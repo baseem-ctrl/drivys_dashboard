@@ -460,7 +460,7 @@ export default function ProductCard({
 
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
         <LoadingButton
-          sx={{ width: '100%', color: '#BC243A', borderColor: '#BC243A' }}
+          sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}
           type="submit"
           variant="outlined"
           loading={isSubmitting}
@@ -547,7 +547,7 @@ export default function ProductCard({
                   >
                     <Iconify
                       icon="solar:minus-circle-linear"
-                      sx={{ color: '#BC243A', width: 18, height: 18 }}
+                      sx={{ color: '#CF5A0D', width: 18, height: 18 }}
                     />
                   </IconButton>
                 </Box>
@@ -620,7 +620,7 @@ export default function ProductCard({
                   justifyContent: 'center',
                   borderRadius: 1,
                   bgcolor: 'rgba(188, 36, 58, 0.1)',
-                  border: '2px dashed #BC243A',
+                  border: '2px dashed #CF5A0D',
                   cursor: 'pointer',
                   transition: 'background-color 0.3s ease',
                   '&:hover': {
@@ -631,7 +631,7 @@ export default function ProductCard({
               >
                 <Iconify
                   icon="icon-park-outline:add-picture"
-                  color="#BC243A"
+                  color="#CF5A0D"
                   sx={{ width: 28, height: 28 }}
                 />
               </Box>

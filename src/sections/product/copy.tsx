@@ -415,7 +415,7 @@ export default function ProductCard({
 
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
         <LoadingButton
-          sx={{ width: '100%', color: '#BC243A', borderColor: '#BC243A' }}
+          sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}
           type="submit"
           variant="outlined"
           loading={isSubmitting}
@@ -488,7 +488,7 @@ export default function ProductCard({
                       onClick={() => handleDeletePicture(item.id)} // Trigger the delete action
                     >
                       <Iconify
-                        color="#BC243A"
+                        color="#CF5A0D"
                         icon="solar:minus-circle-linear"
                         sx={{ width: '15px', height: '15px' }}
                       />
@@ -555,7 +555,7 @@ export default function ProductCard({
               <Grid item xs={3}>
                 <Iconify
                   icon="icon-park-outline:add-picture"
-                  color="#BC243A"
+                  color="#CF5A0D"
                   onClick={() => allImages.onTrue()}
                   sx={{ width: '50px', height: '50px', cursor: 'pointer' }}
                 />

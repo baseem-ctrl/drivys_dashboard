@@ -350,7 +350,7 @@ export default function JobItem({
       />
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
         <LoadingButton
-          sx={{ width: '100%', color: '#BC243A', borderColor: '#BC243A' }}
+          sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}
           type="submit"
           variant="outlined"
           loading={isSubmitting}
@@ -396,10 +396,10 @@ export default function JobItem({
                 mr: 2,
                 fontSize: '11px',
                 mt: 2,
-                color: category?.published ? '#BC243A' : 'inherit',
-                borderColor: category?.published ? '#BC243A' : 'inherit', // Change border color too
+                color: category?.published ? '#CF5A0D' : 'inherit',
+                borderColor: category?.published ? '#CF5A0D' : 'inherit', // Change border color too
                 '&:hover': {
-                  borderColor: category?.published ? '#BC243A' : 'inherit', // Ensure hover color is consistent
+                  borderColor: category?.published ? '#CF5A0D' : 'inherit', // Ensure hover color is consistent
                 },
               }}
             >
@@ -452,7 +452,7 @@ export default function JobItem({
                       onClick={() => handleDelete(item.id)} // Trigger the delete action
                     >
                       <Iconify
-                        color="#BC243A"
+                        color="#CF5A0D"
                         icon="solar:minus-circle-linear"
                         sx={{ width: '15px', height: '15px' }}
                       />
@@ -524,7 +524,7 @@ export default function JobItem({
                     justifyContent: 'center',
                     borderRadius: 1,
                     bgcolor: 'rgba(188, 36, 58, 0.1)',
-                    border: '2px dashed #BC243A',
+                    border: '2px dashed #CF5A0D',
                     cursor: 'pointer',
                     transition: 'background-color 0.3s ease',
                     '&:hover': {
@@ -535,7 +535,7 @@ export default function JobItem({
                 >
                   <Iconify
                     icon="icon-park-outline:add-picture"
-                    color="#BC243A"
+                    color="#CF5A0D"
                     sx={{ width: 28, height: 28 }}
                   />
                 </Box>

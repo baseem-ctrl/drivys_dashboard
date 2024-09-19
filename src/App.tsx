@@ -48,17 +48,16 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // ----------------------------------------------------------------------
 
 export default function App() {
-  const charAt = `
+  // const charAt = `
 
-  ░░░    ░░░
-  ▒▒▒▒  ▒▒▒▒
-  ▒▒ ▒▒▒▒ ▒▒
-  ▓▓  ▓▓  ▓▓
-  ██      ██
+  // ░░░||||▒▒  ▒▒▒▒
+  // ▒▒ ▒▒▒▒ ▒▒
+  // ▓▓  ▓▓  ▓▓
+  // ██      ██
 
-  `;
+  // `;
 
-  console.info(`%c${charAt}`, 'color: #5BE49B');
+  // console.info(`%c${charAt}`, 'color: #5BE49B');
 
   useScrollToTop();
 
@@ -67,7 +66,7 @@ export default function App() {
       <LocalizationProvider>
         <SettingsProvider
           defaultSettings={{
-            themeMode: 'light', // 'light' | 'dark'
+            themeMode: 'dark', // 'light' | 'dark'
             themeDirection: 'ltr', //  'rtl' | 'ltr'
             themeContrast: 'default', // 'default' | 'bold'
             themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
@@ -79,7 +78,7 @@ export default function App() {
             <MotionLazy>
               <SnackbarProvider>
                 <CheckoutProvider>
-                  <SettingsDrawer />
+                  {/* <SettingsDrawer /> */}
                   <ProgressBar />
                   <AuthConsumer>
                     <Router />

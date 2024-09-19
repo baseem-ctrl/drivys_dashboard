@@ -4,7 +4,7 @@ import Link from '@mui/material/Link';
 import Box, { BoxProps } from '@mui/material/Box';
 // routes
 import { RouterLink } from 'src/routes/components';
-import LogoSVG from '../../../public/logo/logo_single.svg';
+import LogoSVG from '../../../public/logo/logo_single.png';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
         }}
         {...other}
       >
-        <img src={LogoSVG} alt="logo" />
+        <img src={LogoSVG} alt="logo" style={{ maxWidth: 'none' }} />
       </Box>
     );
 

@@ -88,11 +88,11 @@ export function useNavData() {
           // },
 
           // PRODUCT
-          {
-            title: t('product'),
-            path: paths.dashboard.product.root,
-            icon: ICONS.product,
-          },
+          // {
+          //   title: t('product'),
+          //   path: paths.dashboard.product.root,
+          //   icon: ICONS.product,
+          // },
 
           // ORDER
           // {
