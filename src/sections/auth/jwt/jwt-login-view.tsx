@@ -21,6 +21,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { alpha, useTheme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ export default function JwtLoginView() {
   const returnTo = searchParams.get('returnTo');
 
   const password = useBoolean();
+  const theme = useTheme();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
@@ -70,41 +72,11 @@ export default function JwtLoginView() {
     }
   });
 
-  // const onSubmit = handleSubmit(async (data) => {
-  //   try {
-  //     const response = await Login(data);
-  //     if (response) {
-  //       const token = response?.data?.authorization?.token;
-
-  //       localStorage.setItem('token', token);
-
-  //       setTimeout(() => {
-  //         router.replace(PATH_AFTER_LOGIN);
-  //       }, 1000);
-  //       console.log('PATH_AFTER_LOGIN', PATH_AFTER_LOGIN);
-  //     } else {
-  //       throw new Error('Token not found in response');
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     reset();
-  //     setErrorMsg(typeof error === 'string' ? error : error.message);
-  //   }
-  // });
-
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">
-        Sign in to <span style={{ color: '#bc253a' }}>BARRY</span>
+        Sign in to <span style={{ color: '#CF5A0D' }}>Drivys</span>
       </Typography>
-
-      {/* <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
-
-        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
-          Create an account
-        </Link>
-      </Stack> */}
     </Stack>
   );
 

@@ -11,6 +11,7 @@ import Header from './header';
 import NavMini from './nav-mini';
 import NavVertical from './nav-vertical';
 import NavHorizontal from './nav-horizontal';
+import { useTheme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +35,7 @@ export default function DashboardLayout({ children }: Props) {
   const renderHorizontal = <NavHorizontal />;
 
   const renderNavVertical = <NavVertical openNav={nav.value} onCloseNav={nav.onFalse} />;
-
+  const theme = useTheme();
   if (isHorizontal) {
     return (
       <>
@@ -76,6 +77,7 @@ export default function DashboardLayout({ children }: Props) {
           minHeight: 1,
           display: 'flex',
           flexDirection: { xs: 'column', lg: 'row' },
+          background: theme.palette.background.black,
         }}
       >
         {renderNavVertical}

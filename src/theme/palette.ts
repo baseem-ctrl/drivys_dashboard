@@ -7,6 +7,7 @@ export type ColorSchema = 'primary' | 'secondary' | 'info' | 'success' | 'warnin
 declare module '@mui/material/styles/createPalette' {
   interface TypeBackground {
     neutral: string;
+    black: string;
   }
   interface SimplePaletteColorOptions {
     lighter: string;
@@ -36,7 +37,7 @@ const GREY = {
 const PRIMARY = {
   lighter: '#dc4a5f',
   light: '#dc4a5f',
-  main: '#BC243A',
+  main: '#CF5A0D',
   dark: '#b52338',
   darker: '#941c2e',
   contrastText: '#FFFFFF',
@@ -119,10 +120,13 @@ export function palette(mode: 'light' | 'dark') {
       primary: GREY[800],
       secondary: GREY[600],
       disabled: GREY[500],
+      white: '#FFFFFF',
     },
     background: {
       paper: '#FFFFFF',
-      default: '#FFFFFF',
+      default: GREY[200],
+      black: '#0000',
+      white: '#FFFFFF',
       neutral: GREY[200],
     },
     action: {
