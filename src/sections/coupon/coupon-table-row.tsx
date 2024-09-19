@@ -1,0 +1,145 @@
+// @mui
+import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import TableCell from '@mui/material/TableCell';
+import IconButton from '@mui/material/IconButton';
+import ListItemText from '@mui/material/ListItemText';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// types
+import { ICouponItem } from 'src/types/language';
+// components
+import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+//
+import LanguageCreateEditForm from './coupon-create-update';
+import { deleteLanguage } from 'src/api/language';
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  selected: boolean;
+  onEditRow: VoidFunction;
+  row: ICouponItem;
+  onSelectRow: VoidFunction;
+  onDeleteRow: VoidFunction;
+  reload: VoidFunction;
+};
+
+export default function LanguageTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  reload,
+}: Props) {
+  const { name, coupon_code, discount_type_id, use_percentage, value, starting_date, ending_date, limitation_times, is_active, products, categories, id } = row;
+
+  const confirm = useBoolean();
+
+  const quickEdit = useBoolean();
+
+  const popover = usePopover();
+
+  const discount_type_text = discount_type_id === '0' ? "All" : discount_type_id === '1' ? "Product" : "Category"
+
+
+
+  return (
+    <>
+      <TableRow hover selected={selected}>
+        {/* <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell> */}
+
+        <TableCell>
+          {name}
+          <Label sx={{ mb: 1, mt: 1 }} variant="soft" color="primary">
+            linked to  {products?.length} products
+          </Label>
+          <Label variant="soft" color="primary">
+            linked to  {categories?.length} categories
+          </Label>
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{coupon_code}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{discount_type_text}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{value}{use_percentage === "1" ? " %" : " AED"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{limitation_times}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Label variant="soft" color={is_active === '1' ? 'success' : 'error'}>
+            {is_active === '1' ? 'Active' : 'In Active'}
+          </Label>
+        </TableCell>
+
+
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+
+      <LanguageCreateEditForm
+        title="Edit Language"
+        updateValue={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+        reload={reload}
+      />
+
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+        <MenuItem
+          onClick={() => {
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            quickEdit.onTrue();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          Edit
+        </MenuItem>
+      </CustomPopover>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Delete"
+        content="Are you sure want to delete?"
+        onConfirm={() => {
+          confirm.onFalse();
+          onDeleteRow();
+        }}
+        action={
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
+            Delete
+          </Button>
+        }
+      />
+    </>
+  );
+}
