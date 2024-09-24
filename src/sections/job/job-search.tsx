@@ -18,8 +18,8 @@ import SearchNotFound from 'src/components/search-not-found';
 type Props = {
   query: string;
   results: IJobItem[];
-  onSearch: (inputValue: string) => void;
-  hrefItem: (id: string) => string;
+  onSearch?: (inputValue: string) => void;
+  hrefItem?: (id: string) => string;
 };
 
 export default function JobSearch({ query, results, onSearch, hrefItem }: Props) {

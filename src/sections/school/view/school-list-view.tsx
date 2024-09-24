@@ -14,7 +14,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 // _mock
-import { _roles } from 'src/_mock';
+import { _roles, ACTIVE_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -43,6 +43,11 @@ import SchoolTableRow from '../school-table-row';
 import UserTableToolbar from '../school-table-toolbar';
 import UserTableFiltersResult from '../school-table-filters-result';
 import SchoolCreateForm from './school-create-form';
+import SchoolFilters from '../school-filters';
+import { Stack } from '@mui/material';
+import JobSearch from 'src/sections/job/job-search';
+import SchoolSearch from '../school-search';
+import { STATUS_OPTIONS } from 'src/_mock/_school';
 
 // ----------------------------------------------------------------------
 
@@ -61,10 +66,13 @@ const TABLE_HEAD = [
   { id: '' },
 ];
 
-const defaultFilters: IUserTableFilters = {
+const defaultFilters: any = {
   name: '',
   role: [],
   status: 'all',
+  min_commission: 0,
+  max_commission: 0,
+  is_active: '',
 };
 
 // ----------------------------------------------------------------------
@@ -81,6 +89,7 @@ export default function SchoolListView() {
   const router = useRouter();
 
   const confirm = useBoolean();
+  const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
 
@@ -94,11 +103,21 @@ export default function SchoolListView() {
     totalPages,
     schoolEmpty,
     revalidateSchool,
-  } = useGetSchool({ page: table.page, limit: table.rowsPerPage });
+  } = useGetSchool({
+    page: table?.page,
+    limit: table?.rowsPerPage,
+    search: filters?.name,
+    status: filters?.status === 'all' ? '' : filters?.status,
+    min_commission: filters?.min_commission,
+    max_commission: filters?.max_commission,
+    is_active: filters?.is_active,
+  });
 
   useEffect(() => {
     if (schoolList?.length) {
       setTableData(schoolList);
+    } else {
+      setTableData([]);
     }
   }, [schoolList]);
 
@@ -144,9 +163,43 @@ export default function SchoolListView() {
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters(tableData);
+    setFilters(defaultFilters);
   }, []);
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+    >
+      <SchoolSearch query={filters.name} results={filters} onSearch={handleFilters} />
 
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <SchoolFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          filters={filters}
+          onFilters={handleFilters}
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          statusOptions={STATUS_OPTIONS}
+          activeOptions={ACTIVE_OPTIONS}
+        />
+      </Stack>
+    </Stack>
+  );
+  // const renderResults = (
+  //   <JobFiltersResult
+  //     filters={filters}
+  //     onResetFilters={handleResetFilters}
+  //     //
+  //     canReset={canReset}
+  //     onFilters={handleFilters}
+  //     //
+  //     results={dataFiltered.length}
+  //   />
+  // );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -170,9 +223,18 @@ export default function SchoolListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
+        <Stack
+          spacing={2.5}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        >
+          {renderFilters}
 
+          {/* {canReset && renderResults} */}
+        </Stack>
         <Card>
-          <UserTableToolbar
+          {/* <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
@@ -189,7 +251,7 @@ export default function SchoolListView() {
               results={tableData.length}
               sx={{ p: 2.5, pt: 0 }}
             />
-          )}
+          )} */}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
