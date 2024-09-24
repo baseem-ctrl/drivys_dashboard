@@ -7,9 +7,17 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 type Props = TextFieldProps & {
   name: string;
   borderRadius?: string;
+  maxLength?: number;
 };
 
-export default function RHFTextField({ name, borderRadius, helperText, type, ...other }: Props) {
+export default function RHFTextField({
+  name,
+  borderRadius,
+  maxLength,
+  helperText,
+  type,
+  ...other
+}: Props) {
   const { control } = useFormContext();
 
   return (
@@ -24,11 +32,14 @@ export default function RHFTextField({ name, borderRadius, helperText, type, ...
             ...(!borderRadius
               ? {}
               : {
-                sx: {
-                  borderRadius: borderRadius, // Apply borderRadius conditionally
-                  paddingBottom: '2px'
-                },
-              }),
+                  sx: {
+                    borderRadius: borderRadius, // Apply borderRadius conditionally
+                    paddingBottom: '2px',
+                  },
+                }),
+          }}
+          inputProps={{
+            maxLength: maxLength,
           }}
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}

@@ -1,5 +1,5 @@
 import useSWR, { mutate } from 'swr';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
 
@@ -89,13 +89,14 @@ export function useGetSchool({
     revalidateSchool,
   };
 }
-export function useGetSchoolAdmin({ limit, page, search }: useGetDelivereyParams = {}) {
+export function useGetSchoolAdmin(limit: number, page: number) {
   // Construct query parameters dynamically
+  const [searchValue, setSearchValue] = useState('');
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (search) params.search = search;
+    if (searchValue) params.search = searchValue;
     params.user_types = ['SCHOOL_ADMIN'];
     return params;
   }, [limit, page]);
@@ -120,6 +121,10 @@ export function useGetSchoolAdmin({ limit, page, search }: useGetDelivereyParams
   const revalidateDeliverey = () => {
     mutate(fullUrl);
   };
+  const revalidateSearch = (search: any) => {
+    setSearchValue(search);
+    mutate(fullUrl);
+  };
   // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
     const DelivereyData = data?.data || [];
@@ -136,6 +141,7 @@ export function useGetSchoolAdmin({ limit, page, search }: useGetDelivereyParams
   return {
     ...memoizedValue,
     revalidateDeliverey,
+    revalidateSearch,
   };
 }
 export function createSchool(body: any) {

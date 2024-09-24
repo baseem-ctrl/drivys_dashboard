@@ -192,10 +192,10 @@ export default function SchoolTableRow({
               name="locale"
               control={control}
               render={({ field }) => (
-                <Select {...field} value={selectedLanguage} onChange={handleChange}>
-                  {localeOptions.map((option: any) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
+                  {localeOptions?.map((option: any) => (
+                    <MenuItem key={option?.value} value={option?.value}>
+                      {option?.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -288,7 +288,7 @@ export default function SchoolTableRow({
               name="status"
               control={control}
               render={({ field }) => (
-                <Select {...field} value={field.value}>
+                <Select {...field} value={field?.value || ''}>
                   {/* {localeOptions.map((option: any) => ( */}
                   <MenuItem key={'active'} value={'active'}>
                     Active
@@ -302,7 +302,7 @@ export default function SchoolTableRow({
                   <MenuItem key={'cancelled'} value={'cancelled'}>
                     Cancelled
                   </MenuItem>
-                  <MenuItem key={'pending_for_verification'} value={'pending for verification'}>
+                  <MenuItem key={'pending_for_verification'} value={'pending_for_verification'}>
                     Pending for verification
                   </MenuItem>
                   {/* ))} */}
@@ -321,7 +321,7 @@ export default function SchoolTableRow({
               name="is_active"
               control={control}
               render={({ field }) => (
-                <Select {...field} value={field.value}>
+                <Select {...field} value={field?.value || ''}>
                   {/* {localeOptions.map((option: any) => ( */}
                   <MenuItem key={'1'} value={'1'}>
                     Active
@@ -350,7 +350,7 @@ export default function SchoolTableRow({
               name="user_id"
               control={control}
               render={({ field }) => (
-                <Select {...field} value={field.value || ''}>
+                <Select {...field} value={field?.value || ''}>
                   {schoolAdminList.map((option: any) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.name}

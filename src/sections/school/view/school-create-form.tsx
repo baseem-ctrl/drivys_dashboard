@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
-import { createSchool } from 'src/api/school';
+import { createSchool, useGetSchoolAdmin } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -17,10 +17,17 @@ import DialogContent from '@mui/material/DialogContent';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/system/Unstable_Grid/Grid';
-import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/components/hook-form';
+import FormProvider, {
+  RHFTextField,
+  RHFCheckbox,
+  RHFSelect,
+  RHFAutocomplete,
+} from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
 import { TextField } from '@mui/material';
+import { countries } from 'src/assets/data';
+import Iconify from 'src/components/iconify';
 
 type Props = {
   open: boolean;
@@ -37,10 +44,11 @@ export default function SchoolCreateForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
+  const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
-  const [selectedLocale, setSelectedLocale] = useState<string | null>(null);
+  const [selectedLocale, setSelectedLocale] = useState<string | null>();
 
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -48,30 +56,68 @@ export default function SchoolCreateForm({
   }));
 
   const DeliverySchema = Yup.object().shape({
-    start_time: Yup.string().required('Start time is required'),
-    end_time: Yup.string().required('End time is required'),
-    max_orders: Yup.number()
-      .required('Max orders is required')
-      .typeError('Max orders must be a number'),
-    day_of_week: Yup.string().required('Day of the week is required'),
+    contact_email: Yup.string(),
+    contact_phone_number: Yup.number(),
+    commission_in_percentage: Yup.string()
+      .required('commission_in_percentage is required')
+      .typeError('commission_in_percentage must be a number'),
+    status: Yup.string(),
     name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
     locale: Yup.string().required('Locale is required'),
-    published: Yup.boolean(),
+    is_active: Yup.boolean(),
+    create_new_user: Yup.boolean(),
+    user_id: Yup.mixed().test('user_id-required', 'User ID is required', function (value) {
+      const { create_new_user } = this.parent;
+      if (!create_new_user) {
+        return !!value; // Ensures user_id is filled if create_new_user is false
+      }
+      return true; // No validation if create_new_user is true
+    }),
+    user_name: Yup.string().test('user_name-required', 'Username is required', function (value) {
+      const { create_new_user } = this.parent;
+      if (create_new_user) {
+        return !!value; // Ensures user_name is filled if create_new_user is true
+      }
+      return true; // No validation if create_new_user is false
+    }),
+    user_email: Yup.string()
+      .email('Must be a valid email')
+      .test('user_email-required', 'Email is required', function (value) {
+        const { create_new_user } = this.parent;
+        if (create_new_user) {
+          return !!value; // Ensures user_email is filled if create_new_user is true
+        }
+        return true; // No validation if create_new_user is false
+      }),
+    password: Yup.string().test('password-required', 'Password is required', function (value) {
+      const { create_new_user } = this.parent;
+      if (create_new_user) {
+        return !!value; // Ensures password is filled if create_new_user is true
+      }
+      return true; // No validation if create_new_user is false
+    }),
+    phone: Yup.string().length(9, 'should be 10 digit'),
+    country_code: Yup.mixed(),
   });
 
   const defaultValues = useMemo(
     () => ({
-      start_time: currentDelivery?.start_time || '',
-      end_time: currentDelivery?.end_time || '',
-      max_orders: currentDelivery?.max_orders || '',
-      day_of_week: currentDelivery?.day_of_week || '',
+      contact_email: '',
+      contact_phone_number: 0,
+      commission_in_percentage: '',
+      status: '',
       name: '',
-      description: '',
       locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
-      published: currentDelivery?.published || false,
+      is_active: true,
+      create_new_user: false,
+      user_id: '',
+      user_name: '',
+      user_email: '',
+      password: '',
+      phone: '',
+      country_code: '',
     }),
-    [currentDelivery]
+    []
   );
 
   const methods = useForm({
@@ -90,7 +136,7 @@ export default function SchoolCreateForm({
 
   const currentName = watch('name');
   const currentDescription = watch('description');
-
+  const values = watch();
   const previousLocaleRef = useRef(selectedLocale);
 
   // ** 1. Saving current locale's translation before switching **
@@ -123,7 +169,6 @@ export default function SchoolCreateForm({
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
       setValue('name', translation.name || '');
-      setValue('description', translation.description || '');
       setValue('locale', selectedLocale);
 
       // Update the previous locale
@@ -135,24 +180,26 @@ export default function SchoolCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
+    console.log(data, 'data');
 
     const formData = new FormData();
 
-    formData.append('start_time', moment(data.start_time).format('HH:mm'));
-    formData.append('end_time', moment(data.end_time).format('HH:mm'));
-    formData.append('max_orders', data.max_orders);
-    formData.append('day_of_week', data.day_of_week);
-    formData.append('published', data.published ? '1' : '0');
-
-    // Merge all translations before sending to the backend
-    Object.keys(translations).forEach((locale, index) => {
-      formData.append(`delivery_slot_translation[${index}][name]`, translations[locale].name);
-      formData.append(
-        `delivery_slot_translation[${index}][description]`,
-        translations[locale].description
-      );
-      formData.append(`delivery_slot_translation[${index}][locale]`, locale);
-    });
+    formData.append('contact_email', data?.contact_email);
+    formData.append('contact_phone_number', data?.contact_phone_number);
+    formData.append('commission_in_percentage', data?.commission_in_percentage);
+    formData.append('status', data?.status);
+    formData.append('is_active', data.is_active ? '1' : '0');
+    formData.append('create_new_user', data.create_new_user ? '1' : '0');
+    formData.append('user_id', data?.user_id?.value);
+    if (data?.create_new_user) {
+      formData.append('name', data?.user_name);
+      formData.append('user_email', data?.user_email);
+      formData.append('password', data?.password);
+      formData.append('phone', data?.phone);
+      formData.append('country_code', data?.country_code?.phone);
+    }
+    formData.append(`vendor_translations[0][name]`, data?.name);
+    formData.append(`vendor_translations[0][locale]`, data?.locale);
 
     try {
       const response = await createSchool(formData);
@@ -160,17 +207,29 @@ export default function SchoolCreateForm({
         reset();
         onClose();
         revalidateDeliverey();
-        enqueueSnackbar('Delivery slot created successfully!', { variant: 'success' });
+        enqueueSnackbar(response?.message, { variant: 'success' });
       }
     } catch (error) {
-      enqueueSnackbar('Failed to create delivery slot.', { variant: 'error' });
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
-
+  const handleSearchChange = (e) => {
+    revalidateSearch(e?.target?.value);
+  };
+  const handleClose = () => {
+    reset(defaultValues);
+    onClose();
+  };
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Create Delivery Slot</DialogTitle>
+        <DialogTitle>Create School</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
@@ -179,12 +238,11 @@ export default function SchoolCreateForm({
               gap={1}
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: '75% 25% ',
+                sm: '25% 75% ',
               }}
             >
-              <RHFTextField name="name" label="Name" />
               <RHFSelect
-                name="locale"
+                name="locale (Language)"
                 label="Locale"
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
@@ -194,67 +252,29 @@ export default function SchoolCreateForm({
                   </MenuItem>
                 ))}
               </RHFSelect>
+              <RHFTextField name="name" label="Name" />
             </Box>
-            <RHFTextField name="description" label="Description" />
+            {/* <RHFTextField name="description" label="Description" /> */}
           </Box>
 
           <Divider sx={{ my: 2 }} />
 
           <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
             <Grid item xs={6}>
-              <Controller
-                name="start_time"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TimePicker
-                    {...field}
-                    sx={{ width: '100%' }}
-                    label="Start Time"
-                    ampm={false}
-                    views={['hours', 'minutes']}
-                    format="HH:mm"
-                    mask="__:__"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
-                )}
-              />
+              <RHFTextField name="contact_email" label="Email" type="email" />
             </Grid>
             <Grid item xs={6}>
-              <Controller
-                name="end_time"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TimePicker
-                    {...field}
-                    label="End Time"
-                    ampm={false}
-                    sx={{ width: '100%' }}
-                    views={['hours', 'minutes']}
-                    format="HH:mm"
-                    mask="__:__"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
-                )}
+              <RHFTextField
+                name="contact_phone_number"
+                label="Contact Number"
+                maxLength={10}
+                placeholder="0503445679"
               />
             </Grid>
 
             <Grid item xs={6} mt={2}>
               <Controller
-                name="day_of_week"
+                name="status"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <RHFTextField
@@ -264,28 +284,91 @@ export default function SchoolCreateForm({
                     error={!!error}
                     helperText={error?.message}
                   >
-                    <option value="">Select Day of Week</option>
-                    <option value="0">Saturday</option>
-                    <option value="1">Sunday</option>
-                    <option value="2">Monday</option>
-                    <option value="3">Tuesday</option>
-                    <option value="4">Wednesday</option>
-                    <option value="5">Thursday</option>
-                    <option value="6">Friday</option>
+                    <option value="">Select Status</option>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="pending_for_verification">Pending for Verification</option>
+                    <option value="expired">Expired</option>
+                    <option value="cancelled">Cancelled</option>
                   </RHFTextField>
                 )}
               />
             </Grid>
 
             <Box mt={2}>
-              <RHFTextField name="max_orders" label="Max Orders" />
+              <RHFTextField
+                name="commission_in_percentage"
+                label="Commission in (%)"
+                type="number"
+              />
             </Box>
-            <RHFCheckbox name="published" label="Published" />
+
+            <RHFCheckbox name="is_active" label="Active" />
+            <RHFCheckbox name="create_new_user" label="Create New User" />
           </Box>
+          {!values?.create_new_user ? (
+            <RHFAutocomplete
+              name="user_id"
+              label="Select Owner"
+              options={schoolAdminList.map(({ name, email, id }) => ({
+                label: `${name}[${email}]`,
+                value: id,
+              }))}
+              onInputChange={(e: any) => handleSearchChange(e)}
+              loading={schoolAdminLoading}
+            />
+          ) : (
+            <Box>
+              <Divider sx={{ my: 2 }} />
+              Create New User
+              <Box
+                display="grid"
+                gridTemplateColumns="repeat(2, 1fr)"
+                columnGap={2}
+                mt={2}
+                rowGap={3}
+              >
+                <RHFTextField name="user_name" label="User Name" />
+                <RHFTextField name="user_email" label="User Email" />
+                <RHFTextField name="password" label="password" type="password" />
+                <RHFAutocomplete
+                  name="country_code"
+                  label="Country Code"
+                  options={countries}
+                  getOptionLabel={(option) => {
+                    return option ? `${option.phone} ${option.label}` : '';
+                  }}
+                  isOptionEqualToValue={(option, value) => option.countryCode === value.countryCode}
+                  filterOptions={(options, state) => {
+                    return options.filter(
+                      (option) =>
+                        // Check if the input matches either countryCode or label
+                        option.phone.toLowerCase().includes(state.inputValue.toLowerCase()) ||
+                        option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                    );
+                  }}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props} key={option.label}>
+                        <Iconify
+                          key={option.label}
+                          icon={`circle-flags:${option.code.toLowerCase()}`}
+                          width={28}
+                          sx={{ mr: 1 }}
+                        />
+                        {option.phone} {option.label}
+                      </li>
+                    );
+                  }}
+                />
+                <RHFTextField name="phone" label="Phone Number" />
+              </Box>
+            </Box>
+          )}
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
