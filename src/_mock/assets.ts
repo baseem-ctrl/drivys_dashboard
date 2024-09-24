@@ -265,17 +265,14 @@ export const _roles = [
   'CTO',
 ];
 // ----------------------------------------------------------------------
-export const _discount_types = [
-'All', 'Product','Category'
-];
+export const _discount_types = ['All', 'Product', 'Category'];
 // ----------------------------------------------------------------------
 
 export const ACTIVE_OPTIONS = [
-  { value: '1', label: 'Active' },
-  { value: '0', label: 'Inactive' },
+  { value: '1', label: 'Show All Active' },
+  { value: '0', label: 'Show All Inactive' },
 ];
 // ----------------------------------------------------------------------
-
 
 export const PUBLISH_OPTIONS = [
   { value: '1', label: 'Published' },
