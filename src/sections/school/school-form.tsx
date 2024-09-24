@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
-import { createDelivery } from 'src/api/delivery';
+import { createDelivery } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -29,7 +29,7 @@ type Props = {
   currentDelivery?: IDeliveryItem;
 };
 
-export default function DeliveryCreateForm({
+export default function SchoolCreateForm({
   currentDelivery,
   open,
   onClose,

@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
-import { createDelivery } from 'src/api/delivery';
+import { createSchool } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -20,15 +20,16 @@ import Grid from '@mui/system/Unstable_Grid/Grid';
 import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
+import { TextField } from '@mui/material';
 
 type Props = {
   open: boolean;
   onClose: VoidFunction;
   revalidateDeliverey: VoidFunction;
-  currentDelivery?: IDeliveryItem;
+  currentDelivery?: any;
 };
 
-export default function DeliveryQuickEditForm({
+export default function SchoolCreateForm({
   currentDelivery,
   open,
   onClose,
@@ -41,13 +42,11 @@ export default function DeliveryQuickEditForm({
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>(null);
 
-  // Generate locale options
-  const localeOptions = language?.map((item) => ({
+  const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
     value: item.language_culture,
   }));
 
-  // Validation schema
   const DeliverySchema = Yup.object().shape({
     start_time: Yup.string().required('Start time is required'),
     end_time: Yup.string().required('End time is required'),
@@ -61,23 +60,22 @@ export default function DeliveryQuickEditForm({
     published: Yup.boolean(),
   });
 
-  // Default form values
   const defaultValues = useMemo(
     () => ({
       start_time: currentDelivery?.start_time || '',
       end_time: currentDelivery?.end_time || '',
       max_orders: currentDelivery?.max_orders || '',
       day_of_week: currentDelivery?.day_of_week || '',
-      name: currentDelivery?.translations?.[0]?.name || '',
-      description: currentDelivery?.translations?.[0]?.description || '',
-      locale: currentDelivery?.translations?.[0]?.locale || '',
+      name: '',
+      description: '',
+      locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
       published: currentDelivery?.published || false,
     }),
     [currentDelivery]
   );
 
   const methods = useForm({
-    resolver: yupResolver(DeliverySchema),
+    resolver: yupResolver(DeliverySchema) as any,
     defaultValues,
   });
 
@@ -92,8 +90,10 @@ export default function DeliveryQuickEditForm({
 
   const currentName = watch('name');
   const currentDescription = watch('description');
+
   const previousLocaleRef = useRef(selectedLocale);
 
+  // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
     if (selectedLocale) {
       setTranslations((prev: any) => ({
@@ -106,6 +106,7 @@ export default function DeliveryQuickEditForm({
     }
   };
 
+  // ** 2. Handle locale change **
   const handleLocaleChange = (newLocale: string) => {
     if (newLocale !== selectedLocale) {
       // Save current locale's data before switching
@@ -116,6 +117,7 @@ export default function DeliveryQuickEditForm({
     }
   };
 
+  // ** 3. Load translation when locale changes **
   useEffect(() => {
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
@@ -129,17 +131,20 @@ export default function DeliveryQuickEditForm({
     }
   }, [selectedLocale, setValue, translations]);
 
-  // Handle form submission
+  // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
+    // Save current locale's data before submission
+    saveCurrentLocaleTranslation();
+
     const formData = new FormData();
 
-    formData.append('delivery_slot_id', currentDelivery?.id);
     formData.append('start_time', moment(data.start_time).format('HH:mm'));
     formData.append('end_time', moment(data.end_time).format('HH:mm'));
     formData.append('max_orders', data.max_orders);
     formData.append('day_of_week', data.day_of_week);
     formData.append('published', data.published ? '1' : '0');
 
+    // Merge all translations before sending to the backend
     Object.keys(translations).forEach((locale, index) => {
       formData.append(`delivery_slot_translation[${index}][name]`, translations[locale].name);
       formData.append(
@@ -150,22 +155,22 @@ export default function DeliveryQuickEditForm({
     });
 
     try {
-      const response = await createDelivery(formData);
+      const response = await createSchool(formData);
       if (response) {
         reset();
         onClose();
         revalidateDeliverey();
-        enqueueSnackbar('Delivery slot updated successfully!', { variant: 'success' });
+        enqueueSnackbar('Delivery slot created successfully!', { variant: 'success' });
       }
     } catch (error) {
-      enqueueSnackbar('Failed to updated delivery slot.', { variant: 'error' });
+      enqueueSnackbar('Failed to create delivery slot.', { variant: 'error' });
     }
   };
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Update Delivery Slot</DialogTitle>
+        <DialogTitle>Create Delivery Slot</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
@@ -183,7 +188,7 @@ export default function DeliveryQuickEditForm({
                 label="Locale"
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
-                {localeOptions?.map((option) => (
+                {localeOptions?.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -203,6 +208,7 @@ export default function DeliveryQuickEditForm({
                 render={({ field, fieldState: { error } }) => (
                   <TimePicker
                     {...field}
+                    sx={{ width: '100%' }}
                     label="Start Time"
                     ampm={false}
                     views={['hours', 'minutes']}
@@ -229,6 +235,7 @@ export default function DeliveryQuickEditForm({
                     {...field}
                     label="End Time"
                     ampm={false}
+                    sx={{ width: '100%' }}
                     views={['hours', 'minutes']}
                     format="HH:mm"
                     mask="__:__"
@@ -252,7 +259,6 @@ export default function DeliveryQuickEditForm({
                 render={({ field, fieldState: { error } }) => (
                   <RHFTextField
                     {...field}
-                    // label={t('Day of Week')}
                     select
                     SelectProps={{ native: true }}
                     error={!!error}
@@ -283,7 +289,7 @@ export default function DeliveryQuickEditForm({
             Cancel
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Update
+            Create
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -1,4 +1,4 @@
-import { fetcher, endpoints, barryCreator, barryFetcher, barrySmasher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 // ----------------------------------------------------------------------
 export function createCategory(body: any) {
   const URL = endpoints.category.create;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 
@@ -40,7 +40,7 @@ export function useGetAllCategory({
     [queryParams]
   );
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, barryFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({

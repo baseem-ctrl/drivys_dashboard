@@ -1,8 +1,14 @@
-import { fetcher, endpoints, barryCreator, barryFetcher, barrySmasher, barryCreatorPut } from 'src/utils/axios';
+import {
+  fetcher,
+  endpoints,
+  drivysCreator,
+  drivysFetcher,
+  barrySmasher,
+  drivysCreatorPut,
+} from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo } from 'react';
-
 
 export function useGetAllLanguage(page: number, limit: number) {
   const getTheFullUrl = () => {
@@ -20,7 +26,7 @@ export function useGetAllLanguage(page: number, limit: number) {
     return `${endpoints.language.list}?${new URLSearchParams(queryPrams)}`;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, barryFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
   const memoizedValue = useMemo(
     () => ({
       language: data?.data as any,
@@ -39,8 +45,8 @@ export function useGetAllLanguage(page: number, limit: number) {
 }
 // ----------------------------------------------------------------------
 
-export function deleteLanguage(id:any) {
-  const URL = endpoints.language.delete+ id;
+export function deleteLanguage(id: any) {
+  const URL = endpoints.language.delete + id;
   const response = barrySmasher(URL);
   return response;
 }
@@ -49,14 +55,14 @@ export function deleteLanguage(id:any) {
 
 export function createLanguage(body: any) {
   const URL = endpoints.language.create;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 
 // ----------------------------------------------------------------------
 
-export function updateLanguage(body: any, id:string) {
-  const URL = endpoints.language.update+id;
-  const response = barryCreatorPut([URL, body]);
+export function updateLanguage(body: any, id: string) {
+  const URL = endpoints.language.update + id;
+  const response = drivysCreatorPut([URL, body]);
   return response;
 }

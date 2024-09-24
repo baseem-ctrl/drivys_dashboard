@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
-import DeliveryListView from 'src/sections/delivery/view/delivery-list-view';
+import SchoolListView from 'src/sections/school/view/school-list-view';
 // sections
 
 // ----------------------------------------------------------------------
 
-export default function DeliveryListPage() {
+export default function SchoolListPage() {
   return (
     <>
       <Helmet>
         <title> Dashboard: Delivery List</title>
       </Helmet>
 
-      <DeliveryListView />
+      <SchoolListView />
     </>
   );
 }

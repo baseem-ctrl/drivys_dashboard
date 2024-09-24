@@ -20,7 +20,7 @@ type Props = StackProps & {
   results: number;
 };
 
-export default function UserTableFiltersResult({
+export default function SchoolTableFiltersResult({
   filters,
   onFilters,
   //

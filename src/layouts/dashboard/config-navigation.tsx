@@ -45,6 +45,7 @@ const ICONS = {
   dashboard: icon('ic_dashboard'),
   language: icon('ic_setting'),
   delivery: icon('ic_delivery'),
+  school: icon('ic_school'),
 };
 
 // ----------------------------------------------------------------------
@@ -139,9 +140,9 @@ export function useNavData() {
           },
           // DELIVERY
           {
-            title: t('delivery'),
-            path: paths.dashboard.delivery.root,
-            icon: ICONS.delivery,
+            title: t('schools'),
+            path: paths.dashboard.school.root,
+            icon: ICONS.school,
           },
           // COUPON
           {

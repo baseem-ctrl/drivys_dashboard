@@ -1,0 +1,435 @@
+// @mui
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
+import TableCell from '@mui/material/TableCell';
+import IconButton from '@mui/material/IconButton';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// types
+// components
+import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+//
+import SchoolQuickEditForm from './school-quick-edit-form';
+import { useEffect, useMemo, useState } from 'react';
+import { ListItemText, Select, TextField } from '@mui/material';
+import { useGetAllLanguage } from 'src/api/language';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import * as Yup from 'yup';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { createSchool, useGetSchoolAdmin } from 'src/api/school';
+import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
+import LoadingButton from '@mui/lab/LoadingButton';
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  selected: boolean;
+  onEditRow: VoidFunction;
+  row: any;
+  onSelectRow: VoidFunction;
+  onDeleteRow: VoidFunction;
+  revalidateSchool: VoidFunction;
+};
+
+export default function SchoolTableRow({
+  row,
+  selected,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+  revalidateSchool,
+}: Props) {
+  const {
+    vendor_translations,
+    email,
+    phone_number,
+    status,
+    is_active,
+    vendor_user,
+    commission_in_percentage,
+  } = row;
+  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
+    useGetAllLanguage(0, 1000);
+  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
+  const [localeOptions, setLocaleOptions] = useState([]);
+
+  const confirm = useBoolean();
+
+  const quickEdit = useBoolean();
+  const handleEditClick = () => {
+    // console.log(row, 'row');
+
+    setEditingRowId(row.id);
+    // setEditedData({ ...row });
+  };
+  const popover = usePopover();
+  useEffect(() => {
+    if ((language && language?.length > 0) || vendor_translations?.length > 0) {
+      let initialLocaleOptions = [];
+      if (Array.isArray(language)) {
+        initialLocaleOptions = language?.map((item: any) => ({
+          label: item.language_culture,
+          value: item.language_culture,
+        }));
+      }
+      const newLocales = vendor_translations
+        ?.map((category: any) => category.locale)
+        .filter(
+          (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
+        )
+        .map((locale: any) => ({ label: locale, value: locale }));
+      setLocaleOptions([...initialLocaleOptions, ...newLocales]);
+    }
+  }, [language, vendor_translations, selectedLanguage]);
+
+  const selectedLocaleObject = vendor_translations.find(
+    (item: { locale: string }) => item.locale === selectedLanguage
+  );
+  const NewSchema = Yup.object().shape({
+    name: Yup.string(),
+    locale: Yup.mixed(),
+    email: Yup.string(),
+    phone_number: Yup.string(),
+    status: Yup.mixed(),
+    is_active: Yup.boolean(),
+    user_id: Yup.string(),
+    commission_in_percentage: Yup.string(),
+  });
+  const defaultValues = useMemo(
+    () => ({
+      name: selectedLocaleObject?.name || '',
+      locale: selectedLocaleObject?.locale || '',
+      email: email || '',
+      phone_number: phone_number || '',
+      status: status,
+      is_active: is_active || 1,
+      user_id: vendor_user?.user_id || '',
+      commission_in_percentage: commission_in_percentage || 0,
+    }),
+    [selectedLocaleObject, row]
+  );
+
+  const methods = useForm({
+    resolver: yupResolver(NewSchema) as any,
+    defaultValues,
+  });
+  const { watch, reset, handleSubmit, formState, setValue, control } = methods;
+  const values = watch();
+  const { isSubmitting, errors } = formState;
+  const { enqueueSnackbar } = useSnackbar();
+  const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
+    setSelectedLanguage(event.target.value);
+    const selectedLocaleObject = vendor_translations.find(
+      (item: { locale: string }) => item.locale === event.target.value
+    );
+
+    // Update the form values to reflect the selected locale
+    if (selectedLocaleObject) {
+      setValue('name', selectedLocaleObject.name); // Update name to match the locale
+    } else {
+      setValue('name', '');
+    }
+  };
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      let payload = {
+        vendor_translations: [
+          {
+            name: data?.name || vendor_translations?.name,
+            locale: selectedLanguage || vendor_translations?.locale,
+          },
+        ],
+        contact_email: data?.email || email,
+        contact_phone_number: data?.phone_number || phone_number,
+        status: data?.status || status,
+        user_id: data?.user_id || vendor_user?.user_id,
+        is_active: data?.is_active ? '1' : '0',
+        commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
+        create_new_user: 0,
+        vendor_id: row?.id,
+      };
+      console.log(data, 'data');
+
+      const response = await createSchool(payload);
+      if (response) {
+        enqueueSnackbar(response.message, {
+          variant: 'success',
+        });
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
+      setEditingRowId(null);
+      revalidateSchool();
+    }
+  });
+
+  return (
+    <>
+      <TableRow hover selected={selected}>
+        {/* <TableCell padding="checkbox">
+          <Checkbox checked={selected} onClick={onSelectRow} />
+        </TableCell> */}
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="locale"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} value={selectedLanguage} onChange={handleChange}>
+                  {localeOptions.map((option: any) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          ) : (
+            selectedLanguage
+          )}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.name}
+                  helperText={errors.name ? errors.name.message : ''}
+                />
+              )}
+            />
+          ) : (
+            selectedLocaleObject?.name
+          )}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ''}
+                  type="email"
+                />
+              )}
+            />
+          ) : (
+            email || 'N/A'
+          )}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          {editingRowId === row.id ? (
+            <Controller
+              name="phone_number"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ''}
+                  type="number"
+                />
+              )}
+            />
+          ) : (
+            phone_number || 'N/A'
+          )}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          {editingRowId === row.id ? (
+            <Controller
+              name="commission_in_percentage"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ''}
+                  type="number"
+                />
+              )}
+            />
+          ) : (
+            commission_in_percentage || 'N/A'
+          )}
+        </TableCell>
+
+        <TableCell>
+          {editingRowId === row.id ? (
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} value={field.value}>
+                  {/* {localeOptions.map((option: any) => ( */}
+                  <MenuItem key={'active'} value={'active'}>
+                    Active
+                  </MenuItem>
+                  <MenuItem key={'suspended'} value={'suspended'}>
+                    Suspended
+                  </MenuItem>{' '}
+                  <MenuItem key={'expired'} value={'expired'}>
+                    Expired
+                  </MenuItem>{' '}
+                  <MenuItem key={'cancelled'} value={'cancelled'}>
+                    Cancelled
+                  </MenuItem>
+                  <MenuItem key={'pending_for_verification'} value={'pending for verification'}>
+                    Pending for verification
+                  </MenuItem>
+                  {/* ))} */}
+                </Select>
+              )}
+            />
+          ) : (
+            <Label variant="outlined" color={'default'}>
+              {status}
+            </Label>
+          )}
+        </TableCell>
+        <TableCell>
+          {editingRowId === row.id ? (
+            <Controller
+              name="is_active"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} value={field.value}>
+                  {/* {localeOptions.map((option: any) => ( */}
+                  <MenuItem key={'1'} value={'1'}>
+                    Active
+                  </MenuItem>
+                  <MenuItem key={'0'} value={'0'}>
+                    In Active
+                  </MenuItem>{' '}
+                  {/* ))} */}
+                </Select>
+              )}
+            />
+          ) : (
+            <Label
+              variant="soft"
+              color={
+                (is_active === '1' && 'success') || (is_active === '0' && 'error') || 'default'
+              }
+            >
+              {is_active === '0' ? 'In Active' : 'Active'}
+            </Label>
+          )}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="user_id"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} value={field.value || ''}>
+                  {schoolAdminList.map((option: any) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          ) : (
+            <ListItemText
+              primary={vendor_user?.user?.name ?? 'NA'}
+              secondary={vendor_user?.user?.email ?? 'NA'}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          )}
+        </TableCell>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          {editingRowId !== null ? (
+            <LoadingButton
+              sx={{ color: '#CF5A0D', borderColor: '#CF5A0D' }}
+              type="submit"
+              variant="outlined"
+              loading={isSubmitting}
+              onClick={onSubmit}
+            >
+              {'Save'}
+            </LoadingButton>
+          ) : (
+            // <Button
+            //   onClick={onSubmit}
+            //   variant="outlined"
+            //   sx={{ color: '#CF5A0D', borderColor: '#CF5A0D' }}
+            // >
+            //   Save
+            // </Button>
+            <Tooltip title="Quick Edit" placement="top" arrow>
+              <IconButton color="default" onClick={handleEditClick}>
+                <Iconify icon="solar:pen-bold" />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <IconButton
+            color="error"
+            onClick={() => {
+              confirm.onTrue();
+            }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+
+      {/* <SchoolQuickEditForm
+        currentDelivery={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+        revalidateDeliverey={revalidateDeliverey}
+      /> */}
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Delete"
+        content="Are you sure want to delete?"
+        onConfirm={() => {
+          confirm.onFalse();
+          onDeleteRow();
+        }}
+        action={
+          <Button variant="contained" color="error" onClick={onDeleteRow}>
+            Delete
+          </Button>
+        }
+      />
+    </>
+  );
+}

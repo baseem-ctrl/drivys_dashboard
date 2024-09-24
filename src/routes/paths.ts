@@ -176,16 +176,12 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/category/${MOCK_ID}/edit`,
       },
     },
-    delivery: {
-      root: `${ROOTS.DASHBOARD}/delivery`,
-      list: `${ROOTS.DASHBOARD}/delivery/list`,
-      new: `${ROOTS.DASHBOARD}/delivery/new`,
-      details: (id: string) => `${ROOTS.DASHBOARD}/delivery/${id}`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/delivery/${id}/edit`,
-      demo: {
-        details: `${ROOTS.DASHBOARD}/delivery/${MOCK_ID}`,
-        edit: `${ROOTS.DASHBOARD}/delivery/${MOCK_ID}/edit`,
-      },
+    school: {
+      root: `${ROOTS.DASHBOARD}/school`,
+      list: `${ROOTS.DASHBOARD}/schools/list`,
+      new: `${ROOTS.DASHBOARD}/schools/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
     },
     coupon: {
       root: `${ROOTS.DASHBOARD}/coupon/list`,

@@ -48,7 +48,7 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 // ----------------------------------------------------------------------
 
-export const barryCreator = async (args: string | [string, AxiosRequestConfig]) => {
+export const drivysCreator = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.post(url, config);
@@ -57,7 +57,7 @@ export const barryCreator = async (args: string | [string, AxiosRequestConfig]) 
 
 // ----------------------------------------------------------------------
 
-export const barryCreatorPut = async (args: string | [string, AxiosRequestConfig]) => {
+export const drivysCreatorPut = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.put(url, config);
@@ -66,7 +66,7 @@ export const barryCreatorPut = async (args: string | [string, AxiosRequestConfig
 
 // ----------------------------------------------------------------------
 
-export const barryFetcher = async (args: string | [string, AxiosRequestConfig]) => {
+export const drivysFetcher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
   const res = await axiosInstance.get(url, { ...config });
   return res.data;
@@ -120,15 +120,16 @@ export const endpoints = {
     create: 'admin/user/languages',
     update: 'admin/user/languages/',
   },
-  coupon:{
+  coupon: {
     list: 'admin/discount/get-discount-list',
     delete: 'admin/discount/delete-discount/',
     createUpdate: 'admin/discount/create-discount',
   },
-  deliverey: {
-    list: 'admin/delivery-slot/get-delivery-slot-list',
-    delete: 'admin/delivery-slot/delete-delivery-slot/',
-    create: 'admin/delivery-slot/create-delivery-slot-translation',
+  school: {
+    list: 'admin/vendor/get-vendor-list',
+    admin: 'admin/user/get-list',
+    delete: 'admin/vendor/delete-vendor/',
+    create: 'admin/vendor/create-vendor-translation',
     update: 'admin/delivery-slot/create-delivery-slot-translation',
   },
 };
