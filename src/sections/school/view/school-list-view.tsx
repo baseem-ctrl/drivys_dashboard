@@ -163,7 +163,7 @@ export default function SchoolListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Delivery Slot
+              New School
             </Button>
           }
           sx={{
