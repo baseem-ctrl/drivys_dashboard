@@ -25,7 +25,7 @@ type Props = {
   roleOptions: string[];
 };
 
-export default function UserTableToolbar({
+export default function SchoolTableToolbar({
   filters,
   onFilters,
   //

@@ -1,4 +1,11 @@
-import { fetcher, endpoints, barryCreator, barryFetcher, barrySmasher, barryCreatorPut } from 'src/utils/axios';
+import {
+  fetcher,
+  endpoints,
+  drivysCreator,
+  drivysFetcher,
+  barrySmasher,
+  drivysCreatorPut,
+} from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo } from 'react';
@@ -8,10 +15,9 @@ interface useGetCouponParams {
   search?: any;
   starting_date?: any;
   ending_date?: any;
-  value?:number,
-  discount_type_id?:string,
-  is_active?:any
-
+  value?: number;
+  discount_type_id?: string;
+  is_active?: any;
 }
 
 export function useGetAllCoupon({
@@ -22,13 +28,9 @@ export function useGetAllCoupon({
   ending_date,
   value,
   discount_type_id,
-  is_active
-
+  is_active,
 }: useGetCouponParams = {}) {
-
-
-console.log(is_active,"is_active");
-
+  console.log(is_active, 'is_active');
 
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -39,26 +41,16 @@ console.log(is_active,"is_active");
     if (ending_date) params.ending_date = ending_date;
     if (value) params.value = value;
     if (discount_type_id) params.discount_type_id = discount_type_id;
-    if (is_active || is_active==="0") params.is_active = is_active;
+    if (is_active || is_active === '0') params.is_active = is_active;
 
     return params;
-  }, [
-    limit,
-    page,
-    search,
-    starting_date,
-    ending_date,
-    value,
-    discount_type_id,
-    is_active
-  ]);
+  }, [limit, page, search, starting_date, ending_date, value, discount_type_id, is_active]);
   const getTheFullUrl = useMemo(
     () => `${endpoints.coupon.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
   );
 
-
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, barryFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
   const memoizedValue = useMemo(
     () => ({
       coupon: data?.data as any,
@@ -77,8 +69,8 @@ console.log(is_active,"is_active");
 }
 // ----------------------------------------------------------------------
 
-export function deleteCoupon(id:any) {
-  const URL = endpoints.coupon.delete+ id;
+export function deleteCoupon(id: any) {
+  const URL = endpoints.coupon.delete + id;
   const response = barrySmasher(URL);
   return response;
 }
@@ -87,7 +79,6 @@ export function deleteCoupon(id:any) {
 
 export function createUpdateCoupon(body: any) {
   const URL = endpoints.coupon.createUpdate;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
-

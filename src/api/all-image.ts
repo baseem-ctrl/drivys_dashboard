@@ -1,18 +1,18 @@
-import { fetcher, endpoints, barryCreator, barryFetcher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo } from 'react';
 // ----------------------------------------------------------------------
 export function createImageMultiple(body: any) {
   const URL = endpoints.allimage.create;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 
 // ----------------------------------------------------------------------
 export function createImageSingle(body: any) {
   const URL = endpoints.allimage.createSingle;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 
@@ -34,7 +34,7 @@ export function useGetAllImages(page: number, limit: number) {
     return `${endpoints.allimage.list}?${new URLSearchParams(queryPrams)}`;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, barryFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
   const memoizedValue = useMemo(
     () => ({
       allImages: data?.data as any,

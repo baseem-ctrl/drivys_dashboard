@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
-import { fetcher, endpoints, barryCreator, barryFetcher, barrySmasher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
 // types
 import { IProductItem } from 'src/types/product';
 
@@ -79,7 +79,7 @@ export function useGetProducts({
     [queryParams]
   );
 
-  const { data, error, isLoading, isValidating } = useSWR(fullUrl, barryFetcher, {
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
     revalidateOnFocus: false,
   });
 
@@ -151,12 +151,12 @@ export function useSearchProducts(query: string) {
 
 export function createProduct(body: any) {
   const URL = endpoints.product.create;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 export function updateProduct(body: any) {
   const URL = endpoints.product.update;
-  const response = barryCreator([URL, body]);
+  const response = drivysCreator([URL, body]);
   return response;
 }
 

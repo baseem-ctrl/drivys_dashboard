@@ -39,8 +39,8 @@ const JobEditPage = lazy(() => import('src/pages/dashboard/job/edit'));
 // Category
 const CategoryListPage = lazy(() => import('src/pages/dashboard/category/list'));
 
-// Delivery
-const DeliveryListPage = lazy(() => import('src/pages/dashboard/delivery/list'));
+// School
+const SchoolListPage = lazy(() => import('src/pages/dashboard/schools/list'));
 // TOUR
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
@@ -126,14 +126,13 @@ export const dashboardRoutes = [
         children: [{ element: <CategoryListPage />, index: true }],
       },
       {
-        path: 'delivery',
-        children: [{ element: <DeliveryListPage />, index: true }],
+        path: 'school',
+        children: [{ element: <SchoolListPage />, index: true }],
       },
       {
         path: 'coupon',
         children: [{ path: 'list', element: <CouponListPage />, index: true }],
       },
-
 
       {
         path: 'system',

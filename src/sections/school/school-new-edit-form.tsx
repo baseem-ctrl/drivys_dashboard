@@ -38,7 +38,7 @@ type Props = {
   currentUser?: IUserItem;
 };
 
-export default function UserNewEditForm({ currentUser }: Props) {
+export default function SchoolNewEditForm({ currentUser }: Props) {
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();

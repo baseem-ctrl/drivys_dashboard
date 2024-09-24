@@ -36,25 +36,27 @@ import {
 // types
 import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 //
-import { deleteDelivery, useGetDeliverey } from 'src/api/delivery';
+import { deleteSchool, useGetSchool } from 'src/api/school';
 import { IDeliveryItem } from 'src/types/product';
 import { useSnackbar } from 'src/components/snackbar';
-import DeliveryTableRow from '../delivery-table-row';
-import UserTableToolbar from '../delivery-table-toolbar';
-import UserTableFiltersResult from '../delivery-table-filters-result';
-import DeliveryCreateForm from './delivery-create-form';
+import SchoolTableRow from '../school-table-row';
+import UserTableToolbar from '../school-table-toolbar';
+import UserTableFiltersResult from '../school-table-filters-result';
+import SchoolCreateForm from './school-create-form';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'locale', label: 'Language' },
   { id: 'name', label: 'Name' },
-  { id: 'description', label: 'Description' },
-  { id: 'locale', label: 'locale' },
-  { id: 'day_of_week', label: 'Day of Week' },
-  { id: 'max_orders', label: 'Max Orders' },
-  { id: 'published', label: 'Published' },
-  { id: 'start_time', label: 'Start time' },
-  { id: 'end_time', label: 'End time' },
+  { id: 'email', label: 'Email' },
+  { id: 'phone_number', label: 'Phone Number' },
+  { id: 'commission_in_percentage', label: 'Commission (in %)' },
+
+  { id: 'status', label: 'Status' },
+  { id: 'is_active', label: 'Active Status ' },
+  { id: 'vendor_user', label: 'School Owner' },
+  // { id: 'end_time', label: 'End time' },
 
   { id: '' },
 ];
@@ -67,8 +69,8 @@ const defaultFilters: IUserTableFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function DeliveryListView() {
-  const table = useTable();
+export default function SchoolListView() {
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -85,37 +87,26 @@ export default function DeliveryListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const {
-    delivereyList,
-    delivereyError,
-    delivereyLoading,
-    delivereyValidating,
+    schoolList,
+    schoolError,
+    schoolLoading,
+    schoolValidating,
     totalPages,
-    delivereyEmpty,
-    revalidateDeliverey,
-  } = useGetDeliverey({ page: table.page, limit: table.rowsPerPage });
+    schoolEmpty,
+    revalidateSchool,
+  } = useGetSchool({ page: table.page, limit: table.rowsPerPage });
 
   useEffect(() => {
-    if (delivereyList?.length) {
-      setTableData(delivereyList);
+    if (schoolList?.length) {
+      setTableData(schoolList);
     }
-  }, [delivereyList]);
-
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
-
-  const dataInPage = dataFiltered?.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  }, [schoolList]);
 
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered?.length && canReset) || !dataFiltered?.length;
+  const notFound = (!tableData?.length && canReset) || !tableData?.length;
 
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
@@ -129,14 +120,12 @@ export default function DeliveryListView() {
   );
 
   const handleDeleteRow = async (id: string) => {
-    console.log('id', id);
-
     try {
-      const response = await deleteDelivery(id);
-      revalidateDeliverey();
+      const response = await deleteSchool(id);
+      revalidateSchool();
       enqueueSnackbar(response?.message);
     } catch (error) {
-      enqueueSnackbar('error deleting delivery', { variant: 'error' });
+      enqueueSnackbar(error?.message, { variant: 'error' });
     }
   };
 
@@ -155,17 +144,17 @@ export default function DeliveryListView() {
   );
 
   const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
+    setFilters(tableData);
   }, []);
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="Delivery Slot List"
+          heading="Schools List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Delivery', href: paths.dashboard.delivery.root },
+            { name: 'Delivery', href: paths.dashboard.school.root },
             { name: 'List' },
           ]}
           action={
@@ -197,7 +186,7 @@ export default function DeliveryListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={tableData.length}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -234,20 +223,20 @@ export default function DeliveryListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
+                  {tableData
                     ?.slice(
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     ?.map((row) => (
-                      <DeliveryTableRow
+                      <SchoolTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
-                        revalidateDeliverey={revalidateDeliverey}
+                        revalidateSchool={revalidateSchool}
                       />
                     ))}
 
@@ -263,7 +252,7 @@ export default function DeliveryListView() {
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered?.length}
+            count={tableData?.length}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -274,10 +263,10 @@ export default function DeliveryListView() {
           />
         </Card>
       </Container>
-      <DeliveryCreateForm
+      <SchoolCreateForm
         open={quickCreate.value}
         onClose={quickCreate.onFalse}
-        revalidateDeliverey={revalidateDeliverey}
+        revalidateDeliverey={revalidateSchool}
       />
     </>
   );

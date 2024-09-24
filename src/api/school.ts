@@ -1,0 +1,156 @@
+import useSWR, { mutate } from 'swr';
+import { useMemo } from 'react';
+// utils
+import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+
+// ----------------------------------------------------------------------
+
+interface useGetDelivereyParams {
+  limit?: number;
+  page?: number;
+  locale?: string;
+  search?: string;
+  status?: number;
+  is_active?: number;
+  min_commission?: number;
+  max_commission?: number;
+  license_expiry_from?: number;
+  license_expiry_to?: number;
+}
+
+export function useGetSchool({
+  limit,
+  page,
+  locale,
+  search,
+  status,
+  is_active,
+  min_commission,
+  max_commission,
+  license_expiry_from,
+  license_expiry_to,
+}: useGetDelivereyParams = {}) {
+  // Construct query parameters dynamically
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (locale) params.locale = locale;
+    if (search) params.search = search;
+    if (status) params.status = status;
+    if (is_active) params.is_active = is_active;
+    if (min_commission) params.min_commission = min_commission;
+    if (max_commission) params.max_commission = max_commission;
+    if (license_expiry_from) params.license_expiry_from = license_expiry_from;
+    if (license_expiry_to) params.license_expiry_to = license_expiry_to;
+
+    return params;
+  }, [
+    limit,
+    page,
+    locale,
+    search,
+    status,
+    is_active,
+    min_commission,
+    max_commission,
+    license_expiry_from,
+    license_expiry_to,
+  ]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.school.list}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidateSchool = () => {
+    mutate(fullUrl);
+  };
+
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolList: DelivereyData,
+      schoolLoading: isLoading,
+      schoolError: error,
+      schoolValidating: isValidating,
+      schoolEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidateSchool,
+  };
+}
+export function useGetSchoolAdmin({ limit, page, search }: useGetDelivereyParams = {}) {
+  // Construct query parameters dynamically
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (search) params.search = search;
+    params.user_types = ['SCHOOL_ADMIN'];
+    return params;
+  }, [limit, page]);
+
+  const fullUrl = useMemo(() => {
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If the value is an array, append each item
+        value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
+      } else {
+        urlSearchParams.append(key, value as string);
+      }
+    });
+    return `${endpoints.school.admin}?${urlSearchParams}`;
+  }, [queryParams]);
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidateDeliverey = () => {
+    mutate(fullUrl);
+  };
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolAdminList: DelivereyData,
+      schoolAdminLoading: isLoading,
+      schoolAdminError: error,
+      schoolAdminValidating: isValidating,
+      schoolAdminEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidateDeliverey,
+  };
+}
+export function createSchool(body: any) {
+  const URL = endpoints.school.create;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function updateDelivery(body: any) {
+  const URL = endpoints.school.update;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+export function deleteSchool(id: any) {
+  const URL = endpoints.school.delete + id;
+  const response = barrySmasher(URL);
+  return response;
+}
