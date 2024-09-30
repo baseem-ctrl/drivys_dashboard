@@ -16,13 +16,14 @@ import { IJobItem } from 'src/types/job';
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
 import { Box, Button, CircularProgress, TextField } from '@mui/material';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool } from 'src/api/school';
+import { createSchool, createUpdateSchoolAddress } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
+import marker from 'react-map-gl/dist/esm/components/marker';
 
 // ----------------------------------------------------------------------
 
@@ -33,16 +34,24 @@ type Props = {
 };
 
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
-  const mapContainerStyle = { height: '300px', width: '100%' };
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
+  });
+  const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
   const defaultCenter = {
     lat: parseFloat(details?.latitude) || 0,
     lng: parseFloat(details?.longitude) || 0,
   };
+  const [load, setLoad] = useState(false);
+
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [addresses, setAddresses] = useState(details?.vendor_addresses || []);
   const [newAddress, setNewAddress] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
-
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: parseFloat(details?.latitude) || 24.4539,
+    lng: parseFloat(details?.longitude) || 54.3773,
+  });
   const NewUserSchema = Yup.object().shape({
     street_address: Yup.string(),
     city: Yup.mixed().nullable(),
@@ -80,34 +89,33 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   } = methods;
 
   useEffect(() => {
+    if (defaultValues.latitude && defaultValues.longitude) {
+      setMarkerPosition({
+        lat: parseFloat(defaultValues.latitude) || 24.4539,
+        lng: parseFloat(defaultValues.longitude) || 54.3773,
+      });
+    }
     reset(defaultValues);
+    setLoad(true);
   }, [defaultValues, reset]);
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
     console.log(data, 'data');
     try {
       let payload = {
-        vendor_translations: [
-          {
-            name: details?.vendor_translations[0]?.name,
-            locale: details?.vendor_translations[0]?.locale,
-          },
-        ],
-        vendor_addresses: [
-          {
-            street_address: data?.street_address,
-            city: data?.city,
-            state: data?.state,
-            country: data?.country,
-            latitude: data?.latitude,
-            longitude: data?.longitude,
-          },
-        ],
-        user_id: details?.vendor_user?.user_id,
+        street_address: data?.street_address,
+        city: data?.city,
+        state: data?.state,
+        country: data?.country,
+        latitude: data?.latitude,
+        longitude: data?.longitude,
         create_new_user: 0,
         vendor_id: details?.id,
       };
-      const response = await createSchool(payload);
+      if (editingIndex !== null) {
+        payload.id = details?.vendor_addresses[editingIndex]?.id; // Add id if editingIndex is not null
+      }
+      const response = await createUpdateSchoolAddress(payload);
       if (response) {
         enqueueSnackbar(response.message, {
           variant: 'success',
@@ -127,19 +135,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       reset();
       reload();
     }
-    // if (newAddress) {
-    //   // Add New Address
-    //   setAddresses([data, ...addresses]);
-    //   setNewAddress(null);
-    // } else if (editingIndex !== null) {
-    //   // Update Existing Address
-    //   const updatedAddresses = addresses.map((addr, idx) =>
-    //     idx === editingIndex ? { ...addr, ...data } : addr
-    //   );
-    //   setAddresses(updatedAddresses);
-    //   setEditingIndex(null);
-    // }
-    // Reset form fields after submission
   });
 
   // Function to handle map click and update lat/lng values
@@ -147,6 +142,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     if (!e.latLng) return;
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
+    setMarkerPosition({ lat, lng });
     setValue('latitude', lat.toString());
     setValue('longitude', lng.toString());
   };
@@ -230,6 +226,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           variant="contained"
           onClick={() => {
             setNewAddress({});
+            setEditingIndex(null);
             reset();
           }}
           sx={{ mb: 2 }}
@@ -254,13 +251,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           ].map((item, idx) => (
             <Controller
               key={idx}
-              name={item.name}
+              name={item?.name}
               control={control}
               // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label={item.label}
+                  label={item?.label}
                   variant="outlined"
                   sx={{ my: 1, width: '100%' }}
                   // onChange={(e) => field.onChange(e.target.value)}
@@ -273,24 +270,40 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
             Select Location on Map
           </Typography>
-          <LoadScript googleMapsApiKey={import.meta.env.VITE_APP_GOOGLE_API_KEY}>
-            <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              center={{
-                lat: parseFloat(defaultValues.latitude) || 24.4539,
-                lng: parseFloat(defaultValues.latitude) || 54.3773,
-              }}
-              zoom={12}
-              onClick={handleMapClick}
-            >
-              <Marker
-                position={{
-                  lat: parseFloat(defaultValues.latitude) || 24.4539,
-                  lng: parseFloat(defaultValues.latitude) || 54.3773,
-                }}
-              />
-            </GoogleMap>
-          </LoadScript>
+          <Box sx={{ pt: 2, pb: 2 }}>
+            {isLoaded && load ? (
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={markerPosition}
+                zoom={12}
+                onClick={handleMapClick}
+              >
+                {markerPosition && (
+                  <Marker
+                    position={markerPosition}
+                    icon={{
+                      url: marker, // Specify the URL of your custom marker image
+                      scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                    }}
+                  />
+                )}
+                {(defaultValues?.latitude || defaultValues?.longitude) && (
+                  <Marker
+                    position={{
+                      lat: defaultValues?.latitude,
+                      lng: defaultValues?.longitude,
+                    }}
+                    icon={{
+                      url: marker, // Specify the URL of your custom marker image
+                      scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                    }}
+                  />
+                )}
+              </GoogleMap>
+            ) : (
+              <div>Loading Map...</div>
+            )}
+          </Box>
 
           {/* Save and Cancel Buttons */}
           <Box>
@@ -351,30 +364,33 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                     Map Location
                   </Typography>
-                  <LoadScript googleMapsApiKey={import.meta.env.VITE_APP_GOOGLE_API_KEY}>
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={defaultCenter}
-                      zoom={12}
-                    >
-                      <Marker position={defaultCenter} />
-                    </GoogleMap>
-                  </LoadScript>
-
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      setEditingIndex(index);
-                      reset(defaultValues); // Load address into form fields
-                    }}
-                    sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
-                  >
-                    Edit
-                  </Button>
+                  <Box sx={{ pt: 2, pb: 2 }}>
+                    {isLoaded && load ? (
+                      <GoogleMap
+                        mapContainerStyle={mapContainerStyle}
+                        center={defaultCenter}
+                        zoom={12}
+                      >
+                        <Marker position={defaultCenter} />
+                      </GoogleMap>
+                    ) : (
+                      <div>Loading Map...</div>
+                    )}
+                  </Box>
                 </>
               ) : (
                 <Typography>No location data available</Typography>
               )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setEditingIndex(index);
+                  reset(defaultValues); // Load address into form fields
+                }}
+                sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
+              >
+                Edit
+              </Button>
             </Box>
           );
         })}

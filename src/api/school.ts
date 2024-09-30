@@ -149,6 +149,12 @@ export function createSchool(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+export function createUpdateSchoolAddress(body: any) {
+  const URL = endpoints.school.address;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
 export function updateDelivery(body: any) {
   const URL = endpoints.school.update;
   const response = drivysCreator([URL, body]);

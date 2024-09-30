@@ -132,5 +132,6 @@ export const endpoints = {
     create: 'admin/vendor/create-vendor-translation',
     update: 'admin/delivery-slot/create-delivery-slot-translation',
     admin: 'admin/user/get-list',
+    address: 'admin/vendor/address/create-update-address',
   },
 };
