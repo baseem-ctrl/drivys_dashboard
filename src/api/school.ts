@@ -149,6 +149,12 @@ export function createSchool(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+export function createUpdateSchoolAddress(body: any) {
+  const URL = endpoints.school.address;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
 export function updateDelivery(body: any) {
   const URL = endpoints.school.update;
   const response = drivysCreator([URL, body]);
@@ -159,4 +165,26 @@ export function deleteSchool(id: any) {
   const URL = endpoints.school.delete + id;
   const response = barrySmasher(URL);
   return response;
+}
+export function useGetSchoolById(schoolId: string) {
+  const URL = endpoints.school.details + schoolId;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
 }

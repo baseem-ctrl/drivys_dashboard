@@ -6,3 +6,7 @@ export const STATUS_OPTIONS = [
   { value: 'expired', label: 'Expired' },
   { value: 'cancelled', label: 'Cancelled' },
 ];
+export const SCHOOL_DETAILS_TABS = [
+  { value: 'details', label: 'School Details' },
+  { value: 'trainers', label: 'Trainers' },
+];

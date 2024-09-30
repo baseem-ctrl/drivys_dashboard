@@ -6,6 +6,8 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
+import SchoolDetailsView from 'src/sections/school/view/school-details-view';
+import SchoolDetailsPage from 'src/pages/dashboard/schools/details';
 
 // ----------------------------------------------------------------------
 
@@ -127,7 +129,10 @@ export const dashboardRoutes = [
       },
       {
         path: 'school',
-        children: [{ element: <SchoolListPage />, index: true }],
+        children: [
+          { element: <SchoolListPage />, index: true },
+          { path: ':id', element: <SchoolDetailsPage /> },
+        ],
       },
       {
         path: 'coupon',

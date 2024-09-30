@@ -127,9 +127,11 @@ export const endpoints = {
   },
   school: {
     list: 'admin/vendor/get-vendor-list',
-    admin: 'admin/user/get-list',
+    details: 'admin/vendor/get-vendor/',
     delete: 'admin/vendor/delete-vendor/',
     create: 'admin/vendor/create-vendor-translation',
     update: 'admin/delivery-slot/create-delivery-slot-translation',
+    admin: 'admin/user/get-list',
+    address: 'admin/vendor/address/create-update-address',
   },
 };
