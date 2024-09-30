@@ -160,3 +160,25 @@ export function deleteSchool(id: any) {
   const response = barrySmasher(URL);
   return response;
 }
+export function useGetSchoolById(schoolId: string) {
+  const URL = endpoints.school.details + schoolId;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
+}

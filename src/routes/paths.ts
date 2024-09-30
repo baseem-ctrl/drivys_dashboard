@@ -178,9 +178,9 @@ export const paths = {
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
-      list: `${ROOTS.DASHBOARD}/schools/list`,
-      new: `${ROOTS.DASHBOARD}/schools/new`,
-      details: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}`,
+      list: `${ROOTS.DASHBOARD}/school/list`,
+      new: `${ROOTS.DASHBOARD}/school/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/school/${id}`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
     },
     coupon: {

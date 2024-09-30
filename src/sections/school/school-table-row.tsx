@@ -26,6 +26,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createSchool, useGetSchoolAdmin } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +38,7 @@ type Props = {
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   revalidateSchool: VoidFunction;
+  onViewRow: VoidFunction;
 };
 
 export default function SchoolTableRow({
@@ -45,6 +48,7 @@ export default function SchoolTableRow({
   onSelectRow,
   onDeleteRow,
   revalidateSchool,
+  onViewRow,
 }: Props) {
   const {
     vendor_translations,
@@ -63,7 +67,6 @@ export default function SchoolTableRow({
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();
-
   const quickEdit = useBoolean();
   const handleEditClick = () => {
     // console.log(row, 'row');
@@ -178,7 +181,7 @@ export default function SchoolTableRow({
       revalidateSchool();
     }
   });
-
+  const router = useRouter();
   return (
     <>
       <TableRow hover selected={selected}>
@@ -390,21 +393,11 @@ export default function SchoolTableRow({
             // >
             //   Save
             // </Button>
-            <Tooltip title="Quick Edit" placement="top" arrow>
-              <IconButton color="default" onClick={handleEditClick}>
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
-            </Tooltip>
-          )}
 
-          <IconButton
-            color="error"
-            onClick={() => {
-              confirm.onTrue();
-            }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-          </IconButton>
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </TableCell>
       </TableRow>
 
@@ -430,6 +423,43 @@ export default function SchoolTableRow({
           </Button>
         }
       />
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="bottom-center"
+        sx={{ width: 140 }}
+      >
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            router.push(paths.dashboard.school.details(row?.id));
+          }}
+        >
+          <Iconify icon="solar:eye-bold" />
+          View
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            handleEditClick();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          Edit
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            confirm.onTrue();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
+      </CustomPopover>
     </>
   );
 }

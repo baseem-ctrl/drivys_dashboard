@@ -143,6 +143,10 @@ export function useNavData() {
             title: t('schools'),
             path: paths.dashboard.school.root,
             icon: ICONS.school,
+            // children: [
+            //   { title: t('list'), path: paths.dashboard.school.root }
+            //   ,{ title: t('details'), path: paths.dashboard.school.details }
+            // ],
           },
           // COUPON
           {

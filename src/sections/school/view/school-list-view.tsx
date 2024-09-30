@@ -44,7 +44,7 @@ import UserTableToolbar from '../school-table-toolbar';
 import UserTableFiltersResult from '../school-table-filters-result';
 import SchoolCreateForm from './school-create-form';
 import SchoolFilters from '../school-filters';
-import { Stack } from '@mui/material';
+import { CircularProgress, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 import JobSearch from 'src/sections/job/job-search';
 import SchoolSearch from '../school-search';
 import { STATUS_OPTIONS } from 'src/_mock/_school';
@@ -61,9 +61,9 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status' },
   { id: 'is_active', label: 'Active Status ' },
   { id: 'vendor_user', label: 'School Owner' },
-  // { id: 'end_time', label: 'End time' },
+  { id: 'action', label: 'Action' },
 
-  { id: '' },
+  // { id: '' },
 ];
 
 const defaultFilters: any = {
@@ -149,7 +149,8 @@ export default function SchoolListView() {
   };
 
   const handleEditRow = useCallback(
-    (id: string) => {
+    (e: any, id: string) => {
+      e.stopPropogation();
       router.push(paths.dashboard.user.edit(id));
     },
     [router]
@@ -200,6 +201,12 @@ export default function SchoolListView() {
   //     results={dataFiltered.length}
   //   />
   // );
+  const handleViewRow = useCallback(
+    (id: string) => {
+      router.push(paths.dashboard.school.details(id));
+    },
+    [router]
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -285,29 +292,38 @@ export default function SchoolListView() {
                 />
 
                 <TableBody>
-                  {tableData
-                    ?.slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    ?.map((row) => (
-                      <SchoolTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        revalidateSchool={revalidateSchool}
-                      />
-                    ))}
+                  {schoolLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData
+                        ?.slice(
+                          table.page * table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
+                        )
+                        ?.map((row) => (
+                          <SchoolTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            revalidateSchool={revalidateSchool}
+                            onViewRow={() => handleViewRow(row?.id)}
+                          />
+                        ))}
 
-                  <TableEmptyRows
+                  {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
-                  />
+                  /> */}
 
-                  <TableNoData notFound={notFound} />
+                  {tableData?.length === 0 && !schoolLoading && <TableNoData notFound={notFound} />}
                 </TableBody>
               </Table>
             </Scrollbar>
