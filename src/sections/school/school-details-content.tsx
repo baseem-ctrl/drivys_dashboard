@@ -15,7 +15,7 @@ import { IJobItem } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
-import { Box, Button, CircularProgress, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, TextField } from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -24,6 +24,9 @@ import * as Yup from 'yup';
 import { createSchool, createUpdateSchoolAddress } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
+import Scrollbar from 'src/components/scrollbar';
+import { useBoolean } from 'src/hooks/use-boolean';
+import SchoolCreateForm from './view/school-create-form';
 
 // ----------------------------------------------------------------------
 
@@ -52,6 +55,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     lat: parseFloat(details?.latitude) || 24.4539,
     lng: parseFloat(details?.longitude) || 54.3773,
   });
+  const quickCreate = useBoolean();
+
   const NewUserSchema = Yup.object().shape({
     street_address: Yup.string(),
     city: Yup.mixed().nullable(),
@@ -146,70 +151,88 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     setValue('latitude', lat.toString());
     setValue('longitude', lng.toString());
   };
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
-        {[
-          ...(details?.vendor_translations?.flatMap((itm: any) => [
-            { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
-          ]) || []),
-          // { label: 'Name', value: items?.name ?? 'N/A' },
-          { label: 'Email', value: details?.email ?? 'NA' },
-          { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-          { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
-
-          { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
-          {
-            label: 'License File',
-            value: details?.license_file ? (
-              <a href={`http://${details?.license_file}`} target="_blank" rel="noopener noreferrer">
-                {details?.license_file}
-                {details?.license_file && (
-                  <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
-                )}
-              </a>
-            ) : (
-              'N/A'
-            ),
-          },
-          {
-            label: 'Website',
-            value: details?.website ? (
-              <a href={`http://${details?.website}`} target="_blank" rel="noopener noreferrer">
-                {details?.website}
-                {details?.website && (
-                  <img src="/assets/icons/app/ic_link.svg" alt="" width={22} height={22} />
-                )}
-              </a>
-            ) : (
-              'N/A'
-            ),
-          },
-          { label: 'Status', value: details?.status ?? 'NA' },
-          {
-            label: 'Is Active',
-            value: details?.is_active ? (
-              <Iconify color="green" icon="bi:check-square-fill" />
-            ) : (
-              <Iconify color="red" icon="bi:x-square-fill" />
-            ),
-          },
-        ].map((item, index) => (
-          <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-              {item.label}
-            </Box>
-            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-              :
-            </Box>
-            <Box component="span">{loading ? 'Loading...' : item.value}</Box>
-          </Box>
-        ))}
+      <Stack
+        alignItems="end"
+        sx={{
+          width: '-webkit-fill-available',
+          cursor: 'pointer',
+          position: 'absolute',
+          // top: '1.5rem',
+          right: '1rem',
+        }}
+      >
+        <Iconify icon="solar:pen-bold" onClick={quickCreate.onTrue} sx={{ cursor: 'pointer' }} />
       </Stack>
+      <Scrollbar>
+        <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
+          {[
+            ...(details?.vendor_translations?.flatMap((itm: any) => [
+              { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+            ]) || []),
+            // { label: 'Name', value: items?.name ?? 'N/A' },
+            { label: 'Email', value: details?.email ?? 'NA' },
+            { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
+            { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
 
-      {/* <Markdown children={content} /> */}
+            { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
+            {
+              label: 'License File',
+              value: details?.license_file ? (
+                <a
+                  href={`http://${details?.license_file}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {details?.license_file}
+                  {details?.license_file && (
+                    <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
+                  )}
+                </a>
+              ) : (
+                'N/A'
+              ),
+            },
+            {
+              label: 'Website',
+              value: details?.website ? (
+                <a href={`http://${details?.website}`} target="_blank" rel="noopener noreferrer">
+                  {details?.website}
+                  {details?.website && (
+                    <img src="/assets/icons/app/ic_link.svg" alt="" width={22} height={22} />
+                  )}
+                </a>
+              ) : (
+                'N/A'
+              ),
+            },
+            { label: 'Status', value: details?.status ?? 'NA' },
+            {
+              label: 'Is Active',
+              value: details?.is_active ? (
+                <Iconify color="green" icon="bi:check-square-fill" />
+              ) : (
+                <Iconify color="red" icon="bi:x-square-fill" />
+              ),
+            },
+          ].map((item, index) => (
+            <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+              <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                {item.label}
+              </Box>
+              <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                :
+              </Box>
+              <Box component="span">{loading ? 'Loading...' : item.value}</Box>
+            </Box>
+          ))}
+        </Stack>
 
-      {/* <Stack spacing={2}>
+        {/* <Markdown children={content} /> */}
+
+        {/* <Stack spacing={2}>
         <Typography variant="h6">Benefits</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
           {benefits.map((benefit) => (
@@ -217,184 +240,193 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           ))}
         </Stack>
       </Stack> */}
+      </Scrollbar>
+      <SchoolCreateForm
+        open={quickCreate.value}
+        onClose={quickCreate.onFalse}
+        revalidateDeliverey={reload}
+        currentSchool={details}
+      />
     </Stack>
   );
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
-      <Box>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setNewAddress({});
-            setEditingIndex(null);
-            reset();
-          }}
-          sx={{ mb: 2 }}
-        >
-          Add New Address
-        </Button>
-      </Box>
-
-      {/* Form for Adding or Editing an Address */}
-      {(newAddress || editingIndex !== null) && (
-        <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
-          </Typography>
-          {[
-            { label: 'Street Address', name: 'street_address' },
-            { label: 'City', name: 'city' },
-            { label: 'State', name: 'state' },
-            { label: 'Country', name: 'country' },
-            { label: 'Latitude', name: 'latitude' },
-            { label: 'Longitude', name: 'longitude' },
-          ].map((item, idx) => (
-            <Controller
-              key={idx}
-              name={item?.name}
-              control={control}
-              // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label={item?.label}
-                  variant="outlined"
-                  sx={{ my: 1, width: '100%' }}
-                  // onChange={(e) => field.onChange(e.target.value)}
-                />
-              )}
-            />
-          ))}
-
-          {/* Map Component for Selecting Location */}
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-            Select Location on Map
-          </Typography>
-          <Box sx={{ pt: 2, pb: 2 }}>
-            {isLoaded && load ? (
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={markerPosition}
-                zoom={12}
-                onClick={handleMapClick}
-              >
-                {markerPosition && (
-                  <Marker
-                    position={markerPosition}
-                    icon={{
-                      url: marker, // Specify the URL of your custom marker image
-                      scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                    }}
-                  />
-                )}
-                {(defaultValues?.latitude || defaultValues?.longitude) && (
-                  <Marker
-                    position={{
-                      lat: defaultValues?.latitude,
-                      lng: defaultValues?.longitude,
-                    }}
-                    icon={{
-                      url: marker, // Specify the URL of your custom marker image
-                      scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                    }}
-                  />
-                )}
-              </GoogleMap>
-            ) : (
-              <div>Loading Map...</div>
-            )}
-          </Box>
-
-          {/* Save and Cancel Buttons */}
-          <Box>
-            <Button variant="contained" type="submit" sx={{ mr: 1 }}>
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                setEditingIndex(null);
-                setNewAddress(null);
-                reset(defaultValues); // Reset form to default values
-                reset();
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
+      <Scrollbar>
+        <Box>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setNewAddress({});
+              setEditingIndex(null);
+              reset();
+            }}
+            sx={{ mb: 2 }}
+          >
+            Add New Address
+          </Button>
         </Box>
-      )}
 
-      <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-        {details?.vendor_addresses?.map((details: any, index: any) => {
-          // Map center position for each address
-          const defaultCenter = {
-            lat: parseFloat(details?.latitude) || 0,
-            lng: parseFloat(details?.longitude) || 0,
-          };
+        {/* Form for Adding or Editing an Address */}
+        {(newAddress || editingIndex !== null) && (
+          <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
+            </Typography>
+            {[
+              { label: 'Street Address', name: 'street_address' },
+              { label: 'City', name: 'city' },
+              { label: 'State', name: 'state' },
+              { label: 'Country', name: 'country' },
+              { label: 'Latitude', name: 'latitude' },
+              { label: 'Longitude', name: 'longitude' },
+            ].map((item, idx) => (
+              <Controller
+                key={idx}
+                name={item?.name}
+                control={control}
+                // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label={item?.label}
+                    variant="outlined"
+                    sx={{ my: 1, width: '100%' }}
+                    // onChange={(e) => field.onChange(e.target.value)}
+                  />
+                )}
+              />
+            ))}
 
-          return (
-            <Box key={details.id} sx={{ width: '100%' }}>
-              {/* Address Section Title */}
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Address Details {index + 1}
-              </Typography>
-
-              {/* Address Details */}
-              {[
-                { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                { label: 'City', value: details?.city ?? 'N/A' },
-                { label: 'State', value: details?.state ?? 'N/A' },
-                { label: 'Country', value: details?.country ?? 'N/A' },
-              ].map((item, idx) => (
-                <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {item.label}
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span">{loading ? 'Loading...' : item.value}</Box>
-                </Box>
-              ))}
-
-              {/* Map Section */}
-              {details?.latitude && details?.longitude ? (
-                <>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-                    Map Location
-                  </Typography>
-                  <Box sx={{ pt: 2, pb: 2 }}>
-                    {isLoaded && load ? (
-                      <GoogleMap
-                        mapContainerStyle={mapContainerStyle}
-                        center={defaultCenter}
-                        zoom={12}
-                      >
-                        <Marker position={defaultCenter} />
-                      </GoogleMap>
-                    ) : (
-                      <div>Loading Map...</div>
-                    )}
-                  </Box>
-                </>
+            {/* Map Component for Selecting Location */}
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+              Select Location on Map
+            </Typography>
+            <Box sx={{ pt: 2, pb: 2 }}>
+              {isLoaded && load ? (
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={markerPosition}
+                  zoom={12}
+                  onClick={handleMapClick}
+                >
+                  {markerPosition && (
+                    <Marker
+                      position={markerPosition}
+                      icon={{
+                        url: marker, // Specify the URL of your custom marker image
+                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                      }}
+                    />
+                  )}
+                  {(defaultValues?.latitude || defaultValues?.longitude) && (
+                    <Marker
+                      position={{
+                        lat: defaultValues?.latitude,
+                        lng: defaultValues?.longitude,
+                      }}
+                      icon={{
+                        url: marker, // Specify the URL of your custom marker image
+                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                      }}
+                    />
+                  )}
+                </GoogleMap>
               ) : (
-                <Typography>No location data available</Typography>
+                <div>Loading Map...</div>
               )}
+            </Box>
+
+            {/* Save and Cancel Buttons */}
+            <Box>
+              <Button variant="contained" type="submit" sx={{ mr: 1 }}>
+                Save
+              </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 onClick={() => {
-                  setEditingIndex(index);
-                  reset(defaultValues); // Load address into form fields
+                  setEditingIndex(null);
+                  setNewAddress(null);
+                  reset(defaultValues); // Reset form to default values
+                  reset();
                 }}
-                sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
               >
-                Edit
+                Cancel
               </Button>
             </Box>
-          );
-        })}
-      </Stack>
+          </Box>
+        )}
+
+        <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
+          {details?.vendor_addresses?.map((details: any, index: any) => {
+            // Map center position for each address
+            const defaultCenter = {
+              lat: parseFloat(details?.latitude) || 0,
+              lng: parseFloat(details?.longitude) || 0,
+            };
+
+            return (
+              <Box key={details.id} sx={{ width: '100%' }}>
+                {/* Address Section Title */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                  Address Details {index + 1}
+                </Typography>
+
+                {/* Address Details */}
+                {[
+                  { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                  { label: 'City', value: details?.city ?? 'N/A' },
+                  { label: 'State', value: details?.state ?? 'N/A' },
+                  { label: 'Country', value: details?.country ?? 'N/A' },
+                ].map((item, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span">{loading ? 'Loading...' : item.value}</Box>
+                  </Box>
+                ))}
+
+                {/* Map Section */}
+                {details?.latitude && details?.longitude ? (
+                  <>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                      Map Location
+                    </Typography>
+                    <Box sx={{ pt: 2, pb: 2 }}>
+                      {isLoaded && load ? (
+                        <GoogleMap
+                          mapContainerStyle={mapContainerStyle}
+                          center={defaultCenter}
+                          zoom={12}
+                        >
+                          <Marker position={defaultCenter} />
+                        </GoogleMap>
+                      ) : (
+                        <div>Loading Map...</div>
+                      )}
+                    </Box>
+                  </>
+                ) : (
+                  <Typography>No location data available</Typography>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setEditingIndex(index);
+                    reset(defaultValues); // Load address into form fields
+                  }}
+                  sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
+                >
+                  Edit
+                </Button>
+              </Box>
+            );
+          })}
+        </Stack>
+      </Scrollbar>
     </Stack>
   );
 
