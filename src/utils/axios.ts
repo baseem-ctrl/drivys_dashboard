@@ -134,4 +134,8 @@ export const endpoints = {
     admin: 'admin/user/get-list',
     address: 'admin/vendor/address/create-update-address',
   },
+  users: {
+    enum: 'public/enum/get-user-type-enum',
+    list: 'admin/user/get-list',
+  },
 };

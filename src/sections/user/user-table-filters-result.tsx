@@ -30,12 +30,12 @@ export default function UserTableFiltersResult({
   ...other
 }: Props) {
   const handleRemoveStatus = () => {
-    onFilters('status', 'all');
+    onFilters('userType', 'all');
   };
 
   const handleRemoveRole = (inputValue: string) => {
-    const newValue = filters.role.filter((item) => item !== inputValue);
-    onFilters('role', newValue);
+    const newValue = filters.status.filter((item) => item !== inputValue);
+    onFilters('status', newValue);
   };
 
   return (
@@ -48,14 +48,14 @@ export default function UserTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.status !== 'all' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+        {filters.userTypes !== 'all' && (
+          <Block label="User Type:">
+            <Chip size="small" label={filters.userTypes} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {!!filters.role.length && (
-          <Block label="Role:">
+        {!!filters.status.length && (
+          <Block label="Status:">
             {filters.role.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}
