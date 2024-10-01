@@ -96,7 +96,13 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().length(9, 'should be 10 digit'),
+    phone: Yup.string().test('should be 10 digit', 'should be 10 digit', function (value) {
+      const { create_new_user } = this.parent;
+      if (create_new_user) {
+        return value && value.length === 10; // Ensures password is filled if create_new_user is true
+      }
+      return true; // No validation if create_new_user is false
+    }),
     country_code: Yup.mixed(),
   });
 
@@ -131,13 +137,14 @@ export default function SchoolCreateForm({
     control,
     setValue,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const currentName = watch('name');
   const currentDescription = watch('description');
   const values = watch();
   const previousLocaleRef = useRef(selectedLocale);
+  console.log(errors, 'errors');
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
