@@ -66,13 +66,15 @@ export default function SchoolCreateForm({
     locale: Yup.string().required('Locale is required'),
     is_active: Yup.boolean(),
     create_new_user: Yup.boolean(),
-    user_id: Yup.mixed().test('user_id-required', 'User ID is required', function (value) {
-      const { create_new_user } = this.parent;
-      if (!create_new_user) {
-        return !!value; // Ensures user_id is filled if create_new_user is false
-      }
-      return true; // No validation if create_new_user is true
-    }),
+    user_id: Yup.mixed()
+      .test('user_id-required', 'User ID is required', function (value) {
+        const { create_new_user } = this.parent;
+        if (!create_new_user) {
+          return !!value; // Ensures user_id is filled if create_new_user is false
+        }
+        return true; // No validation if create_new_user is true
+      })
+      .nullable(),
     user_name: Yup.string().test('user_name-required', 'Username is required', function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
@@ -96,10 +98,10 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('should be 10 digit', 'should be 10 digit', function (value) {
+    phone: Yup.string().test('should be 9 digit', 'should be 9 digit', function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
-        return value && value.length === 10; // Ensures password is filled if create_new_user is true
+        return value && value.length === 9; // Ensures password is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
@@ -337,7 +339,7 @@ export default function SchoolCreateForm({
               >
                 <RHFTextField name="user_name" label="User Name" />
                 <RHFTextField name="user_email" label="User Email" />
-                <RHFTextField name="password" label="password" type="password" />
+                <RHFTextField name="password" label="Password" type="password" />
                 <RHFAutocomplete
                   name="country_code"
                   label="Country Code"
