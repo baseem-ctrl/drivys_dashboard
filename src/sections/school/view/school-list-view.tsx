@@ -104,7 +104,7 @@ export default function SchoolListView() {
     schoolEmpty,
     revalidateSchool,
   } = useGetSchool({
-    page: table?.page,
+    page: table?.page + 1,
     limit: table?.rowsPerPage,
     search: filters?.name,
     status: filters?.status === 'all' ? '' : filters?.status,
@@ -300,23 +300,18 @@ export default function SchoolListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData
-                        ?.slice(
-                          table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage
-                        )
-                        ?.map((row) => (
-                          <SchoolTableRow
-                            key={row.id}
-                            row={row}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => table.onSelectRow(row.id)}
-                            onDeleteRow={() => handleDeleteRow(row.id)}
-                            onEditRow={(e: any) => handleEditRow(e, row.id)}
-                            revalidateSchool={revalidateSchool}
-                            onViewRow={() => handleViewRow(row?.id)}
-                          />
-                        ))}
+                    : tableData?.map((row) => (
+                        <SchoolTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={(e: any) => handleEditRow(e, row.id)}
+                          revalidateSchool={revalidateSchool}
+                          onViewRow={() => handleViewRow(row?.id)}
+                        />
+                      ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}
@@ -330,7 +325,7 @@ export default function SchoolListView() {
           </TableContainer>
 
           <TablePaginationCustom
-            count={tableData?.length}
+            count={totalPages}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}

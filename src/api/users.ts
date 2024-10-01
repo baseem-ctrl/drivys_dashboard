@@ -21,8 +21,6 @@ export function useGetUsers({
   search,
 }: any) {
   const getTheFullUrl = () => {
-    console.log(page, user_types);
-
     const queryParams: { [key: string]: any } = {
       page: page + 1,
       limit,
