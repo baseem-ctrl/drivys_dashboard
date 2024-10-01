@@ -24,7 +24,16 @@ type Props = {
   //
   roleOptions: string[];
 };
-
+const StatusOptions = [
+  {
+    label: 'Active',
+    value: '1',
+  },
+  {
+    label: 'In Active',
+    value: '0',
+  },
+];
 export default function UserTableToolbar({
   filters,
   onFilters,
@@ -42,10 +51,7 @@ export default function UserTableToolbar({
 
   const handleFilterRole = useCallback(
     (event: SelectChangeEvent<string[]>) => {
-      onFilters(
-        'role',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
+      onFilters('status', event.target.value);
     },
     [onFilters]
   );
@@ -70,24 +76,24 @@ export default function UserTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Role</InputLabel>
+          <InputLabel>Status</InputLabel>
 
           <Select
-            multiple
-            value={filters.role}
+            // multiple
+            value={filters.status}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Role" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            input={<OutlinedInput label="Status" />}
+            // renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {
                 sx: { maxHeight: 240 },
               },
             }}
           >
-            {roleOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.role.includes(option)} />
-                {option}
+            {StatusOptions.map((option) => (
+              <MenuItem key={option?.value} value={option?.value}>
+                {/*  F<Checkbox disableRipple size="small" checked={filters.status.includes(option)} /> */}
+                {option?.label}
               </MenuItem>
             ))}
           </Select>

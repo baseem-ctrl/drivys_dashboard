@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -43,6 +43,9 @@ import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/u
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
+import { useGetUsers, useGetUserTypeEnum } from 'src/api/users';
+import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -51,22 +54,26 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
+  { id: 'user_type', label: 'User Type', width: 180 },
+  { id: 'dob', label: 'DOB', width: 220 },
   { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 88 },
 ];
 
-const defaultFilters: IUserTableFilters = {
+const defaultFilters: any = {
   name: '',
   role: [],
-  status: 'all',
+  status: '',
+  userTypes: 'all',
 };
-
+interface StatusOption {
+  value: string;
+  label: string;
+}
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const settings = useSettingsContext();
 
@@ -74,26 +81,47 @@ export default function UserListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
-
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
+  const [userTypeOptions, setUserTypeOptions] = useState<StatusOption[]>([]);
+  const { enumData, enumLoading } = useGetUserTypeEnum();
+  const { users, usersLoading, usersError, usersEmpty, usersLength } = useGetUsers({
+    page: table?.page,
+    limit: table?.rowsPerPage,
+    user_types: filters?.userTypes,
+    search: filters?.name,
+    is_active: filters?.status,
   });
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  useEffect(() => {
+    if (enumData) {
+      // Log the type and structure of enumData
 
+      // Ensure enumData is an array before using map
+      if (Array.isArray(enumData)) {
+        const formattedEnumData = enumData.map((item: { value: string; name: string }) => ({
+          value: item.value,
+          label: item.name,
+        }));
+        setUserTypeOptions([{ value: 'all', label: 'All' }, ...formattedEnumData]);
+      } else {
+        console.error('enumData is not an array:', enumData);
+      }
+    }
+  }, [enumData]);
+  useEffect(() => {
+    if (users?.length > 0) {
+      setTableData(users);
+    } else {
+      setTableData([]);
+    }
+  }, [users]);
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!tableData.length && canReset) || !tableData.length;
 
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
@@ -105,27 +133,18 @@ export default function UserListView() {
     },
     [table]
   );
-
   const handleDeleteRow = useCallback(
     (id: string) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
       setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
     setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  }, [tableData.length, table, tableData]);
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -140,14 +159,19 @@ export default function UserListView() {
     },
     [handleFilters]
   );
-
+  const handleTabChange = useCallback(
+    (event: React.SyntheticEvent, newValue: string) => {
+      handleFilters('userTypes', newValue);
+    },
+    [handleFilters]
+  );
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
           heading="List"
           links={[
@@ -172,44 +196,15 @@ export default function UserListView() {
 
         <Card>
           <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
+            value={filters?.userTypes}
+            onChange={handleTabChange}
             sx={{
               px: 2.5,
               boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
             }}
           >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
-
-                    {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
-                  </Label>
-                }
-              />
+            {userTypeOptions.map((tab) => (
+              <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
             ))}
           </Tabs>
 
@@ -227,7 +222,7 @@ export default function UserListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={tableData?.length}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -245,7 +240,7 @@ export default function UserListView() {
               }
               action={
                 <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
+                  <IconButton onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
                 </Tooltip>
@@ -268,37 +263,39 @@ export default function UserListView() {
                     )
                   }
                 />
-
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
+                  {usersLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData
+                        ?.slice(
+                          table.page * table.rowsPerPage,
+                          table.page * table.rowsPerPage + table.rowsPerPage
+                        )
+                        .map((row) => (
+                          <UserTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={() => handleEditRow(row.id)}
+                          />
+                        ))}
 
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
+                  {tableData?.length === 0 && !usersLoading && <TableNoData notFound={notFound} />}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={usersLength}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}

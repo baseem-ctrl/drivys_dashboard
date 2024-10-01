@@ -39,7 +39,7 @@ export default function TableSelectedAction({
         zIndex: 9,
         height: 58,
         position: 'absolute',
-        bgcolor: 'primary.lighter',
+        bgcolor: 'primary.dark',
         ...(dense && {
           height: 38,
         }),
@@ -60,7 +60,7 @@ export default function TableSelectedAction({
         sx={{
           ml: 2,
           flexGrow: 1,
-          color: 'primary.main',
+          color: 'white',
           ...(dense && {
             ml: 3,
           }),

@@ -25,7 +25,7 @@ import UserQuickEditForm from './user-quick-edit-form';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IUserItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
@@ -37,7 +37,7 @@ export default function UserTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { name, avatarUrl, company, role, status, email, phoneNumber } = row;
+  const { name, photo_url, dob, user_type, is_active, email, phone, country_code } = row;
 
   const confirm = useBoolean();
 
@@ -53,11 +53,11 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+          <Avatar alt={name} src={photo_url} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={name}
-            secondary={email}
+            primary={name ?? 'NA'}
+            secondary={email ?? 'NA'}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
               component: 'span',
@@ -66,23 +66,21 @@ export default function UserTableRow({
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {country_code ? `${country_code}-${phone}` : phone || 'NA'}
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{user_type}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{dob ?? 'NA'}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
-              'default'
+              (is_active === true && 'success') || (is_active === false && 'error') || 'default'
             }
           >
-            {status}
+            {is_active ? 'Active' : 'In Active'}
           </Label>
         </TableCell>
 
