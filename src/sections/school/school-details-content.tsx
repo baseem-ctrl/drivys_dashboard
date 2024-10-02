@@ -49,15 +49,20 @@ type Props = {
 
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.[0]?.locale ?? ''
+    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const selectedLocaleObject = details?.vendor_translations?.find(
-    (item: { locale: string }) => item.locale === selectedLanguage
-  );
+
+  // This useEffect sets the initial selectedLanguage value once details are available
+  useEffect(() => {
+    if (details?.vendor_translations?.length > 0) {
+      setSelectedLanguage(details?.vendor_translations[0]?.locale);
+    }
+  }, [details]);
+
   const [localeOptions, setLocaleOptions] = useState([]);
 
   useEffect(() => {
@@ -65,26 +70,33 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       let initialLocaleOptions = [];
       if (Array.isArray(language)) {
         initialLocaleOptions = language?.map((item: any) => ({
-          label: item.language_culture,
-          value: item.language_culture,
+          label: item?.language_culture,
+          value: item?.language_culture,
         }));
       }
-      const newLocales = details?.vendor_translations
-        ?.map((category: any) => category?.locale)
-        ?.filter(
-          (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-        )
-        .map((locale: any) => ({ label: locale, value: locale }));
-      if (newLocales) {
-        setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      } else {
-        setLocaleOptions([...initialLocaleOptions]);
-      }
+      // const newLocales = details?.vendor_translations
+      //   ?.map((category: any) => category?.locale)
+      //   ?.filter(
+      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
+      //   )
+      //   .map((locale: any) => ({ label: locale, value: locale }));
+      // if (newLocales) {
+      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
+      // } else {
+      setLocaleOptions([...initialLocaleOptions]);
+      // }
     }
-  }, [language, details, selectedLanguage]);
+  }, [language, details]);
+
+  // Find the selectedLocaleObject whenever selectedLanguage or details change
+  const selectedLocaleObject = details?.vendor_translations?.find(
+    (item: { locale: string }) => item.locale === selectedLanguage
+  );
+  console.log(selectedLocaleObject, selectedLanguage, 'selectedLocaleObject');
+
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
-    name: Yup.string(),
+    name: Yup.string().required('Name is required'),
     contact_email: Yup.string().email('Invalid email'),
     phone_number: Yup.string(),
     commission_in_percentage: Yup.string(),
@@ -123,6 +135,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
 
+  console.log(errors, 'errors');
+
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
     const selectedLocaleObject = details?.vendor_translations.find(
@@ -137,10 +151,22 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     }
   };
   useEffect(() => {
-    if (details?.vendor_translations?.length > 0) {
+    if (details) {
+      const defaultVendorValues = {
+        locale: selectedLocaleObject?.locale || '',
+        name: selectedLocaleObject?.name || '',
+        contact_email: details?.email || '',
+        phone_number: details?.phone_number || '',
+        commission_in_percentage: details?.commission_in_percentage || '',
+        license_expiry: details?.license_expiry || '',
+        license_file: '',
+        website: details?.website || '',
+        status: details?.status || '',
+        is_active: details?.is_active === '0' ? false : true,
+      };
       schoolReset(defaultVendorValues);
     }
-  }, []);
+  }, [details, schoolReset, selectedLocaleObject]);
   const onSubmitBasicInfo = schoolSubmit(async (data) => {
     try {
       let payload = {
@@ -150,12 +176,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
             locale: selectedLanguage || selectedLocaleObject?.locale,
           },
         ],
-        contact_email: data?.email || details?.email,
-        contact_phone_number: data?.phone_number || details?.phone_number,
-        status: data?.status || details?.status,
+        contact_email: data?.email,
+        contact_phone_number: data?.phone_number,
+        status: data?.status,
         is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage:
-          data?.commission_in_percentage || details?.commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage,
         create_new_user: 0,
         user_id: details?.vendor_user?.user_id,
         vendor_id: details?.id,
@@ -181,7 +206,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   });
 
   const handleCancel = () => {
-    reset(); // Reset to the original values
+    schoolReset(); // Reset to the original values
     setEditMode(false);
   };
   const renderContent = (
@@ -313,7 +338,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="name"
                   control={schoolControl}
                   render={({ field }) => (
-                    <TextField label="Name" {...field} error={!!errors.name} />
+                    <TextField
+                      label="Name"
+                      {...field}
+                      error={errors?.name?.message}
+                      helperText={errors?.name ? errors?.name?.message : ''}
+                    />
                   )}
                 />
               </Box>
