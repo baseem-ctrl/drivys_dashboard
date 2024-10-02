@@ -4,7 +4,6 @@ import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // utils
@@ -15,7 +14,17 @@ import { IJobItem } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
-import { Box, Button, CircularProgress, IconButton, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+} from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -27,6 +36,8 @@ import marker from 'react-map-gl/dist/esm/components/marker';
 import Scrollbar from 'src/components/scrollbar';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolCreateForm from './view/school-create-form';
+import { useGetAllLanguage } from 'src/api/language';
+import { RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +48,413 @@ type Props = {
 };
 
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    details?.vendor_translations?.[0]?.locale ?? ''
+  );
+  const [editMode, setEditMode] = useState(false);
+
+  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
+    useGetAllLanguage(0, 1000);
+  const selectedLocaleObject = details?.vendor_translations?.find(
+    (item: { locale: string }) => item.locale === selectedLanguage
+  );
+  const [localeOptions, setLocaleOptions] = useState([]);
+
+  useEffect(() => {
+    if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
+      let initialLocaleOptions = [];
+      if (Array.isArray(language)) {
+        initialLocaleOptions = language?.map((item: any) => ({
+          label: item.language_culture,
+          value: item.language_culture,
+        }));
+      }
+      const newLocales = details?.vendor_translations
+        ?.map((category: any) => category?.locale)
+        ?.filter(
+          (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
+        )
+        .map((locale: any) => ({ label: locale, value: locale }));
+      if (newLocales) {
+        setLocaleOptions([...initialLocaleOptions, ...newLocales]);
+      } else {
+        setLocaleOptions([...initialLocaleOptions]);
+      }
+    }
+  }, [language, details, selectedLanguage]);
+  const VendorSchema = Yup.object().shape({
+    locale: Yup.mixed(),
+    name: Yup.string(),
+    contact_email: Yup.string().email('Invalid email'),
+    phone_number: Yup.string(),
+    commission_in_percentage: Yup.string(),
+    license_expiry: Yup.string(),
+    website: Yup.string().url('Invalid URL'),
+    status: Yup.string(),
+    license_file: Yup.mixed(),
+    is_active: Yup.boolean(),
+  });
+  const defaultVendorValues = useMemo(
+    () => ({
+      locale: selectedLocaleObject?.locale || '',
+      name: selectedLocaleObject?.name || '',
+      contact_email: details?.email || '',
+      phone_number: details?.phone_number || '',
+      commission_in_percentage: details?.commission_in_percentage || '',
+      license_expiry: details?.license_expiry || '',
+      license_file: '',
+      website: details?.website || '',
+      status: details?.status || '',
+      is_active: true,
+    }),
+    [selectedLocaleObject, details, editMode]
+  );
+  const Schoolethods = useForm({
+    resolver: yupResolver(VendorSchema) as any,
+    defaultVendorValues,
+  });
+  const {
+    reset: schoolReset,
+    watch: schoolWatch,
+    control: schoolControl,
+    setValue: schoolSetValue,
+    handleSubmit: schoolSubmit,
+    formState: schoolFormState,
+  } = Schoolethods;
+  const { isSubmitting, errors } = schoolFormState;
+
+  const handleChange = (event: { target: { value: any } }) => {
+    setSelectedLanguage(event.target.value);
+    const selectedLocaleObject = details?.vendor_translations.find(
+      (item: { locale: string }) => item.locale === event.target.value
+    );
+
+    // Update the form values to reflect the selected locale
+    if (selectedLocaleObject) {
+      schoolSetValue('name', selectedLocaleObject.name); // Update name to match the locale
+    } else {
+      schoolSetValue('name', '');
+    }
+  };
+  useEffect(() => {
+    if (details?.vendor_translations?.length > 0) {
+      schoolReset(defaultVendorValues);
+    }
+  }, []);
+  const onSubmitBasicInfo = schoolSubmit(async (data) => {
+    try {
+      let payload = {
+        vendor_translations: [
+          {
+            name: data?.name || selectedLocaleObject?.name,
+            locale: selectedLanguage || selectedLocaleObject?.locale,
+          },
+        ],
+        contact_email: data?.email || details?.email,
+        contact_phone_number: data?.phone_number || details?.phone_number,
+        status: data?.status || details?.status,
+        is_active: data?.is_active ? '1' : '0',
+        commission_in_percentage:
+          data?.commission_in_percentage || details?.commission_in_percentage,
+        create_new_user: 0,
+        user_id: details?.vendor_user?.user_id,
+        vendor_id: details?.id,
+      };
+      const response = await createSchool(payload);
+      if (response) {
+        enqueueSnackbar(response.message, {
+          variant: 'success',
+        });
+        setEditMode(false);
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
+      reload();
+    }
+  });
+
+  const handleCancel = () => {
+    reset(); // Reset to the original values
+    setEditMode(false);
+  };
+  const renderContent = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Stack
+        alignItems="end"
+        sx={{
+          width: '-webkit-fill-available',
+          cursor: 'pointer',
+          position: 'absolute',
+          // top: '1.5rem',
+          right: '1rem',
+        }}
+      >
+        <Iconify
+          icon="solar:pen-bold"
+          onClick={() => setEditMode(true)}
+          sx={{ cursor: 'pointer' }}
+        />
+      </Stack>
+      <Scrollbar>
+        {!editMode ? (
+          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
+            {[
+              ...(details?.vendor_translations?.flatMap((itm: any) => [
+                { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+              ]) || []),
+              // { label: 'Name', value: items?.name ?? 'N/A' },
+              { label: 'Email', value: details?.email ?? 'NA' },
+              { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
+              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
+
+              { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
+              {
+                label: 'License File',
+                value: details?.license_file ? (
+                  <a
+                    href={`http://${details?.license_file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {details?.license_file}
+                    {details?.license_file && (
+                      <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
+                    )}
+                  </a>
+                ) : (
+                  'N/A'
+                ),
+              },
+              {
+                label: 'Website',
+                value: details?.website ? (
+                  <a href={`http://${details?.website}`} target="_blank" rel="noopener noreferrer">
+                    {details?.website}
+                    {details?.website && (
+                      <img src="/assets/icons/app/ic_link.svg" alt="" width={22} height={22} />
+                    )}
+                  </a>
+                ) : (
+                  'N/A'
+                ),
+              },
+              { label: 'Status', value: details?.status ?? 'NA' },
+              {
+                label: 'Is Active',
+                value:
+                  details?.is_active === '1' ? (
+                    <Iconify color="green" icon="bi:check-square-fill" />
+                  ) : (
+                    <Iconify color="red" icon="bi:x-square-fill" />
+                  ),
+              },
+            ].map((item, index) => (
+              <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                  {item.label}
+                </Box>
+                <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                  :
+                </Box>
+                <Box component="span" sx={{ flex: 1 }}>
+                  {item.value ?? 'N/A'}
+                </Box>
+                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <Box
+            component="form"
+            rowGap={2}
+            columnGap={2}
+            display="grid"
+            onSubmit={onSubmitBasicInfo}
+            pb={1}
+          >
+            <Box
+              mt={2}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns="repeat(1, 1fr)"
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+            >
+              <Box
+                display="grid"
+                gap={1}
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: '25% 70% ',
+                  // md: 'repeat(2, 1fr)',
+                }}
+              >
+                <Controller
+                  name="locale"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
+                      {localeOptions?.map((option: any) => (
+                        <MenuItem key={option?.value} value={option?.value}>
+                          {option?.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                <Controller
+                  name="name"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField label="Name" {...field} error={!!errors.name} />
+                  )}
+                />
+              </Box>
+            </Box>
+
+            <Box
+              mt={2}
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns="repeat(1, 1fr)"
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+            >
+              <Box
+                display="grid"
+                gap={1}
+                gridTemplateColumns={{
+                  // xs: 'repeat(1, 1fr)',
+                  sm: '48% 47% ',
+                  // md: 'repeat(2, 1fr)',
+                }}
+                pt={1}
+              >
+                <Controller
+                  name="contact_email"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField label="Email" {...field} error={!!errors.contact_email} />
+                  )}
+                />{' '}
+                <Controller
+                  name="contact_phone_number"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="Phone Number"
+                      type="number"
+                      placeholder="0503445679"
+                      {...field}
+                      error={!!errors.contact_phone_number}
+                    />
+                  )}
+                />
+                <Controller
+                  name="commission_in_percentage"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="Commission in (%)"
+                      {...field}
+                      error={!!errors.commission_in_percentage}
+                      type="number"
+                    />
+                  )}
+                />
+                <Controller
+                  name="license_expiry"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="License Expiry"
+                      {...field}
+                      error={!!errors.license_expiry}
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  )}
+                />
+                <Controller
+                  name="license_file"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="License File"
+                      {...field}
+                      error={!!errors.license_file}
+                      type="file"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  )}
+                />
+                <Controller
+                  name="website"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField label="Website" {...field} error={!!errors.website} />
+                  )}
+                />
+                <Controller
+                  name="status"
+                  control={schoolControl}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextField {...field} select SelectProps={{ native: true }} error={!!error}>
+                      <option value="">Select Status</option>
+                      <option value="active">Active</option>
+                      <option value="suspended">Suspended</option>
+                      <option value="pending_for_verification">Pending for Verification</option>
+                      <option value="expired">Expired</option>
+                      <option value="cancelled">Cancelled</option>
+                    </TextField>
+                  )}
+                />
+                <Controller
+                  name="is_active"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                  )}
+                />
+              </Box>
+            </Box>
+            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+              <Button variant="outlined" color="error" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained">
+                Save
+              </Button>
+            </Stack>
+          </Box>
+        )}
+      </Scrollbar>
+      {/* <SchoolCreateForm
+        open={quickCreate.value}
+        onClose={quickCreate.onFalse}
+        revalidateDeliverey={reload}
+        currentSchool={details}
+      /> */}
+      {/* {editMode && (
+        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+          <Button variant="outlined" color="error" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained">
+            Save
+          </Button>
+        </Stack>
+      )} */}
+    </Stack>
+  );
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
   });
@@ -90,7 +508,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     control,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    // formState: { isSubmitting },
   } = methods;
 
   useEffect(() => {
@@ -105,7 +523,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   }, [defaultValues, reset]);
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data, 'data');
     try {
       let payload = {
         street_address: data?.street_address,
@@ -152,103 +569,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     setValue('longitude', lng.toString());
   };
 
-  const renderContent = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Stack
-        alignItems="end"
-        sx={{
-          width: '-webkit-fill-available',
-          cursor: 'pointer',
-          position: 'absolute',
-          // top: '1.5rem',
-          right: '1rem',
-        }}
-      >
-        <Iconify icon="solar:pen-bold" onClick={quickCreate.onTrue} sx={{ cursor: 'pointer' }} />
-      </Stack>
-      <Scrollbar>
-        <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
-          {[
-            ...(details?.vendor_translations?.flatMap((itm: any) => [
-              { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
-            ]) || []),
-            // { label: 'Name', value: items?.name ?? 'N/A' },
-            { label: 'Email', value: details?.email ?? 'NA' },
-            { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-            { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
-
-            { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
-            {
-              label: 'License File',
-              value: details?.license_file ? (
-                <a
-                  href={`http://${details?.license_file}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {details?.license_file}
-                  {details?.license_file && (
-                    <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
-                  )}
-                </a>
-              ) : (
-                'N/A'
-              ),
-            },
-            {
-              label: 'Website',
-              value: details?.website ? (
-                <a href={`http://${details?.website}`} target="_blank" rel="noopener noreferrer">
-                  {details?.website}
-                  {details?.website && (
-                    <img src="/assets/icons/app/ic_link.svg" alt="" width={22} height={22} />
-                  )}
-                </a>
-              ) : (
-                'N/A'
-              ),
-            },
-            { label: 'Status', value: details?.status ?? 'NA' },
-            {
-              label: 'Is Active',
-              value: details?.is_active ? (
-                <Iconify color="green" icon="bi:check-square-fill" />
-              ) : (
-                <Iconify color="red" icon="bi:x-square-fill" />
-              ),
-            },
-          ].map((item, index) => (
-            <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-              <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                {item.label}
-              </Box>
-              <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                :
-              </Box>
-              <Box component="span">{loading ? 'Loading...' : item.value}</Box>
-            </Box>
-          ))}
-        </Stack>
-
-        {/* <Markdown children={content} /> */}
-
-        {/* <Stack spacing={2}>
-        <Typography variant="h6">Benefits</Typography>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          {benefits.map((benefit) => (
-            <Chip key={benefit} label={benefit} variant="soft" />
-          ))}
-        </Stack>
-      </Stack> */}
-      </Scrollbar>
-      <SchoolCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={reload}
-        currentSchool={details}
-      />
-    </Stack>
-  );
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>

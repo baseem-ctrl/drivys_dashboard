@@ -8,6 +8,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import SchoolDetailsView from 'src/sections/school/view/school-details-view';
 import SchoolDetailsPage from 'src/pages/dashboard/schools/details';
+import UserDetailsPage from 'src/pages/dashboard/user/details';
 
 // ----------------------------------------------------------------------
 
@@ -89,6 +90,7 @@ export const dashboardRoutes = [
           { path: 'new', element: <UserCreatePage /> },
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
+          { path: ':id', element: <UserDetailsPage /> },
         ],
       },
       {

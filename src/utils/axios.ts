@@ -133,9 +133,12 @@ export const endpoints = {
     update: 'admin/delivery-slot/create-delivery-slot-translation',
     admin: 'admin/user/get-list',
     address: 'admin/vendor/address/create-update-address',
+    trainers: 'admin/trainers/get-trainer-list',
   },
   users: {
     enum: 'public/enum/get-user-type-enum',
     list: 'admin/user/get-list',
+    details: 'admin/trainers/get-trainer/',
+    create: 'admin/auth/register',
   },
 };

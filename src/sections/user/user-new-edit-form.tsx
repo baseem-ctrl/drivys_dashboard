@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -30,7 +30,11 @@ import FormProvider, {
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
+  RHFSelect,
 } from 'src/components/hook-form';
+import { useGetUserTypeEnum } from 'src/api/users';
+import { MenuItem } from '@mui/material';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -40,9 +44,23 @@ type Props = {
 
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
+  const { user } = useAuthContext();
 
+  const { enumData, enumLoading } = useGetUserTypeEnum();
+  const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
+  useEffect(() => {
+    // Retrieve user type from local storage
 
+    // Filter the list based on the user type
+    const updatedValues =
+      user?.user?.user_type === 'SYSTEM_ADMIN'
+        ? enumData
+        : enumData?.filter((item) => item.value !== 'SYSTEM_ADMIN');
+
+    // Update state with the filtered list
+    setFilteredValues(updatedValues);
+  }, []);
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
@@ -52,7 +70,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     company: Yup.string().required('Company is required'),
     state: Yup.string().required('State is required'),
     city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
+    user_type: Yup.string().required('Role is required'),
     zipCode: Yup.string().required('Zip code is required'),
     avatarUrl: Yup.mixed<any>().nullable().required('Avatar is required'),
     // not required
@@ -64,7 +82,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     () => ({
       name: currentUser?.name || '',
       city: currentUser?.city || '',
-      role: currentUser?.role || '',
+      user_type: currentUser?.user_type || '',
       email: currentUser?.email || '',
       state: currentUser?.state || '',
       status: currentUser?.status || '',
@@ -80,7 +98,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
@@ -101,7 +119,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.list);
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -232,6 +249,14 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              <RHFSelect name="user_type" label="User Type">
+                {filteredValues &&
+                  filteredValues?.map((option: any) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+              </RHFSelect>
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
@@ -270,7 +295,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
               <RHFTextField name="address" label="Address" />
               <RHFTextField name="zipCode" label="Zip/Code" />
               <RHFTextField name="company" label="Company" />
-              <RHFTextField name="role" label="Role" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

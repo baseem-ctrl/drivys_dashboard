@@ -19,6 +19,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import UserQuickEditForm from './user-quick-edit-form';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +46,7 @@ export default function UserTableRow({
   const quickEdit = useBoolean();
 
   const popover = usePopover();
-
+  const router = useRouter();
   return (
     <>
       <TableRow hover selected={selected}>
@@ -124,6 +126,15 @@ export default function UserTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            router.push(paths.dashboard.user.details(row?.id));
+          }}
+        >
+          <Iconify icon="solar:eye-bold" />
+          View
         </MenuItem>
       </CustomPopover>
 

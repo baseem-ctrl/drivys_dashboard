@@ -87,12 +87,13 @@ export function AuthProvider({ children }: Props) {
       const accessToken = localStorage.getItem(STORAGE_KEY);
       if (accessToken) {
         const res = await axios.get(endpoints.auth.me);
-        const { user } = res.data;
+
+        const user = res.data?.data;
         dispatch({
           type: Types.INITIAL,
           payload: {
             user: {
-              ...user,
+              user,
               accessToken,
             },
           },
