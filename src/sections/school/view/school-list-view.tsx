@@ -214,7 +214,7 @@ export default function SchoolListView() {
           heading="Schools List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Delivery', href: paths.dashboard.school.root },
+            { name: 'School', href: paths.dashboard.school.root },
             { name: 'List' },
           ]}
           action={

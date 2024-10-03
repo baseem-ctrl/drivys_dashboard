@@ -45,7 +45,6 @@ export function useGetUsers({
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher, {
     revalidateOnFocus: false,
   });
-  console.log(data, 'data');
 
   const memoizedValue = useMemo(
     () => ({
@@ -70,71 +69,28 @@ export function useGetUsers({
   };
 }
 
-// export function useGetOrderById(orderId: number) {
-//   const URL = endpoints.order.details + orderId;
+export function useGetUserById(schoolId: string) {
+  const URL = endpoints.users.details + schoolId;
 
-//   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
-//     revalidateOnFocus: false,
-//   });
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
 
-//   const memoizedValue = useMemo(
-//     () => ({
-//       order: (data?.data as any) || {},
-//       orderLoading: isLoading,
-//       orderError: error,
-//       orderValdating: isValidating,
-//     }),
-//     [data?.data, error, isLoading, isValidating]
-//   );
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
 
-//   const revalidateOrders = () => {
-//     mutate(URL);
-//   };
-
-//   return { ...memoizedValue, revalidateOrders };
-// }
-
-// export function useGetOrderByFeedback(orderId: number) {
-//   const URL = endpoints.order.feedback + orderId;
-
-//   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
-//     revalidateOnFocus: false,
-//   });
-
-//   const memoizedValue = useMemo(
-//     () => ({
-//       feedback: (data?.data as any) || {},
-//       feedbackLoading: isLoading,
-//       feedbackError: error,
-//       feedbackValdating: isValidating,
-//     }),
-//     [data?.data, error, isLoading, isValidating]
-//   );
-
-//   const revalidateFeedback = () => {
-//     mutate(URL);
-//   };
-
-//   return { ...memoizedValue, revalidateFeedback };
-// }
-
-// export function updateOrderById(id: any, data: any) {
-//   const URL = endpoints.order.update + id;
-//   return drivysCreator([URL, data]);
-// }
-// export function updateShippingStatus(data: any) {
-//   const URL = endpoints.order.shippingstatus;
-//   return drivysCreator([URL, data]);
-// }
-// export function assignVendor(data: any) {
-//   const URL = endpoints.order.assign_vendor;
-//   return drivysCreator([URL, data]);
-// }
-// export function updateOrderBooking(data: any) {
-//   const URL = endpoints.order.orderBooking;
-//   return drivysCreator([URL, data]);
-// }
-
+  return { ...memoizedValue, revalidateDetails };
+}
 export function useGetUserTypeEnum() {
   const URL = endpoints.users.enum;
 
@@ -154,8 +110,41 @@ export function useGetUserTypeEnum() {
 
   return memoizedValue;
 }
-// export function createBookingOrder(body: any) {
-//   const URL = endpoints.order.createBookingOrder;
-//   const response = drivysCreator([URL, body]);
-//   return response;
-// }
+export function createUser(body: any) {
+  const URL = endpoints.users.create;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function updateUser(body: any) {
+  const URL = endpoints.users.update;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+export function useGetUserDetails(userId: string) {
+  const URL = endpoints.users.getbyId + userId;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
+}
+export function deleteUser(id: any) {
+  const URL = `${endpoints.users.delete}?user_id=${id}`;
+  const response = barrySmasher(URL);
+  return response;
+}

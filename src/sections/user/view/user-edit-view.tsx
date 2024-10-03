@@ -9,6 +9,8 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import UserNewEditForm from '../user-new-edit-form';
+import { useGetUserDetails } from 'src/api/users';
+import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -18,8 +20,8 @@ type Props = {
 
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
-
-  const currentUser = _userList.find((user) => user.id === id);
+  const { details } = useGetUserDetails(id);
+  const currentUser = details;
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -32,7 +34,7 @@ export default function UserEditView({ id }: Props) {
           },
           {
             name: 'User',
-            href: paths.dashboard.user.root,
+            href: paths.dashboard.user.list,
           },
           { name: currentUser?.name },
         ]}

@@ -11,6 +11,10 @@ export const USER_STATUS_OPTIONS = [
   { value: 'banned', label: 'Banned' },
   { value: 'rejected', label: 'Rejected' },
 ];
+export const USER_DETAILS_TABS = [
+  { value: 'details', label: 'User Details' },
+  { value: 'trainers', label: 'Trainers' },
+];
 export const USER_TYPE_OPTIONS = [
   { value: 'active', label: 'Active' },
   { value: 'pending', label: 'Pending' },

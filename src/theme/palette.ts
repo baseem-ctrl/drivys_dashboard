@@ -124,7 +124,7 @@ export function palette(mode: 'light' | 'dark') {
     },
     background: {
       paper: '#FFFFFF',
-      default: GREY[200],
+      // default: GREY[200],
       black: '#0000',
       white: '#FFFFFF',
       neutral: GREY[200],

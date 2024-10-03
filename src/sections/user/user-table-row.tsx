@@ -19,6 +19,9 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import UserQuickEditForm from './user-quick-edit-form';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +31,7 @@ type Props = {
   row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
+  currentUserType?: any;
 };
 
 export default function UserTableRow({
@@ -36,6 +40,7 @@ export default function UserTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  currentUserType,
 }: Props) {
   const { name, photo_url, dob, user_type, is_active, email, phone, country_code } = row;
 
@@ -44,7 +49,7 @@ export default function UserTableRow({
   const quickEdit = useBoolean();
 
   const popover = usePopover();
-
+  const router = useRouter();
   return (
     <>
       <TableRow hover selected={selected}>
@@ -84,6 +89,14 @@ export default function UserTableRow({
           </Label>
         </TableCell>
 
+        {currentUserType === 'TRAINER' && (
+          <>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
+              {row?.max_cash_in_hand_allowed ?? 'NA'}
+            </TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>
+          </>
+        )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
@@ -124,6 +137,15 @@ export default function UserTableRow({
         >
           <Iconify icon="solar:pen-bold" />
           Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            router.push(paths.dashboard.user.details(row?.id));
+          }}
+        >
+          <Iconify icon="solar:eye-bold" />
+          View
         </MenuItem>
       </CustomPopover>
 

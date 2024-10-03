@@ -22,6 +22,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { alpha, useTheme } from '@mui/material/styles';
+import { Box, Tab, Tabs } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -38,20 +39,23 @@ export default function JwtLoginView() {
 
   const password = useBoolean();
   const theme = useTheme();
-
+  const [selectedTab, setSelectedTab] = useState(0); // 0 = Admin, 1 = School
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+  };
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    email: 'admin@barry.com',
-    password: 'mvp@12345',
+    email: '',
+    password: '',
   };
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
-    defaultValues,
+    // defaultValues,
   });
 
   const {
@@ -62,7 +66,11 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login?.(data.email, data.password);
+      if (selectedTab === 0) {
+        await login?.(data.email, data.password);
+      } else {
+        await login?.(data.email, data.password, 'SCHOOL_ADMIN');
+      }
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
@@ -122,9 +130,28 @@ export default function JwtLoginView() {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
 
-      {/* <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert> */}
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Use email : <strong>admin@barry.com</strong> / password :<strong> mvp@12345</strong>
+      </Alert>
+      <Box sx={{ borderColor: 'divider', mb: 4 }}>
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          aria-label="login tabs"
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: '#cf5a0d', // Change the underline color to #cf5a0d
+            },
+          }}
+          sx={{
+            '.MuiTab-root': { color: '#000' }, // Set default tab text color
+            '.Mui-selected': { color: '#cf5a0d', fontWeight: '800' }, // Set selected tab text color
+          }}
+        >
+          <Tab label="Login As Admin" />
+          <Tab label="Login As School" />
+        </Tabs>
+      </Box>
 
       {renderForm}
     </FormProvider>

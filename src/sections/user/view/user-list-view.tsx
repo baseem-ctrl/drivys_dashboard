@@ -46,20 +46,32 @@ import UserTableFiltersResult from '../user-table-filters-result';
 import { useGetUsers, useGetUserTypeEnum } from 'src/api/users';
 import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
 import { Box } from '@mui/system';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'user_type', label: 'User Type', width: 180 },
-  { id: 'dob', label: 'DOB', width: 220 },
-  { id: 'status', label: 'Status', width: 100 },
-  { id: '', width: 88 },
-];
-
+const TABLE_HEAD = {
+  all: [
+    { id: 'name', label: 'Name' },
+    { id: 'phoneNumber', label: 'Phone Number', width: 180 },
+    { id: 'user_type', label: 'User Type', width: 180 },
+    { id: 'dob', label: 'DOB', width: 220 },
+    { id: 'status', label: 'Status', width: 100 },
+    { id: '', width: 88 },
+  ],
+  trainer: [
+    { id: 'name', label: 'Name' },
+    { id: 'phoneNumber', label: 'Phone Number' },
+    { id: 'user_type', label: 'User Type' },
+    { id: 'dob', label: 'DOB' },
+    { id: 'status', label: 'Status' },
+    { id: 'max_cash_in_hand_allowed', label: 'MAx Cash Allowded' },
+    { id: 'cash_in_hand', label: 'Cash in Hand' },
+    { id: '', width: 88 },
+  ],
+};
 const defaultFilters: any = {
   name: '',
   role: [],
@@ -74,6 +86,7 @@ interface StatusOption {
 
 export default function UserListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { user } = useAuthContext();
 
   const settings = useSettingsContext();
 
@@ -86,6 +99,18 @@ export default function UserListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [userTypeOptions, setUserTypeOptions] = useState<StatusOption[]>([]);
   const { enumData, enumLoading } = useGetUserTypeEnum();
+  const [filteredValues, setFilteredValues] = useState(enumData);
+  useEffect(() => {
+    if (enumData?.length > 0) {
+      const updatedValues =
+        user?.user?.user_type === 'SYSTEM_ADMIN'
+          ? enumData
+          : enumData?.filter((item) => item.value !== 'SYSTEM_ADMIN');
+
+      // Update state with the filtered list
+      setFilteredValues(updatedValues);
+    }
+  }, [enumData]);
   const { users, usersLoading, usersError, usersEmpty, usersLength } = useGetUsers({
     page: table?.page,
     limit: table?.rowsPerPage,
@@ -93,14 +118,13 @@ export default function UserListView() {
     search: filters?.name,
     is_active: filters?.status,
   });
-
   useEffect(() => {
-    if (enumData) {
+    if (enumData && filteredValues) {
       // Log the type and structure of enumData
 
       // Ensure enumData is an array before using map
-      if (Array.isArray(enumData)) {
-        const formattedEnumData = enumData.map((item: { value: string; name: string }) => ({
+      if (Array.isArray(filteredValues)) {
+        const formattedEnumData = filteredValues.map((item: { value: string; name: string }) => ({
           value: item.value,
           label: item.name,
         }));
@@ -109,7 +133,7 @@ export default function UserListView() {
         console.error('enumData is not an array:', enumData);
       }
     }
-  }, [enumData]);
+  }, [enumData, filteredValues]);
   useEffect(() => {
     if (users?.length > 0) {
       setTableData(users);
@@ -168,7 +192,7 @@ export default function UserListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
+  const currentTableHeaders = filters.userTypes === 'TRAINER' ? TABLE_HEAD.trainer : TABLE_HEAD.all;
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -176,7 +200,7 @@ export default function UserListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'User', href: paths.dashboard.user.list },
             { name: 'List' },
           ]}
           action={
@@ -252,7 +276,7 @@ export default function UserListView() {
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
+                  headLabel={currentTableHeaders}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
@@ -280,6 +304,7 @@ export default function UserListView() {
                           onSelectRow={() => table.onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
                           onEditRow={() => handleEditRow(row.id)}
+                          currentUserType={filters?.userTypes}
                         />
                       ))}
 
