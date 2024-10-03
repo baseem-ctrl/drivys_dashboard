@@ -12,15 +12,17 @@ import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
 import JobDetailsToolbar from '../job-details-toolbar';
-import JobDetailsContent from '../school-details-content';
+import JobDetailsContent from '../user-details-content';
 import JobDetailsCandidates from '../school-details-trainers';
 import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
-import SchoolDetailsContent from '../school-details-content';
+import SchoolDetailsContent from '../user-details-content';
 import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { Button } from '@mui/base';
-import { useGetUserById } from 'src/api/users';
+import { useGetUserDetails } from 'src/api/users';
+import UserProfileView from './user-profile-view';
+import UserDetailsContent from '../user-details-content';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +32,7 @@ type Props = {
 
 export default function UserDetailsView({ id }: Props) {
   const settings = useSettingsContext();
-  const { details, detailsLoading, revalidateDetails } = useGetUserById(id);
+  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const currentJob = details;
 
   const [publish, setPublish] = useState(currentJob?.publish);
@@ -80,38 +82,12 @@ export default function UserDetailsView({ id }: Props) {
           { name: 'Users', href: paths.dashboard.user.list },
           { name: `${details?.user?.name ?? 'Details'}` },
         ]}
-        // action={
-        //   <Button
-        //     onClick={quickCreate.onTrue}
-        //     variant="contained"
-        //     startIcon={<Iconify icon="mingcute:add-line" />}
-        //   >
-        //     New School
-        //   </Butto>
-        // }
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-      {/* <JobDetailsToolbar
-        backLink={paths.dashboard.job.root}
-        editLink={paths.dashboard.job.edit(`${currentJob?.id}`)}
-        liveLink="#"
-        publish={publish || ''}
-        onChangePublish={handleChangePublish}
-        publishOptions={JOB_PUBLISH_OPTIONS}
-      /> */}
-      {renderTabs}
 
-      {/* {currentTab === 'details' && (
-        <SchoolDetailsContent
-          details={currentJob}
-          loading={detailsLoading}
-          reload={revalidateDetails}
-        />
-      )} */}
-
-      {/* {currentTab === 'trainers' && <SchoolTrainers candidates={currentJob?.candidates} />} */}
+      <UserDetailsContent details={details} loading={detailsLoading} />
     </Container>
   );
 }
