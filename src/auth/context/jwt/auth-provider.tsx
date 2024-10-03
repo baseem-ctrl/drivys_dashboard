@@ -122,11 +122,20 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    const data = {
-      email,
-      password,
-    };
+  const login = useCallback(async (email: string, password: string, user_type?: string) => {
+    var data;
+    if (!user_type) {
+      data = {
+        email,
+        password,
+      };
+    } else {
+      data = {
+        email,
+        password,
+        user_type,
+      };
+    }
 
     const res = await axios.post(endpoints.auth.login, data);
 
@@ -146,6 +155,7 @@ export function AuthProvider({ children }: Props) {
         },
       },
     });
+    initialize();
   }, []);
 
   // REGISTER

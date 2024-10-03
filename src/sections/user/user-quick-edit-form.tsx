@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -21,70 +21,113 @@ import { countries } from 'src/assets/data';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFTextField,
+  RHFAutocomplete,
+  RHFSwitch,
+} from 'src/components/hook-form';
+import { updateUser, useGetUserTypeEnum } from 'src/api/users';
+import { useAuthContext } from 'src/auth/hooks';
+import { IconButton, InputAdornment } from '@mui/material';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   open: boolean;
   onClose: VoidFunction;
-  currentUser?: IUserItem;
+  currentUser?: any;
 };
 
 export default function UserQuickEditForm({ currentUser, open, onClose }: Props) {
-  const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
 
+  const { enqueueSnackbar } = useSnackbar();
+  const { enumData, enumLoading } = useGetUserTypeEnum();
+
+  const [filteredValues, setFilteredValues] = useState(enumData);
+  useEffect(() => {
+    if (enumData?.length > 0) {
+      const updatedValues =
+        user?.user?.user_type === 'SYSTEM_ADMIN'
+          ? enumData
+          : enumData?.filter((item) => item.value !== 'SYSTEM_ADMIN');
+
+      // Update state with the filtered list
+      setFilteredValues(updatedValues);
+    }
+  }, [enumData]);
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
+    password: Yup.lazy(() => {
+      // If `currentUser?.id` is not present, make the password required
+      return currentUser?.id
+        ? Yup.string() // No requirements if `currentUser.id` exists
+        : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
+    }),
+    phone: Yup.string()
+      .matches(/^\d{1,9}$/, 'Phone number shpuld not exceed 9 digits ')
+      .nullable(),
+    country_code: Yup.mixed().nullable(),
+    is_active: Yup.boolean(),
+    user_type: Yup.string(),
   });
 
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      password: '',
+      phone: currentUser?.phone || '',
+      user_type: currentUser?.user_type || '',
+      country_code: countries?.find((option) => option?.phone === currentUser?.country_code) || '',
+      is_active: currentUser?.is_active || 1,
     }),
     [currentUser]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      onClose();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      const body = new FormData();
+      body.append('name', data?.name);
+      body.append('email', data?.email);
+      body.append('password', data?.password);
+      body.append('phone', data?.phone);
+      body.append('country_code', data?.country_code?.phone);
+      body.append('user_type', data?.user_type);
+      body.append('is_active', data?.is_active ? '1' : '0');
+      body.append('user_id', currentUser?.id);
+      const response = await updateUser(body);
+      if (response) {
+        reset();
+        onClose();
+        enqueueSnackbar(response?.message);
+      }
     } catch (error) {
-      console.error(error);
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   });
+  const password = useBoolean();
+  console.log(errors, 'errors');
 
   return (
     <Dialog
@@ -100,10 +143,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
         <DialogTitle>Quick Update</DialogTitle>
 
         <DialogContent>
-          <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-            Account is waiting for confirmation
-          </Alert>
-
           <Box
             rowGap={3}
             columnGap={2}
@@ -112,55 +151,64 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
+            pt={3}
           >
-            <RHFSelect name="status" label="Status">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
+            <RHFSelect name="user_type" label="User Type">
+              {filteredValues?.length > 0 &&
+                filteredValues?.map((option: any) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
             </RHFSelect>
-
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
-
             <RHFTextField name="name" label="Full Name" />
             <RHFTextField name="email" label="Email Address" />
-            <RHFTextField name="phoneNumber" label="Phone Number" />
-
+            <RHFTextField
+              name="password"
+              label="Password"
+              type={password.value ? 'text' : 'password'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={password.onToggle} edge="end">
+                      <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
             <RHFAutocomplete
-              name="country"
-              label="Country"
-              options={countries.map((country) => country.label)}
-              getOptionLabel={(option) => option}
+              name="country_code"
+              label="Country Code"
+              options={countries}
+              getOptionLabel={(option) => {
+                return option ? `${option.phone} ${option.label}` : '';
+              }}
+              isOptionEqualToValue={(option, value) => option.countryCode === value.countryCode}
+              filterOptions={(options, state) => {
+                return options.filter(
+                  (option) =>
+                    // Check if the input matches either countryCode or label
+                    option.phone.toLowerCase().includes(state.inputValue.toLowerCase()) ||
+                    option.label.toLowerCase().includes(state.inputValue.toLowerCase())
+                );
+              }}
               renderOption={(props, option) => {
-                const { code, label, phone } = countries.filter(
-                  (country) => country.label === option
-                )[0];
-
-                if (!label) {
-                  return null;
-                }
-
                 return (
-                  <li {...props} key={label}>
+                  <li {...props} key={option.label}>
                     <Iconify
-                      key={label}
-                      icon={`circle-flags:${code.toLowerCase()}`}
+                      key={option.label}
+                      icon={`circle-flags:${option.code.toLowerCase()}`}
                       width={28}
                       sx={{ mr: 1 }}
                     />
-                    {label} ({code}) +{phone}
+                    {option.phone} {option.label}
                   </li>
                 );
               }}
             />
-
-            <RHFTextField name="state" label="State/Region" />
-            <RHFTextField name="city" label="City" />
-            <RHFTextField name="address" label="Address" />
-            <RHFTextField name="zipCode" label="Zip/Code" />
-            <RHFTextField name="company" label="Company" />
-            <RHFTextField name="role" label="Role" />
+            <RHFTextField name="phone" label="Phone Number" />
+            <RHFSwitch name="is_active" label="Is Active" />{' '}
           </Box>
         </DialogContent>
 

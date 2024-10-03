@@ -80,7 +80,7 @@ export const endpoints = {
   calendar: '/api/calendar',
   auth: {
     me: 'admin/auth/who-am-i',
-    login: 'admin/auth/login',
+    login: 'admin/auth/all-login',
     register: '/api/auth/register',
   },
   mail: {
@@ -139,6 +139,9 @@ export const endpoints = {
     enum: 'public/enum/get-user-type-enum',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
+    getbyId: 'admin/user/get-user/',
     create: 'admin/auth/register',
+    delete: 'admin/user/delete-user-by-id',
+    update: 'admin/user/user-update-by-id',
   },
 };

@@ -110,8 +110,41 @@ export function useGetUserTypeEnum() {
 
   return memoizedValue;
 }
-export function createBookingOrder(body: any) {
+export function createUser(body: any) {
   const URL = endpoints.users.create;
   const response = drivysCreator([URL, body]);
+  return response;
+}
+export function updateUser(body: any) {
+  const URL = endpoints.users.update;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+export function useGetUserDetails(userId: string) {
+  const URL = endpoints.users.getbyId + userId;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
+}
+export function deleteUser(id: any) {
+  const URL = `${endpoints.users.delete}?user_id=${id}`;
+  const response = barrySmasher(URL);
   return response;
 }
