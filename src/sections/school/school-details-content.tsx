@@ -30,7 +30,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool, createUpdateSchoolAddress } from 'src/api/school';
+import { createSchool, createUpdateSchoolAddress, useGetSchoolAdmin } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
 import Scrollbar from 'src/components/scrollbar';
@@ -55,6 +55,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
+  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
 
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
@@ -98,13 +99,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     locale: Yup.mixed(),
     name: Yup.string().required('Name is required'),
     contact_email: Yup.string().email('Invalid email'),
-    phone_number: Yup.string(),
+    phone_number: Yup.string().matches(/^\d{1,15}$/, 'Phone number must be less that 15 digits'),
     commission_in_percentage: Yup.string(),
     license_expiry: Yup.string(),
     website: Yup.string().url('Invalid URL'),
     status: Yup.string(),
-    license_file: Yup.mixed(),
+    license_file: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
+    user_id: Yup.string(),
   });
   const defaultVendorValues = useMemo(
     () => ({
@@ -114,10 +116,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       phone_number: details?.phone_number || '',
       commission_in_percentage: details?.commission_in_percentage || '',
       license_expiry: details?.license_expiry || '',
-      license_file: '',
+      license_file: null,
       website: details?.website || '',
       status: details?.status || '',
       is_active: true,
+      user_id: details?.vendor_user?.user_id,
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -134,9 +137,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     formState: schoolFormState,
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
-
+  const [uploadedFileUrl, setUploadedFileUrl] = useState('');
   console.log(errors, 'errors');
-
+  useEffect(() => {
+    if (details?.license_file) {
+      setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
+    }
+  }, [details]);
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
     const selectedLocaleObject = details?.vendor_translations.find(
@@ -159,10 +166,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         phone_number: details?.phone_number || '',
         commission_in_percentage: details?.commission_in_percentage || '',
         license_expiry: details?.license_expiry || '',
-        license_file: '',
+        license_file: null,
         website: details?.website || '',
         status: details?.status || '',
         is_active: details?.is_active === '0' ? false : true,
+        user_id: details?.vendor_user?.user_id,
       };
       schoolReset(defaultVendorValues);
     }
@@ -176,16 +184,47 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
             locale: selectedLanguage || selectedLocaleObject?.locale,
           },
         ],
-        contact_email: data?.email,
+        contact_email: data?.contact_email,
         contact_phone_number: data?.phone_number,
         status: data?.status,
         is_active: data?.is_active ? '1' : '0',
         commission_in_percentage: data?.commission_in_percentage,
         create_new_user: 0,
-        user_id: details?.vendor_user?.user_id,
+        license_expiry: data?.license_expiry,
+        license_file: data?.license_file,
+        user_id: data?.user_id,
         vendor_id: details?.id,
+        website: data?.website,
       };
-      const response = await createSchool(payload);
+      let formData = new FormData();
+
+      // Append fields to FormData
+      formData.append('contact_email', payload.contact_email || '');
+      formData.append('contact_phone_number', payload.contact_phone_number || '');
+      formData.append('status', payload.status || '');
+      formData.append('is_active', payload.is_active);
+      formData.append('commission_in_percentage', payload.commission_in_percentage || '');
+      formData.append('create_new_user', payload.create_new_user.toString());
+      formData.append('license_expiry', payload.license_expiry || '');
+      formData.append('user_id', payload.user_id || '');
+      formData.append('vendor_id', payload.vendor_id || '');
+      formData.append('website', payload.website || '');
+
+      // Handle `vendor_translations` (assumes only one translation)
+      if (payload.vendor_translations && payload.vendor_translations.length > 0) {
+        formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
+        formData.append(
+          'vendor_translations[0][locale]',
+          payload.vendor_translations[0].locale || ''
+        );
+      }
+
+      // Append file field if it exists and is a File object
+      if (payload.license_file) {
+        formData.append('license_file', payload.license_file); // Assumes `license_file` is a File object
+      }
+
+      const response = await createSchool(formData);
       if (response) {
         enqueueSnackbar(response.message, {
           variant: 'success',
@@ -211,22 +250,24 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   };
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Stack
-        alignItems="end"
-        sx={{
-          width: '-webkit-fill-available',
-          cursor: 'pointer',
-          position: 'absolute',
-          // top: '1.5rem',
-          right: '1rem',
-        }}
-      >
-        <Iconify
-          icon="solar:pen-bold"
-          onClick={() => setEditMode(true)}
-          sx={{ cursor: 'pointer' }}
-        />
-      </Stack>
+      {!editMode && (
+        <Stack
+          alignItems="end"
+          sx={{
+            width: '-webkit-fill-available',
+            cursor: 'pointer',
+            position: 'absolute',
+            // top: '1.5rem',
+            right: '1rem',
+          }}
+        >
+          <Iconify
+            icon="solar:pen-bold"
+            onClick={() => setEditMode(true)}
+            sx={{ cursor: 'pointer' }}
+          />
+        </Stack>
+      )}
       <Scrollbar>
         {!editMode ? (
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
@@ -244,14 +285,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 label: 'License File',
                 value: details?.license_file ? (
                   <a
-                    href={`http://${details?.license_file}`}
+                    href={details?.license_file}
                     target="_blank"
                     rel="noopener noreferrer"
+                    style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}
                   >
                     {details?.license_file}
-                    {details?.license_file && (
-                      <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
-                    )}
                   </a>
                 ) : (
                   'N/A'
@@ -260,10 +299,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               {
                 label: 'Website',
                 value: details?.website ? (
-                  <a href={`http://${details?.website}`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={details?.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}
+                  >
                     {details?.website}
                     {details?.website && (
-                      <img src="/assets/icons/app/ic_link.svg" alt="" width={22} height={22} />
+                      <img src="/assets/icons/navbar/ic_link.svg" alt="" width={22} height={22} />
                     )}
                   </a>
                 ) : (
@@ -375,15 +419,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   )}
                 />{' '}
                 <Controller
-                  name="contact_phone_number"
+                  name="phone_number"
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
                       label="Phone Number"
                       type="number"
-                      placeholder="0503445679"
                       {...field}
-                      error={!!errors.contact_phone_number}
+                      error={!!errors.phone_number?.message}
+                      helperText={errors?.phone_number ? errors?.phone_number?.message : ''}
                     />
                   )}
                 />
@@ -415,14 +459,43 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 <Controller
                   name="license_file"
                   control={schoolControl}
+                  defaultValue={null}
                   render={({ field }) => (
-                    <TextField
-                      label="License File"
-                      {...field}
-                      error={!!errors.license_file}
-                      type="file"
-                      InputLabelProps={{ shrink: true }}
-                    />
+                    <>
+                      <TextField
+                        label="License File"
+                        error={!!errors.license_file}
+                        type="file"
+                        InputLabelProps={{ shrink: true }}
+                        inputRef={field.ref} // Use React Hook Form's ref to handle file input correctly
+                        inputProps={{
+                          accept: '.pdf,.doc,.jpg,.png', // Optional: specify allowed file types
+                        }}
+                        onChange={(e) => {
+                          // Update the field value when a file is selected
+                          field.onChange(e.target.files[0]);
+                        }}
+                      />
+                      {uploadedFileUrl && (
+                        <Box>
+                          <TextField
+                            label="Uploaded File URL"
+                            value={uploadedFileUrl}
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                            disabled
+                            fullWidth
+                            // variant="outlined"
+                            // margin="normal"
+                          />
+                          {/* Optional: Show the uploaded file as a clickable link */}
+                          {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
+                            View Uploaded File
+                          </a> */}
+                        </Box>
+                      )}
+                    </>
                   )}
                 />
                 <Controller
@@ -444,6 +517,19 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       <option value="expired">Expired</option>
                       <option value="cancelled">Cancelled</option>
                     </TextField>
+                  )}
+                />
+                <Controller
+                  name="user_id"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Select {...field} value={field?.value || ''}>
+                      {schoolAdminList.map((option: any) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   )}
                 />
                 <Controller
@@ -787,6 +873,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       spacing={2}
       sx={{ p: 3, borderRadius: 2 }}
       height={350}
+      // onClick={route}
     >
       <Avatar
         alt={details?.vendor_user?.user?.name}
@@ -845,7 +932,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={1} rowGap={1}>
           <Grid xs={12} md={8}>
             {renderContent}
           </Grid>
