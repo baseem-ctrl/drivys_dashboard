@@ -35,8 +35,9 @@ export default function CategoryList({
     useGetAllCategory({
       limit: 1000,
       page: 1,
-      search: searchValue,
+      search: searchValue ?? "",
     });
+
 
   const handleView = useCallback(
     (id: string) => {
@@ -80,6 +81,7 @@ export default function CategoryList({
           setAddOnlyOneCategory={setAddOnlyOneCategory}
           parentCategoryValues={category}
           searchCategory={handleSearch}
+          setSearchValue={setSearchValue}
         />
       ))}
     </Box>
