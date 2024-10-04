@@ -62,9 +62,10 @@ type Props = {
   onDelete: VoidFunction;
   reload: any;
   setTableData: any;
-  setAddOnlyOneCategory: boolean;
+  setAddOnlyOneCategory: any;
   parentCategoryValues: any;
   searchCategory: any;
+  setSearchValue: any;
 };
 
 export default function JobItem({
@@ -77,6 +78,7 @@ export default function JobItem({
   setAddOnlyOneCategory,
   parentCategoryValues,
   searchCategory,
+  setSearchValue,
 }: Props) {
   const popover = usePopover();
   const allImages = useBoolean();
@@ -89,12 +91,16 @@ export default function JobItem({
   const [selectedImageIds, setSelectedImageIds] = useState([]);
   const [localeOptions, setLocaleOptions] = useState([]);
 
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    category?.category_translations[0]?.locale ?? ''
-  );
+  //To set english as the 1st display language if present or the first available lang
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    const translations = category?.category_translations || [];
+    return translations.find(trans => trans.locale.toLowerCase() === 'en') ? 'en' : translations[0]?.locale || '';
+  });
+
   const [isSubmittingImage, setIsSubmitting] = useState(false);
 
   const isCreateCategory = category?.newCategory;
+
   useEffect(() => {
     if ((language && language?.length > 0) || category?.category_translations?.length > 0) {
       let initialLocaleOptions = [];
@@ -113,6 +119,7 @@ export default function JobItem({
       setLocaleOptions([...initialLocaleOptions, ...newLocales]);
     }
   }, [language, category]);
+
   const parentCategoryOptions = parentCategoryValues?.map((item) => {
     const translations = item?.category_translations;
 
@@ -227,6 +234,7 @@ export default function JobItem({
     // setPublish(newValue);
   };
 
+
   const NewSchema = Yup.object().shape({
     name: Yup.string(),
     locale: Yup.mixed(),
@@ -290,6 +298,7 @@ export default function JobItem({
         enqueueSnackbar(response.message, {
           variant: 'success',
         });
+        setSearchValue('')
       }
     } catch (error) {
       if (error?.errors) {
@@ -345,7 +354,7 @@ export default function JobItem({
         label="Parent Category"
         options={parentCategoryOptions || []}
         onInputChange={(event, value) => {
-          searchCategory(value);
+          searchCategory(value.split(' (')[0]);
         }}
       />
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
@@ -407,143 +416,143 @@ export default function JobItem({
             </LoadingButton>
           )}
         </Stack>
-        {/* {!isCreateCategory && ( */}
-        <Stack
-          sx={{
-            p: 3,
-            pb: 2,
-            mt: 2,
-            flexGrow: 1,
-            bgcolor: 'rgba(224,224,224,0.2)',
-            borderRadius: '8px',
-          }}
-        >
-          <Stack direction="row" spacing={1}>
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              wrap="nowrap"
-              sx={{ overflowX: 'auto' }}
-            >
-              {pictures.slice(0, 2).map((item, index) => (
-                <Grid item key={index}>
-                  <Box sx={{ position: 'relative', width: 68, height: 68 }}>
-                    {/* Image Avatar */}
-                    <Avatar
-                      alt={item?.description}
-                      src={item?.virtual_path}
-                      variant="rounded"
-                      sx={{ width: '100%', height: '100%', mb: 2 }}
-                    />
-
-                    {/* Delete Icon */}
-                    <IconButton
-                      size="small"
-                      sx={{
-                        position: 'absolute',
-                        top: -10,
-                        left: -10,
-                        backgroundColor: 'white',
-                        '&:hover': {
-                          backgroundColor: 'lightgrey',
-                        },
-                      }}
-                      onClick={() => handleDelete(item.id)} // Trigger the delete action
-                    >
-                      <Iconify
-                        color="#CF5A0D"
-                        icon="solar:minus-circle-linear"
-                        sx={{ width: '15px', height: '15px' }}
-                      />
-                    </IconButton>
-                  </Box>
-                </Grid>
-              ))}
-
-              {pictures?.length > 2 && (
-                <Grid item xs={3}>
-                  <Box
-                    sx={{
-                      position: 'relative',
-                      width: 68,
-                      height: 68,
-                      mb: 2,
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gridTemplateRows: 'repeat(2, 1fr)',
-                      gap: '2px',
-                      '&:hover .overlay': {
-                        display: 'flex',
-                      },
-                    }}
-                  >
-                    {pictures.slice(2, 6).map((item, index) => (
+        {!isCreateCategory && (
+          <Stack
+            sx={{
+              p: 3,
+              pb: 2,
+              mt: 2,
+              flexGrow: 1,
+              bgcolor: 'rgba(224,224,224,0.2)',
+              borderRadius: '8px',
+            }}
+          >
+            <Stack direction="row" spacing={1}>
+              <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                wrap="nowrap"
+                sx={{ overflowX: 'auto' }}
+              >
+                {pictures.slice(0, 2).map((item, index) => (
+                  <Grid item key={index}>
+                    <Box sx={{ position: 'relative', width: 68, height: 68 }}>
+                      {/* Image Avatar */}
                       <Avatar
-                        key={index}
                         alt={item?.description}
                         src={item?.virtual_path}
-                        variant="square"
-                        sx={{ width: 32, height: 32, objectFit: 'cover' }}
+                        variant="rounded"
+                        sx={{ width: '100%', height: '100%', mb: 2 }}
                       />
-                    ))}
+
+                      {/* Delete Icon */}
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          top: -10,
+                          left: -10,
+                          backgroundColor: 'white',
+                          '&:hover': {
+                            backgroundColor: 'lightgrey',
+                          },
+                        }}
+                        onClick={() => handleDelete(item.id)} // Trigger the delete action
+                      >
+                        <Iconify
+                          color="#CF5A0D"
+                          icon="solar:minus-circle-linear"
+                          sx={{ width: '15px', height: '15px' }}
+                        />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                ))}
+
+                {pictures?.length > 2 && (
+                  <Grid item xs={3}>
                     <Box
-                      className="overlay"
-                      onClick={() => viewImages.onTrue()}
                       sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '50px',
-                        height: '100%',
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        color: 'white',
-                        display: 'none',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        fontSize: 10,
-                        fontWeight: 'bold',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
+                        position: 'relative',
+                        width: 68,
+                        height: 68,
+                        mb: 2,
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gridTemplateRows: 'repeat(2, 1fr)',
+                        gap: '2px',
+                        '&:hover .overlay': {
+                          display: 'flex',
+                        },
                       }}
                     >
-                      {`+ ${pictures?.length - 2} more`}
+                      {pictures.slice(2, 6).map((item, index) => (
+                        <Avatar
+                          key={index}
+                          alt={item?.description}
+                          src={item?.virtual_path}
+                          variant="square"
+                          sx={{ width: 32, height: 32, objectFit: 'cover' }}
+                        />
+                      ))}
+                      <Box
+                        className="overlay"
+                        onClick={() => viewImages.onTrue()}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '50px',
+                          height: '100%',
+                          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                          color: 'white',
+                          display: 'none',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textAlign: 'center',
+                          fontSize: 10,
+                          fontWeight: 'bold',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {`+ ${pictures?.length - 2} more`}
+                      </Box>
                     </Box>
+                  </Grid>
+                )}
+
+                <Grid item>
+                  <Box
+                    sx={{
+                      width: 68,
+                      height: 68,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 1,
+                      bgcolor: 'rgba(188, 36, 58, 0.1)',
+                      border: '2px dashed #CF5A0D',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease',
+                      '&:hover': {
+                        bgcolor: 'rgba(188, 36, 58, 0.2)',
+                      },
+                    }}
+                    onClick={() => allImages.onTrue()}
+                  >
+                    <Iconify
+                      icon="icon-park-outline:add-picture"
+                      color="#CF5A0D"
+                      sx={{ width: 28, height: 28 }}
+                    />
                   </Box>
                 </Grid>
-              )}
-
-              <Grid item>
-                <Box
-                  sx={{
-                    width: 68,
-                    height: 68,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 1,
-                    bgcolor: 'rgba(188, 36, 58, 0.1)',
-                    border: '2px dashed #CF5A0D',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'rgba(188, 36, 58, 0.2)',
-                    },
-                  }}
-                  onClick={() => allImages.onTrue()}
-                >
-                  <Iconify
-                    icon="icon-park-outline:add-picture"
-                    color="#CF5A0D"
-                    sx={{ width: 28, height: 28 }}
-                  />
-                </Box>
               </Grid>
-            </Grid>
+            </Stack>
           </Stack>
-        </Stack>
-        {/* // )} */}
+        )}
 
         <CustomPopover
           open={popover.open}

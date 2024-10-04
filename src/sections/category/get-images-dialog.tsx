@@ -17,6 +17,8 @@ type Props = {
   open: boolean;
   onClose: VoidFunction;
   allImages?: any;
+  deleteId?: any;
+  reload?: any;
 };
 
 export default function ImagesPerCategoryView({ open, onClose, allImages, deleteId, reload }: Props) {

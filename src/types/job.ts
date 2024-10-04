@@ -56,4 +56,6 @@ export type IJobItem = {
   candidates: IJobCandidate[];
   newCategory:boolean;
   category_translations:any;
+  parent_id:string|number;
+  published:any;
 };
