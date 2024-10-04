@@ -46,6 +46,7 @@ type Props = {
   selectedImageIds?: any;
   setSelectedImageIds?: any;
   apiCall?: any;
+  isSubmitting?: any;
 };
 
 export default function AllImagesForm({

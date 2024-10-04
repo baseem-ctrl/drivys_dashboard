@@ -258,7 +258,7 @@ export default function CategoryListView() {
         reload={revalidateCategory}
         setTableData={setTableData}
         setAddOnlyOneCategory={setAddOnlyOneCategory}
-        // parentCategoryValues={category}
+      // parentCategoryValues={category}
       />
       <TablePaginationCustom
         count={totalpages}
@@ -267,9 +267,9 @@ export default function CategoryListView() {
         onPageChange={table.onChangePage}
         onRowsPerPageChange={table.onChangeRowsPerPage}
 
-        // dense={table.dense}
-        // onChangeDense={table.onChangeDense}
-        //
+      // dense={table.dense}
+      // onChangeDense={table.onChangeDense}
+      //
       />
     </Container>
   );
