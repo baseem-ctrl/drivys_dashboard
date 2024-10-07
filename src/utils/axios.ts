@@ -135,6 +135,12 @@ export const endpoints = {
     address: 'admin/vendor/address/create-update-address',
     trainers: 'admin/trainers/get-trainer-list',
   },
+  package: {
+    list: 'admin/package/get-packge-list',
+    details: 'admin/package/get-packge/',
+    delete: 'admin/package/delete-packge/',
+    createUpdate: 'admin/package/create-packge-translation',
+  },
   users: {
     enum: 'public/enum/get-user-type-enum',
     list: 'admin/user/get-list',

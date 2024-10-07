@@ -44,6 +44,10 @@ const CategoryListPage = lazy(() => import('src/pages/dashboard/category/list'))
 
 // School
 const SchoolListPage = lazy(() => import('src/pages/dashboard/schools/list'));
+
+// Package
+const PackageListPage = lazy(() => import('src/pages/dashboard/package/list'));
+const PackageDetailsPage = lazy(() => import('src/pages/dashboard/package/details'));
 // TOUR
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
@@ -136,6 +140,14 @@ export const dashboardRoutes = [
           { path: ':id', element: <SchoolDetailsPage /> },
         ],
       },
+      {
+        path: 'package',
+        children: [
+          { element: <PackageListPage />, index: true },
+          { path: ':id', element: <PackageDetailsPage /> },
+        ],
+      },
+
       {
         path: 'coupon',
         children: [{ path: 'list', element: <CouponListPage />, index: true }],
