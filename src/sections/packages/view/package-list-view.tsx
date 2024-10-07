@@ -58,7 +58,7 @@ const TABLE_HEAD = [
   { id: 'session_inclusions', label: 'Session inclusions' },
   { id: 'number_of_sessions', label: 'Number of sessions' },
   { id: 'is_published', label: 'Is published' },
-  { id: 'Vendor', label: 'Vendor' },
+  { id: 'Vendor', label: 'School' },
   { id: 'action', label: 'Action' },
 
   // { id: '' },

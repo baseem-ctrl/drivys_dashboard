@@ -73,9 +73,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
         : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,9}$/, 'Phone number shpuld not exceed 9 digits ')
+      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
       .nullable(),
-    country_code: Yup.mixed().nullable(),
+    country_code: Yup.mixed().required('Country Code is required'),
     dob: Yup.string().nullable(),
     locale: Yup.string().nullable(), // not required
     user_type: Yup.string(),
@@ -90,7 +90,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       email: currentUser?.email || '',
       password: '',
       phone: currentUser?.phone || '',
-      country_code: countries?.find((option) => option?.phone === currentUser?.country_code) || '',
+      country_code: countries?.find((option) => option?.phone === currentUser?.country_code) || null,
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: currentUser?.locale || '',
       photo_url: currentUser?.photo_url || '',
