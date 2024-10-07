@@ -52,6 +52,7 @@ import { STATUS_OPTIONS } from 'src/_mock/_school';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'id', label: 'Id' },
   { id: 'locale', label: 'Language' },
   { id: 'name', label: 'Name' },
   { id: 'email', label: 'Email' },

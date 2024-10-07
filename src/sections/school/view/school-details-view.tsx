@@ -19,7 +19,9 @@ import SchoolDetailsContent from '../school-details-content';
 import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
-import { Button } from '@mui/base';
+import Iconify from 'src/components/iconify';
+import { Button } from '@mui/material';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +46,7 @@ export default function SchoolDetailsView({ id }: Props) {
   const handleChangePublish = useCallback((newValue: string) => {
     setPublish(newValue);
   }, []);
-
+  const quickCreate = useBoolean();
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -70,19 +72,39 @@ export default function SchoolDetailsView({ id }: Props) {
       ))}
     </Tabs>
   );
-
+  const handleAddTrainer = () => {
+    if (quickCreate) {
+      quickCreate.onFalse();
+    } else {
+      quickCreate.onTrue();
+    }
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Schools Details"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'School', href: paths.dashboard.school.root },
+          {
+            name: `${
+              currentJob?.vendor_translations?.length > 0
+                ? currentJob?.vendor_translations[0]?.name
+                : 'School'
+            }`,
+            href: paths.dashboard.school.root,
+          },
           { name: 'Details' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
+        action={
+          currentTab === 'trainers' && (
+            <Button onClick={quickCreate.onTrue} variant="contained">
+              Add Trainer
+            </Button>
+          )
+        }
       />
       {/* <JobDetailsToolbar
         backLink={paths.dashboard.job.root}
@@ -102,7 +124,13 @@ export default function SchoolDetailsView({ id }: Props) {
         />
       )}
 
-      {currentTab === 'trainers' && <SchoolTrainers candidates={details} />}
+      {currentTab === 'trainers' && (
+        <SchoolTrainers
+          candidates={details}
+          create={quickCreate.value}
+          onCreate={handleAddTrainer}
+        />
+      )}
     </Container>
   );
 }
