@@ -148,6 +148,16 @@ export function useNavData() {
             //   ,{ title: t('details'), path: paths.dashboard.school.details }
             // ],
           },
+          // PACKAGE
+          {
+            title: t('package'),
+            path: paths.dashboard.package.root,
+            icon: ICONS.booking,
+            // children: [
+            //   { title: t('list'), path: paths.dashboard.school.root }
+            //   ,{ title: t('details'), path: paths.dashboard.school.details }
+            // ],
+          },
           // COUPON
           {
             title: t('coupon'),

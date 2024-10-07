@@ -274,6 +274,12 @@ export const ACTIVE_OPTIONS = [
 ];
 // ----------------------------------------------------------------------
 
+export const PUBLISHED_OPTIONS = [
+  { value: '1', label: 'Show All Published' },
+  { value: '0', label: 'Show All Un Published' },
+];
+// ----------------------------------------------------------------------
+
 export const PUBLISH_OPTIONS = [
   { value: '1', label: 'Published' },
   { value: '0', label: 'UnPublished' },
