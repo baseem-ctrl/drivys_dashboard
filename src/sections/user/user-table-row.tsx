@@ -32,6 +32,7 @@ type Props = {
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   currentUserType?: any;
+  reload?: any;
 };
 
 export default function UserTableRow({
@@ -41,6 +42,7 @@ export default function UserTableRow({
   onSelectRow,
   onDeleteRow,
   currentUserType,
+  reload,
 }: Props) {
   const { name, photo_url, dob, user_type, is_active, email, phone, country_code } = row;
 
@@ -110,7 +112,7 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} reload={reload} />
 
       <CustomPopover
         open={popover.open}

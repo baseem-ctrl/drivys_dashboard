@@ -52,13 +52,13 @@ export function useGetUsers({
     [data, isLoading, error, isValidating]
   );
 
-  const revalidateOrders = () => {
+  const revalidateUsers = () => {
     mutate(getTheFullUrl);
   };
 
   return {
     ...memoizedValue,
-    revalidateOrders,
+    revalidateUsers,
   };
 }
 
