@@ -58,6 +58,7 @@ export default function SchoolTableRow({
     is_active,
     vendor_user,
     commission_in_percentage,
+    id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -188,6 +189,7 @@ export default function SchoolTableRow({
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
+        <TableCell>{id}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (

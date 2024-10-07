@@ -218,7 +218,7 @@ export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
     revalidateOnFocus: false,
   });
 
-  const revalidateDeliverey = () => {
+  const revalidateTrainers = () => {
     mutate(fullUrl);
   };
   const revalidateSearch = (search: any) => {
@@ -240,7 +240,12 @@ export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
 
   return {
     ...memoizedValue,
-    revalidateDeliverey,
+    revalidateTrainers,
     revalidateSearch,
   };
+}
+export function addTrainer(body: any) {
+  const URL = endpoints.school.addTrainer;
+  const response = drivysCreator([URL, body]);
+  return response;
 }

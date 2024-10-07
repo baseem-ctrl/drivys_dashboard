@@ -11,31 +11,139 @@ import ListItemText from '@mui/material/ListItemText';
 import { IJobCandidate } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
-import { useGetSchoolTrainers } from 'src/api/school';
+import { addTrainer, useGetSchoolTrainers } from 'src/api/school';
 import { TablePaginationCustom, useTable } from 'src/components/table';
-import { Button, CircularProgress, MenuItem, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Button,
+  CircularProgress,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { usePopover } from 'src/components/custom-popover';
 import CustomPopover from 'src/components/custom-popover/custom-popover';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useGetUsers } from 'src/api/users';
+import { useEffect, useMemo, useState } from 'react';
+import * as Yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { RHFAutocomplete, RHFTextField } from 'src/components/hook-form';
+import FormProvider from 'src/components/hook-form/form-provider';
+import { useSnackbar } from 'src/components/snackbar';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   candidates: any;
+  create: Boolean;
+  onCreate: Function;
 };
 
-export default function SchoolTrainers({ candidates }: Props) {
+export default function SchoolTrainers({ candidates, create, onCreate }: Props) {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [trainerId, setTrainerId] = useState('');
 
-  const { schoolTrainersList, schoolTrainersLoading, schoolTrainersError, totalPages } =
-    useGetSchoolTrainers({
-      page: table?.page + 1,
-      limit: table?.rowsPerPage,
-      vendor_id: candidates?.id,
-    });
+  const {
+    schoolTrainersList,
+    schoolTrainersLoading,
+    schoolTrainersError,
+    totalPages,
+    revalidateTrainers,
+  } = useGetSchoolTrainers({
+    page: table?.page + 1,
+    limit: table?.rowsPerPage,
+    vendor_id: candidates?.id,
+  });
+  const { users, usersLoading, usersError, usersEmpty, usersLength } = useGetUsers({
+    page: table?.page,
+    limit: table?.rowsPerPage,
+    user_types: 'TRAINER',
+    search: search,
+    is_active: '1',
+  });
   const popover = usePopover();
   const confirm = useBoolean();
+  const NewUserSchema = Yup.object().shape({
+    cash_clearance_date: Yup.string(),
+    cash_in_hand: Yup.string().required('Mention the Cash in hand '),
+    vendor_commission_in_percentage: Yup.string().nullable(),
+    trainer_id: Yup.mixed().required(),
+    max_cash_in_hand_allowed: Yup.string().nullable(), // not required
+  });
+
+  const defaultValues = useMemo(
+    () => ({
+      cash_clearance_date: candidates?.cash_clearance_date || '',
+      cash_in_hand: candidates?.cash_in_hand || '',
+      vendor_commission_in_percentage: candidates?.vendor_commission_in_percentage || '',
+      password: '',
+      phone: candidates?.phone || '',
+      trainer_id: users?.find((option) => option?.id === candidates?.trainer_id) || '',
+      max_cash_in_hand_allowed: candidates?.max_cash_in_hand_allowed || '',
+    }),
+    [candidates]
+  );
+
+  const methods = useForm({
+    resolver: yupResolver(NewUserSchema) as any,
+    defaultValues,
+  });
+
+  const {
+    reset,
+    watch,
+    control,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = methods;
+
+  const values = watch();
+  useEffect(() => {
+    if (candidates?.id) {
+      reset(defaultValues);
+    }
+  }, [candidates, reset]);
+  const onSubmit = async (data: any) => {
+    console.log(data, 'data');
+    const body = {
+      trainer_id: data?.trainer_id?.id,
+      vendor_id: candidates?.id,
+      vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
+      cash_in_hand: data?.cash_in_hand,
+      max_cash_in_hand_allowed: data?.max_cash_in_hand_allowed,
+      cash_clearance_date: data?.cash_clearance_date,
+    };
+    try {
+      const response = await addTrainer(body);
+      if (response) {
+        enqueueSnackbar(response?.message ?? 'Trainer Added Successfully');
+        onCreate();
+        revalidateTrainers();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
+  const handlePopoverOpen = (e, id: any) => {
+    popover.onOpen(e);
+    setTrainerId(id);
+  };
   return (
     <Box
       gap={3}
@@ -45,6 +153,79 @@ export default function SchoolTrainers({ candidates }: Props) {
         md: 'repeat(2, 1fr)',
       }}
     >
+      {create && (
+        <Stack component={Card} direction="column" spacing={2} sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Add New Trainer
+          </Typography>
+          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+            <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
+              <RHFAutocomplete
+                name="trainer_id"
+                label="Trainer"
+                options={users} // Use the full list of user objects as options
+                getOptionLabel={(option) => (option ? `${option.name}` : '')} // Display only the name in the input field
+                isOptionEqualToValue={(option, value) => option.id === value.id} // Compare based on IDs
+                onInputChange={(_, value) => setSearch(value)} // Set the search value when user types in the field
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id}>
+                    {option.name} - {option.email} {/* Show "name - email" in the dropdown */}
+                  </li>
+                )}
+                onInput={(_, value) => {
+                  setSearch(value); // Store only the ID in the form state
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search Trainer"
+                    variant="outlined"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {usersLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+              <RHFTextField
+                name="cash_clearance_date"
+                label="Cash Clearance Date "
+                type="date"
+                InputLabelProps={{ shrink: true }}
+              />
+              <RHFTextField name="cash_in_hand" label="Cash in Hand" />
+              <RHFTextField name="vendor_commission_in_percentage" label="Vendor Commission (%)" />
+              <RHFTextField name="max_cash_in_hand_allowed" label="Max Cash Allowded" />
+            </Box>
+
+            <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
+              <LoadingButton
+                sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}
+                type="submit"
+                variant="outlined"
+                loading={schoolTrainersLoading}
+              >
+                {'Save'}
+              </LoadingButton>
+              <LoadingButton
+                onClick={() => {
+                  onCreate();
+                }}
+                color="error"
+                variant="outlined"
+                sx={{ width: '100%' }}
+              >
+                {'Cancel'}
+              </LoadingButton>
+            </Box>
+          </FormProvider>
+        </Stack>
+      )}
       {!schoolTrainersLoading ? (
         schoolTrainersList?.length > 0 ? (
           schoolTrainersList?.map((trainer: any) => (
@@ -52,7 +233,7 @@ export default function SchoolTrainers({ candidates }: Props) {
               <Stack direction="row" spacing={2} key={trainer?.id}>
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8 }}
-                  onClick={popover.onOpen}
+                  onClick={(e) => handlePopoverOpen(e, trainer?.user_id)}
                 >
                   <Iconify icon="eva:more-vertical-fill" />
                 </IconButton>
@@ -181,7 +362,7 @@ export default function SchoolTrainers({ candidates }: Props) {
             </Stack>
           ))
         ) : (
-          <Box>No Trainers Found</Box>
+          !create && <Box>No Trainers Found</Box>
         )
       ) : (
         <Box
@@ -216,9 +397,9 @@ export default function SchoolTrainers({ candidates }: Props) {
         sx={{ width: 140 }}
       >
         <MenuItem
-          onClick={() => {
+          onClick={(e) => {
             popover.onClose();
-            // router.push(paths.dashboard.school.details(row?.id));
+            router.push(paths.dashboard.user.details(trainerId));
           }}
         >
           <Iconify icon="solar:eye-bold" />
@@ -233,7 +414,7 @@ export default function SchoolTrainers({ candidates }: Props) {
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          Remove
         </MenuItem>
       </CustomPopover>
     </Box>

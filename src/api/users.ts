@@ -28,15 +28,8 @@ export function useGetUsers({
 
     if (user_types !== 'all') {
       queryParams['user_types[]'] = [user_types]; // Set as an array for URL params
-    } // if (payment_status_id) queryParams.payment_status_id = payment_status_id;
-    // if (shipping_status_id) queryParams.shipping_status_id = shipping_status_id;
-    // if (payment_method_system_name)
-    //   queryParams.payment_method_system_name = payment_method_system_name;
-    // if (city) queryParams.city = city;
-    // if (start_date) queryParams.start_date = start_date;
-    // if (end_date) queryParams.end_date = end_date;
-    // if (type || type === 0) queryParams.type = type === 0 ? 0 : type;
-    // if (store_id) queryParams.store_id = store_id;
+    }
+
     if (search) queryParams.search = search;
     if (is_active) queryParams.is_active = is_active;
     return `${endpoints.users.list}?${new URLSearchParams(queryParams)}`;
