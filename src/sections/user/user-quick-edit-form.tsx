@@ -38,9 +38,10 @@ type Props = {
   open: boolean;
   onClose: VoidFunction;
   currentUser?: any;
+  reload?: any;
 };
 
-export default function UserQuickEditForm({ currentUser, open, onClose }: Props) {
+export default function UserQuickEditForm({ currentUser, open, onClose, reload }: Props) {
   const { user } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -99,6 +100,12 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
     formState: { isSubmitting, errors },
   } = methods;
 
+  useEffect(() => {
+    if (currentUser) {
+      reset(defaultValues);
+    }
+  }, [currentUser, defaultValues, reset]);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const body = new FormData();
@@ -115,6 +122,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }: Props)
         reset();
         onClose();
         enqueueSnackbar(response?.message);
+        reload();
       }
     } catch (error) {
       if (error?.errors) {
