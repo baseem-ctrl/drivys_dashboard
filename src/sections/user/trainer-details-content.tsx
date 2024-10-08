@@ -44,68 +44,57 @@ import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
-import TrainerDetailsContent from './trainer-details-content';
-
+import { useGetPackagesDetailsByTrainer } from 'src/api/trainer';
+import Divider from '@mui/material/Divider';
 // ----------------------------------------------------------------------
 
 type Props = {
-  details: any;
-  loading?: any;
-  reload?: VoidFunction;
+  id: number | string;
 };
 
-export default function UserDetailsContent({ details, loading, reload }: Props) {
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
-  );
-  console.log(details?.user_type, "details");
+export default function TrainerDetailsContent({ id }: Props) {
+  const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(id);
 
-  const [editMode, setEditMode] = useState(false);
+
+  // const [selectedLanguage, setSelectedLanguage] = useState(
+  //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+  // );
+
+  // const [editMode, setEditMode] = useState(false);
 
   const [currentTab, setCurrentTab] = useState('details');
 
   const currentTrainer = details;
 
 
-  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
-    setCurrentTab(newValue);
-  }, []);
 
-  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-    useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  // const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
+  //   useGetAllLanguage(0, 1000);
+  // const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
 
   // This useEffect sets the initial selectedLanguage value once details are available
-  useEffect(() => {
-    if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
-    }
-  }, [details]);
+  // useEffect(() => {
+  //   if (details?.vendor_translations?.length > 0) {
+  //     setSelectedLanguage(details?.vendor_translations[0]?.locale);
+  //   }
+  // }, [details]);
 
   const [localeOptions, setLocaleOptions] = useState([]);
 
-  useEffect(() => {
-    if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
-      let initialLocaleOptions = [];
-      if (Array.isArray(language)) {
-        initialLocaleOptions = language?.map((item: any) => ({
-          label: item?.language_culture,
-          value: item?.language_culture,
-        }));
-      }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
-      setLocaleOptions([...initialLocaleOptions]);
-      // }
-    }
-  }, [language, details]);
+  // useEffect(() => {
+  //   if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
+  //     let initialLocaleOptions = [];
+  //     if (Array.isArray(language)) {
+  //       initialLocaleOptions = language?.map((item: any) => ({
+  //         label: item?.language_culture,
+  //         value: item?.language_culture,
+  //       }));
+  //     }
+
+  //     setLocaleOptions([...initialLocaleOptions]);
+
+  //   }
+  // }, [language, details]);
 
   // Find the selectedLocaleObject whenever selectedLanguage or details change
   const router = useRouter();
@@ -215,80 +204,13 @@ export default function UserDetailsContent({ details, loading, reload }: Props) 
     </Stack>
   );
 
-  const renderTabs = (
-    <Tabs
-      value={currentTab}
-      onChange={handleChangeTab}
-      sx={{
-        mb: { xs: 3, md: 5 },
-      }}
-    >
-      {TRAINER_DETAILS_TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-        />
-      ))}
-    </Tabs>
-  );
 
-  const renderCompany = (
-    <Stack
-      component={Paper}
-      variant="outlined"
-      spacing={2}
-      sx={{ p: 3, borderRadius: 2 }}
-      height={350}
-    // onClick={route}
-    >
-      <Avatar
-        alt={details?.vendor_user?.user?.name}
-        src={details?.vendor_user?.name?.user?.photo_url}
-        variant="rounded"
-        sx={{ width: 64, height: 64 }}
-      />
+  console.log(Array.isArray(details), details, "details");
 
-      <Stack spacing={1}>
-        {details?.vendor_user?.user?.name && (
-          <Typography variant="subtitle1">
-            {details?.vendor_user?.user?.name ?? 'Name Not Availbale'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.email && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.email ?? 'Email Not Availbale'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.phone && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.country_code
-              ? details?.vendor_user?.user?.country_code - details?.vendor_user?.user?.phone
-              : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.user_type && (
-          <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.dob && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_balance !== 0 && (
-          <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_points !== 0 && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-      </Stack>
-    </Stack>
-  );
 
   return (
     <>
-      {loading ? (
+      {detailsLoading ? (
         <Box
           sx={{
             display: 'flex',
@@ -300,31 +222,42 @@ export default function UserDetailsContent({ details, loading, reload }: Props) 
           <CircularProgress />
         </Box>
       ) : (
-        <>
-          {details?.user_type === "TRAINER" && renderTabs}
-          <Grid container spacing={1} rowGap={1}>
-            <Grid xs={12} md={12}>
-              {/* For all other user types */}
-              {details?.user_type !== "TRAINER" && renderContent}
 
-              {/* For trainer user type with 3 tabs */}
-              {currentTab === 'details' && details?.user_type === "TRAINER" && renderContent}
-              {currentTab === 'packages' && details?.user_type === "TRAINER" &&
-                <TrainerDetailsContent id={details?.id} />}
-              {/* {currentTab === 'students' && details?.user_type === "TRAINER" && renderContent} */}
+        details?.length > 0 ?
+          <>
+            <Grid container spacing={1} rowGap={1}>
+              <Grid xs={12} sm={6} md={3}>
+                {Array.isArray(details) && details.map((item: any) => (
+                  <Stack
+                    component={Card}
+                    direction="column"
+                    key={item?.id}
+                  >
+                    <Stack sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}>{item?.number_of_sessions} Sessions</Stack>
+                    <hr style={{ width: "100%", height: "0.5px", border: "none", backgroundColor: "#CF5A0D" }} />
+
+                    <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
+                      <Typography variant="h5" color="#CF5A0D" > {item?.package_translations[0]?.name} </Typography>
+                      <Typography sx={{ fontSize: "12px", fontWeight: "700" }}> What's included </Typography>
+
+                      <Stack direction="row" spacing={1}>
+                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> <Typography>  {item?.package_translations[0]?.session_inclusions} </Typography>
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                ))}
 
 
-
-              {/* For trainer user type with 3 tabs */}
-            </Grid>
+              </Grid>
 
 
-            {/* <Grid xs={12} md={4}>
+              {/* <Grid xs={12} md={4}>
             {renderCompany}
           </Grid> */}
-          </Grid>
-        </>
-      )}
+            </Grid>
+          </> : "No Packages"
+      )
+      }
     </>
   );
 }
