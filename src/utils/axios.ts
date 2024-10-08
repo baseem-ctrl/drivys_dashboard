@@ -151,4 +151,7 @@ export const endpoints = {
     delete: 'admin/user/delete-user-by-id',
     update: 'admin/user/user-update-by-id',
   },
+  trainer:{
+    getPackages:'admin/package-trainer/get-trainer-packages/'
+  }
 };
