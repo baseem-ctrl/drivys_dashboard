@@ -148,3 +148,81 @@ export function deleteUser(id: any) {
   const response = barrySmasher(URL);
   return response;
 }
+
+// Function to delete a user adress
+export function deleteUserAddress(addressId: any) {
+  const URL = `${endpoints.users.deleteAddressFromList}/${addressId}`;
+  const response = barrySmasher(URL);
+  return response;
+}
+
+// Function to create user address (add new user address)
+
+export function createNewAddressForUser(body: any) {
+  const URL = endpoints.users.createNewAdressForUser;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+// Function to update the user address
+export function updateExistingUserAddress(body: any, id, user_id) {
+  console.log('body', body);
+  const updatedBody = {
+    ...body,
+    id,
+    user_id,
+  };
+  console.log('updatedBody', updatedBody);
+  const URL = endpoints.users.createNewAdressForUser; // Use the endpoint for creating/updating user address
+  const response = drivysCreator([URL, updatedBody]); // Make the API request using the updated body
+  return response;
+}
+
+//  Function to fetch address list
+export function useGetAddressList({
+  page,
+  limit,
+  search,
+  userId,
+}: {
+  page: number;
+  limit: number;
+  search?: string;
+  userId: number;
+}) {
+  const getAddressUrl = () => {
+    const queryParams: { [key: string]: any } = {
+      page: page + 1,
+      limit,
+      user_id: userId,
+    };
+
+    if (search) queryParams.search = search;
+
+    return `${endpoints.users.addressList}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getAddressUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      addresses: data?.data || [],
+      addressesLoading: isLoading,
+      addressesError: error,
+      addressesValidating: isValidating,
+      addressesEmpty: !isLoading && !data?.data?.length,
+      addressesLength: data?.total,
+    }),
+    [data, isLoading, error, isValidating]
+  );
+
+  const revalidateAddresses = () => {
+    mutate(getAddressUrl);
+  };
+
+  return {
+    ...memoizedValue,
+    revalidateAddresses,
+  };
+}
