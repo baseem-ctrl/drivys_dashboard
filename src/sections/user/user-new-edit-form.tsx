@@ -37,6 +37,7 @@ import { IconButton, InputAdornment, MenuItem } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,9 @@ type Props = {
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { user } = useAuthContext();
+
+  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
+    useGetAllLanguage(0, 1000);
 
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const [filteredValues, setFilteredValues] = useState(enumData);
@@ -77,7 +81,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       .nullable(),
     country_code: Yup.mixed().required('Country Code is required'),
     dob: Yup.string().nullable(),
-    locale: Yup.string().nullable(), // not required
+    locale: Yup.mixed().nullable(), // not required
     user_type: Yup.string(),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
@@ -130,7 +134,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('country_code', data?.country_code?.phone);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
-      body.append('locale', data?.locale);
+      body.append('locale', data?.locale?.name);
       if (data?.photo_url && typeof data?.photo_url === 'file') {
         body.append('photo_url', data?.photo_url);
       }
@@ -307,6 +311,23 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   );
                 }}
               />
+
+              <RHFAutocomplete
+                name="locale"
+                label="Prefered Language"
+                options={language}
+                getOptionLabel={(option) => {
+                  return option ? `${option.name}` : '';
+                }}
+                renderOption={(props, option: any) => {
+                  return (
+                    <li {...props} key={option.id}>
+
+                      {option.name}
+                    </li>
+                  );
+                }}
+              />
               <RHFTextField name="phone" label="Phone Number" />
 
               <RHFTextField
@@ -315,7 +336,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
-              <RHFTextField name="locale" label="Preffered Language " />
+
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
             </Box>
 
