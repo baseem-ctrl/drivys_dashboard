@@ -2,7 +2,8 @@ import * as Yup from 'yup';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
+
+// @mui components
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -10,58 +11,60 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-// utils
-import { fData } from 'src/utils/format-number';
-// assets
-import { countries } from 'src/assets/data';
-// components
+
+// Components and hooks
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { useRouter } from 'src/routes/hooks';
 import FormProvider, {
   RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
   RHFAutocomplete,
 } from 'src/components/hook-form';
+import { fData } from 'src/utils/format-number';
+import { countries } from 'src/assets/data';
+import { UpdateProfile, DeleteUserProfile } from 'src/api/auth';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
+  const { user, logout } = useAuthContext();
+  const router = useRouter();
 
-  const { user } = useMockedUser();
+  // Setting up default values
+  const defaultValues = {
+    countryCode: user?.user?.country_code || '',
+    DOB: user?.user?.dob || '',
+    displayName: user?.user?.name || '',
+    email: user?.user?.email || '',
+    photoURL: user?.user?.photo_url || null,
+    phoneNumber: user?.user?.phone || '',
+    isPublic: user?.user?.is_active || false,
+    isActive: user?.user?.is_active || false,
+    walletBalance: user?.user?.wallet_balance || 0,
+    walletPoints: user?.user?.wallet_points || 0,
+    locale: user?.user?.locale || '',
+  };
 
+  // Setup Yup schema validation
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
     phoneNumber: Yup.string().required('Phone number is required'),
-    country: Yup.string().required('Country is required'),
-    address: Yup.string().required('Address is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    about: Yup.string().required('About is required'),
-    // not required
+    countryCode: Yup.string().required('Country Code is required'),
+    DOB: Yup.string(), // Optional field
     isPublic: Yup.boolean(),
+    isActive: Yup.boolean(), // New field for validation
+    walletBalance: Yup.number().required('Wallet balance is required'),
+    walletPoints: Yup.number().required('Wallet points are required'),
+    locale: Yup.string().required('Locale is required'),
   });
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
-  };
-
+  // Initializing useForm hook with yupResolver and defaultValues
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
     defaultValues,
@@ -70,23 +73,54 @@ export default function AccountGeneral() {
   const {
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
+  // Function to delete user profile
+  const handleDeleteUser = async (id) => {
+    try {
+      await DeleteUserProfile(id);
+      enqueueSnackbar('User deleted successfully!', { variant: 'success' });
+
+      // Navigate to home
+      router.replace('/');
+      await logout();
+    } catch (error) {
+      enqueueSnackbar('Failed to delete user.', { variant: 'error' });
+    }
+  };
+
+  // Function to submit the user profile for updating the user profile
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Form submitted');
+      console.log('Original form data:', data);
+
+      // Map the data to the required structure for your API
+      const updatedData = {
+        name: data.displayName,
+        email: data.email,
+        phone: data.phoneNumber,
+        country_code: data.countryCode,
+        locale: data.locale,
+        password: data.password || '',
+        photo_url: data.photoURL?.preview || data.photoURL,
+        is_active: data.isActive,
+      };
+
+      // Call the API with the updated data
+      await UpdateProfile(updatedData);
       enqueueSnackbar('Update success!');
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Update failed! Please try again.', { variant: 'error' });
     }
   });
 
+  // Handle image upload
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-
       const newFile = Object.assign(file, {
         preview: URL.createObjectURL(file),
       });
@@ -131,7 +165,12 @@ export default function AccountGeneral() {
               sx={{ mt: 5 }}
             />
 
-            <Button variant="soft" color="error" sx={{ mt: 3 }}>
+            <Button
+              variant="soft"
+              color="error"
+              sx={{ mt: 3 }}
+              onClick={() => handleDeleteUser(user?.user?.id)}
+            >
               Delete User
             </Button>
           </Card>
@@ -151,44 +190,17 @@ export default function AccountGeneral() {
               <RHFTextField name="displayName" label="Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="address" label="Address" />
-
-              <RHFAutocomplete
-                name="country"
-                label="Country"
-                options={countries.map((country) => country.label)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
-
-                  if (!label) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
-                }}
-              />
-
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
+              <RHFTextField name="countryCode" label="Country Code" />
+              <RHFTextField name="password" label="Password" type="password" />
+              <RHFTextField name="locale" label="Locale" />
             </Box>
-
+            <RHFSwitch
+              name="isActive"
+              labelPlacement="start"
+              label="Public Profile"
+              sx={{ mt: 2 }}
+            />
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="About" />
-
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes
               </LoadingButton>

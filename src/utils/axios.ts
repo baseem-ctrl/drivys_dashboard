@@ -82,6 +82,8 @@ export const endpoints = {
     me: 'admin/auth/who-am-i',
     login: 'admin/auth/all-login',
     register: '/api/auth/register',
+    update: 'admin/auth/update-profile', // To update user profile
+    delete: 'admin/auth/delete-profile', // To delete user profile
   },
   mail: {
     list: '/api/mail/list',
