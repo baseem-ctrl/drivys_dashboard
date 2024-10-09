@@ -249,3 +249,9 @@ export function addTrainer(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+
+export function RemoveTrainerFromSchool(id: any) {
+  const URL = `${endpoints.school.removeTrainer}?trainer_id=${id}`;
+  const response = barrySmasher(URL);
+  return response;
+}
