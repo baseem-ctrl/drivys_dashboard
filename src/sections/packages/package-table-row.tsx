@@ -115,7 +115,7 @@ export default function PackageTableRow({
     () => ({
       name: selectedLocaleObject?.name || '',
       locale: selectedLocaleObject?.locale || '',
-      session_inclusions: selectedLocaleObject?.session_inclusions || '',
+      // session_inclusions: selectedLocaleObject?.session_inclusions || '',
       email: email || '',
       phone_number: phone_number || '',
       status: status,
@@ -147,7 +147,7 @@ export default function PackageTableRow({
       setValue('name', '');
     }
   };
-  console.log(package_translations, "package_translations?.session_inclusions");
+
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -156,7 +156,7 @@ export default function PackageTableRow({
           {
             name: data?.name || package_translations?.name,
             locale: selectedLanguage || package_translations?.locale,
-            session_inclusions: data?.session_inclusions || package_translations?.name,
+            // session_inclusions: data?.session_inclusions || package_translations?.name,
           },
         ],
         contact_email: data?.email || email,
@@ -235,7 +235,7 @@ export default function PackageTableRow({
           )}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
               name="session_inclusions"
@@ -251,7 +251,7 @@ export default function PackageTableRow({
           ) : (
             selectedLocaleObject?.session_inclusions || 'N/A'
           )}
-        </TableCell>
+        </TableCell> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}

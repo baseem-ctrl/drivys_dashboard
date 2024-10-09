@@ -55,7 +55,7 @@ import { deletePackage, useGetPackage } from 'src/api/package';
 const TABLE_HEAD = [
   { id: 'locale', label: 'Language' },
   { id: 'name', label: 'Name' },
-  { id: 'session_inclusions', label: 'Session inclusions' },
+  // { id: 'session_inclusions', label: 'Session inclusions' },
   { id: 'number_of_sessions', label: 'Number of sessions' },
   { id: 'is_published', label: 'Is published' },
   { id: 'Vendor', label: 'School' },

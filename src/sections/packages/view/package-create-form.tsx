@@ -17,15 +17,17 @@ import DialogContent from '@mui/material/DialogContent';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/system/Unstable_Grid/Grid';
+import Stack from '@mui/material/Stack';
 import FormProvider, {
   RHFTextField,
   RHFCheckbox,
   RHFSelect,
   RHFAutocomplete,
+  RHFEditor,
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { TextField } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
@@ -221,9 +223,7 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFTextField name="number_of_sessions" label="Number of sessions" />
             </Grid>
-            <Grid item xs={6}>
-              <RHFTextField name="session_inclusions" label="Session inclusions" />
-            </Grid>
+
             <Grid item xs={6}>
               <RHFAutocomplete
                 name="vendor_id"
@@ -238,9 +238,16 @@ export default function PackageCreateForm({
               />
             </Grid>
             <Grid item xs={6}>
-              <RHFCheckbox sx={{ m: 2 }} name="is_published" label="Publish" />
+              <RHFCheckbox name="is_published" label="Publish" />
             </Grid>
+            <Grid item xs={12}>
 
+              <Stack spacing={1.5} mt={2}>
+                <Typography variant="subtitle2">Session inclusions</Typography>
+                <RHFEditor name="session_inclusions" />
+              </Stack>
+              {/* <RHFTextField name="session_inclusions" label="Session inclusions" /> */}
+            </Grid>
           </Grid>
 
 

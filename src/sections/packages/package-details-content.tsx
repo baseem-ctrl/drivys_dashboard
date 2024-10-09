@@ -25,7 +25,10 @@ import { useGetAllLanguage } from 'src/api/language';
 import { createUpdatePackage } from 'src/api/package';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-
+import FormHelperText from '@mui/material/FormHelperText';
+//
+import Editor, { EditorProps } from '../../components/editor';
+import PackageDescription from './package-html-converter';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -232,7 +235,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
               ]) || []),
               ...(details?.package_translations?.flatMap((itm: any) => [
-                { label: `Session inclusions (${itm?.locale})`, value: itm?.session_inclusions ?? 'N/A' },
+                { label: `Session inclusions (${itm?.locale})`, value: <PackageDescription description={itm?.session_inclusions} /> ?? 'N/A' },
               ]) || []),
               {
                 label: 'School Id',
@@ -357,13 +360,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   )}
                 />
 
-                <Controller
-                  name="session_inclusions"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <TextField label="Sessions Inclusions" {...field} error={!!errors.session_inclusions} />
-                  )}
-                />
 
 
 
@@ -381,6 +377,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     </Select>
                   )}
                 />
+
                 <Stack direction="row" alignItems="center">
                   <Typography>Published</Typography>
                   <Controller
@@ -393,6 +390,25 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 </Stack>
               </Box>
             </Box>
+            <Controller
+              name="session_inclusions"
+              control={schoolControl}
+              render={({ field, fieldState: { error } }) => (
+                <Editor
+                  id="session_inclusions"
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={!!error}
+                  helperText={
+                    (!!error) && (
+                      <FormHelperText error={!!error} sx={{ px: 2 }}>
+                        {error ?? error?.message}
+                      </FormHelperText>
+                    )
+                  }
+                />
+              )}
+            />
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
               <Button variant="outlined" color="error" onClick={handleCancel}>
                 Cancel
