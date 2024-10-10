@@ -318,7 +318,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 label="Prefered Language"
                 options={language}
                 getOptionLabel={(option) => {
-                  return option ? `${option.name}` : '';
+                  return option ? `${option?.name}` : '';
                 }}
                 renderOption={(props, option: any) => {
                   return (
