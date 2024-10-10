@@ -449,19 +449,18 @@ export default function UserDetailsContent({
   };
   const [addressForm, setAddressForm] = useState({
     // State for form fields
-    id: '',
-    plot_number: '',
-    building_name: '',
-    street: '',
-    city: '',
-    label: '',
-    address: '',
-    landmark: '',
-    country_code: '',
-    phone_number: '',
-    longitude: '',
-    latitude: '',
-    postalCode: '',
+    id: '', //
+    plot_number: '', //
+    building_name: '', //
+    street: '', //
+    city: '', //
+    label: '', //
+    address: '', //
+    landmark: '', //
+    country_code: '', //
+    phone_number: '', //
+    longitude: '', //
+    latitude: '', //
   });
 
   const handleChangeStoreAddress = (e) => {
@@ -535,6 +534,7 @@ export default function UserDetailsContent({
     },
     [addressForm]
   );
+  console.log('addressForm', addressForm);
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
@@ -645,14 +645,6 @@ export default function UserDetailsContent({
             {/* Row 3 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
               <TextField
-                label="State"
-                variant="outlined"
-                name="state"
-                value={addressForm.state}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-              <TextField
                 label="Country Code"
                 variant="outlined"
                 name="country_code"
@@ -660,16 +652,6 @@ export default function UserDetailsContent({
                 onChange={(e) => handleChangeStoreAddress(e, true)}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
-              <TextField
-                label="Postal Code"
-                variant="outlined"
-                name="postalCode"
-                value={addressForm.postalCode}
-                onChange={(e) => handleChangeStoreAddress(e, true)}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
               <TextField
                 label="Phone Number"
                 variant="outlined"
@@ -800,6 +782,7 @@ export default function UserDetailsContent({
                 <Button
                   variant="contained"
                   onClick={() => {
+                    setAddressForm(address);
                     handleEditAddress(index, address);
                   }}
                 >
@@ -964,7 +947,7 @@ export default function UserDetailsContent({
                     <Button
                       variant="contained"
                       onClick={() =>
-                        handleUpdateExistingUserAddress(addressForm, address.id, address.user_id)
+                        handleUpdateExistingUserAddress(address, address.id, address.user_id)
                       }
                       sx={{ flex: 1, mr: 1 }}
                     >
