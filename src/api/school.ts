@@ -249,3 +249,30 @@ export function addTrainer(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+
+
+
+
+//LOGIN AS SCHOOL ADMIN APIS
+export function useGetSchoolByIdAdmin(schoolId: string) {
+  const URL = endpoints.school.detailsadmin;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
+}
