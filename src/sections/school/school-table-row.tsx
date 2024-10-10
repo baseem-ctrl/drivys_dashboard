@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './school-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { ListItemText, Select, TextField } from '@mui/material';
+import { Link, ListItemText, Select, TextField } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -116,7 +116,7 @@ export default function SchoolTableRow({
       phone_number: phone_number || '',
       status: status,
       is_active: is_active || 1,
-      user_id: vendor_user?.user_id || '',
+      user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
       commission_in_percentage: commission_in_percentage || 0,
     }),
     [selectedLocaleObject, row]
@@ -155,7 +155,7 @@ export default function SchoolTableRow({
         contact_email: data?.email || email,
         contact_phone_number: data?.phone_number || phone_number,
         status: data?.status || status,
-        user_id: data?.user_id || vendor_user?.user_id,
+        user_id: data?.user_id || vendor_user?.user !== null ? vendor_user?.user_id : '',
         is_active: data?.is_active ? '1' : '0',
         commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
         create_new_user: 0,
@@ -225,7 +225,9 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            selectedLocaleObject?.name
+            <Link color="inherit" sx={{ cursor: 'pointer' }} onClick={onViewRow}>
+              {selectedLocaleObject?.name ?? 'N/A'}
+            </Link>
           )}
         </TableCell>
 

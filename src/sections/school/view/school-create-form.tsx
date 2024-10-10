@@ -98,10 +98,10 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('should be 9 digit', 'should be 9 digit', function (value) {
+    phone: Yup.string().test('Maximum 15 digit', 'Maximum 15 digit', function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
-        return value && value.length === 9; // Ensures password is filled if create_new_user is true
+        return value && value.length <= 15; // Ensures password is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
@@ -214,7 +214,7 @@ export default function SchoolCreateForm({
       const response = await createSchool(formData);
       if (response) {
         reset();
-        onClose();
+        handleClose();
         revalidateDeliverey();
         enqueueSnackbar(response?.message, { variant: 'success' });
       }
@@ -236,7 +236,7 @@ export default function SchoolCreateForm({
     onClose();
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>Create School</DialogTitle>
 

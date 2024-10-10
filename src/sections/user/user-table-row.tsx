@@ -22,14 +22,15 @@ import UserQuickEditForm from './user-quick-edit-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useState } from 'react';
+import { Link } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  selected: boolean;
+  selected?: boolean;
   onEditRow: VoidFunction;
   row: any;
-  onSelectRow: VoidFunction;
+  onSelectRow?: VoidFunction;
   onDeleteRow: VoidFunction;
   currentUserType?: any;
   reload?: any;
@@ -61,16 +62,21 @@ export default function UserTableRow({
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={name} src={photo_url} sx={{ mr: 2 }} />
-
-          <ListItemText
-            primary={name ?? 'NA'}
-            secondary={email ?? 'NA'}
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
+          <Link
+            color="inherit"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => router.push(paths.dashboard.user.details(row?.id))}
+          >
+            <ListItemText
+              primary={name ?? 'NA'}
+              secondary={email ?? 'NA'}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          </Link>
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

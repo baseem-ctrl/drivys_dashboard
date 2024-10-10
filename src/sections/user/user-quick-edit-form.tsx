@@ -69,7 +69,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
         : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,9}$/, 'Phone number shpuld not exceed 9 digits ')
+      .matches(/^\d{1,15}$/, 'Phone number shpuld not exceed 15 digits ')
       .nullable(),
     country_code: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
