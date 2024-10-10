@@ -460,7 +460,6 @@ export default function UserDetailsContent({
   ) => {
     try {
       // Log the current state of the address and marker position
-
       // Update the body to include latitude and longitude from markerPosition
       const updatedAddress = {
         ...body,
@@ -572,7 +571,6 @@ export default function UserDetailsContent({
     },
     [addressForm, editingIndex] // Include editingIndex in the dependency array
   );
-  console.log('newAddress', newAddress);
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
@@ -850,7 +848,7 @@ export default function UserDetailsContent({
                   Delete
                 </Button>
               </Box>
-              {showMapIndex === index && address.latitude && address.longitude && (
+              {showMapIndex === index && (
                 <Box sx={{ pt: 2, pb: 2 }}>
                   {isLoaded && load ? (
                     <GoogleMap
@@ -868,7 +866,7 @@ export default function UserDetailsContent({
                           }}
                         />
                       )}
-                      {/* {(defaultValues?.latitude || defaultValues?.longitude) && (
+                      {(defaultValues?.latitude || defaultValues?.longitude) && (
                         <Marker
                           position={{
                             lat: defaultValues?.latitude,
@@ -879,7 +877,7 @@ export default function UserDetailsContent({
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
-                      )} */}
+                      )}
                     </GoogleMap>
                   ) : (
                     <div>Loading Map...</div>
@@ -1014,7 +1012,7 @@ export default function UserDetailsContent({
                       variant="contained"
                       onClick={() =>
                         handleUpdateExistingUserAddress(
-                          address,
+                          addressForm,
                           markerPosition,
                           address.id,
                           address.user_id
