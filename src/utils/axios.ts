@@ -148,6 +148,8 @@ export const endpoints = {
   },
   users: {
     enum: 'public/enum/get-user-type-enum',
+    genderenum: 'public/enum/get-gender-type-enum',
+    gearenum: 'public/enum/get-gear-type-enum',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
     getbyId: 'admin/user/get-user/',

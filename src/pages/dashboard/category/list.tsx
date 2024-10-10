@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { CategoryListView } from 'src/sections/category/view';
+
 // sections
 
 // ----------------------------------------------------------------------

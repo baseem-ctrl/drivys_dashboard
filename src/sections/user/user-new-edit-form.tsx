@@ -32,7 +32,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFSelect,
 } from 'src/components/hook-form';
-import { createUser, deleteUser, updateUser, useGetUserTypeEnum } from 'src/api/users';
+import { createUser, deleteUser, updateUser, useGetGearEnum, useGetGenderEnum, useGetUserTypeEnum } from 'src/api/users';
 import { IconButton, InputAdornment, MenuItem } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -53,6 +53,11 @@ export default function UserNewEditForm({ currentUser }: Props) {
     useGetAllLanguage(0, 1000);
 
   const { enumData, enumLoading } = useGetUserTypeEnum();
+  const { genderData, genderLoading } = useGetGenderEnum();
+  const { gearData, gearLoading } = useGetGearEnum();
+
+
+
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
   useEffect(() => {
@@ -257,6 +262,22 @@ export default function UserNewEditForm({ currentUser }: Props) {
               <RHFSelect name="user_type" label="User Type">
                 {filteredValues?.length > 0 &&
                   filteredValues?.map((option: any) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+              </RHFSelect>
+              <RHFSelect name="gender" label="Gender">
+                {genderData?.length > 0 &&
+                  genderData?.map((option: any) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+              </RHFSelect>
+              <RHFSelect name="gear" label="Gear">
+                {gearData?.length > 0 &&
+                  gearData?.map((option: any) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.name}
                     </MenuItem>
