@@ -48,6 +48,9 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // ----------------------------------------------------------------------
 
 export default function App() {
+
+  const is_user_type_school_admin = localStorage.getItem("user_type") === "SCHOOL_ADMIN"
+
   // const charAt = `
 
   // ░░░||||▒▒  ▒▒▒▒
@@ -81,7 +84,7 @@ export default function App() {
                   {/* <SettingsDrawer /> */}
                   <ProgressBar />
                   <AuthConsumer>
-                    <Router />
+                    <Router is_user_type_school_admin={is_user_type_school_admin} />
                   </AuthConsumer>
                 </CheckoutProvider>
               </SnackbarProvider>

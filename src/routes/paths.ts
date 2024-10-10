@@ -183,6 +183,8 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/school/list`,
       new: `${ROOTS.DASHBOARD}/school/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/school/${id}`,
+      detailsadmin: (id: string) => `${ROOTS.DASHBOARD}/school/admin/${id}`,
+      admin: (id: string) => `${ROOTS.DASHBOARD}/school/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
     },
     package: {

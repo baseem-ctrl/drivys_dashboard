@@ -9,6 +9,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import SchoolDetailsView from 'src/sections/school/view/school-details-view';
 import SchoolDetailsPage from 'src/pages/dashboard/schools/details';
 import UserDetailsPage from 'src/pages/dashboard/user/details';
+import SchoolAdminDetailsPage from 'src/pages/dashboard/schools/school_admin_details';
+import UserDetailsAdminPage from 'src/pages/dashboard/schools/user-details';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +70,130 @@ const LanguageListPage = lazy(() => import('src/pages/dashboard/language/list'))
 const CouponListPage = lazy(() => import('src/pages/dashboard/coupon/list'));
 // ----------------------------------------------------------------------
 
+const allroutes = [
+  { element: <OverviewEcommercePage />, index: true },
+  { path: 'ecommerce', element: <OverviewEcommercePage /> },
+
+  {
+    path: 'user',
+    children: [
+      { element: <UserProfilePage />, index: true },
+      { path: 'profile', element: <UserProfilePage /> },
+      { path: 'cards', element: <UserCardsPage /> },
+      { path: 'list', element: <UserListPage /> },
+      { path: 'new', element: <UserCreatePage /> },
+      { path: ':id/edit', element: <UserEditPage /> },
+      { path: 'account', element: <UserAccountPage /> },
+      { path: ':id', element: <UserDetailsPage /> },
+    ],
+  },
+  {
+    path: 'product',
+    children: [{ element: <ProductListPage />, index: true }],
+  },
+  {
+    path: 'order',
+    children: [
+      { element: <OrderListPage />, index: true },
+      { path: 'list', element: <OrderListPage /> },
+      { path: ':id', element: <OrderDetailsPage /> },
+    ],
+  },
+  {
+    path: 'post',
+    children: [
+      { element: <BlogPostsPage />, index: true },
+      { path: 'list', element: <BlogPostsPage /> },
+      { path: ':title', element: <BlogPostPage /> },
+      { path: ':title/edit', element: <BlogEditPostPage /> },
+      { path: 'new', element: <BlogNewPostPage /> },
+    ],
+  },
+  {
+    path: 'job',
+    children: [
+      { element: <JobListPage />, index: true },
+      { path: 'list', element: <JobListPage /> },
+      { path: ':id', element: <JobDetailsPage /> },
+      { path: 'new', element: <JobCreatePage /> },
+      { path: ':id/edit', element: <JobEditPage /> },
+    ],
+  },
+  {
+    path: 'category',
+    children: [{ element: <CategoryListPage />, index: true }],
+  },
+  {
+    path: 'school',
+    children: [
+      { element: <SchoolListPage />, index: true },
+      { path: ':id', element: <SchoolDetailsPage /> },
+      { path: 'admin', element: <SchoolAdminDetailsPage /> },
+      { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
+  {
+    path: 'package',
+    children: [
+      { element: <PackageListPage />, index: true },
+      { path: ':id', element: <PackageDetailsPage /> },
+    ],
+  },
+
+  {
+    path: 'coupon',
+    children: [{ path: 'list', element: <CouponListPage />, index: true }],
+  },
+
+  {
+    path: 'system',
+    children: [
+      { element: <LanguageListPage />, index: true },
+      { path: 'language', element: <LanguageListPage /> },
+      // { path: ':id', element: <JobDetailsPage /> },
+      // { path: 'new', element: <JobCreatePage /> },
+      // { path: ':id/edit', element: <JobEditPage /> },
+    ],
+  },
+
+  {
+    path: 'tour',
+    children: [
+      { element: <TourListPage />, index: true },
+      { path: 'list', element: <TourListPage /> },
+      { path: ':id', element: <TourDetailsPage /> },
+      { path: 'new', element: <TourCreatePage /> },
+      { path: ':id/edit', element: <TourEditPage /> },
+    ],
+  },
+  { path: 'kanban', element: <KanbanPage /> },
+  { path: 'permission', element: <PermissionDeniedPage /> },
+  { path: 'blank', element: <BlankPage /> },
+]
+
+const schooladminRoutes = [
+  { element: <OverviewEcommercePage />, index: true },
+  { path: 'ecommerce', element: <OverviewEcommercePage /> },
+
+  {
+    path: 'school',
+    children: [
+      { path: 'admin', element: <SchoolAdminDetailsPage /> },
+      { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
+]
+const userType = localStorage.getItem('user_type');
+const routes = (() => {
+  switch (userType) {
+
+    case 'SCHOOL_ADMIN':
+      return schooladminRoutes;
+    default:
+      return allroutes;
+  }
+})();
+
 export const dashboardRoutes = [
   {
     path: 'dashboard',
@@ -80,103 +206,6 @@ export const dashboardRoutes = [
         </DashboardLayout>
       </AuthGuard>
     ),
-    children: [
-      { element: <OverviewEcommercePage />, index: true },
-      { path: 'ecommerce', element: <OverviewEcommercePage /> },
-
-      {
-        path: 'user',
-        children: [
-          { element: <UserProfilePage />, index: true },
-          { path: 'profile', element: <UserProfilePage /> },
-          { path: 'cards', element: <UserCardsPage /> },
-          { path: 'list', element: <UserListPage /> },
-          { path: 'new', element: <UserCreatePage /> },
-          { path: ':id/edit', element: <UserEditPage /> },
-          { path: 'account', element: <UserAccountPage /> },
-          { path: ':id', element: <UserDetailsPage /> },
-        ],
-      },
-      {
-        path: 'product',
-        children: [{ element: <ProductListPage />, index: true }],
-      },
-      {
-        path: 'order',
-        children: [
-          { element: <OrderListPage />, index: true },
-          { path: 'list', element: <OrderListPage /> },
-          { path: ':id', element: <OrderDetailsPage /> },
-        ],
-      },
-      {
-        path: 'post',
-        children: [
-          { element: <BlogPostsPage />, index: true },
-          { path: 'list', element: <BlogPostsPage /> },
-          { path: ':title', element: <BlogPostPage /> },
-          { path: ':title/edit', element: <BlogEditPostPage /> },
-          { path: 'new', element: <BlogNewPostPage /> },
-        ],
-      },
-      {
-        path: 'job',
-        children: [
-          { element: <JobListPage />, index: true },
-          { path: 'list', element: <JobListPage /> },
-          { path: ':id', element: <JobDetailsPage /> },
-          { path: 'new', element: <JobCreatePage /> },
-          { path: ':id/edit', element: <JobEditPage /> },
-        ],
-      },
-      {
-        path: 'category',
-        children: [{ element: <CategoryListPage />, index: true }],
-      },
-      {
-        path: 'school',
-        children: [
-          { element: <SchoolListPage />, index: true },
-          { path: ':id', element: <SchoolDetailsPage /> },
-        ],
-      },
-      {
-        path: 'package',
-        children: [
-          { element: <PackageListPage />, index: true },
-          { path: ':id', element: <PackageDetailsPage /> },
-        ],
-      },
-
-      {
-        path: 'coupon',
-        children: [{ path: 'list', element: <CouponListPage />, index: true }],
-      },
-
-      {
-        path: 'system',
-        children: [
-          { element: <LanguageListPage />, index: true },
-          { path: 'language', element: <LanguageListPage /> },
-          // { path: ':id', element: <JobDetailsPage /> },
-          // { path: 'new', element: <JobCreatePage /> },
-          // { path: ':id/edit', element: <JobEditPage /> },
-        ],
-      },
-
-      {
-        path: 'tour',
-        children: [
-          { element: <TourListPage />, index: true },
-          { path: 'list', element: <TourListPage /> },
-          { path: ':id', element: <TourDetailsPage /> },
-          { path: 'new', element: <TourCreatePage /> },
-          { path: ':id/edit', element: <TourEditPage /> },
-        ],
-      },
-      { path: 'kanban', element: <KanbanPage /> },
-      { path: 'permission', element: <PermissionDeniedPage /> },
-      { path: 'blank', element: <BlankPage /> },
-    ],
+    children: routes,
   },
 ];

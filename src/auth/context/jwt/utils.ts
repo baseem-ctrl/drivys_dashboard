@@ -74,6 +74,9 @@ export const setSession = (accessToken: string | null) => {
 
     localStorage.removeItem('token');
 
+    localStorage.removeItem('user_type');
+
+
     delete axios.defaults.headers.common.Authorization;
   }
 };

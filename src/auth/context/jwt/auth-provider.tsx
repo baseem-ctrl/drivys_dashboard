@@ -145,6 +145,8 @@ export function AuthProvider({ children }: Props) {
 
     setSession(accessToken);
     localStorage.setItem('token', token);
+    localStorage.setItem('user_type', user_type ?? "");
+
 
     dispatch({
       type: Types.LOGIN,
