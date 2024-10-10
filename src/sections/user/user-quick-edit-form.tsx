@@ -71,7 +71,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
     phone: Yup.string()
       .matches(/^\d{1,15}$/, 'Phone number shpuld not exceed 15 digits ')
       .nullable(),
-    country_code: Yup.mixed().nullable(),
+    country_code: Yup.string().nullable(),
     is_active: Yup.boolean(),
     user_type: Yup.string(),
   });
@@ -83,7 +83,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       password: '',
       phone: currentUser?.phone || '',
       user_type: currentUser?.user_type || '',
-      country_code: countries?.find((option) => option?.phone === currentUser?.country_code) || '',
+      country_code: '971',
       is_active: currentUser?.is_active || 1,
     }),
     [currentUser]
@@ -113,7 +113,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       body.append('email', data?.email);
       body.append('password', data?.password);
       body.append('phone', data?.phone);
-      body.append('country_code', data?.country_code?.phone);
+      body.append('country_code', data?.country_code);
       body.append('user_type', data?.user_type);
       body.append('is_active', data?.is_active ? '1' : '0');
       body.append('user_id', currentUser?.id);
@@ -185,7 +185,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 ),
               }}
             />
-            <RHFAutocomplete
+            {/* <RHFAutocomplete
               name="country_code"
               label="Country Code"
               options={countries}
@@ -214,8 +214,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                   </li>
                 );
               }}
-            />
-            <RHFTextField name="phone" label="Phone Number" />
+            /> */}
+            <RHFTextField name="phone" label="Phone Number" prefix="+971" />
             <RHFSwitch name="is_active" label="Is Active" />{' '}
           </Box>
         </DialogContent>

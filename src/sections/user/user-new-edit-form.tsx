@@ -79,7 +79,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     phone: Yup.string()
       .matches(/^\d{1,15}$/, 'Phone number should not exceed 15 digits ')
       .nullable(),
-    country_code: Yup.mixed().required('Country Code is required'),
+    country_code: Yup.string().required('Country Code is required'),
     dob: Yup.string().required('Dob is required'),
     locale: Yup.mixed().nullable(), // not required
     user_type: Yup.string(),
@@ -94,8 +94,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       email: currentUser?.email || '',
       password: '',
       phone: currentUser?.phone || '',
-      country_code:
-        countries?.find((option) => option?.phone === currentUser?.country_code) || null,
+      country_code: '971',
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: currentUser?.locale || '',
       photo_url: currentUser?.photo_url || '',
@@ -132,7 +131,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('email', data?.email);
       body.append('password', data?.password);
       body.append('phone', data?.phone);
-      body.append('country_code', data?.country_code?.phone);
+      body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
       body.append('locale', data?.locale?.name);
@@ -281,55 +280,22 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   ),
                 }}
               />
-
-              <RHFAutocomplete
-                name="country_code"
-                label="Country Code"
-                options={countries}
-                getOptionLabel={(option) => {
-                  return option ? `${option.phone} ${option.label}` : '';
-                }}
-                isOptionEqualToValue={(option, value) => option.countryCode === value.countryCode}
-                filterOptions={(options, state) => {
-                  return options.filter(
-                    (option) =>
-                      // Check if the input matches either countryCode or label
-                      option.phone.toLowerCase().includes(state.inputValue.toLowerCase()) ||
-                      option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                  );
-                }}
-                renderOption={(props, option) => {
-                  return (
-                    <li {...props} key={option.label}>
-                      <Iconify
-                        key={option.label}
-                        icon={`circle-flags:${option.code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {option.phone} {option.label}
-                    </li>
-                  );
-                }}
-              />
-
-              <RHFAutocomplete
+              {/* <RHFAutocomplete
                 name="locale"
                 label="Prefered Language"
                 options={language}
                 getOptionLabel={(option) => {
-                  return option ? `${option.name}` : '';
+                  return option ? `${option?.name}` : '';
                 }}
                 renderOption={(props, option: any) => {
                   return (
                     <li {...props} key={option.id}>
-                      {option.name}
+                      {option?.name}
                     </li>
                   );
                 }}
-              />
-              <RHFTextField name="phone" label="Phone Number" />
-
+              /> */}
+              <RHFTextField name="phone" label="Phone Number" prefix="+971" />
               <RHFTextField
                 name="dob"
                 label="Date of Birth"

@@ -1,6 +1,7 @@
 import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import { InputAdornment } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -8,6 +9,7 @@ type Props = TextFieldProps & {
   name: string;
   borderRadius?: string;
   maxLength?: number;
+  prefix?: string;
 };
 
 export default function RHFTextField({
@@ -16,6 +18,7 @@ export default function RHFTextField({
   maxLength,
   helperText,
   type,
+  prefix,
   ...other
 }: Props) {
   const { control } = useFormContext();
@@ -29,6 +32,11 @@ export default function RHFTextField({
           {...field}
           fullWidth
           InputProps={{
+            ...(prefix
+              ? {
+                  startAdornment: <InputAdornment position="start">{prefix}</InputAdornment>,
+                }
+              : {}),
             ...(!borderRadius
               ? {}
               : {
