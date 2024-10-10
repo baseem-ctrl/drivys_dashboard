@@ -97,12 +97,13 @@ export default function UserNewEditForm({ currentUser }: Props) {
       country_code:
         countries?.find((option) => option?.phone === currentUser?.country_code) || null,
       dob: currentUser?.dob?.split('T')[0] || '',
-      locale: currentUser?.locale || '',
+      locale: language?.find((option) => option?.name === currentUser?.locale) || null,
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.is_active || 1,
     }),
     [currentUser]
   );
+
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -312,22 +313,24 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   );
                 }}
               />
+              {language?.length > 0 && (
+                <RHFAutocomplete
+                  name="locale"
+                  label="Prefered Language"
+                  options={language}
+                  getOptionLabel={(option) => {
+                    return option ? `${option?.name}` : '';
+                  }}
+                  renderOption={(props, option: any) => {
+                    return (
+                      <li {...props} key={option?.id}>
+                        {option?.name}
+                      </li>
+                    );
+                  }}
+                />
+              )}
 
-              <RHFAutocomplete
-                name="locale"
-                label="Prefered Language"
-                options={language}
-                getOptionLabel={(option) => {
-                  return option ? `${option?.name}` : '';
-                }}
-                renderOption={(props, option: any) => {
-                  return (
-                    <li {...props} key={option.id}>
-                      {option.name}
-                    </li>
-                  );
-                }}
-              />
               <RHFTextField name="phone" label="Phone Number" />
 
               <RHFTextField
