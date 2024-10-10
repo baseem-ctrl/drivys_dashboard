@@ -100,7 +100,18 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
     name: Yup.string().required('Name is required'),
-    contact_email: Yup.string().email('Invalid email'),
+    contact_email: Yup.string().test(
+      'valid-email-format',
+      'Email must be in the valid format',
+      function (value) {
+        // Only check format if value is present
+        if (value) {
+          const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+          return emailRegex.test(value);
+        }
+        return true; // Skip format check if value is empty
+      }
+    ),
     phone_number: Yup.string().matches(/^\d{1,15}$/, 'Phone number must be less that 15 digits'),
     commission_in_percentage: Yup.string(),
     license_expiry: Yup.string(),

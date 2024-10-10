@@ -61,7 +61,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
   }, [enumData]);
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    email: Yup.string()
+      .required('Email is required')
+      .matches(/^[^@]+@[^@]+\.[^@]+$/, 'Email must be in the valid format'),
     password: Yup.lazy(() => {
       // If `currentUser?.id` is not present, make the password required
       return currentUser?.id

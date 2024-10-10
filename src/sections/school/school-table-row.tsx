@@ -101,7 +101,18 @@ export default function SchoolTableRow({
   const NewSchema = Yup.object().shape({
     name: Yup.string(),
     locale: Yup.mixed(),
-    email: Yup.string(),
+    email: Yup.string().test(
+      'valid-email-format',
+      'Email must be in the valid format',
+      function (value) {
+        // Only check format if value is present
+        if (value) {
+          const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+          return emailRegex.test(value);
+        }
+        return true; // Skip format check if value is empty
+      }
+    ),
     phone_number: Yup.string(),
     status: Yup.mixed(),
     is_active: Yup.boolean(),
@@ -259,8 +270,8 @@ export default function SchoolTableRow({
               render={({ field }) => (
                 <TextField
                   {...field}
-                  error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ''}
+                  error={!!errors?.phone_number}
+                  helperText={errors?.phone_number ? errors?.phone_number?.message : ''}
                   type="number"
                 />
               )}
@@ -278,8 +289,12 @@ export default function SchoolTableRow({
               render={({ field }) => (
                 <TextField
                   {...field}
-                  error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ''}
+                  error={!!errors.commission_in_percentage}
+                  helperText={
+                    errors?.commission_in_percentage
+                      ? errors?.commission_in_percentage?.message
+                      : ''
+                  }
                   type="number"
                 />
               )}

@@ -56,7 +56,18 @@ export default function SchoolCreateForm({
   }));
 
   const DeliverySchema = Yup.object().shape({
-    contact_email: Yup.string(),
+    contact_email: Yup.string().test(
+      'valid-email-format',
+      'Email must be in the valid format',
+      function (value) {
+        // Only check format if value is present
+        if (value) {
+          const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+          return emailRegex.test(value);
+        }
+        return true; // Skip format check if value is empty
+      }
+    ),
     contact_phone_number: Yup.number(),
     commission_in_percentage: Yup.string()
       .required('commission_in_percentage is required')
@@ -83,13 +94,20 @@ export default function SchoolCreateForm({
       return true; // No validation if create_new_user is false
     }),
     user_email: Yup.string()
-      .email('Must be a valid email')
       .test('user_email-required', 'Email is required', function (value) {
         const { create_new_user } = this.parent;
         if (create_new_user) {
           return !!value; // Ensures user_email is filled if create_new_user is true
         }
         return true; // No validation if create_new_user is false
+      })
+      .test('valid-email-format', 'Email must be in the valid format', function (value) {
+        // Only check format if value is present
+        if (value) {
+          const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+          return emailRegex.test(value);
+        }
+        return true; // Skip format check if value is empty
       }),
     password: Yup.string().test('password-required', 'Password is required', function (value) {
       const { create_new_user } = this.parent;
