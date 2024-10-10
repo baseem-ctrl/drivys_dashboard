@@ -112,7 +112,12 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} reload={reload} />
+      <UserQuickEditForm
+        currentUser={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+        reload={reload}
+      />
 
       <CustomPopover
         open={popover.open}
@@ -156,6 +161,7 @@ export default function UserTableRow({
         onClose={confirm.onFalse}
         title="Delete"
         content="Are you sure want to delete?"
+        onConfirm={onDeleteRow}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete

@@ -43,10 +43,11 @@ import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/u
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
-import { useGetUsers, useGetUserTypeEnum } from 'src/api/users';
+import { deleteUser, useGetUsers, useGetUserTypeEnum } from 'src/api/users';
 import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAuthContext } from 'src/auth/hooks';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
@@ -87,7 +88,7 @@ interface StatusOption {
 export default function UserListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { user } = useAuthContext();
-
+  const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -111,13 +112,15 @@ export default function UserListView() {
       setFilteredValues(updatedValues);
     }
   }, [enumData]);
-  const { users, usersLoading, usersError, usersEmpty, usersLength, revalidateUsers } = useGetUsers({
-    page: table?.page,
-    limit: table?.rowsPerPage,
-    user_types: filters?.userTypes,
-    search: filters?.name,
-    is_active: filters?.status,
-  });
+  const { users, usersLoading, usersError, usersEmpty, usersLength, revalidateUsers } = useGetUsers(
+    {
+      page: table?.page,
+      limit: table?.rowsPerPage,
+      user_types: filters?.userTypes,
+      search: filters?.name,
+      is_active: filters?.status,
+    }
+  );
   useEffect(() => {
     if (enumData && filteredValues) {
       // Log the type and structure of enumData
@@ -157,13 +160,17 @@ export default function UserListView() {
     },
     [table]
   );
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
-    },
-    [table, tableData]
-  );
+  const handleDeleteRow = async (id: string) => {
+    try {
+      const response = await deleteUser(id);
+      if (response) {
+        enqueueSnackbar(response?.message);
+        revalidateUsers();
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  };
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
@@ -290,24 +297,24 @@ export default function UserListView() {
                 <TableBody>
                   {usersLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        currentUserType={filters?.userTypes}
-                        reload={() => revalidateUsers()}
-                      />
-                    ))}
+                        <UserTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          currentUserType={filters?.userTypes}
+                          reload={() => revalidateUsers()}
+                        />
+                      ))}
 
                   {tableData?.length === 0 && !usersLoading && <TableNoData notFound={notFound} />}
                 </TableBody>
