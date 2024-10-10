@@ -77,7 +77,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
         : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,15}$/, 'Phone number should not exceed 15 digits ')
+      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
       .nullable(),
     country_code: Yup.string().required('Country Code is required'),
     dob: Yup.string().required('Dob is required'),
@@ -134,7 +134,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
-      body.append('locale', data?.locale?.name);
+      body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && typeof data?.photo_url === 'file') {
         body.append('photo_url', data?.photo_url);
       }
@@ -280,21 +280,21 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   ),
                 }}
               />
-              {/* <RHFAutocomplete
+              <RHFAutocomplete
                 name="locale"
-                label="Prefered Language"
+                label="Locale"
                 options={language}
                 getOptionLabel={(option) => {
                   return option ? `${option?.name}` : '';
                 }}
                 renderOption={(props, option: any) => {
                   return (
-                    <li {...props} key={option.id}>
+                    <li {...props} key={option?.id}>
                       {option?.name}
                     </li>
                   );
                 }}
-              /> */}
+              />
               <RHFTextField name="phone" label="Phone Number" prefix="+971" />
               <RHFTextField
                 name="dob"
