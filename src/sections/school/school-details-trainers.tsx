@@ -51,6 +51,8 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
+  const [trainerMappingId, setTrainerMappingId] = useState('');
+
   const [loadingButton, setLoadingButton] = useState(false);
 
   const {
@@ -145,14 +147,15 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       setLoadingButton(false);
     }
   };
-  const handlePopoverOpen = (e, id: any) => {
+  const handlePopoverOpen = (e, trainer: any) => {
     popover.onOpen(e);
-    setTrainerId(id);
+    setTrainerId(trainer?.user_id);
+    setTrainerMappingId(trainer?.id);
   };
   const handleRemove = async () => {
     try {
-      if (trainerId) {
-        const response = await RemoveTrainerFromSchool(trainerId);
+      if (trainerMappingId) {
+        const response = await RemoveTrainerFromSchool(trainerMappingId);
         if (response) {
           enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
           setTrainerId('');
@@ -258,7 +261,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
               <Stack direction="row" spacing={2} key={trainer?.id}>
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8 }}
-                  onClick={(e) => handlePopoverOpen(e, trainer?.user_id)}
+                  onClick={(e) => handlePopoverOpen(e, trainer)}
                 >
                   <Iconify icon="eva:more-vertical-fill" />
                 </IconButton>
