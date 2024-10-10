@@ -105,7 +105,7 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    country_code: Yup.mixed(),
+    country_code: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -123,7 +123,7 @@ export default function SchoolCreateForm({
       user_email: '',
       password: '',
       phone: '',
-      country_code: '',
+      country_code: '971',
     }),
     []
   );
@@ -340,7 +340,7 @@ export default function SchoolCreateForm({
                 <RHFTextField name="user_name" label="User Name" />
                 <RHFTextField name="user_email" label="User Email" />
                 <RHFTextField name="password" label="Password" type="password" />
-                <RHFAutocomplete
+                {/* <RHFAutocomplete
                   name="country_code"
                   label="Country Code"
                   options={countries}
@@ -369,8 +369,8 @@ export default function SchoolCreateForm({
                       </li>
                     );
                   }}
-                />
-                <RHFTextField name="phone" label="Phone Number" />
+                /> */}
+                <RHFTextField name="phone" label="Phone Number" prefix="+971" />
               </Box>
             </Box>
           )}

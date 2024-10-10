@@ -38,6 +38,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolCreateForm from './view/school-create-form';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -865,15 +867,19 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       </Scrollbar>
     </Stack>
   );
-
+  const router = useRouter();
   const renderCompany = (
     <Stack
       component={Paper}
       variant="outlined"
       spacing={2}
-      sx={{ p: 3, borderRadius: 2 }}
+      sx={{ p: 3, borderRadius: 2, cursor: 'pointer' }}
       height={350}
-      // onClick={route}
+      onClick={() =>
+        details?.vendor_user?.user?.id
+          ? router.push(paths.dashboard.user.details(details?.vendor_user?.user?.id))
+          : ''
+      }
     >
       <Avatar
         alt={details?.vendor_user?.user?.name}
