@@ -71,6 +71,8 @@ export default function UserDetailsContent({
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
+  const [load, setLoad] = useState(false);
+
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
@@ -79,6 +81,36 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: parseFloat(addresses?.latitude) || 24.4539,
+    lng: parseFloat(addresses?.longitude) || 54.3773,
+  });
+  // Function to handle map click and update lat/lng values
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    // setAddressForm((prev) => ({
+    //   ...prev,
+    //   longitude: e.latLng.lat(),
+    //   latitude: e.latLng.lat(),
+    // }));
+    // if (!e.latLng) return;
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    // setAddressForm({ longitude: lng, latitude: lat });
+    setMarkerPosition({ lat, lng });
+    // setValue('latitude', lat.toString());
+    // setValue('longitude', lng.toString());
+  };
+  const defaultValues = useMemo(
+    () => ({
+      street_address: addresses[0]?.street_address || '',
+      city: addresses[0]?.city || '',
+      country: addresses[0]?.country || '',
+      state: addresses[0]?.state || '',
+      latitude: addresses[0]?.latitude || '',
+      longitude: addresses[0]?.longitude || '',
+    }),
+    [addresses]
+  );
 
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
@@ -86,7 +118,16 @@ export default function UserDetailsContent({
       setSelectedLanguage(details?.vendor_translations[0]?.locale);
     }
   }, [details]);
-
+  useEffect(() => {
+    if (defaultValues.latitude && defaultValues.longitude) {
+      setMarkerPosition({
+        lat: parseFloat(defaultValues.latitude) || '',
+        lng: parseFloat(defaultValues.longitude) || '',
+      });
+    }
+    // reset(defaultValues);
+    setLoad(true);
+  }, [defaultValues, reset]);
   const [localeOptions, setLocaleOptions] = useState([]);
 
   useEffect(() => {
@@ -116,7 +157,6 @@ export default function UserDetailsContent({
   const selectedLocaleObject = details?.vendor_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
-  console.log(selectedLocaleObject, selectedLanguage, 'selectedLocaleObject');
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
@@ -161,7 +201,6 @@ export default function UserDetailsContent({
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
-  console.log(errors, 'errors');
   useEffect(() => {
     if (details?.license_file) {
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
@@ -379,6 +418,7 @@ export default function UserDetailsContent({
       </Stack>
     </Stack>
   );
+  console.log('editingIndex', editingIndex);
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -412,14 +452,26 @@ export default function UserDetailsContent({
   //   }),
   //   [details?.vendor_addresses, editingIndex]
   // );
-  const handleUpdateExistingUserAddress = async (body: Address, id, user_id) => {
+  const handleUpdateExistingUserAddress = async (
+    body: Address,
+    markerPosition: { lat: number; lng: number },
+    id: string,
+    user_id: string
+  ) => {
     try {
-      console.log('Updating address with body:', body);
+      // Log the current state of the address and marker position
 
-      // Call the update API with the address data
-      const response = await updateExistingUserAddress(body, id, user_id);
+      // Update the body to include latitude and longitude from markerPosition
+      const updatedAddress = {
+        ...body,
+        latitude: markerPosition.lat,
+        longitude: markerPosition.lng,
+      };
 
-      // Display success message if update is successful
+      // Call the update API with the updated address data
+      const response = await updateExistingUserAddress(updatedAddress, id, user_id);
+
+      // Display success message if the update is successful
       if (response && response.status === 'success') {
         setNewAddress(null);
         setEditingIndex(null);
@@ -434,7 +486,6 @@ export default function UserDetailsContent({
 
   const handleCreateNewUserAddress = async (body: Address) => {
     try {
-      console.log('body', body);
       const response = await createNewAddressForUser(body);
 
       if (response && response.status === 'success') {
@@ -464,37 +515,20 @@ export default function UserDetailsContent({
   });
 
   const handleChangeStoreAddress = (e) => {
-    console.log('e.target', e.target);
     const { name, value } = e.target;
     setAddressForm((prev) => ({ ...prev, [name]: value }));
+    // if (name === 'latitude' || name === 'longitude') {
+    //   setMarkerPosition({
+    //     lat: addressForm.latitude || 0,
+    //     lng: addressForm.longitude || 0,
+    //   });
+    // }
   };
-
-  // useEffect(() => {
-  //   if (defaultValues.latitude && defaultValues.longitude) {
-  //     setMarkerPosition({
-  //       lat: parseFloat(defaultValues.latitude) || 24.4539,
-  //       lng: parseFloat(defaultValues.longitude) || 54.3773,
-  //     });
-  //   }
-  //   reset(defaultValues);
-  //   setLoad(true);
-  // }, [defaultValues, reset]);
-  // const onSubmit = () => {};
-  // const handleMapClick = (e: google.maps.MapMouseEvent) => {
-  //   if (!e.latLng) return;
-  //   const lat = e.latLng.lat();
-  //   const lng = e.latLng.lng();
-  //   setMarkerPosition({ lat, lng });
-  //   // setValue('latitude', lat.toString());
-  //   // setValue('longitude', lng.toString());
-  // };
   // State to manage the visibility of the map for each address
   const [showMapIndex, setShowMapIndex] = useState(null);
-  console.log('addresses', addresses);
   // Function to handle user deletion
   const handleDeleteUserAddress = async (addressId: string, reloadData: () => void) => {
     try {
-      console.log('addressId', addressId);
       const response = await deleteUserAddress(addressId);
 
       if (response) {
@@ -513,28 +547,31 @@ export default function UserDetailsContent({
       latitude: selectedLocation.lat,
     }));
   };
-  useEffect(() => {
-    console.log('Editing index changed to:', editingIndex);
-    console.log('showMapIndex', showMapIndex);
-  }, [editingIndex, showMapIndex]);
+  // useEffect(() => {
+  //   console.log('Editing index changed to:', editingIndex);
+  //   console.log('showMapIndex', showMapIndex);
+  // }, [editingIndex, showMapIndex]);
   const handleEditAddress = useCallback(
-    (index, adddress) => {
-      console.log('index', index);
-      console.log('address', adddress);
-      // Open map and set longitude and latitude
-      setShowMapIndex(index);
-      setEditMode(!editMode);
-      setEditingIndex(index);
-      setAddressForm({
-        ...addressForm,
-        longitude: address.longitude,
-        latitude: address.latitude,
-      });
-      setEditMode(!editMode);
+    (index, address) => {
+      // Toggle the editing index
+      if (editingIndex === index) {
+        // If the current index is the same, hide the map and clear the editing index
+        setEditingIndex(null);
+        // setShowMapIndex(null);
+      } else {
+        // Show the map for the selected index and update the address form
+        setEditingIndex(index);
+        //setShowMapIndex(showMapIndex === index ? null : index);
+        // setAddressForm({
+        //   ...addressForm,
+        //   longitude: address.longitude, // Ensure these properties exist on the address object
+        //   latitude: address.latitude,
+        // });
+      }
     },
-    [addressForm]
+    [addressForm, editingIndex] // Include editingIndex in the dependency array
   );
-  console.log('addressForm', addressForm);
+
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
@@ -582,25 +619,34 @@ export default function UserDetailsContent({
           >
             {newAddress && (
               <Box sx={{ pt: 2, pb: 2 }}>
-                {/* {console.log(
-                    `isLoaded: ${isLoaded}, load: ${load}, latitude: ${address.latitude}, longitude: ${address.longitude}`
-                  )} */}
-                {isLoaded ? (
+                {isLoaded && load ? (
                   <GoogleMap
-                    onClick={(e) => handleLocationSelect(e.latLng.toJSON())}
                     mapContainerStyle={mapContainerStyle}
-                    center={{
-                      lat: parseFloat(addressForm?.latitude) || 24.4539,
-                      lng: parseFloat(addressForm?.latitude) || 24.4539,
-                    }}
+                    center={markerPosition}
                     zoom={12}
+                    onClick={handleMapClick}
                   >
-                    <Marker
-                      position={{
-                        lat: parseFloat(addressForm.latitude),
-                        lng: parseFloat(addressForm.longitude),
-                      }}
-                    />
+                    {markerPosition && (
+                      <Marker
+                        position={markerPosition}
+                        icon={{
+                          url: marker, // Specify the URL of your custom marker image
+                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                        }}
+                      />
+                    )}
+                    {(defaultValues?.latitude || defaultValues?.longitude) && (
+                      <Marker
+                        position={{
+                          lat: defaultValues?.latitude,
+                          lng: defaultValues?.longitude,
+                        }}
+                        icon={{
+                          url: marker, // Specify the URL of your custom marker image
+                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                        }}
+                      />
+                    )}
                   </GoogleMap>
                 ) : (
                   <div>Loading Map...</div>
@@ -774,7 +820,15 @@ export default function UserDetailsContent({
               <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
                 <Button
                   variant="outlined"
-                  onClick={() => setShowMapIndex(showMapIndex === index ? null : index)} // Toggle map visibility
+                  onClick={() => {
+                    setShowMapIndex(showMapIndex === index ? null : index);
+                    setAddressForm({
+                      ...addressForm,
+                      longitude: address.longitude, // Ensure these properties exist on the address object
+                      latitude: address.latitude,
+                    });
+                    // handleEditAddress(index, address);
+                  }}
                   // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? 'Hide Map' : 'Show Map'}
@@ -783,6 +837,7 @@ export default function UserDetailsContent({
                   variant="contained"
                   onClick={() => {
                     setAddressForm(address);
+
                     handleEditAddress(index, address);
                   }}
                 >
@@ -798,22 +853,34 @@ export default function UserDetailsContent({
               </Box>
               {showMapIndex === index && address.latitude && address.longitude && (
                 <Box sx={{ pt: 2, pb: 2 }}>
-                  {isLoaded ? (
+                  {isLoaded && load ? (
                     <GoogleMap
-                      onClick={(e) => handleLocationSelect(e.latLng.toJSON())}
                       mapContainerStyle={mapContainerStyle}
-                      center={{
-                        lat: parseFloat(address.latitude),
-                        lng: parseFloat(address.longitude),
-                      }}
+                      center={markerPosition}
                       zoom={12}
+                      onClick={handleMapClick}
                     >
-                      <Marker
-                        position={{
-                          lat: parseFloat(address.latitude),
-                          lng: parseFloat(address.longitude),
-                        }}
-                      />
+                      {markerPosition && (
+                        <Marker
+                          position={markerPosition}
+                          icon={{
+                            url: marker, // Specify the URL of your custom marker image
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
+                      {(defaultValues?.latitude || defaultValues?.longitude) && (
+                        <Marker
+                          position={{
+                            lat: defaultValues?.latitude,
+                            lng: defaultValues?.longitude,
+                          }}
+                          icon={{
+                            url: marker, // Specify the URL of your custom marker image
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
                     </GoogleMap>
                   ) : (
                     <div>Loading Map...</div>
@@ -947,7 +1014,12 @@ export default function UserDetailsContent({
                     <Button
                       variant="contained"
                       onClick={() =>
-                        handleUpdateExistingUserAddress(address, address.id, address.user_id)
+                        handleUpdateExistingUserAddress(
+                          address,
+                          markerPosition,
+                          address.id,
+                          address.user_id
+                        )
                       }
                       sx={{ flex: 1, mr: 1 }}
                     >
