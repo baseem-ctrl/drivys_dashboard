@@ -96,7 +96,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       phone: currentUser?.phone || '',
       country_code: '971',
       dob: currentUser?.dob?.split('T')[0] || '',
-      locale: currentUser?.locale || '',
+      locale: language?.find((option) => option?.name === currentUser?.locale) || null,
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.is_active || 1,
     }),
