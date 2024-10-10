@@ -1,0 +1,117 @@
+import { useState, useCallback } from 'react';
+// @mui
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Container from '@mui/material/Container';
+// routes
+import { paths } from 'src/routes/paths';
+// _mock
+import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
+// components
+import Label from 'src/components/label';
+import { useSettingsContext } from 'src/components/settings';
+//
+
+import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
+import { useGetSchoolByIdAdmin } from 'src/api/school';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import { Button } from '@mui/material';
+import { useBoolean } from 'src/hooks/use-boolean';
+import SchoolAdminDetailsContent from './school-admin-details-content';
+import SchoolAdminTrainers from './school-admin-details-trainers';
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  id: string;
+};
+
+export default function SchoolAdminDetailsView({ id }: Props) {
+  const settings = useSettingsContext();
+  const { details, detailsLoading, revalidateDetails } = useGetSchoolByIdAdmin(id);
+
+  const currentSchool = details[0]?.vendor;
+
+  console.log(details, "currentSchool");
+
+
+  const [currentTab, setCurrentTab] = useState('details');
+
+  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    setCurrentTab(newValue);
+  }, []);
+
+  ;
+  const quickCreate = useBoolean();
+  const renderTabs = (
+    <Tabs
+      value={currentTab}
+      onChange={handleChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {SCHOOL_DETAILS_TABS.map((tab) => (
+        <Tab
+          key={tab.value}
+          iconPosition="end"
+          value={tab.value}
+          label={tab.label}
+          icon={
+            tab.value === 'candidates' ? (
+              <Label variant="filled">{currentSchool?.candidates.length}</Label>
+            ) : (
+              ''
+            )
+          }
+        />
+      ))}
+    </Tabs>
+  );
+  const handleAddTrainer = () => {
+    if (quickCreate) {
+      quickCreate.onFalse();
+    } else {
+      quickCreate.onTrue();
+    }
+  };
+  return (
+    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading="Schools Details"
+        links={[
+          {}
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+        action={
+          currentTab === 'trainers' && (
+            <Button onClick={quickCreate.onTrue} variant="contained">
+              Add Trainer
+            </Button>
+          )
+        }
+      />
+
+      {renderTabs}
+
+      {currentTab === 'details' && (
+        <SchoolAdminDetailsContent
+          details={currentSchool}
+          loading={detailsLoading}
+          reload={revalidateDetails}
+        />
+      )}
+
+      {currentTab === 'trainers' && (
+        <SchoolAdminTrainers
+          candidates={details}
+          create={quickCreate.value}
+          onCreate={handleAddTrainer}
+          vendor_id={details[0]?.vendor_id}
+        />
+      )}
+    </Container>
+  );
+}
