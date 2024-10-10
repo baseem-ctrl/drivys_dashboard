@@ -121,8 +121,8 @@ export default function UserDetailsContent({
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
       setMarkerPosition({
-        lat: parseFloat(defaultValues.latitude) || '',
-        lng: parseFloat(defaultValues.longitude) || '',
+        lat: parseFloat(defaultValues.latitude) || 24.4539,
+        lng: parseFloat(defaultValues.longitude) || 54.3773,
       });
     }
     // reset(defaultValues);
@@ -517,12 +517,12 @@ export default function UserDetailsContent({
   const handleChangeStoreAddress = (e) => {
     const { name, value } = e.target;
     setAddressForm((prev) => ({ ...prev, [name]: value }));
-    // if (name === 'latitude' || name === 'longitude') {
-    //   setMarkerPosition({
-    //     lat: addressForm.latitude || 0,
-    //     lng: addressForm.longitude || 0,
-    //   });
-    // }
+    if (name === 'latitude' || name === 'longitude') {
+      setMarkerPosition({
+        lat: addressForm.latitude || 0,
+        lng: addressForm.longitude || 0,
+      });
+    }
   };
   // State to manage the visibility of the map for each address
   const [showMapIndex, setShowMapIndex] = useState(null);
@@ -561,6 +561,7 @@ export default function UserDetailsContent({
       } else {
         // Show the map for the selected index and update the address form
         setEditingIndex(index);
+        setAddressForm(address);
         //setShowMapIndex(showMapIndex === index ? null : index);
         // setAddressForm({
         //   ...addressForm,
@@ -571,7 +572,7 @@ export default function UserDetailsContent({
     },
     [addressForm, editingIndex] // Include editingIndex in the dependency array
   );
-
+  console.log('newAddress', newAddress);
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
@@ -590,7 +591,7 @@ export default function UserDetailsContent({
         </Box>
 
         {/* Form for Adding or Editing an Address */}
-        {newAddress && (
+        {newAddress && !editingIndex && (
           <Box
             component="form"
             onSubmit={(e) => {
@@ -617,7 +618,7 @@ export default function UserDetailsContent({
             }}
             sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
           >
-            {newAddress && (
+            {newAddress && !editingIndex && (
               <Box sx={{ pt: 2, pb: 2 }}>
                 {isLoaded && load ? (
                   <GoogleMap
@@ -754,7 +755,7 @@ export default function UserDetailsContent({
                 label="Longitude"
                 variant="outlined"
                 name="longitude"
-                value={addressForm.longitude}
+                value={markerPosition.lng}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
@@ -762,7 +763,7 @@ export default function UserDetailsContent({
                 label="Latitude"
                 variant="outlined"
                 name="latitude"
-                value={addressForm.latitude}
+                value={markerPosition.lat}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
@@ -836,8 +837,6 @@ export default function UserDetailsContent({
                 <Button
                   variant="contained"
                   onClick={() => {
-                    setAddressForm(address);
-
                     handleEditAddress(index, address);
                   }}
                 >
@@ -869,7 +868,7 @@ export default function UserDetailsContent({
                           }}
                         />
                       )}
-                      {(defaultValues?.latitude || defaultValues?.longitude) && (
+                      {/* {(defaultValues?.latitude || defaultValues?.longitude) && (
                         <Marker
                           position={{
                             lat: defaultValues?.latitude,
@@ -880,14 +879,14 @@ export default function UserDetailsContent({
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
-                      )}
+                      )} */}
                     </GoogleMap>
                   ) : (
                     <div>Loading Map...</div>
                   )}
                 </Box>
               )}
-              {editingIndex === index && (
+              {editingIndex === index && !newAddress && (
                 <>
                   {/* Form Fields in Rows */}
                   {/* Row 1 */}
@@ -994,7 +993,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="longitude"
-                      value={addressForm.longitude}
+                      value={markerPosition.lng}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
@@ -1003,7 +1002,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="latitude"
-                      value={addressForm.latitude}
+                      value={markerPosition.lat}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
