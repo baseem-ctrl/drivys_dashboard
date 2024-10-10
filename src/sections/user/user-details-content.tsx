@@ -95,12 +95,11 @@ export default function UserDetailsContent({
     // if (!e.latLng) return;
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
-    setAddressForm({ longitude: lng, latitude: lat });
+    // setAddressForm({ longitude: lng, latitude: lat });
     setMarkerPosition({ lat, lng });
     // setValue('latitude', lat.toString());
     // setValue('longitude', lng.toString());
   };
-  console.log('addresses', addresses);
   const defaultValues = useMemo(
     () => ({
       street_address: addresses[0]?.street_address || '',
@@ -112,9 +111,7 @@ export default function UserDetailsContent({
     }),
     [addresses]
   );
-  console.log('defaultValues', addresses[0]?.latitude);
-  console.log('defaultValues', defaultValues);
-  console.log('editingIndex', editingIndex);
+
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
@@ -124,8 +121,8 @@ export default function UserDetailsContent({
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
       setMarkerPosition({
-        lat: parseFloat(defaultValues.latitude) || 24.4539,
-        lng: parseFloat(defaultValues.longitude) || 54.3773,
+        lat: parseFloat(defaultValues.latitude) || '',
+        lng: parseFloat(defaultValues.longitude) || '',
       });
     }
     // reset(defaultValues);
@@ -160,7 +157,6 @@ export default function UserDetailsContent({
   const selectedLocaleObject = details?.vendor_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
-  console.log(selectedLocaleObject, selectedLanguage, 'selectedLocaleObject');
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
@@ -205,7 +201,6 @@ export default function UserDetailsContent({
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
-  console.log(errors, 'errors');
   useEffect(() => {
     if (details?.license_file) {
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
@@ -423,6 +418,7 @@ export default function UserDetailsContent({
       </Stack>
     </Stack>
   );
+  console.log('editingIndex', editingIndex);
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -464,8 +460,6 @@ export default function UserDetailsContent({
   ) => {
     try {
       // Log the current state of the address and marker position
-      console.log('Updating address with body:', body);
-      console.log('Marker Position:', markerPosition);
 
       // Update the body to include latitude and longitude from markerPosition
       const updatedAddress = {
@@ -492,7 +486,6 @@ export default function UserDetailsContent({
 
   const handleCreateNewUserAddress = async (body: Address) => {
     try {
-      console.log('body', body);
       const response = await createNewAddressForUser(body);
 
       if (response && response.status === 'success') {
@@ -522,22 +515,20 @@ export default function UserDetailsContent({
   });
 
   const handleChangeStoreAddress = (e) => {
-    console.log('e.target', e.target);
     const { name, value } = e.target;
     setAddressForm((prev) => ({ ...prev, [name]: value }));
-    if (name === 'latitude' || name === 'longitude') {
-      setMarkerPosition({
-        lat: addressForm.latitude || 0,
-        lng: addressForm.longitude || 0,
-      });
-    }
+    // if (name === 'latitude' || name === 'longitude') {
+    //   setMarkerPosition({
+    //     lat: addressForm.latitude || 0,
+    //     lng: addressForm.longitude || 0,
+    //   });
+    // }
   };
   // State to manage the visibility of the map for each address
   const [showMapIndex, setShowMapIndex] = useState(null);
   // Function to handle user deletion
   const handleDeleteUserAddress = async (addressId: string, reloadData: () => void) => {
     try {
-      console.log('addressId', addressId);
       const response = await deleteUserAddress(addressId);
 
       if (response) {
@@ -562,9 +553,6 @@ export default function UserDetailsContent({
   // }, [editingIndex, showMapIndex]);
   const handleEditAddress = useCallback(
     (index, address) => {
-      console.log('index', index);
-      console.log('address', address);
-
       // Toggle the editing index
       if (editingIndex === index) {
         // If the current index is the same, hide the map and clear the editing index
@@ -574,17 +562,16 @@ export default function UserDetailsContent({
         // Show the map for the selected index and update the address form
         setEditingIndex(index);
         //setShowMapIndex(showMapIndex === index ? null : index);
-        setAddressForm({
-          ...addressForm,
-          longitude: address.longitude, // Ensure these properties exist on the address object
-          latitude: address.latitude,
-        });
+        // setAddressForm({
+        //   ...addressForm,
+        //   longitude: address.longitude, // Ensure these properties exist on the address object
+        //   latitude: address.latitude,
+        // });
       }
     },
     [addressForm, editingIndex] // Include editingIndex in the dependency array
   );
 
-  console.log('addressForm', addressForm);
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
