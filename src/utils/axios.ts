@@ -138,6 +138,7 @@ export const endpoints = {
     address: 'admin/vendor/address/create-update-address',
     trainers: 'admin/trainers/get-trainer-list',
     addTrainer: 'admin/trainers/create-trainer',
+    removeTrainer: 'admin/trainers/vendor-trainer-mapping/remove-mapping',
   },
   package: {
     list: 'admin/package/get-packge-list',
@@ -153,8 +154,11 @@ export const endpoints = {
     create: 'admin/auth/register',
     delete: 'admin/user/delete-user-by-id',
     update: 'admin/user/user-update-by-id',
+    addressList: 'admin/user/address/get-user-address-list',
+    deleteAddressFromList: 'admin/user/address/delete-user-address',
+    createNewAdressForUser: 'admin/user/address/create-update-user-address',
   },
-  trainer:{
-    getPackages:'admin/package-trainer/get-trainer-packages/'
-  }
+  trainer: {
+    getPackages: 'admin/package-trainer/get-trainer-packages/',
+  },
 };

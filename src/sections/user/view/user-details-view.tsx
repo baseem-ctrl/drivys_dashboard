@@ -11,6 +11,7 @@ import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS, USER_DETAILS_TABS } from 
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
+
 import JobDetailsToolbar from '../job-details-toolbar';
 import JobDetailsContent from '../user-details-content';
 import JobDetailsCandidates from '../school-details-trainers';
@@ -22,6 +23,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { Button } from '@mui/base';
 import { useGetUserDetails } from 'src/api/users';
 import UserProfileView from './user-profile-view';
+import { useGetAddressList } from 'src/api/users';
 import UserDetailsContent from '../user-details-content';
 
 // ----------------------------------------------------------------------
@@ -32,7 +34,16 @@ type Props = {
 
 export default function UserDetailsView({ id }: Props) {
   const settings = useSettingsContext();
+  const userId = Number(window.location.pathname.split('/').pop());
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
+  // Use the new hook to get the address list
+  const { addresses, addressesLoading, addressesError, revalidateAddresses } = useGetAddressList({
+    userId, // Add userId here
+    page: 0, // First page
+    limit: 10, // Limit to 10 addresses
+    search: '', // Optional search string
+  });
+
   const currentJob = details;
 
   const [publish, setPublish] = useState(currentJob?.publish);
@@ -46,7 +57,6 @@ export default function UserDetailsView({ id }: Props) {
   const handleChangePublish = useCallback((newValue: string) => {
     setPublish(newValue);
   }, []);
-
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -87,7 +97,13 @@ export default function UserDetailsView({ id }: Props) {
         }}
       />
 
-      <UserDetailsContent details={details} loading={detailsLoading} />
+      <UserDetailsContent
+        details={details}
+        addresses={addresses || []}
+        loading={detailsLoading}
+        addressesLoading={addressesLoading}
+        reload={revalidateAddresses}
+      />
     </Container>
   );
 }

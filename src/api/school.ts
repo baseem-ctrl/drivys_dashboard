@@ -275,4 +275,8 @@ export function useGetSchoolByIdAdmin(schoolId: string) {
   };
 
   return { ...memoizedValue, revalidateDetails };
+export function RemoveTrainerFromSchool(id: any) {
+  const URL = `${endpoints.school.removeTrainer}?trainer_id=${id}`;
+  const response = barrySmasher(URL);
+  return response;
 }

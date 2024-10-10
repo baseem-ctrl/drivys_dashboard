@@ -11,7 +11,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { IJobCandidate } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
-import { addTrainer, useGetSchoolTrainers } from 'src/api/school';
+import { addTrainer, RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import {
   Autocomplete,
@@ -51,6 +51,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const {
     schoolTrainersList,
@@ -82,13 +83,13 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
 
   const defaultValues = useMemo(
     () => ({
-      cash_clearance_date: candidates?.cash_clearance_date || '',
-      cash_in_hand: candidates?.cash_in_hand || '',
-      vendor_commission_in_percentage: candidates?.vendor_commission_in_percentage || '',
+      cash_clearance_date: '',
+      cash_in_hand: '',
+      vendor_commission_in_percentage: '',
       password: '',
-      phone: candidates?.phone || '',
-      trainer_id: users?.find((option) => option?.id === candidates?.trainer_id) || '',
-      max_cash_in_hand_allowed: candidates?.max_cash_in_hand_allowed || '',
+      phone: '',
+      trainer_id: '',
+      max_cash_in_hand_allowed: '',
     }),
     [candidates]
   );
@@ -124,11 +125,39 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       cash_clearance_date: data?.cash_clearance_date,
     };
     try {
+      setLoadingButton(true);
       const response = await addTrainer(body);
       if (response) {
         enqueueSnackbar(response?.message ?? 'Trainer Added Successfully');
         onCreate();
         revalidateTrainers();
+        reset(defaultValues);
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
+      setLoadingButton(false);
+    }
+  };
+  const handlePopoverOpen = (e, id: any) => {
+    popover.onOpen(e);
+    setTrainerId(id);
+  };
+  const handleRemove = async () => {
+    try {
+      if (trainerId) {
+        const response = await RemoveTrainerFromSchool(trainerId);
+        if (response) {
+          enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
+          setTrainerId('');
+          revalidateTrainers();
+        }
       }
     } catch (error) {
       if (error?.errors) {
@@ -139,10 +168,6 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     }
-  };
-  const handlePopoverOpen = (e, id: any) => {
-    popover.onOpen(e);
-    setTrainerId(id);
   };
   return (
     <Box
@@ -255,66 +280,6 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                       color: 'text.disabled',
                     }}
                   />
-
-                  {/* <Stack direction="column"> */}
-                  {/* <IconButton
-                  size="small"
-                  color="error"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="solar:phone-bold" />
-                </IconButton>
-
-                <IconButton
-                  size="small"
-                  color="info"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="solar:chat-round-dots-bold" />
-                </IconButton>
-
-                <IconButton
-                  size="small"
-                  color="primary"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="fluent:mail-24-filled" />
-                </IconButton>
-
-                <Tooltip title="Download CV">
-                  <IconButton
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      borderRadius: 1,
-                      bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-                      '&:hover': {
-                        bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.16),
-                      },
-                    }}
-                  >
-                    <Iconify width={18} icon="eva:cloud-download-fill" />
-                  </IconButton>
-                </Tooltip> */}
-                  {/* </Stack> */}
                 </Stack>
                 {/* <TablePaginationCustom
               count={totalPages}
@@ -383,6 +348,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
         content="Are you sure want to delete?"
         onConfirm={() => {
           confirm.onFalse();
+          handleRemove();
         }}
         action={
           <Button variant="contained" color="error">
