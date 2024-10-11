@@ -145,6 +145,11 @@ export function useNavData() {
       path: paths.dashboard.coupon.root,
       icon: ICONS.file,
     },
+    {
+      title: t('slider'),
+      path: paths.dashboard.slider.root,
+      icon: ICONS.external,
+    },
 
     // TOUR
     // {

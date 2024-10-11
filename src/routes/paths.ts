@@ -178,6 +178,11 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/category/${MOCK_ID}/edit`,
       },
     },
+    slider: {
+      root: `${ROOTS.DASHBOARD}/slider`,
+      new: `${ROOTS.DASHBOARD}/slider/new`,
+      list: `${ROOTS.DASHBOARD}/home-slider/list`,
+    },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,
