@@ -36,6 +36,7 @@ export default function ImagePreview({
   selectedImageIds,
   setSelectedImageIds,
   isUpdate,
+  selectedImageArray,
   reload,
 }: ImagePreviewProps) {
   const { allImages } = useGetAllImages(0, 1000);
@@ -56,13 +57,18 @@ export default function ImagePreview({
       console.log(error);
     }
   };
+  console.log(selectedImages, selectedImageArray, 'selectedImages');
 
   // Function to handle the removal of an image ID from the selected list
 
 
-  const handleRemoveImage = (id: number) => {
-    if (isUpdate) {
-      handleDeleteUploadedImage(id)
+  const handleRemoveImage = (id: number, index: number) => {
+    const deleteId = selectedImageArray?.find(item => Number(item?.picture_id) === id)?.id
+    console.log(selectedImageArray, id, deleteId, "deleteId");
+
+    if (isUpdate && deleteId) {
+
+      handleDeleteUploadedImage(deleteId)
     }
     setSelectedImageIds((prevSelected) => prevSelected.filter((imageId) => imageId !== id));
   };
@@ -78,13 +84,13 @@ export default function ImagePreview({
         Selected Images
       </Typography>
       <Grid container spacing={2}>
-        {selectedImages?.map((image) => (
+        {selectedImages?.map((image, index) => (
           <Grid item xs={12} sm={6} md={isUpdate ? 6 : 3} key={image.id}>
             <Card sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2 }}>
               {/* Delete Icon with Tooltip */}
               <DeleteIconWrapper>
                 <Tooltip title="Remove Image">
-                  <IconButton onClick={() => handleRemoveImage(image.id)} size="small">
+                  <IconButton onClick={() => handleRemoveImage(image.id, index)} size="small">
                     <Iconify icon="clarity:remove-line" />
                   </IconButton>
                 </Tooltip>
