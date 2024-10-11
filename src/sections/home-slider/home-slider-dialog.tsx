@@ -54,6 +54,7 @@ export default function HomeSliderDialog({
 
   // const [selectedType, setSelectedType] = useState('Product');
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
+  const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
@@ -159,6 +160,7 @@ export default function HomeSliderDialog({
     console.log(updateValue?.pictures?.map((item: { picture_id: any; }) => item?.picture_id), "updateValue?.pictures");
 
     setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
+    setSelectedArrayIds(updateValue?.pictures)
 
     // setSelectedType(updateValue?.type)
 
@@ -370,6 +372,7 @@ export default function HomeSliderDialog({
                 selectedImageIds={selectedImageIds}
                 setSelectedImageIds={setSelectedImageIds}
                 isUpdate
+                selectedImageArray={selectedImageArray}
                 reload={onReload}
               />
             </Box>
