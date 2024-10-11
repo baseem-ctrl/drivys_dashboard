@@ -84,7 +84,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{user_type}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{dob ?? 'NA'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(dob).toISOString().split('T')[0] ?? 'NA'}</TableCell>
 
         <TableCell>
           <Label

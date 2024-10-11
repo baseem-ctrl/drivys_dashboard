@@ -316,6 +316,8 @@ export default function UserDetailsContent({
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
   }, [router]);
+
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -379,24 +381,24 @@ export default function UserDetailsContent({
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      {
-                        label: 'Max Cash Allowded in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                      },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                      {
-                        label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
-                      },
-                      {
-                        label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
-                      },
-                      {
-                        label: 'Vendor Commission',
-                        value: details?.vendor_commission_in_percentage ?? 'N/A',
-                      },
-                    ]
+                    {
+                      label: 'Max Cash Allowded in Hand',
+                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                    },
+                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                    {
+                      label: 'Cash Clearance Date',
+                      value: details?.cash_clearance_date ?? 'N/A',
+                    },
+                    {
+                      label: 'Last Booking At',
+                      value: details?.last_booking_was ?? 'N/A',
+                    },
+                    {
+                      label: 'Vendor Commission',
+                      value: details?.vendor_commission_in_percentage ?? 'N/A',
+                    },
+                  ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -828,7 +830,7 @@ export default function UserDetailsContent({
                     });
                     // handleEditAddress(index, address);
                   }}
-                  // sx={{ mt: 1 }}
+                // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? 'Hide Map' : 'Show Map'}
                 </Button>
