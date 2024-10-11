@@ -503,7 +503,7 @@ export default function JobItem({
                           position: 'absolute',
                           top: 0,
                           left: 0,
-                          width: '50px',
+                          width: '100%',
                           height: '100%',
                           backgroundColor: 'rgba(0, 0, 0, 0.6)',
                           color: 'white',
