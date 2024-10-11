@@ -116,9 +116,7 @@ export const endpoints = {
     delete: 'admin/category/delete-category-translation-pictures',
     deleteId: 'admin/category/delete-category/',
   },
-  city: {
-    list: 'admin/city/get-city-list',
-  },
+
   dialect: {
     list: 'admin/dialect/get-list',
   },
@@ -179,5 +177,13 @@ export const endpoints = {
     details: 'admin/slider/get-slider/',
     search: 'homeSlider/search',
     frequencyEnum: 'enum/getHomeSliderFrequencyEnum',
+  },
+  city: {
+    list: 'admin/city/get-city-list',
+    createTranslation: 'admin/city/create-city-translation',
+    updateTranslation: 'admin/city/create-city-translation',
+    getById: 'admin/city/get-city-list',
+    getByList: 'admin/city/get-city-list',
+    delete: 'admin/city/delete-city/',
   },
 };

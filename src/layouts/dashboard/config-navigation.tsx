@@ -178,18 +178,18 @@ export function useNavData() {
       icon: ICONS.language,
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
+        { title: t('City'), path: paths.dashboard.system.city },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
         // { title: t('edit'), path: paths.dashboard.tour.demo.edit },
       ],
     },
-  ]
-  const schooladminRoutes: never[] = []
+  ];
+  const schooladminRoutes: never[] = [];
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
     switch (userType) {
-
       case 'SCHOOL_ADMIN':
         return schooladminRoutes;
       default:
@@ -215,7 +215,7 @@ export function useNavData() {
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        subheader: t(userType === "SCHOOL_ADMIN" ? '' : 'management'),
+        subheader: t(userType === 'SCHOOL_ADMIN' ? '' : 'management'),
         items: routes,
       },
 

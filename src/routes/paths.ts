@@ -207,6 +207,10 @@ export const paths = {
     system: {
       root: `${ROOTS.DASHBOARD}/system/language`,
       language: `${ROOTS.DASHBOARD}/system/language`,
+      city: `${ROOTS.DASHBOARD}/system/city`,
+      cityList: `${ROOTS.DASHBOARD}/system/city/list`,
+      edit: `${ROOTS.DASHBOARD}/system/city/edit`,
+      viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
     },
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,

@@ -111,12 +111,12 @@ export type IUserItem = {
 
 export type ImageItem = {
   coverUrl: any;
-  picture:any ;
-  picture_large:any;
+  picture: any;
+  picture_large: any;
   description: string;
-  virtual_path:any;
-  virtual_large_path:any;
-  id:any;
+  virtual_path: any;
+  virtual_large_path: any;
+  id: any;
 };
 
 export type IUserAccount = {
@@ -144,4 +144,11 @@ export type IUserAccountChangePassword = {
   oldPassword: string;
   newPassword: string;
   confirmNewPassword: string;
+};
+export type ICityTableFilters = {
+  name: string;
+  status: string;
+  locale: string;
+  cityId: string;
+  isPublished: boolean;
 };
