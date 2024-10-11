@@ -68,7 +68,7 @@ export default function PackageTableRow({
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
-  console.log(row?.vendor, "vendor_user");
+
 
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -156,7 +156,7 @@ export default function PackageTableRow({
           {
             name: data?.name || package_translations?.name,
             locale: selectedLanguage || package_translations?.locale,
-            // session_inclusions: data?.session_inclusions || package_translations?.name,
+            session_inclusions: selectedLocaleObject?.session_inclusions,
           },
         ],
         contact_email: data?.email || email,
