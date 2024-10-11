@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -9,7 +9,8 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid';
+
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // utils
@@ -32,18 +33,28 @@ import FormProvider, {
   RHFAutocomplete,
   RHFSelect,
 } from 'src/components/hook-form';
-import { createUser, deleteUser, updateUser, useGetUserTypeEnum } from 'src/api/users';
+import { createUser, deleteUser, updateUser, useGetGearEnum, useGetGenderEnum, useGetUserTypeEnum } from 'src/api/users';
 import { IconButton, InputAdornment, MenuItem } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetAllLanguage } from 'src/api/language';
+import { useGetAllCategory } from 'src/api/category';
+import { useGetAllCity } from 'src/api/city';
+import { useGetAllDialect } from 'src/api/dialect';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   currentUser?: any;
 };
+
+const fluencyOptions = [
+  { name: 'BASIC', value: 'BASIC' },
+  { name: 'INTERMEDIATE', value: 'INTERMEDIATE' },
+  { name: 'ADVANCED', value: 'ADVANCED' },
+  { name: 'NATIVE', value: 'NATIVE' },
+]
 
 export default function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
@@ -53,8 +64,31 @@ export default function UserNewEditForm({ currentUser }: Props) {
     useGetAllLanguage(0, 1000);
 
   const { enumData, enumLoading } = useGetUserTypeEnum();
+  const { genderData, genderLoading } = useGetGenderEnum();
+  const { gearData, gearLoading } = useGetGearEnum();
+
+
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
+  const { category } =
+    useGetAllCategory({
+      limit: 1000,
+      page: 0
+    });
+
+  const { city } =
+    useGetAllCity({
+      limit: 1000,
+      page: 0
+    });
+
+  const { dialect } =
+    useGetAllDialect({
+      limit: 1000,
+      page: 0
+    });
+
+
   useEffect(() => {
     if (enumData?.length > 0) {
       const updatedValues =
@@ -87,6 +121,22 @@ export default function UserNewEditForm({ currentUser }: Props) {
     user_type: Yup.string(),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
+    gear: Yup.mixed().nullable(),
+    vehicle_type_id: Yup.mixed().nullable(),
+    gender: Yup.mixed().nullable(),
+    city_id: Yup.mixed().nullable(),
+    languages: Yup.array().of(
+      Yup.object().shape({
+        id: Yup.mixed().required("Language is required"), // Validate court add-on
+        fluency_level: Yup
+          .number()
+          // .typeError("Number of Add Ons must be a number")
+          .required("Language fluency is required") // Validate the number of add-ons
+      })
+    ),
+
+
+
   });
 
   const defaultValues = useMemo(
@@ -101,9 +151,15 @@ export default function UserNewEditForm({ currentUser }: Props) {
       locale: language?.find((option) => option?.name === currentUser?.locale) || null,
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.is_active || 1,
+      languages: [],
+      gear: currentUser?.gear || '',
+      vehicle_type_id: language?.find((option) => option?.id === currentUser?.vehicle_type_id) || null,
+      gender: currentUser?.gender || '',
+      city_id: currentUser?.city_id || '',
     }),
     [currentUser]
   );
+
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -119,6 +175,11 @@ export default function UserNewEditForm({ currentUser }: Props) {
     formState: { isSubmitting },
   } = methods;
 
+  const { fields, remove } = useFieldArray({
+    control,
+    name: 'languages', // Field array name for addons
+  })
+
   const values = watch();
   useEffect(() => {
     if (currentUser?.id) {
@@ -133,12 +194,35 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('email', data?.email);
       body.append('password', data?.password);
       body.append('phone', data?.phone);
+
+
+      body.append('gear', data?.gear);
+      body.append('vehicle_type_id', data?.vehicle_type_id);
+      body.append('gender', data?.gender);
+      body.append('city_id', data?.city_id);
+
+
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
       body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && typeof data?.photo_url === 'file') {
         body.append('photo_url', data?.photo_url);
+      }
+      if (data?.languages && Array.isArray(data?.languages)) {
+        // Convert the array
+        const convertedArray = data?.languages.map((item: any, index: number) => ({
+          id: item?.court_attribute_id?.value,
+          fluency_level: Number(item.fluency_level.value)  // Convert "value" string to number
+        }));
+
+        convertedArray.forEach((addon, index) => {
+          if (addon.court_attribute_id) {
+            body.append(`attributes[${index}][court_attribute_id]`, addon.court_attribute_id);
+          }
+          // Use nullish coalescing to handle cases where `value` might be 0
+          body.append(`attributes[${index}][value]`, addon.value ?? '');
+        });
       }
 
       if (currentUser?.id) {
@@ -163,6 +247,23 @@ export default function UserNewEditForm({ currentUser }: Props) {
       }
     }
   });
+
+  const [languages, setLanguage] = useState<any>([
+  ]);
+  // Function to add more pairs
+  const handleAddMore = () => {
+    setLanguage([...languages, { id: '', fluency_level: '' }]);
+
+  };
+
+  // Function to remove a pair
+  const handleRemove = (index: number) => {
+    const language = [...languages];
+    language.splice(index, 1); // Remove the pair at the specified index
+    setLanguage(language);
+    remove(index);
+  };
+
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -191,6 +292,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
       confirm.onFalse();
     }
   };
+
+
   const confirm = useBoolean();
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -259,11 +362,13 @@ export default function UserNewEditForm({ currentUser }: Props) {
               <RHFSelect name="user_type" label="User Type">
                 {filteredValues?.length > 0 &&
                   filteredValues?.map((option: any) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.name}
+                    <MenuItem key={option?.value} value={option?.value}>
+                      {option?.name}
                     </MenuItem>
                   ))}
               </RHFSelect>
+
+
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField
@@ -306,7 +411,121 @@ export default function UserNewEditForm({ currentUser }: Props) {
               />
 
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
+
+
             </Box>
+            {(values.user_type === "TRAINER" || values.user_type === 'STUDENT') && (
+              <>
+                <Typography sx={{ fontWeight: "700", m: 2 }}> User Preferences:</Typography>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  sx={{ mt: 2 }}
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  }}
+                >
+
+                  <RHFSelect name="vehicle_type_id" label="Category">
+                    {category?.length > 0 &&
+                      category?.map((option: any) => (
+                        <MenuItem key={option?.id} value={option?.id}>
+                          {option?.category_translations[0]?.name}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect>
+
+
+                  <RHFSelect name="city_id" label="City">
+                    {city?.length > 0 &&
+                      city?.map((option: any) => (
+                        <MenuItem key={option?.id} value={option?.id}>
+                          {option?.city_translations[0]?.name}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect>
+
+                  <RHFSelect name="gender" label="Gender">
+                    {genderData?.length > 0 &&
+                      genderData?.map((option: any) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect>
+                  <RHFSelect name="gear" label="Gear">
+                    {gearData?.length > 0 &&
+                      gearData?.map((option: any) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect>
+
+
+                </Box>
+                {languages?.map((languageItem, index) => (
+                  <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
+
+                    {/*
+<RHFSelect name="dialect" label="Dialect">
+                    {dialect?.length > 0 &&
+                      dialect?.map((option: any) => (
+                        <MenuItem key={option?.id} value={option?.id}>
+                          {option?.dialect_name ?? "Unknown"}
+                        </MenuItem>
+                      ))}
+                  </RHFSelect> */}
+
+
+                    <Grid item xs={12} md={5} >
+                      <RHFAutocomplete
+                        name={`language[${index}].id`} // Dynamic name for react-hook-form
+                        label={`Language ${index + 1}`}
+                        getOptionLabel={(option) => {
+                          return option ? `${option?.dialect_name}` : '';
+                        }}
+                        options={dialect}
+                        renderOption={(props, option: any) => (
+                          <li {...props} key={option?.id}>
+                            {option?.dialect_name ?? "Unknown"}
+                          </li>
+                        )}
+                      />
+                    </Grid>
+
+                    {/* Value Field */}
+                    <Grid item xs={12} md={5} >
+                      <RHFSelect name={`language[${index}].fluency_level`} // Dynamic name for react-hook-form
+                        label="Fluency level">
+                        {fluencyOptions?.length > 0 &&
+                          fluencyOptions?.map((option: any) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.name}
+                            </MenuItem>
+                          ))}
+                      </RHFSelect>
+
+                    </Grid>
+
+                    {/* Delete Button */}
+                    <Grid item xs={12} md={2}>
+                      <IconButton onClick={() => handleRemove(index)}>
+                        <Iconify icon="solar:trash-bin-trash-bold" />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                ))}
+                <Grid item xs={12} sx={{ mt: 2 }}>
+                  <Button variant="contained" onClick={handleAddMore}>
+                    Add Language
+                  </Button>
+                </Grid>
+              </>
+            )}
+
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

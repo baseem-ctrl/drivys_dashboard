@@ -116,6 +116,12 @@ export const endpoints = {
     delete: 'admin/category/delete-category-translation-pictures',
     deleteId: 'admin/category/delete-category/',
   },
+  city: {
+    list: 'admin/city/get-city-list',
+  },
+  dialect: {
+    list: 'admin/dialect/get-list',
+  },
   language: {
     list: 'admin/user/languages',
     delete: 'admin/user/languages/',
@@ -148,6 +154,8 @@ export const endpoints = {
   },
   users: {
     enum: 'public/enum/get-user-type-enum',
+    genderenum: 'public/enum/get-gender-type-enum',
+    gearenum: 'public/enum/get-gear-type-enum',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
     getbyId: 'admin/user/get-user/',

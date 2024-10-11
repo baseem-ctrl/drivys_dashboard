@@ -103,6 +103,46 @@ export function useGetUserTypeEnum() {
 
   return memoizedValue;
 }
+
+export function useGetGenderEnum() {
+  const URL = endpoints.users.genderenum;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      genderData: (data?.values as any) || {},
+      genderLoading: isLoading,
+      genderError: error,
+      genderValdating: isValidating,
+    }),
+    [data?.values, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetGearEnum() {
+  const URL = endpoints.users.gearenum;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      gearData: (data?.values as any) || {},
+      gearLoading: isLoading,
+      gearError: error,
+      gearValdating: isValidating,
+    }),
+    [data?.values, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
 export function createUser(body: any) {
   const URL = endpoints.users.create;
   const response = drivysCreator([URL, body]);
