@@ -116,6 +116,12 @@ export const endpoints = {
     delete: 'admin/category/delete-category-translation-pictures',
     deleteId: 'admin/category/delete-category/',
   },
+  city: {
+    list: 'admin/city/get-city-list',
+  },
+  dialect: {
+    list: 'admin/dialect/get-list',
+  },
   language: {
     list: 'admin/user/languages',
     delete: 'admin/user/languages/',
