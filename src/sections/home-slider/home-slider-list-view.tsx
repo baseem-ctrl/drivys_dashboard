@@ -49,12 +49,12 @@ import HomeSliderDialog from './home-slider-dialog';
 const TABLE_HEAD = [
   { id: 'DisplayOrder', label: 'Order' },
   { id: 'picture', label: 'Picture' },
-  { id: 'name', label: 'name' },
+  { id: 'name', label: 'Name' },
 
-  { id: 'published', label: 'published' },
+  { id: 'published', label: 'Published' },
   // { id: 'ISMonthly', label: 'Is Monthly' },
-  { id: 'show_until', label: 'show until' },
-  { id: 'Type', label: 'Type' },
+  { id: 'show_until', label: 'Show until' },
+  // { id: 'Type', label: 'Type' },
   { id: 'actions', label: '' },
 ];
 
@@ -225,7 +225,7 @@ export default function HomeSliderListView() {
                                   </TableCell> */}
                                   <TableCell>{row.show_until}</TableCell>
 
-                                  <TableCell>{row?.type}</TableCell>
+                                  {/* <TableCell>{row?.type}</TableCell> */}
 
                                   <TableCell>
                                     <IconButton
