@@ -129,7 +129,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       Yup.object().shape({
         id: Yup.mixed().required("Language is required"), // Validate court add-on
         fluency_level: Yup
-          .number()
+          .mixed()
           // .typeError("Number of Add Ons must be a number")
           .required("Language fluency is required") // Validate the number of add-ons
       })
@@ -201,6 +201,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('gender', data?.gender);
       body.append('city_id', data?.city_id);
 
+      console.log(data, "MMMM");
 
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
@@ -209,21 +210,33 @@ export default function UserNewEditForm({ currentUser }: Props) {
       if (data?.photo_url && typeof data?.photo_url === 'file') {
         body.append('photo_url', data?.photo_url);
       }
-      if (data?.languages && Array.isArray(data?.languages)) {
-        // Convert the array
-        const convertedArray = data?.languages.map((item: any, index: number) => ({
-          id: item?.court_attribute_id?.value,
-          fluency_level: Number(item.fluency_level.value)  // Convert "value" string to number
-        }));
+      // if (data?.languages && Array.isArray(data?.languages)) {
+      //   console.log(data?.languages, "data?.languages");
 
-        convertedArray.forEach((addon, index) => {
-          if (addon.court_attribute_id) {
-            body.append(`attributes[${index}][court_attribute_id]`, addon.court_attribute_id);
-          }
+      //   // Convert the array
+      //   const convertedArray = data?.languages.map((item: any, index: number) => ({
+      //     id: item?.court_attribute_id?.value,
+      //     fluency_level: Number(item.fluency_level.value)  // Convert "value" string to number
+      //   }));
+
+      //   convertedArray.forEach((addon, index) => {
+      //     if (addon.court_attribute_id) {
+      //       body.append(`attributes[${index}][court_attribute_id]`, addon.court_attribute_id);
+      //     }
+      //     // Use nullish coalescing to handle cases where `value` might be 0
+      //     body.append(`attributes[${index}][value]`, addon.value ?? '');
+      //   });
+      // }language[${index}].id
+      if (data?.languages?.length > 0) {
+        data?.languages?.forEach((languageItem, index) => {
+
+          body.append(`language[${index}][id]`, languageItem?.id?.id);
+
           // Use nullish coalescing to handle cases where `value` might be 0
-          body.append(`attributes[${index}][value]`, addon.value ?? '');
+          body.append(`language[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
+
 
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
@@ -482,7 +495,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
                     <Grid item xs={12} md={5} >
                       <RHFAutocomplete
-                        name={`language[${index}].id`} // Dynamic name for react-hook-form
+                        name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
                         getOptionLabel={(option) => {
                           return option ? `${option?.dialect_name}` : '';
@@ -498,7 +511,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
 
                     {/* Value Field */}
                     <Grid item xs={12} md={5} >
-                      <RHFSelect name={`language[${index}].fluency_level`} // Dynamic name for react-hook-form
+                      <RHFSelect name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
                         label="Fluency level">
                         {fluencyOptions?.length > 0 &&
                           fluencyOptions?.map((option: any) => (

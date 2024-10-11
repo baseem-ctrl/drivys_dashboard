@@ -11,6 +11,8 @@ import SchoolDetailsPage from 'src/pages/dashboard/schools/details';
 import UserDetailsPage from 'src/pages/dashboard/user/details';
 import SchoolAdminDetailsPage from 'src/pages/dashboard/schools/school_admin_details';
 import UserDetailsAdminPage from 'src/pages/dashboard/schools/user-details';
+import HomeSliderListPage from 'src/pages/dashboard/home-slider/home-slider-list';
+import HomeSliderCreatePage from 'src/pages/dashboard/home-slider/new';
 
 // ----------------------------------------------------------------------
 
@@ -97,6 +99,14 @@ const allroutes = [
       { element: <OrderListPage />, index: true },
       { path: 'list', element: <OrderListPage /> },
       { path: ':id', element: <OrderDetailsPage /> },
+    ],
+  },
+  {
+    path: 'slider',
+    children: [
+      { element: <HomeSliderListPage />, index: true },
+      { path: 'list', element: <HomeSliderListPage /> },
+      { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },
   {

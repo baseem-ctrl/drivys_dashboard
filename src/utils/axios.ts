@@ -169,4 +169,15 @@ export const endpoints = {
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
   },
+  slider: {
+    list: 'admin/slider/get-slider-list',
+    create: 'admin/slider/create-slider',
+    create_mapper: 'homeSliderMapping/create',
+    update: 'admin/slider/update-slider',
+    delete: 'admin/slider/delete-slider/',
+    delete_slider_pictures: 'admin/slider/delete-slider-pictures?picture_ids[]=',
+    details: 'admin/slider/get-slider/',
+    search: 'homeSlider/search',
+    frequencyEnum: 'enum/getHomeSliderFrequencyEnum',
+  },
 };
