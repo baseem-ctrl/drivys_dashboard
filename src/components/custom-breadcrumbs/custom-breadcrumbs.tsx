@@ -41,6 +41,7 @@ export default function CustomBreadcrumbs({
                   link={link}
                   activeLast={activeLast}
                   disabled={link.name === lastLink}
+                  onClick={link.onClick} // Pass onClick only if provided
                 />
               ))}
             </Breadcrumbs>
@@ -61,6 +62,12 @@ export default function CustomBreadcrumbs({
               target="_blank"
               rel="noopener"
               sx={{ display: 'table' }}
+              onClick={(e) => {
+                if (moreLink.onClick) {
+                  e.preventDefault();
+                  moreLink.onClick(e);
+                }
+              }}
             >
               {href}
             </Link>

@@ -11,6 +11,7 @@ type Props = {
   dense?: boolean;
   onChangeDense?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   sx?: SxProps<Theme>;
+  rowsPerPageOptions?: number[]; // Added this line to define rowsPerPageOptions
 };
 
 export default function TablePaginationCustom({

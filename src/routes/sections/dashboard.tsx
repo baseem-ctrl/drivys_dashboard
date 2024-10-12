@@ -13,6 +13,7 @@ import SchoolAdminDetailsPage from 'src/pages/dashboard/schools/school_admin_det
 import UserDetailsAdminPage from 'src/pages/dashboard/schools/user-details';
 import HomeSliderListPage from 'src/pages/dashboard/home-slider/home-slider-list';
 import HomeSliderCreatePage from 'src/pages/dashboard/home-slider/new';
+import CityListView from 'src/sections/city/view/city-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -160,6 +161,7 @@ const allroutes = [
     children: [
       { element: <LanguageListPage />, index: true },
       { path: 'language', element: <LanguageListPage /> },
+      { path: 'city', element: <CityListView /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },
@@ -179,7 +181,7 @@ const allroutes = [
   { path: 'kanban', element: <KanbanPage /> },
   { path: 'permission', element: <PermissionDeniedPage /> },
   { path: 'blank', element: <BlankPage /> },
-]
+];
 
 const schooladminRoutes = [
   { element: <OverviewEcommercePage />, index: true },
@@ -192,11 +194,10 @@ const schooladminRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
     ],
   },
-]
+];
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
   switch (userType) {
-
     case 'SCHOOL_ADMIN':
       return schooladminRoutes;
     default:
