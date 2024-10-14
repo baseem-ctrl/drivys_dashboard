@@ -86,7 +86,7 @@ interface StatusOption {
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
@@ -114,11 +114,11 @@ export default function UserListView() {
   }, [enumData]);
   const { users, usersLoading, usersError, usersEmpty, usersLength, revalidateUsers } = useGetUsers(
     {
-      page: table?.page,
-      limit: table?.rowsPerPage,
-      user_types: filters?.userTypes,
-      search: filters?.name,
-      is_active: filters?.status,
+      page: table.page,
+      limit: table.rowsPerPage,
+      user_types: filters.userTypes,
+      search: filters.name,
+      is_active: filters.status,
     }
   );
   useEffect(() => {
@@ -196,8 +196,10 @@ export default function UserListView() {
     },
     [handleFilters]
   );
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
+    // table.onResetPage(); // Reset pagination when filters are reset
   }, []);
   const currentTableHeaders = filters.userTypes === 'TRAINER' ? TABLE_HEAD.trainer : TABLE_HEAD.all;
   return (
@@ -322,16 +324,17 @@ export default function UserListView() {
             </Scrollbar>
           </TableContainer>
 
-          <TablePaginationCustom
-            count={usersLength}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
+          {usersLength > 0 && (
+            <TablePaginationCustom
+              count={usersLength}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              dense={table.dense}
+              onChangeDense={table.onChangeDense}
+            />
+          )}
         </Card>
       </Container>
 
