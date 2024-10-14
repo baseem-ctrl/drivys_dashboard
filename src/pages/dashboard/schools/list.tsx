@@ -8,7 +8,7 @@ export default function SchoolListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Delivery List</title>
+        <title> Dashboard: School List</title>
       </Helmet>
 
       <SchoolListView />
