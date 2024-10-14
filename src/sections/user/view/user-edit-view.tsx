@@ -22,7 +22,6 @@ export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
   const { details, detailsLoading } = useGetUserDetails(id);
   const currentUser = details;
-  console.log('id', id);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs

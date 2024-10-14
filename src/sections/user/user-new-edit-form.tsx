@@ -204,14 +204,21 @@ export default function UserNewEditForm({ loading, id }: Props) {
       body.append('city_id', data?.city_id);
 
       console.log(data, 'MMMM');
+      if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
+      // if (data?.gender) body.append('gender', data?.gender);
+      if (data?.city_id) body.append('city_id', data?.city_id);
 
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
       body.append('locale', data?.locale?.language_culture);
-      if (data?.photo_url && typeof data?.photo_url === 'file') {
+      if (
+        data?.photo_url
+        // && typeof data?.photo_url === 'file'
+      ) {
         body.append('photo_url', data?.photo_url);
       }
+
       // if (data?.languages && Array.isArray(data?.languages)) {
       //   console.log(data?.languages, "data?.languages");
 
@@ -451,7 +458,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
                     {category?.length > 0 &&
                       category?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.category_translations[0]?.name}
+                          {option?.category_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
                   </RHFSelect>
@@ -460,7 +467,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
                     {city?.length > 0 &&
                       city?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name}
+                          {option?.city_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
                   </RHFSelect>
