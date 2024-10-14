@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { CityListView } from 'src/sections/city/view';
+import CityListView from 'src/sections/city/view/city-list-view';
 // sections
 
 // ----------------------------------------------------------------------

@@ -14,6 +14,7 @@ import UserDetailsAdminPage from 'src/pages/dashboard/schools/user-details';
 import HomeSliderListPage from 'src/pages/dashboard/home-slider/home-slider-list';
 import HomeSliderCreatePage from 'src/pages/dashboard/home-slider/new';
 import CityListView from 'src/sections/city/view/city-list-view';
+import CityListPage from 'src/pages/dashboard/city/city';
 
 // ----------------------------------------------------------------------
 
@@ -161,7 +162,7 @@ const allroutes = [
     children: [
       { element: <LanguageListPage />, index: true },
       { path: 'language', element: <LanguageListPage /> },
-      { path: 'city', element: <CityListView /> },
+      { path: 'city', element: <CityListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },
