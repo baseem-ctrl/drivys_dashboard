@@ -159,15 +159,18 @@ export default function CityListView() {
             { name: 'List' },
           ]}
           action={
-            <Button
-              onClick={() => {
-                createCity.onTrue();
-              }}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New City
-            </Button>
+            viewMode === "table" && (
+              <Button
+                onClick={() => {
+                  createCity.onTrue();
+                }}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                New City
+              </Button>
+            )
+
           }
           sx={{
             mb: { xs: 3, md: 5 },
