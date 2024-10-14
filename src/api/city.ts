@@ -134,6 +134,61 @@ export function updateCityTranslation(body: FormData) {
 
 // ----------------------------------------------------------------------
 
+// Create or update package-city mapping
+export function createPackageCity(body: any) {
+  const URL = endpoints.city.createPackage; // Referring to your defined endpoint
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+// Delete a package-city mapping by ID
+export function deletePackageCityById(packageId: number | string) {
+  const URL = `${endpoints.city.deletePackageList}${packageId}`;
+  const response = barrySmasher(URL);
+  return response;
+}
+// Function to allow fetching a specific package by its ID
+export function useGetPackageCityById(packageId) {
+  const URL = `${endpoints.city.getPackageList}${packageId}`;
+  console.log('URL', URL);
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      packageCityList: data?.data || [],
+      packageCityListLoading: isLoading,
+      packageCityListError: error,
+      packageCityListValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  // Function to manually revalidate (refresh) the data
+  const revalidatePackageCity = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidatePackageCity };
+}
+
+// Get the full list of package-city mappings
+export function useGetPackageCityList() {
+  const URL = `${endpoints.city.getPackageList}`;
+  console.log('URL', URL);
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      packageCityList: data?.data as any,
+      packageCityListLoading: isLoading,
+      packageCityListError: error,
+      packageCityListValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
 // export function deleteCategory(category_translation_id: any, pictures_ids: any) {
 //   const URL =
 //     endpoints.category.delete +

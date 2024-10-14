@@ -39,7 +39,8 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import CityCreateEditForm from '../city-create-update';
 import { deleteCity, useGetAllCities } from 'src/api/city';
 import CityNewEditForm from '../city-new-edit-form';
-import CityDetails from './city-details';
+import CityDetails from './city-details-view';
+import CityDetailsView from './city-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -232,12 +233,11 @@ export default function CityListView() {
           )}
 
           {viewMode === 'detail' && selectedCity && (
-            <CityDetails
+            <CityDetailsView
               city={selectedCity} // Pass the selected city to the detail component
               onEdit={handleEditClick} // Handle edit button click
               onBack={handleBackToList} // Handle back to list click
               reload={revalidateCities}
-              cityId={rowId}
             />
           )}
 

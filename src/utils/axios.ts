@@ -185,5 +185,8 @@ export const endpoints = {
     getById: 'admin/city/get-city-list',
     getByList: 'admin/city/get-city-list',
     delete: 'admin/city/delete-city/',
+    createPackage: 'admin/package-city/create-packge-city',
+    getPackageList: 'admin/package-city/get-package-city/',
+    deletePackageList: 'admin/package-city/delete-packge-city/',
   },
 };

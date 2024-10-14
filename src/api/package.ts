@@ -15,8 +15,8 @@ interface useGetDelivereyParams {
   min_price?: number;
   max_price?: number;
   number_of_sessions?: number;
-  vendor_id?:any;
-  session_inclusions?:any;
+  vendor_id?: any;
+  session_inclusions?: any;
 }
 
 export function useGetPackage({
@@ -29,7 +29,7 @@ export function useGetPackage({
   min_price,
   max_price,
   number_of_sessions,
-  vendor_id
+  vendor_id,
 }: useGetDelivereyParams = {}) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
@@ -45,7 +45,6 @@ export function useGetPackage({
     if (number_of_sessions) params.number_of_sessions = number_of_sessions;
     if (vendor_id) params.vendor_id = vendor_id;
 
-
     return params;
   }, [
     limit,
@@ -54,10 +53,10 @@ export function useGetPackage({
     search,
     status,
     is_published,
-  min_price,
-  max_price,
-  number_of_sessions,
-  vendor_id
+    min_price,
+    max_price,
+    number_of_sessions,
+    vendor_id,
   ]);
 
   const fullUrl = useMemo(
@@ -98,9 +97,6 @@ export function createUpdatePackage(body: any) {
   return response;
 }
 
-
-
-
 export function deletePackage(id: any) {
   const URL = endpoints.package.delete + id;
   const response = barrySmasher(URL);
@@ -128,4 +124,3 @@ export function useGetPackageById(packageId: string) {
 
   return { ...memoizedValue, revalidateDetails };
 }
-
