@@ -59,9 +59,16 @@ export function useGetAllCity({
   };
   return { ...memoizedValue, revalidateCategory };
 }
-export function useGetAllCities() {
+export function useGetAllCities(limit: number) {
   const getTheFullUrl = () => {
-    return `${endpoints.city.getByList}?${new URLSearchParams()}`;
+    let queryPrams = {};
+
+    if (limit) {
+      queryPrams = { ...queryPrams, limit };
+    } else {
+      queryPrams = { ...queryPrams, limit: 100 };
+    }
+    return `${endpoints.city.getByList}?${new URLSearchParams(queryPrams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
@@ -91,7 +98,6 @@ export function useGetCityById(cityId: number | string) {
     cityId ? getCityUrl() : null,
     drivysFetcher
   );
-  console.log('data', data);
 
   const memoizedValue = useMemo(
     () => ({

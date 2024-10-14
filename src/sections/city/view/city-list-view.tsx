@@ -71,7 +71,8 @@ export default function CityListView() {
   const [selectedCity, setSelectedCity] = useState(null); // State to hold selected city
   const [viewMode, setViewMode] = useState('table'); // State to manage view mode
   const [rowId, setRowId] = useState(null);
-  const { cities, revalidateCities } = useGetAllCities({ limit: 1000 }); // Fetch all cities
+  const limit = 100;
+  const { cities, revalidateCities } = useGetAllCities(limit); // Fetch all cities
 
   const [transformedCities, setTransformedCities] = useState([]);
   console.log('citiescities', cities);

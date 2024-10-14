@@ -2,19 +2,13 @@ import { useEffect } from 'react';
 // @mui
 import { Typography, Box, Stack, Card, Grid } from '@mui/material';
 // components
-import { useGetAllCities } from 'src/api/city';
+import { useGetAllCities } from 'src/api/city.tsx';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
 export default function CityDetails({ onEdit, city }) {
-  const { revalidateCities } = useGetAllCities({ limit: 1000 });
-  // State to control the visibility of the edit form
-  useEffect(() => {
-    revalidateCities();
-  }, []);
-
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
