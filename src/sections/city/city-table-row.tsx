@@ -53,19 +53,16 @@ export default function CityTableRow({
             {translation.name}
           </TableCell>
           <TableCell
-            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => handleRowClick(translation.city_id)}
           >
             {translation.locale}
           </TableCell>
           <TableCell
-            sx={{ display: 'flex', alignItems: 'center' }}
             onClick={() => handleRowClick(translation.city_id)}
           >
             {translation.city_id}
           </TableCell>
           <TableCell
-            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => handleRowClick(translation.city_id)}
           >
             <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
@@ -73,12 +70,11 @@ export default function CityTableRow({
             </Label>
           </TableCell>
           <TableCell
-            sx={{ whiteSpace: 'nowrap' }}
             onClick={() => handleRowClick(translation.city_id)}
           >
             {display_order}
           </TableCell>
-          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          <TableCell align="right" >
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
