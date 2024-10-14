@@ -26,6 +26,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import ImagePreview from './image-preview';
 import { useGetUsers } from 'src/api/users';
+import { useGetAllLanguage } from 'src/api/language';
 const ImagesSelectionForm = React.lazy(
   () => import('src/components/images-selection/select-images-dialog')
 );
@@ -45,7 +46,10 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const [userOptions, setUserOptions] = useState([]);
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]); // state for image IDs
   const [imageDialogOpen, setImageDialogOpen] = useState(false); // state for image dialog visibility
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
+  const { language } =
+    useGetAllLanguage(0, 1000);
 
   const { category } = useGetAllCategory({ limit: 1000, page: 0 });
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
@@ -131,6 +135,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
     // if (products) setProductOptions(mapOptions(products, 'product_translations'));
     if (users) setUserOptions(mapOptionsUser(users));
 
+
   }, [category, users]);
 
   const [trainers, setTrainer] = useState<any>([
@@ -190,7 +195,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
       }
       if (selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
-          formData.append(`picture_ids[${index}][locale]`, 'en')
+          formData.append(`picture_ids[${index}][locale]`, selectedLanguage?.language_culture ?? selectedLanguage)
         );
       }
 
@@ -255,6 +260,23 @@ export default function HomeSliderForm({ updateValue }: Props) {
             options={categoryOptions}
             defaultValue={defaultValues.Category}
           />
+
+          <RHFSelect
+            name="language"
+            label="Language"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+          >
+            {language && language.length > 0 ? (
+              language.map((option, index) => (
+                <MenuItem key={index} value={option?.language_culture}>
+                  {option?.language_culture}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
+            )}
+          </RHFSelect>
 
           {/* <RHFMultiSelectAuto
               name="Trainer"
