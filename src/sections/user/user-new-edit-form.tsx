@@ -446,7 +446,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
                     {category?.length > 0 &&
                       category?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.category_translations[0]?.name}
+                          {option?.category_translations[0]?.name ?? "Unknown"}
                         </MenuItem>
                       ))}
                   </RHFSelect>
@@ -456,7 +456,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
                     {city?.length > 0 &&
                       city?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name}
+                          {option?.city_translations[0]?.name ?? "Unknown"}
                         </MenuItem>
                       ))}
                   </RHFSelect>
