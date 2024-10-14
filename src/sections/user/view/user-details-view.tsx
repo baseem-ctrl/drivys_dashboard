@@ -46,42 +46,42 @@ export default function UserDetailsView({ id }: Props) {
 
   const currentJob = details;
 
-  const [publish, setPublish] = useState(currentJob?.publish);
+  // const [publish, setPublish] = useState(currentJob?.publish);
 
-  const [currentTab, setCurrentTab] = useState('details');
+  // const [currentTab, setCurrentTab] = useState('details');
 
-  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
-    setCurrentTab(newValue);
-  }, []);
+  // const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+  //   setCurrentTab(newValue);
+  // }, []);
 
-  const handleChangePublish = useCallback((newValue: string) => {
-    setPublish(newValue);
-  }, []);
-  const renderTabs = (
-    <Tabs
-      value={currentTab}
-      onChange={handleChangeTab}
-      sx={{
-        mb: { xs: 3, md: 5 },
-      }}
-    >
-      {USER_DETAILS_TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-          icon={
-            tab.value === 'candidates' ? (
-              <Label variant="filled">{currentJob?.candidates.length}</Label>
-            ) : (
-              ''
-            )
-          }
-        />
-      ))}
-    </Tabs>
-  );
+  // const handleChangePublish = useCallback((newValue: string) => {
+  //   setPublish(newValue);
+  // }, []);
+  // const renderTabs = (
+  //   <Tabs
+  //     value={currentTab}
+  //     onChange={handleChangeTab}
+  //     sx={{
+  //       mb: { xs: 3, md: 5 },
+  //     }}
+  //   >
+  //     {USER_DETAILS_TABS.map((tab) => (
+  //       <Tab
+  //         key={tab.value}
+  //         iconPosition="end"
+  //         value={tab.value}
+  //         label={tab.label}
+  //         icon={
+  //           tab.value === 'candidates' ? (
+  //             <Label variant="filled">{currentJob?.candidates.length}</Label>
+  //           ) : (
+  //             ''
+  //           )
+  //         }
+  //       />
+  //     ))}
+  //   </Tabs>
+  // );
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
