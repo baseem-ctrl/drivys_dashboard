@@ -34,6 +34,7 @@ export default function CityTableRow({
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
+  const zerothIndex = 0;
 
   const handleRowClick = (cityId: string) => {
     onSelectRow();
@@ -42,45 +43,35 @@ export default function CityTableRow({
 
   return (
     <>
-      {city_translations.map((translation, index) => (
-        <TableRow hover selected={selected} key={index}>
-          {/* Uncomment if you want a checkbox for selection */}
-          {/* <TableCell padding="checkbox">
+      <TableRow hover selected={selected}>
+        {/* Uncomment if you want a checkbox for selection */}
+        {/* <TableCell padding="checkbox">
             <Checkbox checked={selected} onClick={onSelectRow} />
           </TableCell> */}
 
-          <TableCell onClick={() => handleRowClick(translation.city_id)}>
-            {translation.name}
-          </TableCell>
-          <TableCell
-            onClick={() => handleRowClick(translation.city_id)}
-          >
-            {translation.locale}
-          </TableCell>
-          <TableCell
-            onClick={() => handleRowClick(translation.city_id)}
-          >
-            {translation.city_id}
-          </TableCell>
-          <TableCell
-            onClick={() => handleRowClick(translation.city_id)}
-          >
-            <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
-              {is_published === '1' ? 'Published' : 'Unpublished'}
-            </Label>
-          </TableCell>
-          <TableCell
-            onClick={() => handleRowClick(translation.city_id)}
-          >
-            {display_order}
-          </TableCell>
-          <TableCell align="right" >
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      ))}
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          {city_translations[zerothIndex].name}
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          {city_translations[zerothIndex].locale}
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          {city_translations[zerothIndex].city_id}
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
+            {is_published === '1' ? 'Published' : 'Unpublished'}
+          </Label>
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          {display_order}
+        </TableCell>
+        <TableCell align="right">
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </TableCell>
+      </TableRow>
 
       <CityCreateEditForm
         title="Edit City"

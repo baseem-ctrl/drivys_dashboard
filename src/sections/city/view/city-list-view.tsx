@@ -9,6 +9,9 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
+
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -71,35 +74,21 @@ export default function CityListView() {
   const [selectedCity, setSelectedCity] = useState(null); // State to hold selected city
   const [viewMode, setViewMode] = useState('table'); // State to manage view mode
   const [rowId, setRowId] = useState(null);
-  const { cities, revalidateCities } = useGetAllCities({ limit: 1000 }); // Fetch all cities
+  const [openEditPopup, setOpenEditPopup] = useState(false);
 
-  const [transformedCities, setTransformedCities] = useState([]);
-  console.log('citiescities', cities);
-  useEffect(() => {
-    if (cities && Array.isArray(cities)) {
-      const newTransformedCities = cities.reduce((acc, city) => {
-        city.city_translations.forEach((translation) => {
-          acc.push({
-            id: city.id,
-            is_published: city.is_published,
-            city_translations: [translation],
-            deleted_by: city.deleted_by,
-            deleted_by_user: city.deleted_by_user,
-          });
-        });
-        return acc;
-      }, []);
-      setTransformedCities(newTransformedCities);
-    }
-  }, [cities]);
+  const [index, setIndex] = useState(null);
+  const { cities, revalidateCities, totalpages, cityLoading } = useGetAllCities(
+    table.page,
+    table.rowsPerPage
+  ); // Fetch all cities
 
   useEffect(() => {
-    if (transformedCities?.length) {
-      setTableData(transformedCities);
+    if (cities?.length) {
+      setTableData(cities);
     } else {
       setTableData([]);
     }
-  }, [transformedCities]);
+  }, [cities]);
 
   // Function to delete a city row by city ID
   const handleDeleteRow = async (cityId: string) => {
@@ -118,12 +107,6 @@ export default function CityListView() {
     filters,
   });
 
-  const paginatedData = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
-
-  const denseHeight = table.dense ? 52 : 72;
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
@@ -133,15 +116,17 @@ export default function CityListView() {
     setViewMode('detail');
   };
 
-  const handleEditClick = () => {
-    setViewMode('edit'); // Change view to edit
-  };
-
   const handleBackToList = () => {
     setViewMode('table'); // Change view back to table
     setSelectedCity(null); // Reset selected city
   };
+  const handleEditClick = () => {
+    setOpenEditPopup(true);
+  };
 
+  const handleClosePopup = () => {
+    setOpenEditPopup(false);
+  };
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -208,26 +193,25 @@ export default function CityListView() {
                     rowCount={tableData.length}
                     numSelected={table.selected.length}
                   />
-
                   <TableBody>
-                    {paginatedData.map((row) => (
-                      <CityTableRow
-                        // key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)} // Handle row click
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        reload={revalidateCities}
-                      />
-                    ))}
-
-                    <TableEmptyRows
-                      height={denseHeight}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                    />
-
-                    <TableNoData notFound={notFound} />
+                    {cityLoading
+                      ? Array.from(new Array(5)).map((_, index) => (
+                          <TableRow key={index}>
+                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                              <Skeleton animation="wave" height={40} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : tableData?.map((row) => (
+                          <CityTableRow
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={() => handleEditRow(row.id)}
+                            reload={revalidateCities}
+                          />
+                        ))}
                   </TableBody>
                 </Table>
               </Scrollbar>
@@ -241,24 +225,29 @@ export default function CityListView() {
               onBack={handleBackToList} // Handle back to list click
               reload={revalidateCities}
               cityId={rowId}
+              index={index}
             />
           )}
 
-          {viewMode === 'edit' && selectedCity && (
-            <CityNewEditForm
-              setSelectedCity={setSelectedCity}
-              setViewMode={setViewMode}
-              city={selectedCity} // Pass the selected city to the edit component
-              onBack={handleBackToList} // Handle back to list click
-              reload={revalidateCities}
-            />
-          )}
-
+          <Dialog open={openEditPopup} onClose={handleClosePopup}>
+            <DialogTitle>Edit City</DialogTitle>
+            <DialogContent>
+              {selectedCity && (
+                <CityNewEditForm
+                  city={selectedCity}
+                  reload={revalidateCities}
+                  setViewMode={setViewMode}
+                  setSelectedCity={setSelectedCity}
+                  handleClosePopup={handleClosePopup}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
           {viewMode === 'table' && (
             <>
               {' '}
               <TablePaginationCustom
-                count={dataFiltered.length}
+                count={totalpages}
                 page={table.page}
                 rowsPerPage={table.rowsPerPage}
                 onPageChange={table.onChangePage}
@@ -276,6 +265,7 @@ export default function CityListView() {
         open={createCity.value}
         onClose={createCity.onFalse}
         reload={revalidateCities}
+        // currentCity={city}
       />
     </>
   );
