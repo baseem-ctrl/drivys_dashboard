@@ -33,8 +33,16 @@ import FormProvider, {
   RHFAutocomplete,
   RHFSelect,
 } from 'src/components/hook-form';
-import { createUser, deleteUser, updateUser, useGetGearEnum, useGetGenderEnum, useGetUserTypeEnum } from 'src/api/users';
-import { IconButton, InputAdornment, MenuItem } from '@mui/material';
+import {
+  createUser,
+  deleteUser,
+  updateUser,
+  useGetGearEnum,
+  useGetGenderEnum,
+  useGetUserDetails,
+  useGetUserTypeEnum,
+} from 'src/api/users';
+import { CircularProgress, IconButton, InputAdornment, MenuItem } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -54,9 +62,13 @@ const fluencyOptions = [
   { name: 'INTERMEDIATE', value: 'INTERMEDIATE' },
   { name: 'ADVANCED', value: 'ADVANCED' },
   { name: 'NATIVE', value: 'NATIVE' },
-]
+];
 
-export default function UserNewEditForm({ currentUser }: Props) {
+export default function UserNewEditForm({ loading, id }: Props) {
+  console.log('id', id);
+  const { details, detailsLoading } = useGetUserDetails(id);
+  const currentUser = details;
+  console.log('currentUser', currentUser);
   const router = useRouter();
   const { user } = useAuthContext();
 
@@ -67,27 +79,22 @@ export default function UserNewEditForm({ currentUser }: Props) {
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
 
-
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
-  const { category } =
-    useGetAllCategory({
-      limit: 1000,
-      page: 0
-    });
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+  });
 
-  const { city } =
-    useGetAllCity({
-      limit: 1000,
-      page: 0
-    });
+  const { city } = useGetAllCity({
+    limit: 1000,
+    page: 0,
+  });
 
-  const { dialect } =
-    useGetAllDialect({
-      limit: 1000,
-      page: 0
-    });
-
+  const { dialect } = useGetAllDialect({
+    limit: 1000,
+    page: 0,
+  });
 
   useEffect(() => {
     if (enumData?.length > 0) {
@@ -127,16 +134,12 @@ export default function UserNewEditForm({ currentUser }: Props) {
     city_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
-        id: Yup.mixed().required("Language is required"), // Validate court add-on
-        fluency_level: Yup
-          .mixed()
+        id: Yup.mixed().required('Language is required'), // Validate court add-on
+        fluency_level: Yup.mixed()
           // .typeError("Number of Add Ons must be a number")
-          .required("Language fluency is required") // Validate the number of add-ons
+          .required('Language fluency is required'), // Validate the number of add-ons
       })
     ),
-
-
-
   });
 
   const defaultValues = useMemo(
@@ -153,13 +156,13 @@ export default function UserNewEditForm({ currentUser }: Props) {
       is_active: currentUser?.is_active || 1,
       languages: [],
       gear: currentUser?.gear || '',
-      vehicle_type_id: language?.find((option) => option?.id === currentUser?.vehicle_type_id) || null,
+      vehicle_type_id:
+        language?.find((option) => option?.id === currentUser?.vehicle_type_id) || null,
       gender: currentUser?.gender || '',
       city_id: currentUser?.city_id || '',
     }),
     [currentUser]
   );
-
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -178,7 +181,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
   const { fields, remove } = useFieldArray({
     control,
     name: 'languages', // Field array name for addons
-  })
+  });
 
   const values = watch();
   useEffect(() => {
@@ -195,8 +198,12 @@ export default function UserNewEditForm({ currentUser }: Props) {
       body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-
       body.append('gear', data?.gear);
+      body.append('vehicle_type_id', data?.vehicle_type_id);
+      body.append('gender', data?.gender);
+      body.append('city_id', data?.city_id);
+
+      console.log(data, 'MMMM');
       if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       // if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
@@ -205,7 +212,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
       body.append('locale', data?.locale?.language_culture);
-      if (data?.photo_url
+      if (
+        data?.photo_url
         // && typeof data?.photo_url === 'file'
       ) {
         body.append('photo_url', data?.photo_url);
@@ -230,14 +238,12 @@ export default function UserNewEditForm({ currentUser }: Props) {
       // }language[${index}].id
       if (data?.languages?.length > 0) {
         data?.languages?.forEach((languageItem, index) => {
-
           body.append(`language[${index}][id]`, languageItem?.id?.id);
 
           // Use nullish coalescing to handle cases where `value` might be 0
           body.append(`language[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
-
 
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
@@ -262,12 +268,10 @@ export default function UserNewEditForm({ currentUser }: Props) {
     }
   });
 
-  const [languages, setLanguage] = useState<any>([
-  ]);
+  const [languages, setLanguage] = useState<any>([]);
   // Function to add more pairs
   const handleAddMore = () => {
     setLanguage([...languages, { id: '', fluency_level: '' }]);
-
   };
 
   // Function to remove a pair
@@ -277,7 +281,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
     setLanguage(language);
     remove(index);
   };
-
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -307,8 +310,21 @@ export default function UserNewEditForm({ currentUser }: Props) {
     }
   };
 
-
   const confirm = useBoolean();
+  if ((id && detailsLoading) || loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          margin: '10px',
+          alignSelf: 'center',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -382,7 +398,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
                   ))}
               </RHFSelect>
 
-
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField
@@ -425,12 +440,10 @@ export default function UserNewEditForm({ currentUser }: Props) {
               />
 
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
-
-
             </Box>
-            {(values.user_type === "TRAINER" || values.user_type === 'STUDENT') && (
+            {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
               <>
-                <Typography sx={{ fontWeight: "700", m: 2 }}> User Preferences:</Typography>
+                <Typography sx={{ fontWeight: '700', m: 2 }}> User Preferences:</Typography>
                 <Box
                   rowGap={3}
                   columnGap={2}
@@ -441,22 +454,20 @@ export default function UserNewEditForm({ currentUser }: Props) {
                     sm: 'repeat(2, 1fr)',
                   }}
                 >
-
                   <RHFSelect name="vehicle_type_id" label="Category">
                     {category?.length > 0 &&
                       category?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.category_translations[0]?.name ?? "Unknown"}
+                          {option?.category_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
 
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
                         <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name ?? "Unknown"}
+                          {option?.city_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
                   </RHFSelect>
@@ -477,12 +488,9 @@ export default function UserNewEditForm({ currentUser }: Props) {
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
-
                 </Box>
                 {languages?.map((languageItem, index) => (
                   <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-
                     {/*
 <RHFSelect name="dialect" label="Dialect">
                     {dialect?.length > 0 &&
@@ -493,8 +501,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
                       ))}
                   </RHFSelect> */}
 
-
-                    <Grid item xs={12} md={5} >
+                    <Grid item xs={12} md={5}>
                       <RHFAutocomplete
                         name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
@@ -504,16 +511,18 @@ export default function UserNewEditForm({ currentUser }: Props) {
                         options={dialect}
                         renderOption={(props, option: any) => (
                           <li {...props} key={option?.id}>
-                            {option?.dialect_name ?? "Unknown"}
+                            {option?.dialect_name ?? 'Unknown'}
                           </li>
                         )}
                       />
                     </Grid>
 
                     {/* Value Field */}
-                    <Grid item xs={12} md={5} >
-                      <RHFSelect name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
-                        label="Fluency level">
+                    <Grid item xs={12} md={5}>
+                      <RHFSelect
+                        name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
+                        label="Fluency level"
+                      >
                         {fluencyOptions?.length > 0 &&
                           fluencyOptions?.map((option: any) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -521,7 +530,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
                             </MenuItem>
                           ))}
                       </RHFSelect>
-
                     </Grid>
 
                     {/* Delete Button */}
@@ -539,7 +547,6 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 </Grid>
               </>
             )}
-
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

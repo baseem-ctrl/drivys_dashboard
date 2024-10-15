@@ -20,9 +20,8 @@ type Props = {
 
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
-  const { details } = useGetUserDetails(id);
+  const { details, detailsLoading } = useGetUserDetails(id);
   const currentUser = details;
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -36,14 +35,14 @@ export default function UserEditView({ id }: Props) {
             name: 'User',
             href: paths.dashboard.user.list,
           },
-          { name: currentUser?.name },
+          { name: currentUser?.name || 'User Details' }, // set a default value if currentUser.name is null
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <UserNewEditForm currentUser={currentUser} />
+      <UserNewEditForm currentUser={currentUser} loading={detailsLoading} id={id} />
     </Container>
   );
 }
