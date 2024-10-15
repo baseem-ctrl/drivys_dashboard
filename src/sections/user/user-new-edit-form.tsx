@@ -199,7 +199,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
       body.append('phone', data?.phone);
 
       body.append('gear', data?.gear);
-      body.append('vehicle_type_id', data?.vehicle_type_id);
+      if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       body.append('gender', data?.gender);
       body.append('city_id', data?.city_id);
 
