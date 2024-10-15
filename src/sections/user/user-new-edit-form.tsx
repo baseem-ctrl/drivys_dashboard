@@ -311,7 +311,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
   };
 
   const confirm = useBoolean();
-  if (!currentUser.id || loading) {
+  if ((id && detailsLoading) || loading) {
     return (
       <Box
         sx={{
