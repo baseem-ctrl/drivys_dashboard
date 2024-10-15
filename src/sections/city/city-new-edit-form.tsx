@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -9,27 +9,25 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel'; // Import InputLabel
-import FormControl from '@mui/material/FormControl'; // Import FormControl
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 // utils
-import { fData } from 'src/utils/format-number';
-// routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-// components
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { updateCityTranslation } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
-export default function CityNewEditForm({ setSelectedCity, city, setViewMode, reload }) {
+export default function CityNewEditForm({
+  handleClosePopup,
+  setSelectedCity,
+  city,
+  setViewMode,
+  reload,
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const CitySchema = Yup.object().shape({
@@ -41,8 +39,8 @@ export default function CityNewEditForm({ setSelectedCity, city, setViewMode, re
   const methods = useForm({
     resolver: yupResolver(CitySchema),
     defaultValues: {
-      name: city?.city_translations[0]?.name || '',
-      locale: city?.city_translations[0]?.locale || 'ar',
+      name: city?.city_translations?.[0]?.name || '',
+      locale: city?.city_translations?.[0]?.locale || 'ar',
       published: city?.is_published === '1',
       id: city?.id || '',
     },
@@ -50,21 +48,38 @@ export default function CityNewEditForm({ setSelectedCity, city, setViewMode, re
 
   const {
     reset,
-    watch,
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { isSubmitting },
   } = methods;
+
+  const selectedLocale = watch('locale');
+
   useEffect(() => {
     if (city) {
       reset({
-        name: city?.city_translations[0]?.name || '',
-        locale: city?.city_translations[0]?.locale || 'ar',
+        name: city?.city_translations?.[0]?.name || '',
+        locale: city?.city_translations?.[0]?.locale || 'ar',
         published: city?.is_published === '1',
         id: city?.id || '',
       });
     }
-  }, [city]);
+  }, [city, reset]);
+
+  // Update name based on locale
+  useEffect(() => {
+    const translation = city?.city_translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, city, setValue]);
+
   const onSubmit = handleSubmit(async (city) => {
     try {
       console.log('city', city);
@@ -77,31 +92,19 @@ export default function CityNewEditForm({ setSelectedCity, city, setViewMode, re
       // Update city call
       console.log('Updating city...');
       const response = await updateCityTranslation(formData);
-
       if (response) {
         enqueueSnackbar('City translations updated successfully.');
-        const selectedCityData = {
-          id: response.data.id,
-          is_published: response.data.is_published,
-          city_translations: response.data.city_translations.map((translation) => ({
-            id: response.data.id,
-            city_id: translation.city_id,
-            locale: city.locale,
-            name: city.name,
-          })),
-          deleted_by: response.data.deleted_by,
-          deleted_by_user: response.data.deleted_by_user,
-        };
 
-        setSelectedCity(selectedCityData);
+        setSelectedCity(response.data);
         setViewMode('detail');
+        handleClosePopup();
         reload();
       }
     } catch (error) {
       if (error.errors) {
-        // Object.values(error.errors).forEach((errorMessage) => {
-        //   enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        // });
+        Object.values(error.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
@@ -123,14 +126,21 @@ export default function CityNewEditForm({ setSelectedCity, city, setViewMode, re
           >
             <RHFTextField name="name" label="City Name" />
 
-            {/* Wrap Select in FormControl to include a label */}
             <FormControl fullWidth variant="outlined">
               <InputLabel>Locale</InputLabel>
               <Controller
                 name="locale"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} label="Locale">
+                  <Select
+                    {...field}
+                    label="Locale"
+                    onChange={(e) => {
+                      const newLocale = e.target.value; // Get the selected value
+                      console.log('Locale changed to:', newLocale); // Log the new locale
+                      field.onChange(newLocale); // Update the form state with the new locale
+                    }}
+                  >
                     <MenuItem value="en">English</MenuItem>
                     <MenuItem value="ar">Arabic</MenuItem>
                   </Select>
@@ -139,37 +149,27 @@ export default function CityNewEditForm({ setSelectedCity, city, setViewMode, re
             </FormControl>
 
             <FormControlLabel
-              labelPlacement="start"
               control={
                 <Controller
                   name="published"
                   control={control}
-                  render={({ field }) => (
-                    <Switch
-                      {...field}
-                      checked={field.value}
-                      onChange={(event) => field.onChange(event.target.checked)}
-                    />
-                  )}
+                  render={({ field }) => <Switch {...field} checked={field.value} />}
                 />
               }
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Published
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Toggle to publish or unpublish the city
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
+              label="Published"
             />
           </Box>
-
-          <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-              Save Changes
+          <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
+            <LoadingButton variant="contained" onClick={handleClosePopup} sx={{ width: '120px' }}>
+              Close
+            </LoadingButton>
+            <LoadingButton
+              variant="contained"
+              type="submit"
+              loading={isSubmitting}
+              sx={{ width: '120px' }}
+            >
+              Update City
             </LoadingButton>
           </Stack>
         </Card>

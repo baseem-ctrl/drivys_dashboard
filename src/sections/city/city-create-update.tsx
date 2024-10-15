@@ -1,12 +1,10 @@
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,7 +13,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 // types
 import { ICityItem } from 'src/types/city';
-// assets
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
@@ -44,7 +41,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     () => ({
       name: currentCity?.city_translations[0]?.name || '',
       locale: currentCity?.city_translations[0]?.locale || 'en',
-      published: currentCity?.is_published === '1' ? true : false,
+      published: currentCity?.is_published === '1',
     }),
     [currentCity]
   );
@@ -58,13 +55,29 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     reset,
     handleSubmit,
     formState: { isSubmitting },
+    watch,
+    setValue,
   } = methods;
+
+  const selectedLocale = watch('locale');
 
   useEffect(() => {
     if (currentCity) {
       reset(defaultValues);
     }
   }, [currentCity, defaultValues, reset]);
+
+  useEffect(() => {
+    const selectedTranslation = currentCity?.city_translations.find(
+      (t) => t.locale === selectedLocale
+    );
+    if (selectedTranslation) {
+      setValue('name', selectedTranslation.name);
+    } else {
+      console.log('No translation found for the selected locale');
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, currentCity, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -130,11 +143,30 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="locale" label="Locale">
-              <MenuItem value="en">En</MenuItem>
-              <MenuItem value="ar">Ar</MenuItem>
+            <RHFSelect
+              name="locale"
+              label="Locale"
+              onChange={(e) => {
+                const newLocale = e.target.value;
+
+                setValue('locale', newLocale);
+              }}
+              value={selectedLocale}
+            >
+              {currentCity?.city_translations.map((translation) => (
+                <MenuItem key={translation.locale} value={translation.locale}>
+                  {translation.locale === 'en' ? 'English' : 'Arabic'}
+                </MenuItem>
+              ))}
             </RHFSelect>
-            <RHFTextField name="name" label="Name" />
+
+            <RHFTextField
+              name="name"
+              label="Name"
+              onChange={(e) => {
+                setValue('name', e.target.value);
+              }}
+            />
             <RHFSwitch name="published" label={'Published'} />
           </Box>
         </DialogContent>

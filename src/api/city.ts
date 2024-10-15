@@ -59,7 +59,7 @@ export function useGetAllCity({
   };
   return { ...memoizedValue, revalidateCategory };
 }
-export function useGetAllCities(limit: number) {
+export function useGetAllCities(page: number, limit: number) {
   const getTheFullUrl = () => {
     let queryPrams = {};
 
@@ -67,6 +67,12 @@ export function useGetAllCities(limit: number) {
       queryPrams = { ...queryPrams, limit };
     } else {
       queryPrams = { ...queryPrams, limit: 100 };
+    }
+    // Added limit and page for fetching listing of cities
+    if (page) {
+      queryPrams = { ...queryPrams, page: page + 1 };
+    } else {
+      queryPrams = { ...queryPrams, page: 1 };
     }
     return `${endpoints.city.getByList}?${new URLSearchParams(queryPrams)}`;
   };
