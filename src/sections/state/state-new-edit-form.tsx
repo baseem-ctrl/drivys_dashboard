@@ -52,8 +52,23 @@ export default function StateNewEditForm({
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { isSubmitting },
   } = methods;
+
+  const selectedLocale = watch('locale');
+
+  // Update name based on locale
+  useEffect(() => {
+    const translation = state?.translations?.find(
+      (translation: { locale: any; }) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, setValue]);
 
   useEffect(() => {
     if (state) {
