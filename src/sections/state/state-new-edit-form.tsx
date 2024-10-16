@@ -57,7 +57,6 @@ export default function StateNewEditForm({
   } = methods;
   const selectedLocale = watch('locale');
 
-  const selectedLocale = watch('locale');
 
   // Update name based on locale
   useEffect(() => {
