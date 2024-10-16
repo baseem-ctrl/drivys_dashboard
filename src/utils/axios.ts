@@ -186,4 +186,12 @@ export const endpoints = {
     getByList: 'admin/city/get-city-list',
     delete: 'admin/city/delete-city/',
   },
+  state: {
+    createStateTranslation: 'admin/state-province/create-state-translation',
+    updateStateTranslation: 'admin/state-province/create-state-translation',
+    getById: 'admin/state-province/get-by-id',
+    getByList: 'admin/state-province/get-list',
+    deleteById: 'admin/state-province/delete-by-id',
+    deleteStateProvince: 'admin/state-province/delete-state-translation',
+  },
 };
