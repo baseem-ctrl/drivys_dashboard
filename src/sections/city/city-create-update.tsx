@@ -41,7 +41,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     () => ({
       name: currentCity?.city_translations[0]?.name || '',
       locale: currentCity?.city_translations[0]?.locale || 'en',
-      published: currentCity?.is_published === '1',
+      published: currentCity?.is_published === '1' ? true : false,
     }),
     [currentCity]
   );
@@ -55,59 +55,32 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     reset,
     handleSubmit,
     formState: { isSubmitting },
-    watch,
-    setValue,
   } = methods;
 
-  const selectedLocale = watch('locale');
-
   useEffect(() => {
-    if (currentCity) {
-      reset(defaultValues);
-    }
+    reset(defaultValues);
   }, [currentCity, defaultValues, reset]);
-
-  useEffect(() => {
-    const selectedTranslation = currentCity?.city_translations.find(
-      (t) => t.locale === selectedLocale
-    );
-    if (selectedTranslation) {
-      setValue('name', selectedTranslation.name);
-    } else {
-      console.log('No translation found for the selected locale');
-      setValue('name', 'N/A');
-    }
-  }, [selectedLocale, currentCity, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
-
       formData.append('city_id', currentCity?.id || '');
       formData.append('is_published', data.published ? '1' : '0');
       formData.append('city_translation[0][locale]', data.locale);
       formData.append('city_translation[0][name]', data.name);
 
-      let updateResponse;
-      let createResponse;
+      // Conditional API call based on presence of currentCity
       if (currentCity?.id) {
-        // Update city call
-        updateResponse = await updateCityTranslation(formData);
+        await updateCityTranslation(formData);
+        enqueueSnackbar('City translation updated successfully.');
       } else {
-        // Create city call
-        createResponse = await createCityTranslation(formData);
-        reset();
+        await createCityTranslation(formData);
+        enqueueSnackbar('City translation created successfully.');
       }
 
-      if (updateResponse) {
-        onClose();
-        reload();
-        enqueueSnackbar('City translations updated successfully.');
-      } else {
-        onClose();
-        reload();
-        enqueueSnackbar('City translations created successfully.');
-      }
+      reset();
+      onClose();
+      reload();
     } catch (error) {
       if (error.errors) {
         Object.values(error.errors).forEach((errorMessage) => {
@@ -143,31 +116,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect
-              name="locale"
-              label="Locale"
-              onChange={(e) => {
-                const newLocale = e.target.value;
-
-                setValue('locale', newLocale);
-              }}
-              value={selectedLocale}
-            >
-              {currentCity?.city_translations.map((translation) => (
-                <MenuItem key={translation.locale} value={translation.locale}>
-                  {translation.locale === 'en' ? 'English' : 'Arabic'}
-                </MenuItem>
-              ))}
+            <RHFSelect name="locale" label="Locale">
+              <MenuItem value="en">English</MenuItem>
+              <MenuItem value="ar">Arabic</MenuItem>
             </RHFSelect>
-
-            <RHFTextField
-              name="name"
-              label="Name"
-              onChange={(e) => {
-                setValue('name', e.target.value);
-              }}
-            />
-            <RHFSwitch name="published" label={'Published'} />
+            <RHFTextField name="name" label="Name" />
+            <RHFSwitch name="published" label="Published" />
           </Box>
         </DialogContent>
 
