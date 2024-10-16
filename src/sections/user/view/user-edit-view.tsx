@@ -42,7 +42,7 @@ export default function UserEditView({ id }: Props) {
         }}
       />
 
-      <UserNewEditForm currentUser={currentUser} loading={detailsLoading} id={id} />
+      {currentUser?.id && <UserNewEditForm currentUser={currentUser} loading={detailsLoading} id={id} />}
     </Container>
   );
 }
