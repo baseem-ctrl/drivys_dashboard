@@ -65,10 +65,8 @@ const fluencyOptions = [
 ];
 
 export default function UserNewEditForm({ loading, id }: Props) {
-  console.log('id', id);
   const { details, detailsLoading } = useGetUserDetails(id);
   const currentUser = details;
-  console.log('currentUser', currentUser);
   const router = useRouter();
   const { user } = useAuthContext();
 
@@ -151,18 +149,24 @@ export default function UserNewEditForm({ loading, id }: Props) {
       phone: currentUser?.phone || '',
       country_code: '971',
       dob: currentUser?.dob?.split('T')[0] || '',
-      locale: language?.find((option) => option?.name === currentUser?.locale) || null,
+      locale: language ? language?.find((option) => option?.language_culture === currentUser?.locale) : '',
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.is_active || 1,
-      languages: [],
-      gear: currentUser?.gear || '',
+      languages: dialect ? currentUser?.languages?.map(lang => ({
+        id: dialect?.length > 0 ? dialect?.find((option) => option?.id === lang?.dialect?.id) : '',
+        fluency_level: lang?.fluency_level || ''
+      })) : [],
+      gear: gearData?.length > 0 ? gearData?.find((option) => option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase())?.value : '',
       vehicle_type_id:
-        language?.find((option) => option?.id === currentUser?.vehicle_type_id) || null,
-      gender: currentUser?.gender || '',
-      city_id: currentUser?.city_id || '',
+        currentUser?.user_preference?.vehicle_type_id || '',
+      gender: genderData?.length > 0 ? genderData?.find((option) => option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase())?.value : '',
+      city_id: currentUser?.user_preference?.city_id || '',
     }),
-    [currentUser]
+    [currentUser?.locale, dialect, language]
   );
+
+
+
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -180,7 +184,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
 
   const { fields, remove } = useFieldArray({
     control,
-    name: 'languages', // Field array name for addons
+    name: 'languages',
   });
 
   const values = watch();
@@ -188,7 +192,8 @@ export default function UserNewEditForm({ loading, id }: Props) {
     if (currentUser?.id) {
       reset(defaultValues);
     }
-  }, [currentUser, reset]);
+    setLanguage(currentUser?.languages ?? [])
+  }, [currentUser, reset, gearData, genderData, dialect, language]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       let response;
@@ -202,8 +207,6 @@ export default function UserNewEditForm({ loading, id }: Props) {
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       body.append('gender', data?.gender);
       body.append('city_id', data?.city_id);
-
-      console.log(data, 'MMMM');
       if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       // if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
@@ -214,7 +217,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
       body.append('locale', data?.locale?.language_culture);
       if (
         data?.photo_url
-        // && typeof data?.photo_url === 'file'
+        && data?.photo_url instanceof File
       ) {
         body.append('photo_url', data?.photo_url);
       }
@@ -238,10 +241,10 @@ export default function UserNewEditForm({ loading, id }: Props) {
       // }language[${index}].id
       if (data?.languages?.length > 0) {
         data?.languages?.forEach((languageItem, index) => {
-          body.append(`language[${index}][id]`, languageItem?.id?.id);
+          body.append(`languages[${index}][id]`, languageItem?.id?.id);
 
           // Use nullish coalescing to handle cases where `value` might be 0
-          body.append(`language[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
+          body.append(`languages[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
 
@@ -272,6 +275,8 @@ export default function UserNewEditForm({ loading, id }: Props) {
   // Function to add more pairs
   const handleAddMore = () => {
     setLanguage([...languages, { id: '', fluency_level: '' }]);
+    console.log(languages, "languages");
+
   };
 
   // Function to remove a pair
@@ -419,7 +424,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
-                options={language}
+                options={language ?? []}
                 getOptionLabel={(option) => {
                   return option ? `${option?.name}` : '';
                 }}
@@ -490,24 +495,12 @@ export default function UserNewEditForm({ loading, id }: Props) {
                   </RHFSelect>
                 </Box>
                 {languages?.map((languageItem, index) => (
-                  <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-                    {/*
-<RHFSelect name="dialect" label="Dialect">
-                    {dialect?.length > 0 &&
-                      dialect?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.dialect_name ?? "Unknown"}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect> */}
-
+                  <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={languageItem.id || index}>
                     <Grid item xs={12} md={5}>
                       <RHFAutocomplete
                         name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
-                        getOptionLabel={(option) => {
-                          return option ? `${option?.dialect_name}` : '';
-                        }}
+                        getOptionLabel={(option) => option ? `${option?.dialect_name}` : ''}
                         options={dialect}
                         renderOption={(props, option: any) => (
                           <li {...props} key={option?.id}>
@@ -523,12 +516,11 @@ export default function UserNewEditForm({ loading, id }: Props) {
                         name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
                         label="Fluency level"
                       >
-                        {fluencyOptions?.length > 0 &&
-                          fluencyOptions?.map((option: any) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.name}
-                            </MenuItem>
-                          ))}
+                        {fluencyOptions.map((option: any) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
                       </RHFSelect>
                     </Grid>
 
@@ -540,6 +532,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
                     </Grid>
                   </Grid>
                 ))}
+
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <Button variant="contained" onClick={handleAddMore}>
                     Add Language
