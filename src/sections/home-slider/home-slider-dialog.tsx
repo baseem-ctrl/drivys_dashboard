@@ -117,14 +117,27 @@ export default function HomeSliderDialog({
           label: category?.category_translations[0]?.name,
           value: category?.id,
         })) || [],
-      trainers: []
+      // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
+      //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
+      //   display_order: trainer?.display_order || ''
+      // })) : [],
+      trainers: users ? updateValue?.trainers?.map((trainer) => {
+        const user = users.find((option) => option.id === trainer.trainer.id);
+        return {
+          id: user ? { label: user?.name, value: user?.id } : '',
+          display_order: trainer.display_order || '',
+        };
+      }) : [],
+      //  updateValue?.trainers
       // Category: updateValue?.categories || [],
       // Product:
       //   updateValue?.products?.map((product: any) => product?.product_translations[0]?.name) || [],
 
     }),
-    [updateValue, today]
+    [updateValue, today, users]
   );
+
+
 
   const methods = useForm({
     resolver: yupResolver(NewProductSchema),
@@ -180,7 +193,7 @@ export default function HomeSliderDialog({
     // selectedLanguage
     setSelectedArrayIds(updateValue?.pictures)
 
-
+    setTrainer(updateValue?.trainers)
 
 
   }, [updateValue, reset, defaultValues, selectedLanguage]);
@@ -361,6 +374,8 @@ export default function HomeSliderDialog({
               />
               <RHFSwitch name="published" label={t('Published')} />
             </Box>
+
+            <h5>Trainers:</h5>
             {trainers?.map((trainerItem: any, index: Key | null | undefined) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
 
@@ -399,13 +414,13 @@ export default function HomeSliderDialog({
                 </Grid>
               </Grid>
             ))}
-            {/* <Grid item xs={12} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
                 Add Trainer
               </Button>
-            </Grid> */}
-
-            <Box p={3}>
+            </Grid>
+            <h5>Images:</h5>
+            <Box >
               {/* Button to open the image selection dialog */}
               <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
                 Select Images
