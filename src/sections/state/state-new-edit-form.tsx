@@ -55,6 +55,7 @@ export default function StateNewEditForm({
     watch,
     formState: { isSubmitting },
   } = methods;
+  const selectedLocale = watch('locale');
 
   const selectedLocale = watch('locale');
 
@@ -111,7 +112,16 @@ export default function StateNewEditForm({
       }
     }
   });
-
+  useEffect(() => {
+    const translation = state?.translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, state, setValue]);
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid xs={12} md={8}>

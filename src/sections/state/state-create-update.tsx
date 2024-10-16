@@ -56,10 +56,13 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
   const {
     reset,
     handleSubmit,
+    setValue,
+    watch,
     formState: { isSubmitting },
     watch,
     setValue
   } = methods;
+  const selectedLocale = watch('locale');
 
   const selectedLocale = watch('locale');
 
@@ -80,7 +83,16 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       reset(defaultValues);
     }
   }, [currentState, defaultValues, reset]);
-
+  useEffect(() => {
+    const translation = currentState?.translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, currentState, setValue]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();

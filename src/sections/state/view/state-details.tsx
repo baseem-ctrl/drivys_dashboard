@@ -8,10 +8,10 @@ export default function StateDetails({ onEdit, state }) {
   const renderContent = (
     <>
       {state?.translations && state.translations.length > 0 ? (
-        <Grid spacing={3}>
+        <Grid spacing={3} paddingTop={3} paddingBottom={5} paddingLeft={10} paddingRight={10}>
           {state.translations.map((translation, index) => (
-            <Grid>
-              <Stack sx={{ p: 3, position: 'relative' }}>
+            <Grid marginBottom={5}>
+              <Stack sx={{ p: 3, position: 'relative' }} component={Card}>
                 <Stack
                   spacing={1}
                   alignItems={{ xs: 'center', md: 'center' }}
