@@ -54,13 +54,25 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   const {
     reset,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = methods;
+  const selectedLocale = watch('locale');
 
   useEffect(() => {
     reset(defaultValues);
   }, [currentCity, defaultValues, reset]);
-
+  useEffect(() => {
+    const translation = currentCity?.city_translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, currentCity, setValue]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
