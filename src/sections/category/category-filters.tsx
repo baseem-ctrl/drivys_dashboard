@@ -181,12 +181,11 @@ export default function CategoryFilters({
         Parent Category
       </Typography>
       <Autocomplete
-        disableCloseOnSelect
         options={parentCategoryOptions?.map((option) => option)}
         getOptionLabel={(option) => option.label}
         value={filters.parent_id}
         onChange={(event, newValue) => handleFilterParent(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Roles" {...params} />}
+        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
