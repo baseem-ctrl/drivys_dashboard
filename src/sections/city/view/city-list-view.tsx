@@ -9,14 +9,18 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
+import {
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
 
-import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-// _mock
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -27,15 +31,12 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   getComparator,
-  emptyRows,
-  TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 // types
-import { IUserTableFilters } from 'src/types/user';
+import { ICityTableFilters } from 'src/types/city';
 //
 import CityTableRow from '../city-table-row';
 import { enqueueSnackbar } from 'src/components/snackbar';
@@ -43,6 +44,9 @@ import CityCreateEditForm from '../city-create-update';
 import { deleteCity, useGetAllCities } from 'src/api/city';
 import CityNewEditForm from '../city-new-edit-form';
 import CityDetails from './city-details';
+import CityFilters from '../city-filters';
+import CitySearch from '../city-search';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -55,10 +59,9 @@ const TABLE_HEAD = [
   { id: 'action2', label: '', width: 88 },
 ];
 
-const defaultFilters: IUserTableFilters = {
+const defaultFilters: ICityTableFilters = {
   name: '',
-  role: [],
-  status: 'all',
+  locale: '',
 };
 
 // ----------------------------------------------------------------------
@@ -68,25 +71,38 @@ export default function CityListView() {
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const createCity = useBoolean();
+  const openFilters = useBoolean();
 
-  const [filters, setFilters] = useState('');
+  const [filters, setFilters] = useState(defaultFilters);
   const [tableData, setTableData] = useState<any>([]);
   const [selectedCity, setSelectedCity] = useState(null); // State to hold selected city
   const [viewMode, setViewMode] = useState('table'); // State to manage view mode
   const [rowId, setRowId] = useState(null);
   const [openEditPopup, setOpenEditPopup] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [localeFilter, setLocaleFilter] = useState('');
+  const [originalTableData, setOriginalTableData] = useState<any>([]);
 
   const [index, setIndex] = useState(null);
   const { cities, revalidateCities, totalpages, cityLoading } = useGetAllCities(
     table.page,
-    table.rowsPerPage
-  ); // Fetch all cities
+    table.rowsPerPage,
+    searchQuery,
+    localeFilter
+  );
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   useEffect(() => {
     if (cities?.length) {
+      setOriginalTableData(cities);
       setTableData(cities);
     } else {
       setTableData([]);
+      setOriginalTableData([]);
     }
   }, [cities]);
 
@@ -106,6 +122,12 @@ export default function CityListView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+  const handleFiltersChange = (name: string, value: any) => {
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
@@ -117,8 +139,8 @@ export default function CityListView() {
   };
 
   const handleBackToList = () => {
-    setViewMode('table'); // Change view back to table
-    setSelectedCity(null); // Reset selected city
+    setViewMode('table');
+    setSelectedCity(null);
   };
   const handleEditClick = () => {
     setOpenEditPopup(true);
@@ -127,6 +149,56 @@ export default function CityListView() {
   const handleClosePopup = () => {
     setOpenEditPopup(false);
   };
+  console.log('originalTableData', originalTableData);
+  const handleResetFilters = useCallback(() => {
+    setLocaleFilter('');
+    setFilters(defaultFilters);
+    setTableData(originalTableData);
+  }, [originalTableData]);
+
+  const handleFilters = useCallback(
+    (name: string, value: ICityTableFilters) => {
+      console.log('name', name);
+      console.log('value', value);
+
+      setSearchQuery(value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
+
+  const handleLocaleFilterChange = (locale: string) => {
+    setLocaleFilter(locale);
+  };
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      sx={{ marginBottom: 3 }}
+    >
+      <CitySearch query={searchQuery} onSearch={handleFilters} />
+
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <CityFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          filters={filters}
+          onFilters={handleFiltersChange}
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          localeOptions={localeOptions}
+          onLocaleChange={handleLocaleFilterChange}
+        />
+      </Stack>
+    </Stack>
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -144,7 +216,7 @@ export default function CityListView() {
             { name: 'List' },
           ]}
           action={
-            viewMode === "table" && (
+            viewMode === 'table' && (
               <Button
                 onClick={() => {
                   createCity.onTrue();
@@ -155,13 +227,12 @@ export default function CityListView() {
                 New City
               </Button>
             )
-
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
-
+        {renderFilters}
         <Card>
           {viewMode === 'table' && (
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -202,7 +273,7 @@ export default function CityListView() {
                             </TableCell>
                           </TableRow>
                         ))
-                      : tableData?.map((row) => (
+                      : dataFiltered?.map((row) => (
                           <CityTableRow
                             row={row}
                             selected={table.selected.includes(row.id)}
@@ -220,9 +291,9 @@ export default function CityListView() {
 
           {viewMode === 'detail' && selectedCity && (
             <CityDetails
-              city={selectedCity} // Pass the selected city to the detail component
-              onEdit={handleEditClick} // Handle edit button click
-              onBack={handleBackToList} // Handle back to list click
+              city={selectedCity}
+              onEdit={handleEditClick}
+              onBack={handleBackToList}
               reload={revalidateCities}
               cityId={rowId}
               index={index}
@@ -265,7 +336,6 @@ export default function CityListView() {
         open={createCity.value}
         onClose={createCity.onFalse}
         reload={revalidateCities}
-        // currentCity={city}
       />
     </>
   );
@@ -281,30 +351,41 @@ function applyFilter({
 }: {
   inputData: any[];
   comparator: (a: any, b: any) => number;
-  filters: IUserTableFilters;
+  filters: ICityTableFilters;
 }) {
-  const { name, status } = filters;
+  const { name, locale } = filters;
 
-  // Stabilize the input data to maintain order after sorting
   const stabilizedThis = inputData.map((el, index) => [el, index] as [any, number]);
   stabilizedThis.sort((a, b) => {
     return comparator(a[0], b[0]);
   });
 
-  // Apply the filters
-  return stabilizedThis
+  const filteredData = stabilizedThis
     .map((el) => el[0])
     .filter((item) => {
-      // Filter by name if provided
-      if (name && (!item.name || item.name.toLowerCase().indexOf(name.toLowerCase()) === -1)) {
+      // Check for name filter
+      if (
+        name &&
+        (!item.city_translations ||
+          !item.city_translations.some((translation) =>
+            translation.name.toLowerCase().includes(name.toLowerCase())
+          ))
+      ) {
         return false;
       }
 
-      // Filter by status if provided
-      if (status && item.status !== status) {
-        return false;
+      // Check for locale filter
+      if (locale) {
+        const hasMatchingLocale = item.city_translations.some(
+          (translation) => translation.locale === locale
+        );
+        if (!hasMatchingLocale) {
+          return false;
+        }
       }
 
       return true;
     });
+
+  return filteredData;
 }
