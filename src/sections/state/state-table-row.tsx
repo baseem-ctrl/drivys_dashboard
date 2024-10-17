@@ -59,7 +59,7 @@ export default function StateTableRow({
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          {/* {order} */}
+          {order}
         </TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

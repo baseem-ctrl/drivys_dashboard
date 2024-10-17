@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import isEqual from 'lodash/isEqual';
+
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -8,7 +10,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Skeleton, TableCell, TableRow } from '@mui/material';
+import { Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 // routes
@@ -25,6 +27,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -35,6 +38,10 @@ import { deleteStateById, useGetStateList } from 'src/api/state';
 import StateDetails from './state-details';
 import StateNewEditForm from '../state-new-edit-form';
 import StateCreateEditForm from '../state-create-update';
+import StateFilters from '../state-filters';
+import StateSearch from '../state-search';
+import { IStateTableFilters } from 'src/types/state';
+import { useGetAllLanguage } from 'src/api/language';
 // import StateNewEditForm from '../state-new-edit-form';
 // import StateDetails from './state-details';
 
@@ -45,10 +52,14 @@ const TABLE_HEAD = [
   { id: 'locale', label: 'Locale', width: 180 },
   { id: 'state_id', label: 'State ID', width: 220 },
   { id: 'is_published', label: 'Published', width: 180 },
-  { id: 'action1', label: '', width: 180 },
+  { id: 'action1', label: 'Display Order ID', width: 180 },
   { id: 'action2', label: '', width: 88 },
 ];
 
+const defaultFilters: IStateTableFilters = {
+  name: '',
+  locale: '',
+};
 // ----------------------------------------------------------------------
 
 export default function StateListView() {
@@ -56,6 +67,7 @@ export default function StateListView() {
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const createState = useBoolean();
+  const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState<any>([]);
   const [selectedState, setSelectedState] = useState(null);
@@ -63,13 +75,29 @@ export default function StateListView() {
   const [rowId, setRowId] = useState(null);
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [stateProvinceID, setProvinceID] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(null);
+  const [localeFilter, setLocaleFilter] = useState('');
+  const [filters, setFilters] = useState(defaultFilters);
+  const [selectedOrder, setSelectedOrder] = useState(undefined);
+
   const [index, setIndex] = useState(null);
 
   // Use the state hook instead of the city one
   const { states, revalidateStates, totalpages, stateLoading } = useGetStateList({
     limit: table.rowsPerPage,
     page: table.page,
+    order: selectedOrder,
+    searchTerm: searchQuery,
+    locale: localeFilter,
+    is_published: filters.is_published,
   });
+
+  const { language } = useGetAllLanguage(0, 1000);
+
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   useEffect(() => {
     if (states?.length) {
       setTableData(states);
@@ -108,7 +136,75 @@ export default function StateListView() {
   const handleClosePopup = () => {
     setOpenEditPopup(false);
   };
+  const handleFilters = useCallback(
+    (name: string, value: IStateTableFilters) => {
+      setSearchQuery(value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
+  const handleOrderChange = (event) => {
+    const value = event.target.value;
+
+    if (value === '') {
+      setSelectedOrder(undefined);
+      setLocaleFilter('');
+      setFilters(defaultFilters);
+    } else {
+      setSelectedOrder(value);
+    }
+  };
+  const handleLocaleFilterChange = (locale: string) => {
+    setLocaleFilter(locale);
+  };
+  const canReset = !isEqual(defaultFilters, filters);
+
+  const handleFiltersChange = (name, value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const handleResetFilters = useCallback(() => {
+    setSelectedOrder(undefined);
+
+    setLocaleFilter('');
+    setFilters(defaultFilters);
+  }, []);
+
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      sx={{ marginBottom: 3 }}
+    >
+      <StateSearch query={searchQuery} onSearch={handleFilters} />
+
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <StateFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          handleOrderChange={handleOrderChange}
+          selectedOrder={selectedOrder}
+          filters={filters}
+          onFilters={handleFiltersChange}
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          localeOptions={localeOptions}
+          onLocaleChange={handleLocaleFilterChange}
+        />
+      </Stack>
+    </Stack>
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -142,7 +238,7 @@ export default function StateListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-
+        {renderFilters}
         <Card>
           {viewMode === 'table' && (
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -250,5 +346,3 @@ export default function StateListView() {
     </>
   );
 }
-
-// ----------------------------------------------------------------------

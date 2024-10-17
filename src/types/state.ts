@@ -10,3 +10,7 @@ export type IStateItem = {
     locale: string;
   }[];
 };
+export type IStateTableFilters = {
+  name: string;
+  locale: string;
+};

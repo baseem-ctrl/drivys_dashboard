@@ -22,14 +22,18 @@ export function updateStateTranslation(body: any) {
 
 // ----------------------------------------------------------------------
 // List all states
-interface useGetStateListParams {
+// Define the types for the parameters
+type useGetStateListParams = {
   limit?: number;
   page?: number;
   sort?: string;
-  sort_dir?: 'asc' | 'desc';
-  is_published?: number;
-  order?: number;
-}
+  sort_dir?: string;
+  is_published?: 'published' | 'unpublished';
+  order?: string;
+  searchTerm?: string;
+  locale?: string;
+};
+
 export function useGetStateList({
   limit = 10,
   page = 1,
@@ -37,20 +41,27 @@ export function useGetStateList({
   sort_dir = 'asc',
   is_published,
   order,
+  searchTerm = '',
+  locale = '',
 }: useGetStateListParams = {}) {
-  const queryParams = useMemo(() => {
-    const params: Record<string, any> = { sort, sort_dir };
-    params.limit = limit || 100;
-    params.page = page ? page + 1 : 1;
-    if (is_published !== undefined) params.is_published = is_published;
-    if (order !== undefined) params.order = order;
-    return params;
-  }, [limit, page, sort, sort_dir, is_published, order]);
+  const getTheFullUrl = () => {
+    const queryParams: Record<string, any> = {
+      limit: limit || 100,
+      page: page ? page + 1 : 1,
+      sort,
+      sort_dir,
+    };
 
-  const getTheFullUrl = useMemo(
-    () => `${endpoints.state.getByList}?${new URLSearchParams(queryParams)}`,
-    [queryParams]
-  );
+    if (is_published !== undefined) {
+      queryParams.is_published = is_published === 'published' ? 1 : 0;
+    }
+    if (order !== undefined) queryParams.order = order;
+
+    if (searchTerm) queryParams.search = searchTerm;
+    if (locale) queryParams.locale = locale;
+
+    return `${endpoints.state.getByList}?${new URLSearchParams(queryParams)}`;
+  };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
