@@ -8,3 +8,8 @@ export type ICityItem = {
     locale: string;
   }[];
 };
+export type IUserTableFilterValue = string | string[];
+export type ICityTableFilters = {
+  name: string;
+  locale: string;
+};

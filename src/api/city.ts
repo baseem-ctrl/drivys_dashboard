@@ -59,22 +59,23 @@ export function useGetAllCity({
   };
   return { ...memoizedValue, revalidateCategory };
 }
-export function useGetAllCities(page: number, limit: number) {
+export function useGetAllCities(page: number, limit: number, searchQuery: string, locale: string) {
   const getTheFullUrl = () => {
-    let queryPrams = {};
+    let queryParams: any = {
+      limit: limit || 100,
+      page: page ? page + 1 : 1,
+    };
 
-    if (limit) {
-      queryPrams = { ...queryPrams, limit };
-    } else {
-      queryPrams = { ...queryPrams, limit: 100 };
+    // Add search query and locale to the request if provided
+    if (searchQuery) {
+      queryParams.search = searchQuery;
     }
-    // Added limit and page for fetching listing of cities
-    if (page) {
-      queryPrams = { ...queryPrams, page: page + 1 };
-    } else {
-      queryPrams = { ...queryPrams, page: 1 };
+
+    if (locale) {
+      queryParams.locale = locale;
     }
-    return `${endpoints.city.getByList}?${new URLSearchParams(queryPrams)}`;
+
+    return `${endpoints.city.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
