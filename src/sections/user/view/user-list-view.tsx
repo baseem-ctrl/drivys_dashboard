@@ -55,9 +55,8 @@ import { useSnackbar } from 'src/components/snackbar';
 
 const TABLE_HEAD = {
   all: [
-    { id: 'name', label: 'Name' },
+    { id: 'name', label: 'Name', width: 200 },
     { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-    { id: 'user_type', label: 'User Type', width: 180 },
     { id: 'dob', label: 'DOB', width: 220 },
     { id: 'status', label: 'Status', width: 100 },
     { id: '', width: 88 },
@@ -65,7 +64,6 @@ const TABLE_HEAD = {
   trainer: [
     { id: 'name', label: 'Name' },
     { id: 'phoneNumber', label: 'Phone Number' },
-    { id: 'user_type', label: 'User Type' },
     { id: 'dob', label: 'DOB' },
     { id: 'status', label: 'Status' },
     { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },

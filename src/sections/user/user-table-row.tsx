@@ -81,14 +81,19 @@ export default function UserTableRow({
                 color: 'text.disabled',
               }}
             />
+            <Label
+              variant="soft"
+              color="info"
+            >
+              {user_type}
+            </Label>
           </Link>
+
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {country_code ? `${country_code}-${phone}` : phone || 'NA'}
         </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{user_type}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(dob).toISOString().split('T')[0] ?? 'NA'}</TableCell>
 
         <TableCell>
