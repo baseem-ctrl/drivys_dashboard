@@ -146,7 +146,7 @@ type TranslationsObj = {
 };
 
 export type IDeliveryItem = {
-  id: number;
+  id: string;
   day_of_week: string;
   max_orders: string;
   published: string;
