@@ -298,7 +298,7 @@ export default function UserListView() {
                   {usersLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                       <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                        <TableCell colSpan={filters.userTypes === 'TRAINER' ? TABLE_HEAD.trainer?.length : TABLE_HEAD.all?.length || 6}>
                           <Skeleton animation="wave" height={40} />
                         </TableCell>
                       </TableRow>
