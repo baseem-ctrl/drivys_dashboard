@@ -144,6 +144,12 @@ export const endpoints = {
     addTrainer: 'admin/trainers/create-trainer',
     removeTrainer: 'admin/trainers/delete-trainer/',
   },
+  homeListing: {
+    list: 'admin/home-page-listing/get-listing-list',
+    createUpdate:'admin/home-page-listing/create-listing-translation',
+    details: 'admin/home-page-listing/get-listing/',
+    delete: 'admin/home-page-listing/delete-listing/',
+  },
   package: {
     list: 'admin/package/get-packge-list',
     details: 'admin/package/get-packge/',
