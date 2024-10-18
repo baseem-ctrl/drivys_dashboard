@@ -51,11 +51,16 @@ export default function UserTableRow({
 
   const quickEdit = useBoolean();
 
+  const redirectToDetailsPage = () => {
+    router.push(paths.dashboard.user.details(row?.id));
+  };
+
+
   const popover = usePopover();
   const router = useRouter();
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow hover selected={selected} sx={{ cursor: "pointer" }} onClick={redirectToDetailsPage}>
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
