@@ -60,7 +60,7 @@ export default function UserTableRow({
   const router = useRouter();
   return (
     <>
-      <TableRow hover selected={selected} sx={{ cursor: "pointer" }} onClick={redirectToDetailsPage}>
+      <TableRow hover selected={selected}  >
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
