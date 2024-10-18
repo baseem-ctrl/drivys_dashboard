@@ -68,7 +68,7 @@ const TABLE_HEAD = {
     { id: 'user_type', label: 'User Type' },
     { id: 'dob', label: 'DOB' },
     { id: 'status', label: 'Status' },
-    { id: 'max_cash_in_hand_allowed', label: 'MAx Cash Allowded' },
+    { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },
     { id: 'cash_in_hand', label: 'Cash in Hand' },
     { id: '', width: 88 },
   ],
@@ -299,24 +299,24 @@ export default function UserListView() {
                 <TableBody>
                   {usersLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <UserTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          currentUserType={filters?.userTypes}
-                          reload={() => revalidateUsers()}
-                        />
-                      ))}
+                      <UserTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        currentUserType={filters?.userTypes}
+                        reload={() => revalidateUsers()}
+                      />
+                    ))}
 
                   {tableData?.length === 0 && !usersLoading && <TableNoData notFound={notFound} />}
                 </TableBody>
