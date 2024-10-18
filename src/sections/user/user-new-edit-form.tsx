@@ -200,13 +200,12 @@ export default function UserNewEditForm({ loading, id }: Props) {
       const body = new FormData();
       body.append('name', data?.name);
       body.append('email', data?.email);
-      body.append('password', data?.password);
+      if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      body.append('gear', data?.gear);
+      if (data?.gear) body.append('gear', data?.gear);
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      body.append('gender', data?.gender);
-      body.append('city_id', data?.city_id);
+      if (data?.gender) body.append('gender', data?.gender);
       if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       // if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
