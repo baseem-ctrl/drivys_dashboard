@@ -123,7 +123,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
     country_code: Yup.string().required('Country Code is required'),
     dob: Yup.string().required('Dob is required'),
     locale: Yup.mixed().nullable(), // not required
-    user_type: Yup.string(),
+    user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
     gear: Yup.mixed().nullable(),
