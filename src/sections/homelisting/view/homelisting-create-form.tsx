@@ -40,7 +40,7 @@ export default function SchoolCreateForm({
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
-  const [selectedLocale, setSelectedLocale] = useState<string | null>();
+  const [selectedLocale, setSelectedLocale] = useState<string | null>("en");
 
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -60,7 +60,7 @@ export default function SchoolCreateForm({
     () => ({
       catalogue_type: '',
       title: '',
-      locale: '',
+      locale: 'en',
       description: '',
       display_order: '',
       is_active: false,
@@ -118,7 +118,7 @@ export default function SchoolCreateForm({
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
-      setValue('title', translation.name || '');
+      setValue('title', translation.title || '');
       setValue('locale', selectedLocale);
 
       // Update the previous locale
@@ -135,9 +135,9 @@ export default function SchoolCreateForm({
     const body = new FormData();
     body.append("translation[0][locale]", data?.locale)
     body.append("translation[0][title]", data?.title)
-    body.append("translation[0][description]", data?.description)
-    body.append("display_order", data?.display_order)
-    body.append("catalogue_type", data?.catalogue_type)
+    if (data?.description) body.append("translation[0][description]", data?.description)
+    if (data?.display_order) body.append("display_order", data?.display_order)
+    if (data?.catalogue_type) body.append("catalogue_type", data?.catalogue_type)
     body.append("is_active", data?.is_active ? '1' : '0')
 
     try {
@@ -161,6 +161,7 @@ export default function SchoolCreateForm({
 
   const handleClose = () => {
     reset(defaultValues);
+    setSelectedLocale("en")
     onClose();
   };
   return (
@@ -181,6 +182,7 @@ export default function SchoolCreateForm({
               <RHFSelect
                 name="locale (Language)"
                 label="Locale"
+                value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
                 {localeOptions?.map((option: any) => (
