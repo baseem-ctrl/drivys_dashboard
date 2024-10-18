@@ -368,6 +368,15 @@ export default function UserDetailsContent({
                 { label: 'Preffered Language', value: details?.locale ?? 'NA' },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
+                // Updated Languages Section to display each language in a separate row
+                ...(details?.languages?.length > 0
+                  ? details.languages.map((lang: any, index: number) => ({
+                    label: `Language ${index + 1}`,
+                    value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
+                  }))
+                  : [{ label: 'Languages', value: 'NA' }]
+                ),
+
 
                 {
                   label: 'Is Active',
@@ -380,25 +389,73 @@ export default function UserDetailsContent({
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      {
-                        label: 'Max Cash Allowded in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                      },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                      {
-                        label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
-                      },
-                      {
-                        label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
-                      },
-                      {
-                        label: 'Vendor Commission',
-                        value: details?.vendor_commission_in_percentage ?? 'N/A',
-                      },
-                    ]
+                    {
+                      label: 'Max Cash Allowded in Hand',
+                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                    },
+                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                    {
+                      label: 'Cash Clearance Date',
+                      value: details?.cash_clearance_date ?? 'N/A',
+                    },
+                    {
+                      label: 'Last Booking At',
+                      value: details?.last_booking_was ?? 'N/A',
+                    },
+                    {
+                      label: 'Vendor Commission',
+                      value: details?.vendor_commission_in_percentage ?? 'N/A',
+                    },
+                  ]
                   : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+      </Stack>
+    </Stack>
+  );
+
+  const renderUserPreferences = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Typography sx={{ fontWeight: "700" }}>User Preferences:</Typography>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+        }}
+      >
+
+        <Grid item xs={12} sm={8} md={8}>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                { label: 'City', value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A' },
+                { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
+
+                { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+
+                { label: 'Vehicle type', value: details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA' },
+
+
+
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -829,7 +886,7 @@ export default function UserDetailsContent({
                     });
                     // handleEditAddress(index, address);
                   }}
-                  // sx={{ mt: 1 }}
+                // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? 'Hide Map' : 'Show Map'}
                 </Button>
@@ -1073,9 +1130,9 @@ export default function UserDetailsContent({
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
-            {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
+            <Grid xs={12} >
+              {details?.user_preference?.id && renderUserPreferences}
+            </Grid>
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>
