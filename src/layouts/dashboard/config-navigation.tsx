@@ -180,6 +180,7 @@ export function useNavData() {
         { title: t('Language'), path: paths.dashboard.system.root },
         { title: t('City'), path: paths.dashboard.system.city },
         { title: t('State'), path: paths.dashboard.system.state },
+        { title: t('Dialect'), path: paths.dashboard.system.dialect },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
         // { title: t('edit'), path: paths.dashboard.tour.demo.edit },
