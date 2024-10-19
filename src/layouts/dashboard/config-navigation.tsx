@@ -129,6 +129,16 @@ export function useNavData() {
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
     },
+    // HOME LISTING
+    {
+      title: t('home Page listing'),
+      path: paths.dashboard.homelisting.root,
+      icon: ICONS.kanban,
+      // children: [
+      //   { title: t('list'), path: paths.dashboard.school.root }
+      //   ,{ title: t('details'), path: paths.dashboard.school.details }
+      // ],
+    },
     // PACKAGE
     {
       title: t('package'),
