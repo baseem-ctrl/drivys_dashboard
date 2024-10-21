@@ -47,7 +47,7 @@ import HomeSliderDialog from './home-slider-dialog';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'DisplayOrder', label: 'Order' },
+  { id: 'DisplayOrder', label: 'Display Order' },
   { id: 'picture', label: 'Picture' },
   { id: 'name', label: 'Name' },
 

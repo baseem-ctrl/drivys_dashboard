@@ -144,6 +144,12 @@ export const endpoints = {
     addTrainer: 'admin/trainers/create-trainer',
     removeTrainer: 'admin/trainers/delete-trainer/',
   },
+  homeListing: {
+    list: 'admin/home-page-listing/get-listing-list',
+    createUpdate:'admin/home-page-listing/create-listing-translation',
+    details: 'admin/home-page-listing/get-listing/',
+    delete: 'admin/home-page-listing/delete-listing/',
+  },
   package: {
     list: 'admin/package/get-packge-list',
     details: 'admin/package/get-packge/',
@@ -188,5 +194,13 @@ export const endpoints = {
     createPackage: 'admin/package-city/create-packge-city',
     getPackageList: 'admin/package-city/get-package-city',
     deletePackageList: 'admin/package-city/delete-packge-city/',
+  },
+  state: {
+    createStateTranslation: 'admin/state-province/create-state-translation',
+    updateStateTranslation: 'admin/state-province/create-state-translation',
+    getById: 'admin/state-province/get-by-id',
+    getByList: 'admin/state-province/get-list',
+    deleteById: 'admin/state-province/delete-by-id',
+    deleteStateProvince: 'admin/state-province/delete-state-translation',
   },
 };

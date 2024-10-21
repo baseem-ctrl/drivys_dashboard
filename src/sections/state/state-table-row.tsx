@@ -4,67 +4,62 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { ILanguageItem } from 'src/types/language';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import CityCreateEditForm from './city-create-update';
+import StateCreateEditForm from './state-create-update';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: ILanguageItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
 };
 
-export default function CityTableRow({
+export default function StateTableRow({
   row,
   selected,
   onEditRow,
+  setProvinceID,
   onSelectRow,
   onDeleteRow,
   reload,
 }: Props) {
-  const { is_published, display_order, city_translations } = row;
+  const { id, is_published, order, translations } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
   const zerothIndex = 0;
 
-  const handleRowClick = (cityId: string) => {
+  const handleRowClick = (stateId: string) => {
+    setProvinceID(stateId);
     onSelectRow();
-    // navigate(paths.dashboard.system.viewDetails(cityId));
   };
-
+  console.log('row', row);
   return (
     <>
       <TableRow hover selected={selected}>
-        {/* Uncomment if you want a checkbox for selection */}
-        {/* <TableCell padding="checkbox">
-            <Checkbox checked={selected} onClick={onSelectRow} />
-          </TableCell> */}
-
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].name}
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
+          {translations[zerothIndex].name}
         </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].locale}
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
+          {translations[zerothIndex].locale}
         </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].city_id}
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
+          {translations[zerothIndex].state_province_id}
         </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
           <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
             {is_published === '1' ? 'Published' : 'Unpublished'}
           </Label>
         </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {display_order}
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
+          {order}
         </TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -72,14 +67,6 @@ export default function CityTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
-
-      <CityCreateEditForm
-        title="Edit City"
-        currentCity={row}
-        open={quickEdit.value}
-        onClose={quickEdit.onFalse}
-        reload={reload}
-      />
 
       <CustomPopover
         open={popover.open}
@@ -123,6 +110,13 @@ export default function CityTableRow({
             Delete
           </Button>
         }
+      />
+      <StateCreateEditForm
+        title="Edit State"
+        currentState={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+        reload={reload}
       />
     </>
   );

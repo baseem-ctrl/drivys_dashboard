@@ -1,21 +1,21 @@
 // @mui
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import ListItemText from '@mui/material/ListItemText';
+// import ListItemText from '@mui/material/ListItemText';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 // utils
-import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
+// import { fDate } from 'src/utils/format-time';
+// import { fCurrency } from 'src/utils/format-number';
 // types
-import { IJobItem } from 'src/types/job';
+// import { IJobItem } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
-import Markdown from 'src/components/markdown';
+// import Markdown from 'src/components/markdown';
 import {
   Box,
   Button,
@@ -41,9 +41,9 @@ import {
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
 import Scrollbar from 'src/components/scrollbar';
-import { useBoolean } from 'src/hooks/use-boolean';
+// import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetAllLanguage } from 'src/api/language';
-import { RHFTextField } from 'src/components/hook-form';
+// import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
@@ -237,86 +237,85 @@ export default function UserDetailsContent({
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
-  const onSubmitBasicInfo = schoolSubmit(async (data) => {
-    try {
-      let payload = {
-        vendor_translations: [
-          {
-            name: data?.name || selectedLocaleObject?.name,
-            locale: selectedLanguage || selectedLocaleObject?.locale,
-          },
-        ],
-        contact_email: data?.contact_email,
-        contact_phone_number: data?.phone_number,
-        status: data?.status,
-        is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage: data?.commission_in_percentage,
-        create_new_user: 0,
-        license_expiry: data?.license_expiry,
-        license_file: data?.license_file,
-        user_id: data?.user_id,
-        vendor_id: details?.id,
-        website: data?.website,
-      };
-      let formData = new FormData();
+  // const onSubmitBasicInfo = schoolSubmit(async (data) => {
+  //   try {
+  //     let payload = {
+  //       vendor_translations: [
+  //         {
+  //           name: data?.name || selectedLocaleObject?.name,
+  //           locale: selectedLanguage || selectedLocaleObject?.locale,
+  //         },
+  //       ],
+  //       contact_email: data?.contact_email,
+  //       contact_phone_number: data?.phone_number,
+  //       status: data?.status,
+  //       is_active: data?.is_active ? '1' : '0',
+  //       commission_in_percentage: data?.commission_in_percentage,
+  //       create_new_user: 0,
+  //       license_expiry: data?.license_expiry,
+  //       license_file: data?.license_file,
+  //       user_id: data?.user_id,
+  //       vendor_id: details?.id,
+  //       website: data?.website,
+  //     };
+  //     let formData = new FormData();
 
-      // Append fields to FormData
-      formData.append('contact_email', payload.contact_email || '');
-      formData.append('contact_phone_number', payload.contact_phone_number || '');
-      formData.append('status', payload.status || '');
-      formData.append('is_active', payload.is_active);
-      formData.append('commission_in_percentage', payload.commission_in_percentage || '');
-      formData.append('create_new_user', payload.create_new_user.toString());
-      formData.append('license_expiry', payload.license_expiry || '');
-      formData.append('user_id', payload.user_id || '');
-      formData.append('vendor_id', payload.vendor_id || '');
-      formData.append('website', payload.website || '');
+  //     // Append fields to FormData
+  //     formData.append('contact_email', payload.contact_email || '');
+  //     formData.append('contact_phone_number', payload.contact_phone_number || '');
+  //     formData.append('status', payload.status || '');
+  //     formData.append('is_active', payload.is_active);
+  //     formData.append('commission_in_percentage', payload.commission_in_percentage || '');
+  //     formData.append('create_new_user', payload.create_new_user.toString());
+  //     formData.append('license_expiry', payload.license_expiry || '');
+  //     formData.append('user_id', payload.user_id || '');
+  //     formData.append('vendor_id', payload.vendor_id || '');
+  //     formData.append('website', payload.website || '');
 
-      // Handle `vendor_translations` (assumes only one translation)
-      if (payload.vendor_translations && payload.vendor_translations.length > 0) {
-        formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
-        formData.append(
-          'vendor_translations[0][locale]',
-          payload.vendor_translations[0].locale || ''
-        );
-      }
+  //     // Handle `vendor_translations` (assumes only one translation)
+  //     if (payload.vendor_translations && payload.vendor_translations.length > 0) {
+  //       formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
+  //       formData.append(
+  //         'vendor_translations[0][locale]',
+  //         payload.vendor_translations[0].locale || ''
+  //       );
+  //     }
 
-      // Append file field if it exists and is a File object
-      if (payload.license_file) {
-        formData.append('license_file', payload.license_file); // Assumes `license_file` is a File object
-      }
+  //     // Append file field if it exists and is a File object
+  //     if (payload.license_file) {
+  //       formData.append('license_file', payload.license_file); // Assumes `license_file` is a File object
+  //     }
 
-      const response = await createSchool(formData);
-      if (response) {
-        enqueueSnackbar(response.message, {
-          variant: 'success',
-        });
-        setEditMode(false);
-      }
-    } catch (error) {
-      if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    } finally {
-      reload();
-    }
-  });
+  //     const response = await createSchool(formData);
+  //     if (response) {
+  //       enqueueSnackbar(response.message, {
+  //         variant: 'success',
+  //       });
+  //       setEditMode(false);
+  //     }
+  //   } catch (error) {
+  //     if (error?.errors) {
+  //       Object.values(error?.errors).forEach((errorMessage: any) => {
+  //         enqueueSnackbar(errorMessage[0], { variant: 'error' });
+  //       });
+  //     } else {
+  //       enqueueSnackbar(error.message, { variant: 'error' });
+  //     }
+  //   } finally {
+  //     reload();
+  //   }
+  // });
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
-  const handleCancel = () => {
-    schoolReset(); // Reset to the original values
-    setEditMode(false);
-  };
+  // const handleCancel = () => {
+  //   schoolReset(); // Reset to the original values
+  //   setEditMode(false);
+  // };
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
-  }, [router]);
-
+  }, [details?.id]);
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -369,6 +368,15 @@ export default function UserDetailsContent({
                 { label: 'Preffered Language', value: details?.locale ?? 'NA' },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
+                // Updated Languages Section to display each language in a separate row
+                ...(details?.languages?.length > 0
+                  ? details.languages.map((lang: any, index: number) => ({
+                    label: `Language ${index + 1}`,
+                    value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
+                  }))
+                  : [{ label: 'Languages', value: 'NA' }]
+                ),
+
 
                 {
                   label: 'Is Active',
@@ -400,6 +408,54 @@ export default function UserDetailsContent({
                     },
                   ]
                   : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+      </Stack>
+    </Stack>
+  );
+
+  const renderUserPreferences = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Typography sx={{ fontWeight: "700" }}>User Preferences:</Typography>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+        }}
+      >
+
+        <Grid item xs={12} sm={8} md={8}>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                { label: 'City', value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A' },
+                { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
+
+                { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+
+                { label: 'Vehicle type', value: details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA' },
+
+
+
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -1043,7 +1099,7 @@ export default function UserDetailsContent({
 
   return (
     <>
-      {loading ? (
+      {loading || !details.id ? (
         <Box
           sx={{
             display: 'flex',
@@ -1074,9 +1130,9 @@ export default function UserDetailsContent({
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
-            {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
+            <Grid xs={12} >
+              {details?.user_preference?.id && renderUserPreferences}
+            </Grid>
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>

@@ -192,6 +192,15 @@ export const paths = {
       admin: (id: string) => `${ROOTS.DASHBOARD}/school/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
     },
+    homelisting: {
+      root: `${ROOTS.DASHBOARD}/homelisting`,
+      list: `${ROOTS.DASHBOARD}/homelisting/list`,
+      new: `${ROOTS.DASHBOARD}/homelisting/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/homelisting/${id}`,
+      detailsadmin: (id: string) => `${ROOTS.DASHBOARD}/homelisting/admin/${id}`,
+      admin: (id: string) => `${ROOTS.DASHBOARD}/homelisting/admin`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/homelisting/${id}/edit`,
+    },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,
       list: `${ROOTS.DASHBOARD}/package/list`,
@@ -208,6 +217,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/system/language`,
       language: `${ROOTS.DASHBOARD}/system/language`,
       city: `${ROOTS.DASHBOARD}/system/city`,
+      state: `${ROOTS.DASHBOARD}/system/state`,
       cityList: `${ROOTS.DASHBOARD}/system/city/list`,
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,

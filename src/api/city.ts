@@ -59,9 +59,23 @@ export function useGetAllCity({
   };
   return { ...memoizedValue, revalidateCategory };
 }
-export function useGetAllCities() {
+export function useGetAllCities(page: number, limit: number, searchQuery: string, locale: string) {
   const getTheFullUrl = () => {
-    return `${endpoints.city.getByList}?${new URLSearchParams()}`;
+    let queryParams: any = {
+      limit: limit || 100,
+      page: page ? page + 1 : 1,
+    };
+
+    // Add search query and locale to the request if provided
+    if (searchQuery) {
+      queryParams.search = searchQuery;
+    }
+
+    if (locale) {
+      queryParams.locale = locale;
+    }
+
+    return `${endpoints.city.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
@@ -91,7 +105,6 @@ export function useGetCityById(cityId: number | string) {
     cityId ? getCityUrl() : null,
     drivysFetcher
   );
-  console.log('data', data);
 
   const memoizedValue = useMemo(
     () => ({

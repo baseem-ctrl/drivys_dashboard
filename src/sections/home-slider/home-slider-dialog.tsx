@@ -29,6 +29,7 @@ import { paths } from 'src/routes/paths';
 import ImagesSelectionForm from 'src/components/images-selection/select-images-dialog';
 import ImagePreview from './image-preview';
 import { useGetUsers } from 'src/api/users';
+import { useGetAllLanguage } from 'src/api/language';
 
 interface Props {
   title?: string;
@@ -37,6 +38,7 @@ interface Props {
   updateValue: any;
   onReload: any;
 }
+
 
 export default function HomeSliderDialog({
   title = 'Upload Files',
@@ -52,7 +54,7 @@ export default function HomeSliderDialog({
 
   const router = useRouter();
 
-  // const [selectedType, setSelectedType] = useState('Product');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
   const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
@@ -61,6 +63,9 @@ export default function HomeSliderDialog({
   const [userOptions, setUserOptions] = useState([]);
   const [trainers, setTrainer] = useState<any>([
   ]);
+
+  const { language } =
+    useGetAllLanguage(0, 1000);
 
   // Fetch categories and products data
   const { category } = useGetAllCategory({ limit: 1000, page: 0 });
@@ -112,14 +117,27 @@ export default function HomeSliderDialog({
           label: category?.category_translations[0]?.name,
           value: category?.id,
         })) || [],
-      trainers: []
+      // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
+      //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
+      //   display_order: trainer?.display_order || ''
+      // })) : [],
+      trainers: users ? updateValue?.trainers?.map((trainer) => {
+        const user = users.find((option) => option.id === trainer.trainer.id);
+        return {
+          id: user ? { label: user?.name, value: user?.id } : '',
+          display_order: trainer.display_order || '',
+        };
+      }) : [],
+      //  updateValue?.trainers
       // Category: updateValue?.categories || [],
       // Product:
       //   updateValue?.products?.map((product: any) => product?.product_translations[0]?.name) || [],
 
     }),
-    [updateValue, today]
+    [updateValue, today, users]
   );
+
+
 
   const methods = useForm({
     resolver: yupResolver(NewProductSchema),
@@ -159,13 +177,33 @@ export default function HomeSliderDialog({
     }
     console.log(updateValue?.pictures?.map((item: { picture_id: any; }) => item?.picture_id), "updateValue?.pictures");
 
-    setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
+    const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage
+
+    // setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
+    setSelectedImageIds(
+      updateValue?.pictures
+        ?.filter((item) => item?.locale === selectedLocale)
+        .map((item) => Number(item.picture_id))
+    );
+    setSelectedArrayIds(
+      updateValue?.pictures?.filter((item) => item?.locale === selectedLocale) // Filter for locale "en"
+    );
+
+
+    // selectedLanguage
     setSelectedArrayIds(updateValue?.pictures)
 
-    // setSelectedType(updateValue?.type)
+    setTrainer(updateValue?.trainers)
 
 
-  }, [updateValue, reset, defaultValues]);
+  }, [updateValue, reset, defaultValues, selectedLanguage]);
+
+  useEffect(() => {
+    if (updateValue?.pictures) {
+      setSelectedLanguage(updateValue?.pictures[0]?.locale)
+    }
+  }, [updateValue])
+
 
   // Populate category and product options when data is available
   useEffect(() => {
@@ -197,7 +235,7 @@ export default function HomeSliderDialog({
       formData.append('slider_id', updateValue?.id);
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
-      // formData.append('type', selectedType || '');
+      // formData.append('type', selectedLanguage || '');
 
       // Append category or product IDs based on the selected type
       if (data.Category) {
@@ -222,7 +260,7 @@ export default function HomeSliderDialog({
       }
       if (selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
-          formData.append(`picture_ids[${index}][locale]`, 'en')
+          formData.append(`picture_ids[${index}][locale]`, selectedLanguage?.language_culture ?? selectedLanguage)
         );
       }
 
@@ -274,11 +312,29 @@ export default function HomeSliderDialog({
               <RHFTextField name="name" label={t('Name')} />
               <RHFTextField name="display_order" label={t('Display Order')} />
 
+              <RHFSelect
+                name="language"
+                label="Language"
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+              >
+                {language && language.length > 0 ? (
+                  language.map((option, index) => (
+                    <MenuItem key={index} value={option?.language_culture}>
+                      {option?.language_culture}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
+                )}
+              </RHFSelect>
+
+
               {/* <RHFSelect
                 name="type"
                 label="Type"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
               >
                 {['Product', 'Category'].map((option, index) => (
                   <MenuItem key={index} value={option}>
@@ -287,7 +343,7 @@ export default function HomeSliderDialog({
                 ))}
               </RHFSelect> */}
 
-              {/* {selectedType === 'Product' ? (
+              {/* {selectedLanguage === 'Product' ? (
                 <RHFMultiSelectAuto
                   name="Product"
                   label="Product"
@@ -309,6 +365,7 @@ export default function HomeSliderDialog({
                 defaultValue={defaultValues.Category}
               />
 
+
               <RHFTextField
                 name="show_until"
                 label={t('Show Until')}
@@ -317,6 +374,8 @@ export default function HomeSliderDialog({
               />
               <RHFSwitch name="published" label={t('Published')} />
             </Box>
+
+            <h5>Trainers:</h5>
             {trainers?.map((trainerItem: any, index: Key | null | undefined) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
 
@@ -355,13 +414,13 @@ export default function HomeSliderDialog({
                 </Grid>
               </Grid>
             ))}
-            {/* <Grid item xs={12} sx={{ mt: 2 }}>
+            <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
                 Add Trainer
               </Button>
-            </Grid> */}
-
-            <Box p={3}>
+            </Grid>
+            <h5>Images:</h5>
+            <Box >
               {/* Button to open the image selection dialog */}
               <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
                 Select Images

@@ -14,6 +14,9 @@ import UserDetailsAdminPage from 'src/pages/dashboard/schools/user-details';
 import HomeSliderListPage from 'src/pages/dashboard/home-slider/home-slider-list';
 import HomeSliderCreatePage from 'src/pages/dashboard/home-slider/new';
 import CityListView from 'src/sections/city/view/city-list-view';
+import CityListPage from 'src/pages/dashboard/city/city';
+import StateListPage from 'src/pages/dashboard/state/state';
+import HomeListingDetailsPage from 'src/pages/dashboard/homelisting/details';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +52,9 @@ const CategoryListPage = lazy(() => import('src/pages/dashboard/category/list'))
 
 // School
 const SchoolListPage = lazy(() => import('src/pages/dashboard/schools/list'));
+
+// Home Listing
+const HomeListingListPage = lazy(() => import('src/pages/dashboard/homelisting/list'));
 
 // Package
 const PackageListPage = lazy(() => import('src/pages/dashboard/package/list'));
@@ -144,6 +150,16 @@ const allroutes = [
     ],
   },
   {
+    path: 'homelisting',
+    children: [
+      { element: <HomeListingListPage />, index: true },
+      { path: ':id', element: <HomeListingDetailsPage /> },
+      { path: 'admin', element: <SchoolAdminDetailsPage /> },
+      { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
+
+  {
     path: 'package',
     children: [
       { element: <PackageListPage />, index: true },
@@ -161,7 +177,8 @@ const allroutes = [
     children: [
       { element: <LanguageListPage />, index: true },
       { path: 'language', element: <LanguageListPage /> },
-      { path: 'city', element: <CityListView /> },
+      { path: 'city', element: <CityListPage /> },
+      { path: 'state', element: <StateListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },

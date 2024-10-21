@@ -129,6 +129,16 @@ export function useNavData() {
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
     },
+    // HOME LISTING
+    {
+      title: t('home Page listing'),
+      path: paths.dashboard.homelisting.root,
+      icon: ICONS.kanban,
+      // children: [
+      //   { title: t('list'), path: paths.dashboard.school.root }
+      //   ,{ title: t('details'), path: paths.dashboard.school.details }
+      // ],
+    },
     // PACKAGE
     {
       title: t('package'),
@@ -179,6 +189,7 @@ export function useNavData() {
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
         { title: t('City'), path: paths.dashboard.system.city },
+        { title: t('State'), path: paths.dashboard.system.state },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
         // { title: t('edit'), path: paths.dashboard.tour.demo.edit },

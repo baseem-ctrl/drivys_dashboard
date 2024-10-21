@@ -20,7 +20,7 @@ type Props = StackProps & {
   results: number;
 };
 
-export default function UserTableFiltersResult({
+export default function SchoolTableFiltersResult({
   filters,
   onFilters,
   //
@@ -30,13 +30,12 @@ export default function UserTableFiltersResult({
   ...other
 }: Props) {
   const handleRemoveStatus = () => {
-    onFilters('status', '');
+    onFilters('status', 'all');
   };
 
   const handleRemoveRole = (inputValue: string) => {
-    const newValue = filters.status.filter((item) => item !== inputValue);
-
-    onFilters('status', newValue);
+    const newValue = filters.role.filter((item) => item !== inputValue);
+    onFilters('role', newValue);
   };
 
   return (
@@ -49,24 +48,19 @@ export default function UserTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {/* {filters.userTypes !== 'all' && (
-          <Block label="User Type:">
-            <Chip size="small" label={filters.userTypes} onDelete={handleRemoveStatus} />
-          </Block>
-        )} */}
-        {filters.status !== '' && (
+        {filters.status !== 'all' && (
           <Block label="Status:">
-            <Chip size="small" label={filters.status === "1" ? "Active" : "In Active"} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
-        {/* {!!filters.status.length && (
-          <Block label="Status:">
+        {!!filters.role.length && (
+          <Block label="Role:">
             {filters.role.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}
           </Block>
-        )} */}
+        )}
 
         <Button
           color="error"

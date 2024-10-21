@@ -17,32 +17,33 @@ import FormControl from '@mui/material/FormControl';
 // utils
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { updateCityTranslation } from 'src/api/city';
+import { updateStateTranslation } from 'src/api/state';
 
 // ----------------------------------------------------------------------
 
-export default function CityNewEditForm({
+export default function StateNewEditForm({
   handleClosePopup,
-  setSelectedCity,
-  city,
+  setSelectedState,
+  state,
   setViewMode,
+  stateProvinceID,
   reload,
 }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const CitySchema = Yup.object().shape({
-    name: Yup.string().required('City name is required'),
+  const StateSchema = Yup.object().shape({
+    name: Yup.string().required('State name is required'),
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
   });
 
   const methods = useForm({
-    resolver: yupResolver(CitySchema),
+    resolver: yupResolver(StateSchema),
     defaultValues: {
-      name: city?.city_translations?.[0]?.name || '',
-      locale: city?.city_translations?.[0]?.locale || 'ar',
-      published: city?.is_published === '1',
-      id: city?.id || '',
+      name: state?.translations?.[0]?.name || '',
+      locale: state?.translations?.[0]?.locale || 'en',
+      published: state?.is_published === '1',
+      id: state?.id || '',
     },
   });
 
@@ -54,48 +55,48 @@ export default function CityNewEditForm({
     watch,
     formState: { isSubmitting },
   } = methods;
-
   const selectedLocale = watch('locale');
 
-  useEffect(() => {
-    if (city) {
-      reset({
-        name: city?.city_translations?.[0]?.name || '',
-        locale: city?.city_translations?.[0]?.locale || 'ar',
-        published: city?.is_published === '1',
-        id: city?.id || '',
-      });
-    }
-  }, [city, reset]);
 
   // Update name based on locale
   useEffect(() => {
-    const translation = city?.city_translations?.find(
-      (translation) => translation.locale === selectedLocale
+    const translation = state?.translations?.find(
+      (translation: { locale: any; }) => translation.locale === selectedLocale
     );
     if (translation) {
       setValue('name', translation.name);
     } else {
       setValue('name', 'N/A');
     }
-  }, [selectedLocale, city, setValue]);
+  }, [selectedLocale, setValue]);
 
-  const onSubmit = handleSubmit(async (city) => {
+  useEffect(() => {
+    if (state) {
+      reset({
+        name: state?.translations?.[0]?.name || '',
+        locale: state?.translations?.[0]?.locale || 'en',
+        published: state?.is_published === '1',
+        id: state?.id || '',
+      });
+    }
+  }, [state, reset]);
+
+  const onSubmit = handleSubmit(async (state) => {
     try {
-      console.log('city', city);
       const formData = new FormData();
-      formData.append('city_id', city.id);
-      formData.append('is_published', city.published ? '1' : '0');
-      formData.append('city_translation[0][locale]', city.locale);
-      formData.append('city_translation[0][name]', city.name);
+      console.log('state', state);
+      formData.append('order', stateProvinceID);
+      formData.append('state_id', state?.id || '');
+      formData.append('is_published', state.published ? '1' : '0');
+      formData.append('translations[0][locale]', state.locale);
+      formData.append('translations[0][name]', state.name);
 
-      // Update city call
-      console.log('Updating city...');
-      const response = await updateCityTranslation(formData);
+      // Update state call
+      const response = await updateStateTranslation(formData);
       if (response) {
-        enqueueSnackbar('City translations updated successfully.');
+        enqueueSnackbar('State translations updated successfully.');
 
-        setSelectedCity(response.data);
+        setSelectedState(response.data);
         setViewMode('detail');
         handleClosePopup();
         reload();
@@ -110,7 +111,16 @@ export default function CityNewEditForm({
       }
     }
   });
-
+  useEffect(() => {
+    const translation = state?.translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, state, setValue]);
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid xs={12} md={8}>
@@ -124,7 +134,7 @@ export default function CityNewEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFTextField name="name" label="City Name" />
+            <RHFTextField name="name" label="State Name" />
 
             <FormControl fullWidth variant="outlined">
               <InputLabel>Locale</InputLabel>
@@ -136,9 +146,8 @@ export default function CityNewEditForm({
                     {...field}
                     label="Locale"
                     onChange={(e) => {
-                      const newLocale = e.target.value; // Get the selected value
-                      console.log('Locale changed to:', newLocale); // Log the new locale
-                      field.onChange(newLocale); // Update the form state with the new locale
+                      const newLocale = e.target.value;
+                      field.onChange(newLocale);
                     }}
                   >
                     <MenuItem value="en">English</MenuItem>
@@ -169,7 +178,7 @@ export default function CityNewEditForm({
               loading={isSubmitting}
               sx={{ width: '120px' }}
             >
-              Update City
+              Update State
             </LoadingButton>
           </Stack>
         </Card>

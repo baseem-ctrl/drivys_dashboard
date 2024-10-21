@@ -1,15 +1,16 @@
-export type ICityItem = {
+export type IStateItem = {
   name: string;
   locale: string;
   published: string;
+  id: string;
+  order: string;
   is_published: string;
-  city_translations: {
+  translations: {
     name: string;
     locale: string;
   }[];
 };
-export type IUserTableFilterValue = string | string[];
-export type ICityTableFilters = {
+export type IStateTableFilters = {
   name: string;
   locale: string;
 };

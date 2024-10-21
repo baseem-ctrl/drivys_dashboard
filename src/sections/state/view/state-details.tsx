@@ -1,18 +1,17 @@
-import { useEffect } from 'react';
 import { Typography, Box, Stack, Card, Grid } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
-export default function CityDetails({ onEdit, city }) {
+export default function StateDetails({ onEdit, state }) {
   const renderContent = (
     <>
-      {city?.city_translations && city.city_translations.length > 0 ? (
+      {state?.translations && state.translations.length > 0 ? (
         <Grid spacing={3} paddingTop={3} paddingBottom={5} paddingLeft={10} paddingRight={10}>
-          {city.city_translations.map((translation, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index} marginBottom={5}>
-              <Stack component={Card} spacing={3} sx={{ p: 3, position: 'relative' }}>
+          {state.translations.map((translation, index) => (
+            <Grid marginBottom={5}>
+              <Stack sx={{ p: 3, position: 'relative' }} component={Card}>
                 <Stack
                   spacing={1}
                   alignItems={{ xs: 'center', md: 'center' }}
@@ -24,27 +23,25 @@ export default function CityDetails({ onEdit, city }) {
                     p: 2.5,
                   }}
                 >
-                  {/* Add a heading for each detail section */}
-
                   <Scrollbar>
                     <Stack spacing={2} alignItems="flex-start" sx={{ typography: 'body2' }}>
                       <Box sx={{ p: 2, width: '100%' }}>
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                              City ID
+                              State ID
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {translation.city_id ?? 'N/A'}
+                              {translation.state_province_id ?? 'N/A'}
                             </Box>
                           </Box>
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                              City Name
+                              State Name
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -77,11 +74,11 @@ export default function CityDetails({ onEdit, city }) {
                               <Typography
                                 variant="body2"
                                 sx={{
-                                  color: city.is_published === '1' ? 'success.main' : 'error.main',
+                                  color: state.is_published === '1' ? 'success.main' : 'error.main',
                                   fontWeight: 'bold',
                                 }}
                               >
-                                {city.is_published === '1' ? 'Yes' : 'No'}
+                                {state.is_published === '1' ? 'Yes' : 'No'}
                               </Typography>
                             </Box>
                           </Box>
@@ -95,7 +92,7 @@ export default function CityDetails({ onEdit, city }) {
           ))}
         </Grid>
       ) : (
-        <Typography>No city translations available.</Typography>
+        <Typography>No state translations available.</Typography>
       )}
     </>
   );
@@ -112,7 +109,11 @@ export default function CityDetails({ onEdit, city }) {
           zIndex: 10,
         }}
       >
-        <Iconify icon="solar:pen-bold" onClick={() => onEdit(city.id)} sx={{ cursor: 'pointer' }} />
+        <Iconify
+          icon="solar:pen-bold"
+          onClick={() => onEdit(state.id)}
+          sx={{ cursor: 'pointer' }}
+        />
       </Stack>
       {renderContent}
     </Box>

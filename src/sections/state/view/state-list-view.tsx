@@ -1,5 +1,6 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -9,15 +10,8 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import {
-  Skeleton,
-  Stack,
-  TableCell,
-  TableRow,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@mui/material';
+import { Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -30,66 +24,74 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  getComparator,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
-import { ICityTableFilters } from 'src/types/city';
-//
-import CityTableRow from '../city-table-row';
+
+import StateTableRow from '../state-table-row';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import CityCreateEditForm from '../city-create-update';
-import { deleteCity, useGetAllCities } from 'src/api/city';
-import CityNewEditForm from '../city-new-edit-form';
-import CityDetails from './city-details-view';
-import CityFilters from '../city-filters';
-import CitySearch from '../city-search';
+// import StateCreateEditForm from '../state-create-update';
+import { deleteStateById, useGetStateList } from 'src/api/state';
+import StateDetails from './state-details';
+import StateNewEditForm from '../state-new-edit-form';
+import StateCreateEditForm from '../state-create-update';
+import StateFilters from '../state-filters';
+import StateSearch from '../state-search';
+import { IStateTableFilters } from 'src/types/state';
 import { useGetAllLanguage } from 'src/api/language';
+// import StateNewEditForm from '../state-new-edit-form';
+// import StateDetails from './state-details';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'locale', label: 'Locale', width: 180 },
-  { id: 'city_id', label: 'City ID', width: 220 },
+  { id: 'state_id', label: 'State ID', width: 220 },
   { id: 'is_published', label: 'Published', width: 180 },
-  { id: 'action1', label: '', width: 180 },
+  { id: 'action1', label: 'Display Order ID', width: 180 },
   { id: 'action2', label: '', width: 88 },
 ];
 
-const defaultFilters: ICityTableFilters = {
+const defaultFilters: IStateTableFilters = {
   name: '',
   locale: '',
 };
-
 // ----------------------------------------------------------------------
 
-export default function CityListView() {
+export default function StateListView() {
   const table = useTable();
   const settings = useSettingsContext();
   const confirm = useBoolean();
-  const createCity = useBoolean();
+  const createState = useBoolean();
   const openFilters = useBoolean();
 
-  const [filters, setFilters] = useState(defaultFilters);
   const [tableData, setTableData] = useState<any>([]);
-  const [selectedCity, setSelectedCity] = useState(null); // State to hold selected city
-  const [viewMode, setViewMode] = useState('table'); // State to manage view mode
+  const [selectedState, setSelectedState] = useState(null);
+  const [viewMode, setViewMode] = useState('table');
   const [rowId, setRowId] = useState(null);
   const [openEditPopup, setOpenEditPopup] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [stateProvinceID, setProvinceID] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(null);
   const [localeFilter, setLocaleFilter] = useState('');
-  const [originalTableData, setOriginalTableData] = useState<any>([]);
+  const [filters, setFilters] = useState(defaultFilters);
+  const [selectedOrder, setSelectedOrder] = useState(undefined);
 
   const [index, setIndex] = useState(null);
-  const { cities, revalidateCities, totalpages, cityLoading } = useGetAllCities(
-    table.page,
-    table.rowsPerPage,
-    searchQuery,
-    localeFilter
-  );
+
+  // Use the state hook instead of the city one
+  const { states, revalidateStates, totalpages, stateLoading } = useGetStateList({
+    limit: table.rowsPerPage,
+    page: table.page,
+    order: selectedOrder,
+    searchTerm: searchQuery,
+    locale: localeFilter,
+    is_published: filters.is_published,
+  });
+
   const { language } = useGetAllLanguage(0, 1000);
 
   const localeOptions = (language || []).map((lang) => ({
@@ -97,51 +99,36 @@ export default function CityListView() {
     label: lang.name,
   }));
   useEffect(() => {
-    if (cities?.length) {
-      setOriginalTableData(cities);
-      setTableData(cities);
+    if (states?.length) {
+      setTableData(states);
     } else {
       setTableData([]);
-      setOriginalTableData([]);
     }
-  }, [cities]);
+  }, [states]);
 
-  // Function to delete a city row by city ID
-  const handleDeleteRow = async (cityId: string) => {
-    const response = await deleteCity(cityId);
+  // Function to delete a state row by state ID
+  const handleDeleteRow = async (stateId: string) => {
+    const response = await deleteStateById(stateId);
     if (response) {
       enqueueSnackbar(response?.message ?? 'Success');
-      revalidateCities();
+      revalidateStates();
       setViewMode('table');
     } else {
-      console.error('Error deleting city:', response.statusText);
+      console.error('Error deleting state:', response.statusText);
     }
   };
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
-  const handleFiltersChange = (name: string, value: any) => {
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleRowClick = (row) => {
     setRowId(row.id);
-    setSelectedCity(row);
+    setSelectedState(row);
     setViewMode('detail');
   };
 
   const handleBackToList = () => {
     setViewMode('table');
-    setSelectedCity(null);
+    setSelectedState(null);
   };
+
   const handleEditClick = () => {
     setOpenEditPopup(true);
   };
@@ -149,18 +136,8 @@ export default function CityListView() {
   const handleClosePopup = () => {
     setOpenEditPopup(false);
   };
-  console.log('originalTableData', originalTableData);
-  const handleResetFilters = useCallback(() => {
-    setLocaleFilter('');
-    setFilters(defaultFilters);
-    setTableData(originalTableData);
-  }, [originalTableData]);
-
   const handleFilters = useCallback(
-    (name: string, value: ICityTableFilters) => {
-      console.log('name', name);
-      console.log('value', value);
-
+    (name: string, value: IStateTableFilters) => {
       setSearchQuery(value);
       table.onResetPage();
       setFilters((prevState) => ({
@@ -171,9 +148,36 @@ export default function CityListView() {
     [table]
   );
 
+  const handleOrderChange = (event) => {
+    const value = event.target.value;
+
+    if (value === '') {
+      setSelectedOrder(undefined);
+      setLocaleFilter('');
+      setFilters(defaultFilters);
+    } else {
+      setSelectedOrder(value);
+    }
+  };
   const handleLocaleFilterChange = (locale: string) => {
     setLocaleFilter(locale);
   };
+  const canReset = !isEqual(defaultFilters, filters);
+
+  const handleFiltersChange = (name, value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const handleResetFilters = useCallback(() => {
+    setSelectedOrder(undefined);
+
+    setLocaleFilter('');
+    setFilters(defaultFilters);
+  }, []);
+
   const renderFilters = (
     <Stack
       spacing={3}
@@ -182,13 +186,15 @@ export default function CityListView() {
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ marginBottom: 3 }}
     >
-      <CitySearch query={searchQuery} onSearch={handleFilters} />
+      <StateSearch query={searchQuery} onSearch={handleFilters} />
 
       <Stack direction="row" spacing={1} flexShrink={0}>
-        <CityFilters
+        <StateFilters
           open={openFilters.value}
           onOpen={openFilters.onTrue}
           onClose={openFilters.onFalse}
+          handleOrderChange={handleOrderChange}
+          selectedOrder={selectedOrder}
           filters={filters}
           onFilters={handleFiltersChange}
           canReset={canReset}
@@ -207,8 +213,8 @@ export default function CityListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             {
-              name: 'City',
-              href: paths.dashboard.system.city,
+              name: 'State',
+              href: paths.dashboard.system.state,
               onClick: (event) => {
                 setViewMode('table');
               },
@@ -219,12 +225,12 @@ export default function CityListView() {
             viewMode === 'table' && (
               <Button
                 onClick={() => {
-                  createCity.onTrue();
+                  createState.onTrue();
                 }}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New City
+                New State
               </Button>
             )
           }
@@ -265,7 +271,7 @@ export default function CityListView() {
                     numSelected={table.selected.length}
                   />
                   <TableBody>
-                    {cityLoading
+                    {stateLoading
                       ? Array.from(new Array(5)).map((_, index) => (
                           <TableRow key={index}>
                             <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -273,14 +279,15 @@ export default function CityListView() {
                             </TableCell>
                           </TableRow>
                         ))
-                      : dataFiltered?.map((row) => (
-                          <CityTableRow
+                      : tableData?.map((row) => (
+                          <StateTableRow
                             row={row}
+                            setProvinceID={setProvinceID}
                             selected={table.selected.includes(row.id)}
                             onSelectRow={() => handleRowClick(row)}
                             onDeleteRow={() => handleDeleteRow(row.id)}
                             onEditRow={() => handleEditRow(row.id)}
-                            reload={revalidateCities}
+                            reload={revalidateStates}
                           />
                         ))}
                   </TableBody>
@@ -289,103 +296,53 @@ export default function CityListView() {
             </TableContainer>
           )}
 
-          {viewMode === 'detail' && selectedCity && (
-            <CityDetails
-              city={selectedCity}
+          {viewMode === 'detail' && selectedState && (
+            <StateDetails
+              state={selectedState}
               onEdit={handleEditClick}
               onBack={handleBackToList}
-              reload={revalidateCities}
-              cityId={rowId}
+              reload={revalidateStates}
+              stateId={rowId}
               index={index}
             />
           )}
 
           <Dialog open={openEditPopup} onClose={handleClosePopup}>
-            <DialogTitle>Edit City</DialogTitle>
+            <DialogTitle>Edit State</DialogTitle>
             <DialogContent>
-              {selectedCity && (
-                <CityNewEditForm
-                  city={selectedCity}
-                  reload={revalidateCities}
+              {selectedState && (
+                <StateNewEditForm
+                  state={selectedState}
+                  reload={revalidateStates}
                   setViewMode={setViewMode}
-                  setSelectedCity={setSelectedCity}
+                  setSelectedState={setSelectedState}
                   handleClosePopup={handleClosePopup}
+                  stateProvinceID={stateProvinceID}
                 />
               )}
             </DialogContent>
           </Dialog>
+
           {viewMode === 'table' && (
-            <>
-              {' '}
-              <TablePaginationCustom
-                count={totalpages}
-                page={table.page}
-                rowsPerPage={table.rowsPerPage}
-                onPageChange={table.onChangePage}
-                onRowsPerPageChange={table.onChangeRowsPerPage}
-                dense={table.dense}
-                onChangeDense={table.onChangeDense}
-              />
-            </>
+            <TablePaginationCustom
+              count={totalpages}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              dense={table.dense}
+              onChangeDense={table.onChangeDense}
+            />
           )}
         </Card>
       </Container>
 
-      <CityCreateEditForm
-        title="Create City"
-        open={createCity.value}
-        onClose={createCity.onFalse}
-        reload={revalidateCities}
+      <StateCreateEditForm
+        title="Create State"
+        open={createState.value}
+        onClose={createState.onFalse}
+        reload={revalidateStates}
       />
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-// apply filter function
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: any[];
-  comparator: (a: any, b: any) => number;
-  filters: ICityTableFilters;
-}) {
-  const { name, locale } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index] as [any, number]);
-  stabilizedThis.sort((a, b) => {
-    return comparator(a[0], b[0]);
-  });
-
-  const filteredData = stabilizedThis
-    .map((el) => el[0])
-    .filter((item) => {
-      // Check for name filter
-      if (
-        name &&
-        (!item.city_translations ||
-          !item.city_translations.some((translation) =>
-            translation.name.toLowerCase().includes(name.toLowerCase())
-          ))
-      ) {
-        return false;
-      }
-
-      // Check for locale filter
-      if (locale) {
-        const hasMatchingLocale = item.city_translations.some(
-          (translation) => translation.locale === locale
-        );
-        if (!hasMatchingLocale) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-
-  return filteredData;
 }

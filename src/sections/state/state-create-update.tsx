@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
+// @mui components
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,11 +12,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 // types
-import { ICityItem } from 'src/types/city';
-// components
+import { IStateItem } from 'src/types/state';
+// custom components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
-import { createCityTranslation, updateCityTranslation } from 'src/api/city';
+import { createStateTranslation, updateStateTranslation } from 'src/api/state';
 
 // ----------------------------------------------------------------------
 
@@ -24,47 +24,49 @@ type Props = {
   title: string;
   open: boolean;
   onClose: VoidFunction;
-  currentCity?: ICityItem;
+  currentState?: IStateItem;
   reload: VoidFunction;
 };
 
-export default function CityCreateEditForm({ title, currentCity, open, onClose, reload }: Props) {
+export default function StateCreateEditForm({ title, currentState, open, onClose, reload }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const NewUserSchema = Yup.object().shape({
+  const CitySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
+    order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for order
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentCity?.city_translations[0]?.name || '',
-      locale: currentCity?.city_translations[0]?.locale || 'en',
-      published: currentCity?.is_published === '1' ? true : false,
+      name: currentState?.translations?.[0]?.name || '',
+      locale: currentState?.translations?.[0]?.locale || 'en',
+      published: currentState?.is_published === '1',
+      order: currentState?.order || 0, // Set default order to 0 if not provided
     }),
-    [currentCity]
+    [currentState]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(CitySchema),
     defaultValues,
   });
 
   const {
     reset,
     handleSubmit,
-    watch,
     setValue,
+    watch,
     formState: { isSubmitting },
+
   } = methods;
   const selectedLocale = watch('locale');
 
+
+  // Update name based on locale
   useEffect(() => {
-    reset(defaultValues);
-  }, [currentCity, defaultValues, reset]);
-  useEffect(() => {
-    const translation = currentCity?.city_translations?.find(
+    const translation = currentState?.translations?.find(
       (translation) => translation.locale === selectedLocale
     );
     if (translation) {
@@ -72,42 +74,57 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     } else {
       setValue('name', 'N/A');
     }
-  }, [selectedLocale, currentCity, setValue]);
+  }, [selectedLocale, setValue]);
+
+  useEffect(() => {
+    if (currentState) {
+      reset(defaultValues);
+    }
+  }, [currentState, defaultValues, reset]);
+  useEffect(() => {
+    const translation = currentState?.translations?.find(
+      (translation) => translation.locale === selectedLocale
+    );
+    if (translation) {
+      setValue('name', translation.name);
+    } else {
+      setValue('name', 'N/A');
+    }
+  }, [selectedLocale, currentState, setValue]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
-      formData.append('city_id', currentCity?.id || '');
-      formData.append('is_published', data.published ? '1' : '0');
-      formData.append('city_translation[0][locale]', data.locale);
-      formData.append('city_translation[0][name]', data.name);
 
-      // Conditional API call based on presence of currentCity
-      if (currentCity?.id) {
-        await updateCityTranslation(formData);
-        enqueueSnackbar('City translation updated successfully.');
+      // Add the state ID while updating
+      formData.append('state_id', currentState?.id || '');
+      formData.append('is_published', data.published ? '1' : '0');
+      formData.append('translations[0][locale]', data.locale);
+      formData.append('translations[0][name]', data.name);
+      formData.append('order', data.order.toString()); // Append the order value
+
+      if (currentState?.id) {
+        await updateStateTranslation(formData);
+        enqueueSnackbar('State translation updated successfully.');
       } else {
-        await createCityTranslation(formData);
-        enqueueSnackbar('City translation created successfully.');
+        await createStateTranslation(formData);
+        enqueueSnackbar('State translation created successfully.');
+        reset();
       }
 
-      reset();
       onClose();
       reload();
     } catch (error) {
-      if (error.errors) {
-        Object.values(error.errors).forEach((errorMessage) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
+      const errorMessage = error.errors ? Object.values(error.errors).flat() : [error.message];
+      errorMessage.forEach((message) => {
+        enqueueSnackbar(message, { variant: 'error' });
+      });
     }
   });
 
   return (
     <Dialog
       fullWidth
-      maxWidth={false}
+      maxWidth="md"
       open={open}
       onClose={onClose}
       PaperProps={{
@@ -133,6 +150,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               <MenuItem value="ar">Arabic</MenuItem>
             </RHFSelect>
             <RHFTextField name="name" label="Name" />
+            {!currentState && <RHFTextField name="order" label="Order" type="number" />}
             <RHFSwitch name="published" label="Published" />
           </Box>
         </DialogContent>
@@ -141,9 +159,8 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
           <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
-
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentCity?.id ? 'Update' : 'Create'}
+            {currentState?.id ? 'Update' : 'Create'}
           </LoadingButton>
         </DialogActions>
       </FormProvider>
