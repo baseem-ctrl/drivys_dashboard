@@ -49,6 +49,7 @@ import JobSearch from 'src/sections/job/job-search';
 import HomeListingSearch from '../homelisting-search';
 import { STATUS_OPTIONS } from 'src/_mock/_school';
 import { deleteHomeListing, useGetHomeListing } from 'src/api/homelisting';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -68,10 +69,10 @@ const TABLE_HEAD = [
 const defaultFilters: any = {
   name: '',
   role: [],
-  status: 'all',
-  min_commission: 0,
-  max_commission: 0,
-  is_active: '',
+  is_active: 'all',
+  display_order: 0,
+  catalogue_type: '',
+  locale: '',
 };
 
 // ----------------------------------------------------------------------
@@ -106,12 +107,18 @@ export default function HomelistingListView() {
     page: table?.page + 1,
     limit: table?.rowsPerPage,
     search: filters?.name,
+    locale: filters?.locale,
     display_order: filters?.display_order,
     catalogue_type: filters?.catalogue_type,
     trainer_id: filters?.trainer_id,
     is_active: filters?.is_active,
   });
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   useEffect(() => {
     if (homelistingList?.length) {
       setTableData(homelistingList);
@@ -185,6 +192,7 @@ export default function HomelistingListView() {
           onResetFilters={handleResetFilters}
           statusOptions={STATUS_OPTIONS}
           activeOptions={ACTIVE_OPTIONS}
+          localeOptions={localeOptions}
         />
       </Stack>
     </Stack>
@@ -285,39 +293,41 @@ export default function HomelistingListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
 
                 <TableBody>
                   {homelistingLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <HomeListingTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={(e: any) => handleEditRow(e, row.id)}
-                        revalidateHomeListing={revalidateHomeListing}
-                        onViewRow={() => handleViewRow(row?.id)}
-                      />
-                    ))}
+                        <HomeListingTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={(e: any) => handleEditRow(e, row.id)}
+                          revalidateHomeListing={revalidateHomeListing}
+                          onViewRow={() => handleViewRow(row?.id)}
+                        />
+                      ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
                   /> */}
 
-                  {tableData?.length === 0 && !homelistingLoading && <TableNoData notFound={notFound} />}
+                  {tableData?.length === 0 && !homelistingLoading && (
+                    <TableNoData notFound={notFound} />
+                  )}
                 </TableBody>
               </Table>
             </Scrollbar>
