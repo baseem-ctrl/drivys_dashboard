@@ -36,9 +36,8 @@ export function useGetAllDialect({
   // Memoize the query parameters
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
-
     if (limit) params.limit = limit;
-    if (page) params.page = page + 1;
+    if (page) params.page = page;
     if (search) params.search = search;
     if (parent_id) params.parent_id = parent_id;
     if (published || published === '0') params.published = published;
