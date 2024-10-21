@@ -68,7 +68,6 @@ const TABLE_HEAD = [
 
 const defaultFilters: any = {
   name: '',
-  role: [],
   is_active: '',
   display_order: 0,
   catalogue_type: '',
