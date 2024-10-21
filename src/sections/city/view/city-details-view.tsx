@@ -26,9 +26,9 @@ export default function CityDetailsView({ city }: Props) {
   console.log('city', city);
   const [currentTab, setCurrentTab] = useState('cityDetails');
   const { revalidateCities } = useGetAllCities();
-  const { packageCityList, packageCityListLoading, revalidatePackageCity } = useGetPackageCityById(
-    city.id
-  );
+  const { packageCityList, packageCityListLoading, revalidatePackage } = useGetPackageCityList({
+    city_id: city.id,
+  });
   console.log('packageCityList', packageCityList);
   const CITY_DETAILS_TABS = [
     { value: 'cityDetails', label: 'City Details' },
@@ -69,7 +69,7 @@ export default function CityDetailsView({ city }: Props) {
 
       {currentTab === 'package' && (
         <CityPackageDetails
-          reload={revalidatePackageCity}
+          reload={revalidatePackage}
           city={city}
           packageDetails={packageCityList}
           packageCityListLoading={packageCityListLoading}

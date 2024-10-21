@@ -147,47 +147,48 @@ export function deletePackageCityById(packageId: number | string) {
   const response = barrySmasher(URL);
   return response;
 }
-// Function to allow fetching a specific package by its ID
-export function useGetPackageCityById(packageId) {
-  const URL = `${endpoints.city.getPackageList}${packageId}`;
-  console.log('URL', URL);
-  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
-
-  const memoizedValue = useMemo(
-    () => ({
-      packageCityList: data?.data || [],
-      packageCityListLoading: isLoading,
-      packageCityListError: error,
-      packageCityListValidating: isValidating,
-    }),
-    [data?.data, error, isLoading, isValidating]
-  );
-
-  // Function to manually revalidate (refresh) the data
-  const revalidatePackageCity = () => {
-    mutate(URL);
-  };
-
-  return { ...memoizedValue, revalidatePackageCity };
-}
 
 // Get the full list of package-city mappings
-export function useGetPackageCityList() {
-  const URL = `${endpoints.city.getPackageList}`;
-  console.log('URL', URL);
-  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
+interface UseGetPackageCityListParams {
+  city_id?: string;
+}
 
-  const memoizedValue = useMemo(
-    () => ({
-      packageCityList: data?.data as any,
+export function useGetPackageCityList({ city_id }: UseGetPackageCityListParams = {}) {
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (city_id) params.city_id = city_id;
+
+    return params;
+  }, [city_id]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.city.getPackageList}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePackage = () => {
+    mutate(fullUrl);
+  };
+
+  const memoizedValue = useMemo(() => {
+    const packageCityList = data?.data || [];
+    return {
+      packageCityList,
       packageCityListLoading: isLoading,
       packageCityListError: error,
       packageCityListValidating: isValidating,
-    }),
-    [data?.data, error, isLoading, isValidating]
-  );
+      packageCityListEmpty: packageCityList.length === 0,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
 
-  return memoizedValue;
+  return {
+    ...memoizedValue,
+    revalidatePackage,
+  };
 }
 // export function deleteCategory(category_translation_id: any, pictures_ids: any) {
 //   const URL =

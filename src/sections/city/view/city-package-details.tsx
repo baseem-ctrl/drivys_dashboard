@@ -20,33 +20,39 @@ import { createPackageCity, deletePackageCityById } from 'src/api/city';
 import PackageCreateEditForm from '../package-create-update-form';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/Iconify';
+import { useSnackbar } from 'src/components/snackbar';
+
 import { useGetPackage } from 'src/api/package';
 
 // ----------------------------------------------------------------------
 
 export default function CityPackageDetails({ reload, packageDetails, city }) {
+  console.log('packageDetails', packageDetails);
   const quickEdit = useBoolean();
   const confirm = useBoolean(); // State for confirmation dialog
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedPackage, setSelectedPackage] = React.useState(null); // State for selected package
-  const { packageList, packageError } = useGetPackage(city.id);
+  const [selectedPackageId, setSelectedPackageId] = React.useState(null); // State for selected package
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { packageList, packageError } = useGetPackage();
 
   const handleDeletePackage = async (id) => {
     try {
       const response = await deletePackageCityById(id);
       console.log('Package deleted successfully:', response);
       reload();
+      enqueueSnackbar('Package City Mapping successfully.');
       quickEdit.onFalse();
       confirm.onFalse();
     } catch (error) {
       console.error('Error deleting package:', error);
     }
   };
-
   const handleCreatePackage = async (newPackage) => {
     try {
       const response = await createPackageCity(newPackage);
       reload();
+      enqueueSnackbar('Package City Mapping created successfully.');
       console.log('Package created successfully:', response);
       quickEdit.onFalse();
     } catch (error) {
@@ -56,16 +62,15 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
 
   const handleClick = (event, packageItem) => {
     setAnchorEl(event.currentTarget);
-    setSelectedPackage(packageItem); // Set the selected package
   };
-
   const handleClose = () => {
     setAnchorEl(null);
-    setSelectedPackage(null);
   };
 
-  const handleDeleteClick = () => {
-    confirm.onTrue(); // Open confirmation dialog when the delete is clicked
+  const handleDeleteClick = (id) => {
+    console.log('id', id);
+    setSelectedPackageId(id);
+    confirm.onTrue();
   };
 
   return (
@@ -74,7 +79,6 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
         variant="contained"
         color="primary"
         onClick={() => {
-          setSelectedPackage(null); // Set to null for adding a new package
           quickEdit.onTrue(); // Open the form
         }}
         sx={{
@@ -139,8 +143,37 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                   </Stack>
                 </Stack>
               </Stack>
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                <MenuItem
+                  onClick={() => {
+                    console.log('packageItem', packageItem.id);
+                    handleDeleteClick(packageItem.id);
+                    handleClose();
+                  }}
+                >
+                  Delete Package
+                </MenuItem>
+              </Menu>
             </Grid>
           ))}
+        <Dialog open={confirm.value} onClose={confirm.onFalse}>
+          <DialogTitle>Delete Package</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={confirm.onFalse} color="primary">
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => handleDeletePackage(selectedPackageId)}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
       {/* Render form for editing or creating packages */}
       <PackageCreateEditForm
@@ -151,32 +184,8 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
         city_id={city.id} // Pass city_id if selectedPackage exists
       />
       {/* Menu for more options */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem
-          onClick={() => {
-            handleDeleteClick(); // Trigger confirmation popup before deletion
-            handleClose();
-          }}
-        >
-          Delete Package
-        </MenuItem>
-      </Menu>
 
       {/* Confirmation Dialog */}
-      <Dialog open={confirm.value} onClose={confirm.onFalse}>
-        <DialogTitle>Delete Package</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={confirm.onFalse} color="primary">
-            Cancel
-          </Button>
-          <Button variant="contained" color="error" onClick={() => handleDeletePackage(city.id)}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

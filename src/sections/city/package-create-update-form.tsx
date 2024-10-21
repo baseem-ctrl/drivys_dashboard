@@ -19,16 +19,17 @@ const PackageCreateEditForm = ({ open, onClose, onSubmit, city_id }) => {
     min_price: '',
     max_price: '',
     commision: '',
-    commision_type: 'percentage', // Default value
+    commision_type: '', // Default value
     package_id: '', // Added package_id to the formValues state
   });
   // Fetch package list using your custom hook
   const { packageList, packageLoading } = useGetPackage({
-    /* Your parameters here */
+    city_id: city_id,
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log('value', e.target);
+    console.log('name', name);
 
     setFormValues((prev) => ({
       ...prev,
@@ -47,7 +48,6 @@ const PackageCreateEditForm = ({ open, onClose, onSubmit, city_id }) => {
       console.error('Package ID is required.');
       return;
     }
-
     const convertedValues = {
       package_id: package_id, // Ensure this is a number
       cities_ids: [
@@ -57,7 +57,7 @@ const PackageCreateEditForm = ({ open, onClose, onSubmit, city_id }) => {
           min_price: min_price, // Convert to string if necessary
           max_price: max_price, // Convert to string if necessary
           commision: commision, // Convert to number if necessary
-          commision_type: 'percentage', // Ensure this is a valid type
+          commision_type: commision_type, // Ensure this is a valid type
         },
       ],
     };
@@ -107,14 +107,23 @@ const PackageCreateEditForm = ({ open, onClose, onSubmit, city_id }) => {
             fullWidth
             sx={{ mb: 2, marginRight: 2 }}
           />
-          <TextField
-            name="commision_type"
-            label="Commission Type"
-            value={formValues.commision_type}
-            onChange={handleChange}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="commision-type-label">Commission Type</InputLabel>
+            <Select
+              labelId="commision-type-label"
+              name="commision_type"
+              value={formValues.commision_type}
+              onChange={(event) => {
+                // Ensure the value is set as "percentage" or "flat_amount"
+                const selectedValue = event.target.value;
+                handleChange({ target: { name: 'commision_type', value: selectedValue } });
+              }}
+              label="Commission Type"
+            >
+              <MenuItem value="percentage">Percentage</MenuItem>
+              <MenuItem value="flat_amount">Flat Amount</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel id="package-id-label">Package ID</InputLabel>

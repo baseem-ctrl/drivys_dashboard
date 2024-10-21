@@ -18,7 +18,6 @@ export default function CityDetails({ onEdit, city }) {
       <Stack
         alignItems="end"
         sx={{
-          width: '-webkit-fill-available',
           cursor: 'pointer',
           position: 'absolute',
           right: '1rem',
@@ -35,7 +34,7 @@ export default function CityDetails({ onEdit, city }) {
         }}
         sx={{ p: 2.5 }}
       >
-        <Grid item xs={12} sm={8} md={8}>
+        <Grid item xs={12} sm={8} md={8} style={{ width: '100%' }}>
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
