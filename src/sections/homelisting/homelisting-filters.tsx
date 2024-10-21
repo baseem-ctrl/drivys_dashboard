@@ -12,6 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 // types
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -33,6 +35,11 @@ type Props = {
     value: string;
     label: string;
   }[];
+  localeOptions?: {
+    value: string;
+    label: string;
+  }[];
+
   categoryOptions?: string[];
   colorOptions?: string[];
   statusOptions?: {
@@ -58,12 +65,21 @@ export default function ProductFilters({
   //
   statusOptions,
   activeOptions,
+  localeOptions,
 }: Props) {
-  const handleFilterStocks = (newValue: string) => {
-    onFilters('status', newValue);
-  };
   const handleFilterActive = (newValue: string) => {
     onFilters('is_active', newValue);
+  };
+
+  const handleCatalogueTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    onFilters('catalogue_type', event.target.value);
+  };
+  const handleFilterLocale = (event: React.ChangeEvent<{ value: unknown }>) => {
+    onFilters('locale', event.target.value); // Call the function with selected locale
+  };
+  const handleDisplayOrderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    onFilters('display_order', value); // Call the function with display order value
   };
   const renderHead = (
     <Stack
@@ -90,35 +106,50 @@ export default function ProductFilters({
     </Stack>
   );
 
-  const renderStock = (
+  const renderCatalogueType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Status
+        Catalogue Type
       </Typography>
-      {statusOptions.map((option) => (
-        <FormControlLabel
-          key={option.value}
-          control={
-            <Radio
-              checked={option.value === filters?.status}
-              onClick={() => handleFilterStocks(option?.value)}
-            />
-          }
-          label={option.label}
-          sx={{
-            ...(option.label === 'all' && {
-              textTransform: 'capitalize',
-            }),
-          }}
-        />
-      ))}
+      <Select
+        value={filters?.catalogue_type || ''}
+        onChange={handleCatalogueTypeChange}
+        displayEmpty
+        fullWidth
+        sx={{ mb: 2 }}
+      >
+        <MenuItem value="" disabled>
+          Select a category
+        </MenuItem>
+        <MenuItem value="1">Categories</MenuItem>
+        <MenuItem value="2">Drivers</MenuItem>
+      </Select>
     </Stack>
   );
+
+  const renderLocale = (
+    <Stack>
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        Locale
+      </Typography>
+      <Select value={filters?.locale || ''} onChange={handleFilterLocale} displayEmpty fullWidth>
+        <MenuItem value="" disabled>
+          Select Locale
+        </MenuItem>
+        {localeOptions.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </Stack>
+  );
+
   const renderActive = (
     <Stack>
-      {/* <Typography variant="subtitle2" sx={{ mb: 1 }}>
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
         Active Status
-      </Typography> */}
+      </Typography>
       {activeOptions.map((option) => (
         <FormControlLabel
           key={option.value}
@@ -133,56 +164,27 @@ export default function ProductFilters({
       ))}
     </Stack>
   );
-  const renderPrice = (
+
+  const renderDisplayOrder = (
     <Stack>
-      <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Commission
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        Display Order
       </Typography>
-
-      <Stack direction="row" spacing={5} sx={{ my: 2 }}>
-        <InputRange
-          type="min"
-          onFilters={onFilters}
-          filterName="commission"
-          value={filters.min_commission}
-        />
-        <InputRange
-          type="max"
-          onFilters={onFilters}
-          filterName="commission"
-          value={filters.max_commission}
-        />
-      </Stack>
+      <InputBase
+        value={filters?.display_order || ''}
+        onChange={handleDisplayOrderChange}
+        sx={{
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 0.75,
+          px: 1,
+          py: 0.5,
+          width: '100%',
+        }}
+        placeholder="Enter display order"
+      />
     </Stack>
   );
-  const renderRating = (
-    <Stack spacing={2} alignItems="flex-start">
-      <Typography variant="subtitle2">Rating</Typography>
-
-      {activeOptions?.map((item, index) => (
-        <Stack
-          key={item}
-          direction="row"
-          onClick={() => handleFilterRating(item)}
-          sx={{
-            borderRadius: 1,
-            cursor: 'pointer',
-            typography: 'body2',
-            '&:hover': { opacity: 0.48 },
-            ...(filters.rating === item && {
-              pl: 0.5,
-              pr: 0.75,
-              py: 0.25,
-              bgcolor: 'action.selected',
-            }),
-          }}
-        >
-          <Rating readOnly value={4 - index} sx={{ mr: 1 }} /> & Up
-        </Stack>
-      ))}
-    </Stack>
-  );
-
   return (
     <>
       <Button
@@ -215,69 +217,14 @@ export default function ProductFilters({
 
         <Scrollbar sx={{ px: 2.5, py: 3 }}>
           <Stack spacing={3}>
-            {renderStock}
-            {renderPrice}
+            {renderLocale}
+            {renderCatalogueType}
+            {renderDisplayOrder}
+
             {renderActive}
-            {/* {renderDiscountPrice}
-            {renderCostPrice}
-            {renderWeight} */}
           </Stack>
         </Scrollbar>
       </Drawer>
     </>
-  );
-}
-
-// ----------------------------------------------------------------------
-
-type InputRangeProps = {
-  type: 'min' | 'max';
-  onFilters: (name: string, value: any) => void;
-  filterName: string;
-  value: any;
-};
-
-function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
-  const handleMinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(event.target.value);
-    onFilters('min_commission', value); // Call the function with min value
-  };
-
-  const handleMaxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(event.target.value);
-    onFilters('max_commission', value); // Call the function with max value
-  };
-
-  return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: 1 }}>
-      <Typography
-        variant="caption"
-        sx={{
-          flexShrink: 0,
-          color: 'text.disabled',
-          textTransform: 'capitalize',
-          fontWeight: 'fontWeightSemiBold',
-        }}
-      >
-        {`${type} ($)`}
-      </Typography>
-
-      <InputBase
-        fullWidth
-        value={value}
-        onChange={type === 'min' ? handleMinChange : handleMaxChange}
-        sx={{
-          maxWidth: 48,
-          borderRadius: 0.75,
-          bgcolor: (theme) => alpha(theme.palette.grey[500], 0.08),
-          [`& .${inputBaseClasses.input}`]: {
-            pr: 1,
-            py: 0.75,
-            textAlign: 'right',
-            typography: 'body2',
-          },
-        }}
-      />
-    </Stack>
   );
 }
