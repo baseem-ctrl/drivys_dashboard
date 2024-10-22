@@ -28,3 +28,9 @@ export function useGetPackagesDetailsByTrainer(trainerId: string |number) {
 
   return { ...memoizedValue, revalidateDetails };
 }
+
+export function deleteTrainer(id: any) {
+  const URL = `${endpoints.trainer.delete}${id}`;
+  const response = barrySmasher(URL);
+  return response;
+}

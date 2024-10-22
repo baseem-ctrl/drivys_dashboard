@@ -34,6 +34,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createHomeListing } from 'src/api/homelisting';
 import { useParams } from 'react-router';
+import { deleteTrainer } from 'src/api/trainer';
 
 // ----------------------------------------------------------------------
 
@@ -52,11 +53,13 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
+  const [deleteId, setDeleteId] = useState('');
+
   const [trainerMappingId, setTrainerMappingId] = useState('');
 
   // const [loadingButton, setLoadingButton] = useState(false);
 
-  const { users, usersLoading } = useGetUsers({
+  const { users, usersLoading, revalidateUsers } = useGetUsers({
     page: table?.page,
     limit: table?.rowsPerPage,
     user_types: 'TRAINER',
@@ -97,6 +100,17 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
       reset(defaultValues);
     }
   }, [homelistingdetails, reset]);
+
+  // Function to delete trainer
+  const handleDeleteTrainer = async (id: string | number) => {
+    try {
+      await deleteTrainer(id);
+      enqueueSnackbar('Trainer deleted successfully!', { variant: 'success' });
+      revalidateUsers()
+    } catch (error) {
+      enqueueSnackbar('Failed to delete trainer.', { variant: 'error' });
+    }
+  };
 
   const onSubmit = async (data: any) => {
     console.log(data, 'data');
@@ -322,7 +336,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
         content="Are you sure want to delete?"
         onConfirm={() => {
           confirm.onFalse();
-          // handleRemove();
+          handleDeleteTrainer(trainerMappingId);
         }}
         action={
           <Button variant="contained" color="error">
@@ -346,16 +360,17 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
           View
         </MenuItem>
 
-        {/* <MenuItem
+        <MenuItem
           onClick={() => {
             popover.onClose();
             confirm.onTrue();
+            // handleDeleteTrainer(trainerId)
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Remove
-        </MenuItem> */}
+        </MenuItem>
       </CustomPopover>
     </Box>
   );
