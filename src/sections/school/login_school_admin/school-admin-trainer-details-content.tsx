@@ -225,9 +225,10 @@ export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
 
         details?.length > 0 ?
           <>
-            <Grid container spacing={1} rowGap={1}>
-              <Grid xs={12} sm={6} md={3}>
-                {Array.isArray(details) && details.map((item: any) => (
+            <Grid container spacing={2} >
+
+              {Array.isArray(details) && details.map((item: any) => (
+                <Grid item xs={12} sm={6} md={3}>
                   <Stack
                     component={Card}
                     direction="column"
@@ -244,16 +245,18 @@ export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
                         <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> <Typography>  {item?.package_translations[0]?.session_inclusions} </Typography>
                       </Stack>
                     </Stack>
+
                   </Stack>
-                ))}
+                </Grid>
+              ))}
 
 
-              </Grid>
+
 
 
               {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
+        {renderCompany}
+      </Grid> */}
             </Grid>
           </> : "No Packages"
       )
