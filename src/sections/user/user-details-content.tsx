@@ -48,7 +48,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
-
+import StudentDetailsContent from './student-details-content';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -1113,22 +1113,30 @@ export default function UserDetailsContent({
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
           <Grid container spacing={1} rowGap={1}>
+
+
             <Grid xs={12} md={12}>
               {/* For all other user types */}
               {details?.user_type !== 'TRAINER' && renderContent}
 
-              {/* For trainer user type with 3 tabs */}
+              {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
-              {/* {currentTab === 'students' && details?.user_type === "TRAINER" && renderContent} */}
+              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+                <StudentDetailsContent id={details?.id} />
+              )}
 
-              {/* For trainer user type with 3 tabs */}
+              {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
+
+
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
+
+
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' && details?.user_preference?.id && renderUserPreferences}
@@ -1139,6 +1147,8 @@ export default function UserDetailsContent({
                 details?.user_preference?.id &&
                 renderUserPreferences}
             </Grid>
+
+
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>
