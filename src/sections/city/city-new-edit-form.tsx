@@ -82,7 +82,6 @@ export default function CityNewEditForm({
 
   const onSubmit = handleSubmit(async (city) => {
     try {
-      console.log('city', city);
       const formData = new FormData();
       formData.append('city_id', city.id);
       formData.append('is_published', city.published ? '1' : '0');
@@ -90,7 +89,6 @@ export default function CityNewEditForm({
       formData.append('city_translation[0][name]', city.name);
 
       // Update city call
-      console.log('Updating city...');
       const response = await updateCityTranslation(formData);
       if (response) {
         enqueueSnackbar('City translations updated successfully.');
@@ -137,7 +135,6 @@ export default function CityNewEditForm({
                     label="Locale"
                     onChange={(e) => {
                       const newLocale = e.target.value; // Get the selected value
-                      console.log('Locale changed to:', newLocale); // Log the new locale
                       field.onChange(newLocale); // Update the form state with the new locale
                     }}
                   >
