@@ -282,7 +282,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         revalidateDetails();
         reset();
-        router.push(paths.dashboard.user.list);
+        router.push(paths.dashboard.user.details(currentUser?.id));
       }
     } catch (error) {
       if (error?.errors) {
