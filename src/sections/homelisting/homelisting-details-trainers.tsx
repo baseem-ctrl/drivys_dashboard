@@ -66,6 +66,8 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
     search: search,
     is_active: '1',
   });
+
+
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
@@ -115,7 +117,6 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
   const onSubmit = async (data: any) => {
     console.log(data, 'data');
     const body = new FormData()
-    console.log(data?.trainer_id, "data?.trainer_id");
 
     homelistingdetails?.translations?.forEach((translation: { title: string | Blob; locale: string; description: string | Blob; }, index: any) => {
       body.append(`translation[${index}][title]`, translation.title);
@@ -148,10 +149,12 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
       // setLoadingButton(false);
     }
   };
-  const handlePopoverOpen = (e, trainer: any) => {
+
+
+  const handlePopoverOpen = (e, trainer: any,deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
-    setTrainerMappingId(trainer?.id);
+    setTrainerMappingId(deleteId);
   };
   // const handleRemove = async () => {
   //   try {
@@ -257,7 +260,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
                 <Stack direction="row" spacing={2} key={trainerdisplayed?.id}>
                   <IconButton
                     sx={{ position: 'absolute', top: 8, right: 8 }}
-                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed)}
+                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed,trainerItem?.id)}
                   >
                     <Iconify icon="eva:more-vertical-fill" />
                   </IconButton>
