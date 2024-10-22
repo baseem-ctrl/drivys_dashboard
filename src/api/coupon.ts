@@ -30,8 +30,6 @@ export function useGetAllCoupon({
   discount_type_id,
   is_active,
 }: useGetCouponParams = {}) {
-  console.log(is_active, 'is_active');
-
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;

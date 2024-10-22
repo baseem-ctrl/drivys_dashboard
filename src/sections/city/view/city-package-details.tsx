@@ -14,89 +14,118 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import { useGetPackageCityList } from 'src';
-import React from 'react';
+import { useState } from 'react';
 import { createPackageCity, deletePackageCityById } from 'src/api/city';
 import PackageCreateEditForm from '../package-create-update-form';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
-import { useGetPackage } from 'src/api/package';
-
 // ----------------------------------------------------------------------
 
 export default function CityPackageDetails({ reload, packageDetails, city }) {
-  console.log('packageDetails', packageDetails);
   const quickEdit = useBoolean();
-  const confirm = useBoolean(); // State for confirmation dialog
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedPackageId, setSelectedPackageId] = React.useState(null); // State for selected package
+  const confirm = useBoolean();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
+  const [editMode, setEditMode] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
-
-  const { packageList, packageError } = useGetPackage();
 
   const handleDeletePackage = async (id) => {
     try {
       const response = await deletePackageCityById(id);
-      console.log('Package deleted successfully:', response);
       reload();
-      enqueueSnackbar('Package City Mapping successfully.');
+      enqueueSnackbar('Package City Mapping Deleted successfully.');
       quickEdit.onFalse();
       confirm.onFalse();
     } catch (error) {
       console.error('Error deleting package:', error);
     }
   };
+
   const handleCreatePackage = async (newPackage) => {
     try {
       const response = await createPackageCity(newPackage);
       reload();
-      enqueueSnackbar('Package City Mapping created successfully.');
-      console.log('Package created successfully:', response);
+      enqueueSnackbar(response.message);
       quickEdit.onFalse();
+      setEditMode('');
     } catch (error) {
+      setEditMode('');
       console.error('Error creating package:', error);
     }
   };
 
+  const handleEditPackage = (packageItem) => {
+    setEditMode('Edit');
+    setSelectedPackage(packageItem);
+    quickEdit.onTrue();
+    handleClose();
+  };
+
   const handleClick = (event, packageItem) => {
     setAnchorEl(event.currentTarget);
+    setSelectedPackageId(packageItem.id);
+    setSelectedPackage(packageItem);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const handleDeleteClick = (id) => {
-    console.log('id', id);
     setSelectedPackageId(id);
     confirm.onTrue();
   };
 
+  const handleAddPackageClick = () => {
+    setEditMode('');
+    setSelectedPackage(null);
+    quickEdit.onTrue();
+  };
+
   return (
     <Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          quickEdit.onTrue(); // Open the form
-        }}
-        sx={{
-          marginBottom: '20px',
-          backgroundColor: '#CF5A0D',
-          color: 'white',
-          '&:hover': {
-            backgroundColor: '#FB8C00',
-          },
-        }}
-      >
-        Add Package
-      </Button>
+      <Grid container justifyContent="flex-end" sx={{ marginBottom: '20px' }}>
+        {Array.isArray(packageDetails) && packageDetails.length <= 0 && (
+          <Grid item xs={12}>
+            <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
+              No packages available. Click Add Package to create a new one.
+            </Typography>
+          </Grid>
+        )}
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={handleAddPackageClick}
+            sx={{
+              backgroundColor: '#CF5A0D',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#FB8C00',
+              },
+            }}
+          >
+            Add Package
+          </Button>
+        </Grid>
+      </Grid>
       <Grid container spacing={2} rowGap={1}>
         {Array.isArray(packageDetails) &&
           packageDetails.map((packageItem) => (
             <Grid item xs={12} sm={6} md={3} key={packageItem.id}>
-              <Stack component={Card} direction="column" sx={{ marginBottom: '16px' }}>
+              <Stack
+                component={Card}
+                direction="column"
+                sx={{
+                  marginBottom: '16px',
+                  height: '260px',
+                  position: 'relative',
+                }}
+              >
                 <Stack
                   direction="row"
                   justifyContent="space-between"
@@ -108,22 +137,16 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     color="#CF5A0D"
                     sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
                   >
-                    {packageItem.package.package_translations.find((trans) => trans.locale === 'en')
-                      ?.name || 'Unnamed Package'}
+                    {packageItem.package.package_translations[0]?.name.toUpperCase() ||
+                      'UNNAMED PACKAGE'}
                   </Typography>
+
                   <IconButton onClick={(e) => handleClick(e, packageItem)}>
                     <Iconify icon="eva:more-vertical-outline" />
                   </IconButton>
                 </Stack>
-                <hr
-                  style={{
-                    width: '100%',
-                    height: '0.5px',
-                    border: 'none',
-                    backgroundColor: '#CF5A0D',
-                  }}
-                />
-                <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
+
+                <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
                   <Typography variant="body2">
                     {packageItem.package.number_of_sessions} Sessions
                   </Typography>
@@ -142,18 +165,19 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     />
                   </Stack>
                 </Stack>
-              </Stack>
-              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem
-                  onClick={() => {
-                    console.log('packageItem', packageItem.id);
-                    handleDeleteClick(packageItem.id);
-                    handleClose();
+
+                <hr
+                  style={{
+                    width: '100%',
+                    height: '0.5px',
+                    border: 'none',
+                    backgroundColor: '#CF5A0D',
+                    position: 'absolute',
+                    top: '70px',
+                    left: '0',
                   }}
-                >
-                  Delete Package
-                </MenuItem>
-              </Menu>
+                />
+              </Stack>
             </Grid>
           ))}
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
@@ -175,17 +199,33 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
           </DialogActions>
         </Dialog>
       </Grid>
-      {/* Render form for editing or creating packages */}
+
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        <MenuItem
+          onClick={() => {
+            handleEditPackage(selectedPackage);
+          }}
+        >
+          Edit Package
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDeleteClick(selectedPackage.id);
+            handleClose();
+          }}
+        >
+          Delete Package
+        </MenuItem>
+      </Menu>
       <PackageCreateEditForm
+        editMode={editMode}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
         onSubmit={handleCreatePackage}
-        packageList={packageList}
-        city_id={city.id} // Pass city_id if selectedPackage exists
+        selectedPackage={selectedPackage}
+        city_id={city.id}
+        setEditMode={setEditMode}
       />
-      {/* Menu for more options */}
-
-      {/* Confirmation Dialog */}
     </Box>
   );
 }

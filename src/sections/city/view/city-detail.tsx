@@ -9,7 +9,7 @@ export default function CityDetails({ onEdit, city }) {
   const renderContent = (
     <>
       {city?.city_translations && city.city_translations.length > 0 ? (
-        <Grid spacing={3} paddingTop={3} paddingBottom={5} paddingLeft={10} paddingRight={10}>
+        <Grid spacing={3}>
           {city.city_translations.map((translation, index) => (
             <Grid item xs={12} sm={6} md={4} key={index} marginBottom={5}>
               <Stack component={Card} spacing={3} sx={{ p: 3, position: 'relative' }}>

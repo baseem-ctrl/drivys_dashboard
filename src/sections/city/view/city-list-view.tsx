@@ -149,7 +149,6 @@ export default function CityListView() {
   const handleClosePopup = () => {
     setOpenEditPopup(false);
   };
-  console.log('originalTableData', originalTableData);
   const handleResetFilters = useCallback(() => {
     setLocaleFilter('');
     setFilters(defaultFilters);
@@ -158,9 +157,6 @@ export default function CityListView() {
 
   const handleFilters = useCallback(
     (name: string, value: ICityTableFilters) => {
-      console.log('name', name);
-      console.log('value', value);
-
       setSearchQuery(value);
       table.onResetPage();
       setFilters((prevState) => ({
@@ -232,7 +228,7 @@ export default function CityListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-        {renderFilters}
+        {viewMode === 'table' && renderFilters}
         <Card>
           {viewMode === 'table' && (
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -297,6 +293,7 @@ export default function CityListView() {
               reload={revalidateCities}
               cityId={rowId}
               index={index}
+              setOpenEditPopup={setOpenEditPopup}
             />
           )}
 

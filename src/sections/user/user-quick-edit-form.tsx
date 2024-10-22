@@ -137,7 +137,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
     }
   });
   const password = useBoolean();
-  console.log(errors, 'errors');
 
   return (
     <Dialog
