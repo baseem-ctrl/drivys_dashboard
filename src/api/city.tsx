@@ -53,7 +53,6 @@ export function useGetCityById(cityId: number | string) {
     cityId ? getCityUrl() : null,
     drivysFetcher
   );
-  console.log('data', data);
 
   const memoizedValue = useMemo(
     () => ({
@@ -87,8 +86,6 @@ export function createCityTranslation(body: any) {
 
 // Update city translation
 export function updateCityTranslation(body: FormData) {
-  console.log('body entries:');
-
   const URL = endpoints.city.updateTranslation; // Ensure this matches your API
   const response = drivysCreator([URL, body]);
   return response;

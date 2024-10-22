@@ -16,11 +16,7 @@ import DialogContent from '@mui/material/DialogContent';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/system/Unstable_Grid/Grid';
-import FormProvider, {
-  RHFTextField,
-  RHFCheckbox,
-  RHFSelect,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/components/hook-form';
 import { createHomeListing } from 'src/api/homelisting';
 
 type Props = {
@@ -29,18 +25,14 @@ type Props = {
   revalidateHomeListing: VoidFunction;
 };
 
-export default function SchoolCreateForm({
-  open,
-  onClose,
-  revalidateHomeListing,
-}: Props) {
+export default function SchoolCreateForm({ open, onClose, revalidateHomeListing }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
-  const [selectedLocale, setSelectedLocale] = useState<string | null>("en");
+  const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
 
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -64,7 +56,6 @@ export default function SchoolCreateForm({
       description: '',
       display_order: '',
       is_active: false,
-
     }),
     []
   );
@@ -87,7 +78,6 @@ export default function SchoolCreateForm({
   const currentDescription = watch('description');
   const values = watch();
   const previousLocaleRef = useRef(selectedLocale);
-  console.log(errors, 'errors');
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
@@ -130,15 +120,14 @@ export default function SchoolCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
-    console.log(data, 'data');
 
     const body = new FormData();
-    body.append("translation[0][locale]", data?.locale)
-    body.append("translation[0][title]", data?.title)
-    if (data?.description) body.append("translation[0][description]", data?.description)
-    if (data?.display_order) body.append("display_order", data?.display_order)
-    if (data?.catalogue_type) body.append("catalogue_type", data?.catalogue_type)
-    body.append("is_active", data?.is_active ? '1' : '0')
+    body.append('translation[0][locale]', data?.locale);
+    body.append('translation[0][title]', data?.title);
+    if (data?.description) body.append('translation[0][description]', data?.description);
+    if (data?.display_order) body.append('display_order', data?.display_order);
+    if (data?.catalogue_type) body.append('catalogue_type', data?.catalogue_type);
+    body.append('is_active', data?.is_active ? '1' : '0');
 
     try {
       const response = await createHomeListing(body);
@@ -161,7 +150,7 @@ export default function SchoolCreateForm({
 
   const handleClose = () => {
     reset(defaultValues);
-    setSelectedLocale("en")
+    setSelectedLocale('en');
     onClose();
   };
   return (
@@ -192,7 +181,6 @@ export default function SchoolCreateForm({
                 ))}
               </RHFSelect>
               <RHFTextField name="title" label="Title" />
-
             </Box>
             <RHFTextField name="description" label="Description" />
           </Box>
@@ -204,8 +192,7 @@ export default function SchoolCreateForm({
               <RHFTextField name="display_order" label="Display order" />
             </Grid>
 
-
-            <Grid item xs={6} >
+            <Grid item xs={6}>
               <Controller
                 name="catalogue_type"
                 control={control}
@@ -225,13 +212,10 @@ export default function SchoolCreateForm({
               />
             </Grid>
 
-            <Grid item xs={6} >
+            <Grid item xs={6}>
               <RHFCheckbox name="is_active" label="Active" />
             </Grid>
-
-
           </Grid>
-
         </DialogContent>
 
         <DialogActions>

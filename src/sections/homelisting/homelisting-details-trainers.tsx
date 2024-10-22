@@ -34,6 +34,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createHomeListing } from 'src/api/homelisting';
 import { useParams } from 'react-router';
+import { deleteTrainer } from 'src/api/trainer';
 
 // ----------------------------------------------------------------------
 
@@ -52,17 +53,21 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
+  const [deleteId, setDeleteId] = useState('');
+
   const [trainerMappingId, setTrainerMappingId] = useState('');
 
   // const [loadingButton, setLoadingButton] = useState(false);
 
-  const { users, usersLoading } = useGetUsers({
+  const { users, usersLoading, revalidateUsers } = useGetUsers({
     page: table?.page,
     limit: table?.rowsPerPage,
     user_types: 'TRAINER',
     search: search,
     is_active: '1',
   });
+
+
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
@@ -98,10 +103,20 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
     }
   }, [homelistingdetails, reset]);
 
+  // Function to delete trainer
+  const handleDeleteTrainer = async (id: string | number) => {
+    try {
+      await deleteTrainer(id);
+      enqueueSnackbar('Trainer deleted successfully!', { variant: 'success' });
+      revalidateUsers()
+    } catch (error) {
+      enqueueSnackbar('Failed to delete trainer.', { variant: 'error' });
+    }
+  };
+
   const onSubmit = async (data: any) => {
     console.log(data, 'data');
     const body = new FormData()
-    console.log(data?.trainer_id, "data?.trainer_id");
 
     homelistingdetails?.translations?.forEach((translation: { title: string | Blob; locale: string; description: string | Blob; }, index: any) => {
       body.append(`translation[${index}][title]`, translation.title);
@@ -134,10 +149,12 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
       // setLoadingButton(false);
     }
   };
-  const handlePopoverOpen = (e, trainer: any) => {
+
+
+  const handlePopoverOpen = (e, trainer: any,deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
-    setTrainerMappingId(trainer?.id);
+    setTrainerMappingId(deleteId);
   };
   // const handleRemove = async () => {
   //   try {
@@ -243,7 +260,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
                 <Stack direction="row" spacing={2} key={trainerdisplayed?.id}>
                   <IconButton
                     sx={{ position: 'absolute', top: 8, right: 8 }}
-                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed)}
+                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed,trainerItem?.id)}
                   >
                     <Iconify icon="eva:more-vertical-fill" />
                   </IconButton>
@@ -322,7 +339,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
         content="Are you sure want to delete?"
         onConfirm={() => {
           confirm.onFalse();
-          // handleRemove();
+          handleDeleteTrainer(trainerMappingId);
         }}
         action={
           <Button variant="contained" color="error">
@@ -346,16 +363,17 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
           View
         </MenuItem>
 
-        {/* <MenuItem
+        <MenuItem
           onClick={() => {
             popover.onClose();
             confirm.onTrue();
+            // handleDeleteTrainer(trainerId)
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Remove
-        </MenuItem> */}
+        </MenuItem>
       </CustomPopover>
     </Box>
   );

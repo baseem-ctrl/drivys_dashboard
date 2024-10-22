@@ -8,13 +8,11 @@ export function createStateTranslation(body: any) {
   const URL = endpoints.state.createStateTranslation;
 
   const response = drivysCreator([URL, body]);
-  console.log('response', response);
   return response;
 }
 
 // Function for Updatong the state translation
 export function updateStateTranslation(body: any) {
-  console.log('body', body);
   const URL = endpoints.state.updateStateTranslation;
   const response = drivysCreator([URL, body]);
   return response;

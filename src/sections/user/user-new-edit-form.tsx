@@ -65,7 +65,7 @@ const fluencyOptions = [
 ];
 
 export default function UserNewEditForm({ loading, id }: Props) {
-  const { details, detailsLoading } = useGetUserDetails(id);
+  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const currentUser = details;
   const router = useRouter();
   const { user } = useAuthContext();
@@ -149,24 +149,39 @@ export default function UserNewEditForm({ loading, id }: Props) {
       phone: currentUser?.phone || '',
       country_code: '971',
       dob: currentUser?.dob?.split('T')[0] || '',
-      locale: language ? language?.find((option) => option?.language_culture === currentUser?.locale) : '',
+      locale: language
+        ? language?.find((option) => option?.language_culture === currentUser?.locale)
+        : '',
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.is_active || 1,
-      languages: dialect ? currentUser?.languages?.map(lang => ({
-        id: dialect?.length > 0 ? dialect?.find((option) => option?.id === lang?.dialect?.id) : '',
-        fluency_level: lang?.fluency_level || ''
-      })) : [],
-      gear: gearData?.length > 0 ? gearData?.find((option) => option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase())?.value : '',
-      vehicle_type_id:
-        currentUser?.user_preference?.vehicle_type_id || '',
-      gender: genderData?.length > 0 ? genderData?.find((option) => option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase())?.value : '',
+      languages: dialect
+        ? currentUser?.languages?.map((lang) => ({
+            id:
+              dialect?.length > 0
+                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+                : '',
+            fluency_level: lang?.fluency_level || '',
+          }))
+        : [],
+      gear:
+        gearData?.length > 0
+          ? gearData?.find(
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
+            )?.value
+          : '',
+      vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
+      gender:
+        genderData?.length > 0
+          ? genderData?.find(
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
+            )?.value
+          : '',
       city_id: currentUser?.user_preference?.city_id || '',
     }),
     [currentUser?.locale, dialect, language]
   );
-
-
-
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -182,18 +197,30 @@ export default function UserNewEditForm({ loading, id }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-  const { fields, remove } = useFieldArray({
+  const { fields, remove, append } = useFieldArray({
     control,
     name: 'languages',
   });
-
   const values = watch();
   useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
+      revalidateDetails();
     }
-    setLanguage(currentUser?.languages ?? [])
-  }, [currentUser, reset, gearData, genderData, dialect, language]);
+  }, [currentUser?.id, currentUser?.languages, reset, defaultValues]);
+
+  // Function to add more language entry
+  const handleAddMore = () => {
+    append({ id: '', fluency_level: '' });
+    revalidateDetails();
+  };
+
+  // Function to delete language entryu
+  const handleRemove = (index: number) => {
+    remove(index);
+    revalidateDetails();
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       let response;
@@ -214,10 +241,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
       body.append('locale', data?.locale?.language_culture);
-      if (
-        data?.photo_url
-        && data?.photo_url instanceof File
-      ) {
+      if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
 
@@ -256,8 +280,9 @@ export default function UserNewEditForm({ loading, id }: Props) {
       }
       if (response) {
         enqueueSnackbar(currentUser ? response?.message : response?.message);
+        revalidateDetails();
         reset();
-        router.push(paths.dashboard.user.list);
+        router.push(paths.dashboard.user.details(currentUser?.id));
       }
     } catch (error) {
       if (error?.errors) {
@@ -269,22 +294,12 @@ export default function UserNewEditForm({ loading, id }: Props) {
       }
     }
   });
-
-  const [languages, setLanguage] = useState<any>([]);
+  useEffect(() => {
+    if (currentUser) {
+      reset(defaultValues);
+    }
+  }, [currentUser, reset, defaultValues]);
   // Function to add more pairs
-  const handleAddMore = () => {
-    setLanguage([...languages, { id: '', fluency_level: '' }]);
-    console.log(languages, "languages");
-
-  };
-
-  // Function to remove a pair
-  const handleRemove = (index: number) => {
-    const language = [...languages];
-    language.splice(index, 1); // Remove the pair at the specified index
-    setLanguage(language);
-    remove(index);
-  };
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -315,7 +330,14 @@ export default function UserNewEditForm({ loading, id }: Props) {
   };
 
   const confirm = useBoolean();
-  if ((id && detailsLoading) || loading) {
+  if (
+    (id && detailsLoading) ||
+    loading ||
+    languageLoading ||
+    enumLoading ||
+    genderLoading ||
+    gearLoading
+  ) {
     return (
       <Box
         sx={{
@@ -329,6 +351,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
       </Box>
     );
   }
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -493,19 +516,26 @@ export default function UserNewEditForm({ loading, id }: Props) {
                       ))}
                   </RHFSelect>
                 </Box>
-                {languages?.map((languageItem, index) => (
-                  <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={languageItem.id || index}>
+                {fields.map((languageItem, index) => (
+                  <Grid
+                    container
+                    item
+                    spacing={2}
+                    sx={{ mt: 2, mb: 2 }}
+                    key={languageItem.id || index}
+                  >
                     <Grid item xs={12} md={5}>
                       <RHFAutocomplete
                         name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
-                        getOptionLabel={(option) => option ? `${option?.dialect_name}` : ''}
+                        getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
                         options={dialect}
                         renderOption={(props, option: any) => (
                           <li {...props} key={option?.id}>
                             {option?.dialect_name ?? 'Unknown'}
                           </li>
                         )}
+                        defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
                       />
                     </Grid>
 
@@ -514,6 +544,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
                       <RHFSelect
                         name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
                         label="Fluency level"
+                        defaultValue={languageItem.fluency_level}
                       >
                         {fluencyOptions.map((option: any) => (
                           <MenuItem key={option.value} value={option.value}>

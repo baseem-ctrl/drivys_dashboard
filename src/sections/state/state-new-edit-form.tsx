@@ -57,11 +57,10 @@ export default function StateNewEditForm({
   } = methods;
   const selectedLocale = watch('locale');
 
-
   // Update name based on locale
   useEffect(() => {
     const translation = state?.translations?.find(
-      (translation: { locale: any; }) => translation.locale === selectedLocale
+      (translation: { locale: any }) => translation.locale === selectedLocale
     );
     if (translation) {
       setValue('name', translation.name);
@@ -84,7 +83,6 @@ export default function StateNewEditForm({
   const onSubmit = handleSubmit(async (state) => {
     try {
       const formData = new FormData();
-      console.log('state', state);
       formData.append('order', stateProvinceID);
       formData.append('state_id', state?.id || '');
       formData.append('is_published', state.published ? '1' : '0');

@@ -198,13 +198,11 @@ export function createNewAddressForUser(body: any) {
 }
 // Function to update the user address
 export function updateExistingUserAddress(body: any, id, user_id) {
-  console.log('body', body);
   const updatedBody = {
     ...body,
     id,
     user_id,
   };
-  console.log('updatedBody', updatedBody);
   const URL = endpoints.users.createNewAdressForUser; // Use the endpoint for creating/updating user address
   const response = drivysCreator([URL, updatedBody]); // Make the API request using the updated body
   return response;

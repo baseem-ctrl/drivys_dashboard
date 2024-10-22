@@ -40,7 +40,6 @@ export default function StateTableRow({
     setProvinceID(stateId);
     onSelectRow();
   };
-  console.log('row', row);
   return (
     <>
       <TableRow hover selected={selected}>
