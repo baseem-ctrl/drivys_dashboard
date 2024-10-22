@@ -51,6 +51,8 @@ export default function UserTableRow({
 
   const quickEdit = useBoolean();
 
+
+
   const redirectToDetailsPage = () => {
     router.push(paths.dashboard.user.details(row?.id));
   };
@@ -58,9 +60,11 @@ export default function UserTableRow({
 
   const popover = usePopover();
   const router = useRouter();
+
+
   return (
     <>
-      <TableRow hover selected={selected}  >
+      <TableRow hover selected={selected} sx={{ cursor: 'pointer' }} onClick={redirectToDetailsPage} >
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
@@ -117,12 +121,21 @@ export default function UserTableRow({
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
+            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={(e) => {
+              quickEdit.onTrue()
+              e.stopPropagation();
+            }}>
               <Iconify icon="solar:pen-bold" />
             </IconButton>
           </Tooltip>
 
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+          <IconButton
+            color={popover.open ? 'inherit' : 'default'}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevents the event from reaching parent component
+              popover.onOpen(e); // Opens the popover
+            }}
+          >
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
