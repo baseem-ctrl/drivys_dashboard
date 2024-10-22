@@ -43,7 +43,7 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import CityCreateEditForm from '../city-create-update';
 import { deleteCity, useGetAllCities } from 'src/api/city';
 import CityNewEditForm from '../city-new-edit-form';
-import CityDetails from './city-details';
+import CityDetails from './city-details-view';
 import CityFilters from '../city-filters';
 import CitySearch from '../city-search';
 import { useGetAllLanguage } from 'src/api/language';

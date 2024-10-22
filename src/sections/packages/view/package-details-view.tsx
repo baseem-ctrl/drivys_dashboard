@@ -9,7 +9,6 @@ import PackageDetails from '../package-details-content';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { useGetPackageById } from 'src/api/package';
 
-
 // ----------------------------------------------------------------------
 
 type Props = {

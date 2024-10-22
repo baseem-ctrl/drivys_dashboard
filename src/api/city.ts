@@ -147,6 +147,62 @@ export function updateCityTranslation(body: FormData) {
 
 // ----------------------------------------------------------------------
 
+// Create or update package-city mapping
+export function createPackageCity(body: any) {
+  const URL = endpoints.city.createPackage; // Referring to your defined endpoint
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+// Delete a package-city mapping by ID
+export function deletePackageCityById(packageId: number | string) {
+  const URL = `${endpoints.city.deletePackageList}${packageId}`;
+  const response = barrySmasher(URL);
+  return response;
+}
+
+// Get the full list of package-city mappings
+interface UseGetPackageCityListParams {
+  city_id?: string;
+}
+
+export function useGetPackageCityList({ city_id }: UseGetPackageCityListParams = {}) {
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (city_id) params.city_id = city_id;
+
+    return params;
+  }, [city_id]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.city.getPackageList}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePackage = () => {
+    mutate(fullUrl);
+  };
+
+  const memoizedValue = useMemo(() => {
+    const packageCityList = data?.data || [];
+    return {
+      packageCityList,
+      packageCityListLoading: isLoading,
+      packageCityListError: error,
+      packageCityListValidating: isValidating,
+      packageCityListEmpty: packageCityList.length === 0,
+    };
+  }, [data?.data, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePackage,
+  };
+}
 // export function deleteCategory(category_translation_id: any, pictures_ids: any) {
 //   const URL =
 //     endpoints.category.delete +
