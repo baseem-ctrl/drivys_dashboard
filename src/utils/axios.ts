@@ -119,6 +119,10 @@ export const endpoints = {
 
   dialect: {
     list: 'admin/dialect/get-list',
+    createDialect: 'admin/dialect/create-update',
+    updateDilect: 'admin/dialect/create-update',
+    getDilectById: 'admin/dialect/get-by-id',
+    deleteDilect: 'admin/dialect/delete-by-id',
   },
   language: {
     list: 'admin/user/languages',

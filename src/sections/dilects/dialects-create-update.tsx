@@ -1,0 +1,153 @@
+import React, { useState, useEffect } from 'react';
+import * as Yup from 'yup';
+import { useForm, FormProvider } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+// @mui
+import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Controller } from 'react-hook-form';
+import Switch from '@mui/material/Switch';
+
+import Grid from '@mui/material/Grid';
+// components
+import { useSnackbar } from 'src/components/snackbar';
+import { RHFTextField } from 'src/components/hook-form';
+import { createOrUpdateDialect } from 'src/api/dialect';
+
+type Props = {
+  title: string;
+  open: boolean;
+  onClose: VoidFunction;
+  currentDialect?: any;
+  reload: VoidFunction;
+};
+
+export default function DialectCreateEditForm({
+  title,
+  currentDialect,
+  open,
+  onClose,
+  reload,
+}: Props) {
+  const { enqueueSnackbar } = useSnackbar();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const methods = useForm({
+    defaultValues: {
+      language_name: currentDialect?.language_name || '',
+      dialect_name: currentDialect?.dialect_name || '',
+      keywords: currentDialect?.keywords || '',
+      description: currentDialect?.description || '',
+      order: currentDialect?.order || '',
+      is_published: currentDialect?.is_published === '1' || false,
+    },
+    resolver: yupResolver(
+      Yup.object().shape({
+        language_name: Yup.string().required('Language Name is required'),
+        dialect_name: Yup.string(),
+        keywords: Yup.string(),
+        description: Yup.string(),
+        order: Yup.number(),
+        is_published: Yup.boolean(),
+      })
+    ),
+  });
+
+  const { handleSubmit } = methods;
+
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      let formData = new FormData();
+      formData.append('is_published', data.is_published ? '1' : '0');
+      formData.append('language_name', data.language_name);
+      formData.append('dialect_name', data.dialect_name);
+      formData.append('keywords', data.keywords);
+      formData.append('description', data.description);
+      formData.append('order', data.order);
+
+      if (currentDialect?.id) {
+        formData.append('dialect_id', currentDialect.id);
+        const response = await createOrUpdateDialect(formData);
+        enqueueSnackbar(response.message);
+        reload(); // Refresh or reload data
+        onClose(); // Close the form
+      } else {
+        const response = await createOrUpdateDialect(formData);
+        enqueueSnackbar(response.message);
+        reload(); // Refresh or reload data
+        onClose(); // Close the form
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    } finally {
+      setIsSubmitting(false); // Reset loading state
+    }
+  };
+
+  return (
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+      <FormProvider {...methods}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField name="language_name" label="Language Name" />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField name="dialect_name" label="Dialect Name" />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField name="keywords" label="Keywords" />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField name="description" label="Description" multiline rows={2} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField name="order" label="Order" type="number" />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                  control={
+                    <Controller
+                      name="is_published"
+                      control={methods.control}
+                      render={({ field }) => (
+                        <Switch
+                          {...field}
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                      )}
+                    />
+                  }
+                  label="Published"
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+            onClick={handleSubmit(onSubmit)}
+          >
+            {currentDialect?.id ? 'Update' : 'Create'}
+          </LoadingButton>
+        </DialogActions>
+      </FormProvider>
+    </Dialog>
+  );
+}
