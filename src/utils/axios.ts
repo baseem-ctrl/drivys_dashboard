@@ -176,6 +176,7 @@ export const endpoints = {
   },
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
+    delete:'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]='
   },
   slider: {
     list: 'admin/slider/get-slider-list',
