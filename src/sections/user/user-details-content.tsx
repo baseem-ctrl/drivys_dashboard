@@ -1130,8 +1130,13 @@ export default function UserDetailsContent({
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
+            {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
+            <Grid xs={12}>
+              {currentTab === 'details' && details?.user_preference?.id && renderUserPreferences}
+            </Grid>
+            {/* User preferences For all other user types */}
             <Grid xs={12} >
-              {details?.user_preference?.id && renderUserPreferences}
+              {details?.user_type !== 'TRAINER' && details?.user_preference?.id && renderUserPreferences}
             </Grid>
           </Grid>
         </>
