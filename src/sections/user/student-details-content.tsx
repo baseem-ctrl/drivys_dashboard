@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress';
 // components
-import { useTable } from 'src/components/table';
+import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetStudents } from 'src/api/student';
 import { UserCardsView } from './view';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ type Props = {
 export default function StudentDetailsContent({ id }: Props) {
   const [tableData, setTableData] = useState([]);
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
-  const { students, studentsLoading, revalidateStudents } = useGetStudents({
+  const { students, studentsLoading, studentsLength, revalidateStudents } = useGetStudents({
     page: table.page,
     limit: table.rowsPerPage,
     trainer_id: id
@@ -46,6 +46,14 @@ export default function StudentDetailsContent({ id }: Props) {
         students?.length > 0 ?
           <>
             <UserCardsView users={tableData} />
+
+            <TablePaginationCustom
+              count={studentsLength}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+            />
           </> : "No Students"
       )
       }

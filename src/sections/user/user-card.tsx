@@ -19,17 +19,25 @@ import { AvatarShape } from 'src/assets/illustrations';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-
+import Label from 'src/components/label';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+import { Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 type Props = {
-  user: IUserCard;
+  user: any;
 };
 
 export default function UserCard({ user }: Props) {
   const theme = useTheme();
 
-  const { name, coverUrl, role, totalFollowers, totalPosts, avatarUrl, totalFollowing } = user;
+  const router = useRouter()
+
+  const { id, name, photo_url, dob, country_code, email, gender, is_active, user_preference, phone, locale,
+  } = user;
+
+
 
   return (
     <Card sx={{ textAlign: 'center' }}>
@@ -47,7 +55,7 @@ export default function UserCard({ user }: Props) {
 
         <Avatar
           alt={name}
-          src={avatarUrl}
+          src={photo_url}
           sx={{
             width: 64,
             height: 64,
@@ -61,22 +69,37 @@ export default function UserCard({ user }: Props) {
         />
 
         <Image
-          src={coverUrl}
-          alt={coverUrl}
+          src={photo_url}
+          alt={photo_url}
           ratio="16/9"
           overlay={alpha(theme.palette.grey[900], 0.48)}
         />
       </Box>
+      <Stack>
 
-      <ListItemText
-        sx={{ mt: 7, mb: 1 }}
-        primary={name}
-        secondary={role}
-        primaryTypographyProps={{ typography: 'subtitle1' }}
-        secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
-      />
+        <Link
+          color="inherit"
+          sx={{ cursor: 'pointer' }}
+          onClick={() => router.push(paths.dashboard.user.details(id))}
+        >
+          <ListItemText
+            sx={{ mt: 7, mb: 1, cursor: 'pointer' }}
+            primary={name}
+            secondary={email}
+            primaryTypographyProps={{ typography: 'subtitle1' }}
+            secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
+          />
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2.5 }}>
+        </Link>
+
+        {locale !== "undefined" && locale && (
+          <Label color="info">{((locale === "undefined" ? '' : locale) ?? "N/A")}</Label>
+        )}
+
+      </Stack>
+
+
+      {/* <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2.5 }}>
         {_socials.map((social) => (
           <IconButton
             key={social.name}
@@ -90,7 +113,7 @@ export default function UserCard({ user }: Props) {
             <Iconify icon={social.icon} />
           </IconButton>
         ))}
-      </Stack>
+      </Stack> */}
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -101,24 +124,32 @@ export default function UserCard({ user }: Props) {
       >
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Follower
+            Date of birth
           </Typography>
-          {fShortenNumber(totalFollowers)}
+          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
+            {dob.split('T')[0]}
+          </Typography>
+
         </div>
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Following
+            Phone
+          </Typography>
+          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
+            {country_code + '-' + phone}
           </Typography>
 
-          {fShortenNumber(totalFollowing)}
         </div>
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Total Post
+            Gender
           </Typography>
-          {fShortenNumber(totalPosts)}
+          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
+            {gender}
+          </Typography>
+
         </div>
       </Box>
     </Card>

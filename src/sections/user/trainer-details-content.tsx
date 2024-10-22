@@ -225,9 +225,10 @@ export default function TrainerDetailsContent({ id }: Props) {
 
         details?.length > 0 ?
           <>
-            <Grid container spacing={1} rowGap={1}>
-              <Grid xs={12} sm={6} md={3}>
+            <Grid container spacing={2} >
+
                 {Array.isArray(details) && details.map((item: any) => (
+                   <Grid item xs={12} sm={6} md={3}>
                   <Stack
                     component={Card}
                     direction="column"
@@ -244,11 +245,13 @@ export default function TrainerDetailsContent({ id }: Props) {
                         <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> <Typography>  {item?.package_translations[0]?.session_inclusions} </Typography>
                       </Stack>
                     </Stack>
+
                   </Stack>
+                  </Grid>
                 ))}
 
 
-              </Grid>
+
 
 
               {/* <Grid xs={12} md={4}>

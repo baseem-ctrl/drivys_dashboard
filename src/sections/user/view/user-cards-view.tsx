@@ -18,6 +18,7 @@ import UserCardList from '../user-card-list';
 export default function UserCardsView(users: any) {
   const settings = useSettingsContext();
 
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       {/* <CustomBreadcrumbs
@@ -40,7 +41,7 @@ export default function UserCardsView(users: any) {
         sx={{ mb: { xs: 3, md: 5 } }}
       /> */}
 
-      <UserCardList users={_userCards} />
+      <UserCardList users={users?.users} />
     </Container>
   );
 }
