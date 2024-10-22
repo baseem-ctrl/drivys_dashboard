@@ -1,0 +1,54 @@
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress';
+// components
+import { useTable } from 'src/components/table';
+import { useGetStudents } from 'src/api/student';
+import { UserCardsView } from './view';
+import { useEffect, useState } from 'react';
+// ----------------------------------------------------------------------
+
+type Props = {
+  id: number | string;
+};
+
+export default function StudentDetailsContent({ id }: Props) {
+  const [tableData, setTableData] = useState([]);
+  const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { students, studentsLoading, revalidateStudents } = useGetStudents({
+    page: table.page,
+    limit: table.rowsPerPage,
+    trainer_id: id
+  });
+
+  useEffect(() => {
+    if (students?.length > 0) {
+      setTableData(students);
+    } else {
+      setTableData([]);
+    }
+  }, [students]);
+
+  return (
+    <>
+      {studentsLoading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '10px',
+            alignSelf: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+
+        students?.length > 0 ?
+          <>
+            <UserCardsView users={tableData} />
+          </> : "No Students"
+      )
+      }
+    </>
+  );
+}

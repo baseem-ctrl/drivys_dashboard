@@ -176,6 +176,7 @@ export const endpoints = {
   },
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
+    getStudents:'admin/student/get-student-list'
   },
   slider: {
     list: 'admin/slider/get-slider-list',

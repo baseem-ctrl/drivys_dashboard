@@ -15,12 +15,12 @@ import UserCardList from '../user-card-list';
 
 // ----------------------------------------------------------------------
 
-export default function UserCardsView() {
+export default function UserCardsView(users: any) {
   const settings = useSettingsContext();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
+      {/* <CustomBreadcrumbs
         heading="User Cards"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
@@ -38,7 +38,7 @@ export default function UserCardsView() {
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
-      />
+      /> */}
 
       <UserCardList users={_userCards} />
     </Container>
