@@ -46,6 +46,7 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './school-admin-trainer-details-content';
 import SchoolAdminTrainerDetailsContent from './school-admin-trainer-details-content';
+import StudentDetailsContent from 'src/sections/user/student-details-content';
 
 // ----------------------------------------------------------------------
 
@@ -313,7 +314,9 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
               {currentTab === 'packages' && details?.user_type === "TRAINER" &&
                 <SchoolAdminTrainerDetailsContent id={details?.id} />
               }
-              {/* {currentTab === 'students' && details?.user_type === "TRAINER" && renderContent} */}
+              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+                <StudentDetailsContent id={details?.id} />
+              )}
 
 
 
