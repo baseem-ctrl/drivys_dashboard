@@ -26,9 +26,11 @@ import { createUpdatePackage } from 'src/api/package';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import FormHelperText from '@mui/material/FormHelperText';
-//
-import Editor, { EditorProps } from '../../components/editor';
+import { useGetPackageDocuments } from 'src/api/packageDocument';
+import Editor from '../../components/editor';
 import PackageDescription from './package-html-converter';
+import PackageDocumentCreateUpdate from './create-update-package-document-form';
+import PackageDocumentDetails from './view/package-document-details';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -41,10 +43,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.package_translations?.length > 0 ? details?.package_translations[0]?.locale : ''
   );
+  const { documents, revalidateDocuments } = useGetPackageDocuments({
+    packageId: details?.id,
+  });
+
   const [editMode, setEditMode] = useState(false);
-
+  const [openDialog, setOpenDialog] = useState(false);
   const router = useRouter();
-
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -70,7 +75,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         }));
       }
       setLocaleOptions([...initialLocaleOptions]);
-
     }
   }, [language, details]);
 
@@ -123,11 +127,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     if (selectedLocaleObject) {
       schoolSetValue('name', selectedLocaleObject.name); // Update name to match the locale
       schoolSetValue('session_inclusions', selectedLocaleObject.session_inclusions); // Update name to match the locale
-
     } else {
       schoolSetValue('name', '');
       schoolSetValue('session_inclusions', ''); // Update name to match the locale
-
     }
   };
   useEffect(() => {
@@ -143,6 +145,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
   const onSubmit = schoolSubmit(async (data) => {
     try {
       let payload = {
@@ -150,8 +158,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           {
             name: data?.name || selectedLocaleObject?.name,
             locale: selectedLanguage || selectedLocaleObject?.locale,
-            session_inclusions: data?.session_inclusions || selectedLocaleObject?.session_inclusions,
-
+            session_inclusions:
+              data?.session_inclusions || selectedLocaleObject?.session_inclusions,
           },
         ],
         number_of_sessions: data?.number_of_sessions,
@@ -167,8 +175,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
 
-
-
       // Handle `package_translations` (assumes only one translation)
       if (payload.package_translations && payload.package_translations.length > 0) {
         formData.append('package_translation[0][name]', payload.package_translations[0].name || '');
@@ -181,7 +187,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           payload.package_translations[0].session_inclusions || ''
         );
       }
-
 
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -221,10 +226,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             right: '1rem',
           }}
         >
-          <Iconify
-            icon="solar:pen-bold"
-
-          />
+          <Iconify icon="solar:pen-bold" />
         </Stack>
       )}
       <Scrollbar>
@@ -235,7 +237,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
               ]) || []),
               ...(details?.package_translations?.flatMap((itm: any) => [
-                { label: `Session inclusions (${itm?.locale})`, value: <PackageDescription description={itm?.session_inclusions} /> ?? 'N/A' },
+                {
+                  label: `Session inclusions (${itm?.locale})`,
+                  value: <PackageDescription description={itm?.session_inclusions} /> ?? 'N/A',
+                },
               ]) || []),
               {
                 label: 'School Id',
@@ -281,21 +286,14 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             ))}
           </Stack>
         ) : (
-          <Box
-            component="form"
-            rowGap={2}
-            columnGap={2}
-            display="grid"
-            onSubmit={onSubmit}
-            pb={1}
-          >
+          <Box component="form" rowGap={2} columnGap={2} display="grid" onSubmit={onSubmit} pb={1}>
             <Box
               mt={2}
               rowGap={3}
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -340,7 +338,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -356,13 +354,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   name="number_of_sessions"
                   control={schoolControl}
                   render={({ field }) => (
-                    <TextField label="Number of sessions" {...field} error={!!errors.number_of_sessions} />
+                    <TextField
+                      label="Number of sessions"
+                      {...field}
+                      error={!!errors.number_of_sessions}
+                    />
                   )}
                 />
-
-
-
-
 
                 <Controller
                   name="vendor_id"
@@ -371,7 +369,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     <Select {...field} value={field?.value || ''}>
                       {schoolList?.map((option: any) => (
                         <MenuItem key={option.id} value={option.id}>
-                          {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                          {option?.vendor_translations.find(
+                            (item) => item?.locale?.toLowerCase() === 'en'
+                          )?.name || 'Unknown'}
                         </MenuItem>
                       ))}
                     </Select>
@@ -400,7 +400,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   onChange={field.onChange}
                   error={!!error}
                   helperText={
-                    (!!error) && (
+                    !!error && (
                       <FormHelperText error={!!error} sx={{ px: 2 }}>
                         {error ?? error?.message}
                       </FormHelperText>
@@ -413,18 +413,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               <Button variant="outlined" color="error" onClick={handleCancel}>
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" >
+              <Button type="submit" variant="contained">
                 {isSubmitting ? <CircularProgress size="20px" /> : 'Save'}
               </Button>
             </Stack>
           </Box>
         )}
       </Scrollbar>
-
     </Stack>
   );
-
-
 
   return (
     <>
@@ -440,11 +437,37 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container spacing={1} rowGap={1}>
-          <Grid xs={12} md={8}>
-            {renderContent}
-          </Grid>
-        </Grid>
+        <>
+          {' '}
+          <Grid container spacing={1} rowGap={1}>
+            <Grid xs={12} md={8}>
+              {renderContent}
+            </Grid>
+          </Grid>{' '}
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            sx={{ mt: 7, mb: 5 }}
+            onClick={handleOpenDialog}
+          >
+            Add package document
+          </Button>
+          <PackageDocumentCreateUpdate
+            open={openDialog}
+            onClose={handleCloseDialog}
+            reload={revalidateDocuments}
+            packageId={details?.id}
+            sessionNumber={details?.number_of_sessions}
+          />
+          {documents && documents.length > 0 && (
+            <PackageDocumentDetails
+              documents={documents}
+              reload={revalidateDocuments}
+              sessionNumber={details?.number_of_sessions}
+            />
+          )}
+        </>
       )}
     </>
   );

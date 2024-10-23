@@ -150,7 +150,7 @@ export const endpoints = {
   },
   homeListing: {
     list: 'admin/home-page-listing/get-listing-list',
-    createUpdate:'admin/home-page-listing/create-listing-translation',
+    createUpdate: 'admin/home-page-listing/create-listing-translation',
     details: 'admin/home-page-listing/get-listing/',
     delete: 'admin/home-page-listing/delete-listing/',
   },
@@ -176,8 +176,8 @@ export const endpoints = {
   },
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
-    getStudents:'admin/student/get-student-list',
-    delete:'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]='
+    getStudents: 'admin/student/get-student-list',
+    delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
   },
   slider: {
     list: 'admin/slider/get-slider-list',
@@ -208,5 +208,12 @@ export const endpoints = {
     getByList: 'admin/state-province/get-list',
     deleteById: 'admin/state-province/delete-by-id',
     deleteStateProvince: 'admin/state-province/delete-state-translation',
+  },
+  packageDocument: {
+    createOrUpdate: 'admin/package-doc/upload-doc',
+    getList: 'admin/package-doc/get-doc-list',
+    getById: 'admin/package-doc/get-doc',
+    deleteById: 'admin/package-doc/delete-doc',
+    deleteAllByPackageId: 'admin/package-doc/delete-package-docs',
   },
 };
