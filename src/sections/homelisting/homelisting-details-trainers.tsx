@@ -136,6 +136,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
         onCreate();
         revalidateDetails();
         reset(defaultValues);
+        setSearch('')
       }
     } catch (error) {
       if (error?.errors) {
@@ -151,7 +152,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
   };
 
 
-  const handlePopoverOpen = (e, trainer: any,deleteId) => {
+  const handlePopoverOpen = (e, trainer: any, deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
     setTrainerMappingId(deleteId);
@@ -260,7 +261,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
                 <Stack direction="row" spacing={2} key={trainerdisplayed?.id}>
                   <IconButton
                     sx={{ position: 'absolute', top: 8, right: 8 }}
-                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed,trainerItem?.id)}
+                    onClick={(e) => handlePopoverOpen(e, trainerdisplayed, trainerItem?.id)}
                   >
                     <Iconify icon="eva:more-vertical-fill" />
                   </IconButton>
