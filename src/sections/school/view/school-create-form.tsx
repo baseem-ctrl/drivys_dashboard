@@ -48,7 +48,7 @@ export default function SchoolCreateForm({
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
-  const [selectedLocale, setSelectedLocale] = useState<string | null>();
+  const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
 
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -252,7 +252,11 @@ export default function SchoolCreateForm({
   const handleClose = () => {
     reset(defaultValues);
     onClose();
+    setSelectedLocale('en');
+    setTranslations({})
   };
+
+
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -271,6 +275,7 @@ export default function SchoolCreateForm({
               <RHFSelect
                 name="locale (Language)"
                 label="Locale"
+                value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
                 {localeOptions?.map((option: any) => (
