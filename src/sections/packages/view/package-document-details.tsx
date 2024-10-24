@@ -44,7 +44,6 @@ export default function PackageDocumentDetails({
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [docID, setDocID] = useState<number | null>(null);
   const [filePreviewURL, setFilePreviewURL] = useState('');
-  // Add this at the top of your component state
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   // Function to handle image file selection
@@ -98,6 +97,9 @@ export default function PackageDocumentDetails({
   } else if (fileType === 'pdf') {
     acceptedFileTypes = '.pdf';
   }
+  const handleFileClick = (file) => {
+    window.open(file, '_blank'); // Open file in a new tab
+  };
   useEffect(() => {
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
@@ -257,7 +259,7 @@ export default function PackageDocumentDetails({
                             {doc.file && doc.type === 'image' ? (
                               <img
                                 src={doc.file}
-                                alt="Profile Preview"
+                                alt=""
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
                             ) : doc.type === 'image' ? (
@@ -278,7 +280,8 @@ export default function PackageDocumentDetails({
                             ) : (
                               <span
                                 style={{
-                                  fontSize: '10px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
                                   color: '#999',
                                   display: 'flex',
                                   justifyContent: 'center',
@@ -287,8 +290,9 @@ export default function PackageDocumentDetails({
                                   height: '100%',
                                   margin: 0,
                                 }}
+                                onClick={() => handleFileClick(doc.file)}
                               >
-                                No Preview for video and pdf
+                                Click to open
                               </span>
                             )}
                           </Box>
@@ -300,6 +304,22 @@ export default function PackageDocumentDetails({
                             style={{ display: 'none' }}
                             onChange={handleImageUpload}
                           />
+                          {doc.type === 'pdf' ||
+                            (doc.type === 'video' && (
+                              <Typography
+                                sx={{
+                                  mt: 3,
+                                  fontSize: '14px',
+                                  mx: 'auto',
+                                  display: 'block',
+                                  textAlign: 'center',
+                                  color: 'text.disabled',
+                                }}
+                              >
+                                Preview unavailable for videos and PDFs. Click here to view the
+                                uploaded file
+                              </Typography>
+                            ))}
                         </Stack>
                         <Stack
                           spacing={2}
@@ -492,7 +512,7 @@ export default function PackageDocumentDetails({
                             {selectedImage || (doc.file && doc.type === 'image') ? (
                               <img
                                 src={selectedImage || doc.file}
-                                alt="Profile Preview"
+                                alt=""
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               />
                             ) : (
@@ -540,7 +560,7 @@ export default function PackageDocumentDetails({
                           <input
                             id="imageUpload"
                             type="file"
-                            accept="image/*"
+                            accept={acceptedFileTypes}
                             style={{ display: 'none' }}
                             onChange={handleImageUpload}
                           />

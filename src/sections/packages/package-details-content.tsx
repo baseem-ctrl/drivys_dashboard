@@ -30,7 +30,7 @@ import { useGetPackageDocuments } from 'src/api/packageDocument';
 import Editor from '../../components/editor';
 import PackageDescription from './package-html-converter';
 import PackageDocumentCreateUpdate from './create-update-package-document-form';
-import PackageDocumentDetails from './view/package-document-details';
+import PackageDocumentDetails from './view/package-document-details.tsx';
 // ----------------------------------------------------------------------
 
 type Props = {
