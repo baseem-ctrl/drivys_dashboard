@@ -69,7 +69,7 @@ const defaultFilters: IUserTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function LanguageListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
 
