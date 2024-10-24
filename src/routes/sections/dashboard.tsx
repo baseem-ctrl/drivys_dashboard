@@ -167,10 +167,11 @@ const allroutes = [
     ],
   },
 
-  {
-    path: 'coupon',
-    children: [{ path: 'list', element: <CouponListPage />, index: true }],
-  },
+  // to do
+  // {
+  //   path: 'coupon',
+  //   children: [{ path: 'list', element: <CouponListPage />, index: true }],
+  // },
 
   {
     path: 'system',
