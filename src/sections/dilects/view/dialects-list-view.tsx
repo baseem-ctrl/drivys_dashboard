@@ -52,7 +52,7 @@ const defaultFilters: IDialectTableFilters = {
 };
 
 export default function DialectListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const createDialect = useBoolean();
