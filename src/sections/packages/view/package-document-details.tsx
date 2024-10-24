@@ -43,11 +43,23 @@ export default function PackageDocumentDetails({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [docID, setDocID] = useState<number | null>(null);
+  const [filePreviewURL, setFilePreviewURL] = useState('');
+  // Add this at the top of your component state
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  // Function to handle image file selection
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file);
+      setFilePreviewURL(file);
+      setSelectedImage(URL.createObjectURL(file));
+    }
+  };
   const [confirm, setConfirm] = useState({
     value: false,
     onFalse: () => setConfirm({ ...confirm, value: false }),
   });
-  console.log('sessionNumber', sessionNumber);
   const DocumentSchema = Yup.object().shape({
     title: Yup.string(),
     description: Yup.string(),
@@ -68,25 +80,36 @@ export default function PackageDocumentDetails({
     control,
     setValue,
     handleSubmit,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm({
     resolver: yupResolver(DocumentSchema) as any,
     defaultValues: editMode !== null ? defaultDocumentValues(documents[editMode]) : {},
   });
+  // Watch the type field
+  const fileType = watch('type');
+  let acceptedFileTypes = '';
 
+  // Restrict the file type
+  if (fileType === 'image') {
+    acceptedFileTypes = '.jpg,.jpeg,.png';
+  } else if (fileType === 'video') {
+    acceptedFileTypes = '.mp4';
+  } else if (fileType === 'pdf') {
+    acceptedFileTypes = '.pdf';
+  }
   useEffect(() => {
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
       setValue('title', document.title || '');
       setValue('status', document.status || '');
+      setValue('type', document.type || '');
       setValue('file', document.file || '');
       setValue('session', document.session_no || '');
-      //   setValue('file', document.file || '');
-      setFilePreviewURL(document.file || '');
-      console.log('document.file', document.file);
+      setValue('file', document.file || '');
+      // setFilePreviewURL(document.file || '');
     }
   }, [documents, editMode]);
-
   const handleCancel = () => {
     reset();
     setEditMode(null);
@@ -97,17 +120,15 @@ export default function PackageDocumentDetails({
   };
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
-      console.log('formData', formData);
-
       const updatedDocument = new FormData();
-      if (formData.file) {
-        updatedDocument.append('file', formData.file);
+      if (filePreviewURL) {
+        updatedDocument.append('file', filePreviewURL);
       }
-
+      console.log('formData', formData);
       updatedDocument.append('doc_id', document.id);
       updatedDocument.append('title', formData.title || document.title);
       updatedDocument.append('session_no', formData.session || document.session_no);
-      updatedDocument.append('type', document.type);
+      updatedDocument.append('type', formData.type || document.type);
       updatedDocument.append('status', formData.status || document.status);
 
       // Now pass this `updatedDocument` to the API
@@ -121,6 +142,7 @@ export default function PackageDocumentDetails({
     } catch (error: any) {
       enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
     } finally {
+      setSelectedImage(null);
       setEditMode(null);
       reload();
     }
@@ -141,6 +163,7 @@ export default function PackageDocumentDetails({
       enqueueSnackbar(error.message || 'An error occurred while deleting.', { variant: 'error' });
     } finally {
       reload();
+      setSelectedImage(null);
     }
   };
   const openDeleteDialog = (id: number) => {
@@ -158,12 +181,16 @@ export default function PackageDocumentDetails({
     { value: 'inactive', label: 'Inactive' },
     { value: 'pending', label: 'Pending' },
   ];
+  const typeOptions = [
+    { value: 'image', label: 'Image' },
+    { value: 'video', label: 'Video' },
+    { value: 'pdf', label: 'PDF' },
+  ];
   // Handle menu close
   const handleClose = () => {
     setAnchorEl(null);
     setEditMode(null);
   };
-  console.log('documents', documents);
   return (
     <>
       <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -204,9 +231,76 @@ export default function PackageDocumentDetails({
                           alignItems: 'center',
                           padding: 2,
                           width: '100%',
-                          height: '360px',
+                          height: '590px',
                         }}
                       >
+                        <Stack
+                          spacing={2}
+                          alignItems="center"
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            padding: 2,
+                            width: '100%',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 140,
+                              height: 140,
+                              borderRadius: '50%',
+                              overflow: 'hidden',
+                              border: '2px solid #ccc',
+                            }}
+                            // onClick={() => document.getElementById('imageUpload')?.click()} // Triggers file input on click
+                          >
+                            {doc.file && doc.type === 'image' ? (
+                              <img
+                                src={doc.file}
+                                alt="Profile Preview"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : doc.type === 'image' ? (
+                              <span
+                                style={{
+                                  fontSize: '16px',
+                                  color: '#999',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  height: '100%',
+                                  margin: 0,
+                                }}
+                              >
+                                No Image
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  fontSize: '10px',
+                                  color: '#999',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  height: '100%',
+                                  margin: 0,
+                                }}
+                              >
+                                No Preview for video and pdf
+                              </span>
+                            )}
+                          </Box>
+
+                          <input
+                            id="imageUpload"
+                            type="file"
+                            accept={acceptedFileTypes}
+                            style={{ display: 'none' }}
+                            onChange={handleImageUpload}
+                          />
+                        </Stack>
                         <Stack
                           spacing={2}
                           alignItems="flex-start"
@@ -253,7 +347,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              File
+                              File Name
                             </Typography>
                             <Typography
                               variant="h6"
@@ -268,6 +362,35 @@ export default function PackageDocumentDetails({
                                 {doc?.file
                                   ? `${doc.file.slice(0, 8)}...${doc.file.slice(-13)}`
                                   : doc?.file ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              width: '100%',
+                              borderRadius: 1,
+                              padding: 1,
+                              backgroundColor: 'background.default',
+                            }}
+                          >
+                            <Typography
+                              sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                            >
+                              Type
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                            >
+                              :
+                            </Typography>
+                            <Tooltip title={doc?.file ?? 'N/A'} arrow>
+                              <Typography
+                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              >
+                                {doc?.type ? doc.type : 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -337,10 +460,91 @@ export default function PackageDocumentDetails({
                           flexDirection: 'column',
                           alignItems: 'stretch',
                           marginTop: '20px',
-                          height: '340px',
+                          height: '570px',
                           width: '100%',
                         }}
                       >
+                        <Stack
+                          spacing={2}
+                          alignItems="center"
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            padding: 2,
+                            width: '100%',
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              position: 'relative',
+                              width: 140,
+                              height: 140,
+                              borderRadius: '50%',
+                              overflow: 'hidden',
+                              border: '2px solid #ccc',
+                              cursor: 'pointer',
+                              '&:hover .overlay': {
+                                display: 'flex', // Show overlay on hover
+                              },
+                            }}
+                            onClick={() => document.getElementById('imageUpload')?.click()} // Triggers file input on click
+                          >
+                            {selectedImage || (doc.file && doc.type === 'image') ? (
+                              <img
+                                src={selectedImage || doc.file}
+                                alt="Profile Preview"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <span
+                                style={{
+                                  fontSize: '16px',
+                                  color: '#999',
+                                  display: 'flex',
+
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  height: '100%',
+                                  margin: 0,
+                                }}
+                              >
+                                No Image
+                              </span>
+                            )}
+
+                            <Box
+                              className="overlay"
+                              sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                borderRadius: '50%',
+                                backgroundColor: 'rgba(22, 28, 36, 0.64);',
+                                display: 'none',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                lineHeight: 1.5,
+                                fontSize: '0.75rem',
+                                fontFamily: 'Public Sans, sans-serif',
+                              }}
+                            >
+                              Update photo
+                            </Box>
+                          </Box>
+
+                          <input
+                            id="imageUpload"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={handleImageUpload}
+                          />
+                        </Stack>
                         <Controller
                           name="title"
                           control={control}
@@ -378,6 +582,28 @@ export default function PackageDocumentDetails({
                           )}
                         />
                         <Controller
+                          name="type"
+                          control={control}
+                          defaultValue=""
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              select
+                              label="Type"
+                              variant="outlined"
+                              fullWidth
+                              error={Boolean(errors.type)}
+                              helperText={errors.type?.message}
+                            >
+                              {typeOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          )}
+                        />
+                        <Controller
                           name="session"
                           control={control}
                           render={({ field }) => (
@@ -387,24 +613,6 @@ export default function PackageDocumentDetails({
                               variant="outlined"
                               error={Boolean(errors.session)}
                               helperText={errors.session?.message}
-                            />
-                          )}
-                        />
-                        <Controller
-                          name="file"
-                          control={control}
-                          render={({ field }) => (
-                            <input
-                              type="file"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  const fileURL = URL.createObjectURL(file);
-                                  setFilePreviewURL(fileURL);
-                                  field.onChange(file);
-                                }
-                              }}
-                              accept=".jpg,.jpeg,.png,.pdf,.mp4"
                             />
                           )}
                         />
