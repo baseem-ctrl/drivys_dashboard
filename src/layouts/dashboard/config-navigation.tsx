@@ -150,11 +150,14 @@ export function useNavData() {
       // ],
     },
     // COUPON
-    {
-      title: t('coupon'),
-      path: paths.dashboard.coupon.root,
-      icon: ICONS.file,
-    },
+
+    // to do
+
+    // {
+    //   title: t('coupon'),
+    //   path: paths.dashboard.coupon.root,
+    //   icon: ICONS.file,
+    // },
     {
       title: t('slider'),
       path: paths.dashboard.slider.root,
