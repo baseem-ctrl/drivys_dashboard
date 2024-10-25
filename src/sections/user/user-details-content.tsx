@@ -49,6 +49,8 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
 import StudentDetailsContent from './student-details-content';
+import UserDocumentDetails from './user-document/user-document-details';
+import { useGetUserDocumentList } from 'src/api/user-document';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -67,7 +69,7 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset } = useForm();
-
+  console.log('details', details);
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -81,6 +83,13 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const {
+    userDocuments,
+    userDocumentLoading,
+    userDocumentError,
+    totalPages,
+    revalidateUserDocuments,
+  } = useGetUserDocumentList({ userId: details.id });
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -317,7 +326,6 @@ export default function UserDetailsContent({
     router.push(paths.dashboard.user.edit(details?.id));
   }, [details?.id]);
 
-
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -366,46 +374,48 @@ export default function UserDetailsContent({
                 },
                 { label: 'User Type', value: details?.user_type ?? 'NA' },
                 { label: 'Date of birth', value: details?.dob?.split('T')[0] ?? 'NA' },
-                { label: 'Preffered Language', value: (details?.locale === "undefined" ? "N/A" : details?.locale) ?? 'NA' },
+                {
+                  label: 'Preffered Language',
+                  value: (details?.locale === 'undefined' ? 'N/A' : details?.locale) ?? 'NA',
+                },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
                 // Updated Languages Section to display each language in a separate row
                 ...(details?.languages?.length > 0
                   ? details.languages.map((lang: any, index: number) => ({
-                    label: `Language ${index + 1}`,
-                    value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
-                  }))
+                      label: `Language ${index + 1}`,
+                      value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
+                    }))
                   : [{ label: 'Languages', value: 'NA' }]),
 
                 {
                   label: 'Is Active',
-                  value:
-                    details?.is_active ? (
-                      <Chip label="Active" color="success" variant="soft" />
-                    ) : (
-                      <Chip label="In Active" color="error" variant="soft" />
-                    ),
+                  value: details?.is_active ? (
+                    <Chip label="Active" color="success" variant="soft" />
+                  ) : (
+                    <Chip label="In Active" color="error" variant="soft" />
+                  ),
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowed in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowed in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -886,7 +896,7 @@ export default function UserDetailsContent({
                     });
                     // handleEditAddress(index, address);
                   }}
-                // sx={{ mt: 1 }}
+                  // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? 'Hide Map' : 'Show Map'}
                 </Button>
@@ -1114,8 +1124,6 @@ export default function UserDetailsContent({
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
           <Grid container spacing={1} rowGap={1}>
-
-
             <Grid xs={12} md={12}>
               {/* For all other user types */}
               {details?.user_type !== 'TRAINER' && renderContent}
@@ -1125,31 +1133,35 @@ export default function UserDetailsContent({
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
-              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+              {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
 
-
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
 
-
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
-              {(currentTab === 'details' && details?.user_preference?.id && details?.user_type === 'TRAINER') && renderUserPreferences}
+              {currentTab === 'details' &&
+                details?.user_preference?.id &&
+                details?.user_type === 'TRAINER' &&
+                renderUserPreferences}
             </Grid>
             {/* User preferences For all other user types */}
             <Grid xs={12}>
-              {(details?.user_type !== 'TRAINER' &&
-                details?.user_preference?.id) &&
+              {details?.user_type !== 'TRAINER' &&
+                details?.user_preference?.id &&
                 renderUserPreferences}
             </Grid>
-
-
+            <Grid xs={12}>
+              {(details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') && (
+                <UserDocumentDetails documents={userDocuments} reload={revalidateUserDocuments} />
+              )}
+            </Grid>
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>
