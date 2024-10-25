@@ -1139,12 +1139,12 @@ export default function UserDetailsContent({
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
-              {currentTab === 'details' && details?.user_preference?.id && renderUserPreferences}
+              {(currentTab === 'details' && details?.user_preference?.id && details?.user_type === 'TRAINER') && renderUserPreferences}
             </Grid>
             {/* User preferences For all other user types */}
             <Grid xs={12}>
-              {details?.user_type !== 'TRAINER' &&
-                details?.user_preference?.id &&
+              {(details?.user_type !== 'TRAINER' &&
+                details?.user_preference?.id) &&
                 renderUserPreferences}
             </Grid>
 
