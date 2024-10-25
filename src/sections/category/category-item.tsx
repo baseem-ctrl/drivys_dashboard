@@ -264,6 +264,14 @@ export default function JobItem({
     }
   }, [selectedLocaleObject?.name, defaultValues, reset, selectedLanguage]);
 
+  useEffect(() => {
+    // if (isCreateCategory) {
+    searchCategory('')
+    // }
+
+  }, [isCreateCategory])
+
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
