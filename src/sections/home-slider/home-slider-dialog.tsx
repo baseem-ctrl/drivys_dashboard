@@ -122,7 +122,7 @@ export default function HomeSliderDialog({
       //   display_order: trainer?.display_order || ''
       // })) : [],
       trainers: users ? updateValue?.trainers?.map((trainer) => {
-        const user = users.find((option) => option.id === trainer.trainer.id);
+        const user = users.find((option) => option.id === trainer?.trainer?.id);
         return {
           id: user ? { label: user?.name, value: user?.id } : '',
           display_order: trainer.display_order || '',
