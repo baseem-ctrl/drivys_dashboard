@@ -156,27 +156,27 @@ export default function UserNewEditForm({ loading, id }: Props) {
       is_active: currentUser?.is_active || 1,
       languages: dialect
         ? currentUser?.languages?.map((lang) => ({
-            id:
-              dialect?.length > 0
-                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
-                : '',
-            fluency_level: lang?.fluency_level || '',
-          }))
+          id:
+            dialect?.length > 0
+              ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+              : '',
+          fluency_level: lang?.fluency_level || '',
+        }))
         : [],
       gear:
         gearData?.length > 0
           ? gearData?.find(
-              (option) =>
-                option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
-            )?.value
+            (option) =>
+              option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
+          )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
       gender:
         genderData?.length > 0
           ? genderData?.find(
-              (option) =>
-                option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
-            )?.value
+            (option) =>
+              option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
+          )?.value
           : '',
       city_id: currentUser?.user_preference?.city_id || '',
     }),
@@ -279,10 +279,11 @@ export default function UserNewEditForm({ loading, id }: Props) {
         response = await createUser(body);
       }
       if (response) {
+
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         revalidateDetails();
         reset();
-        router.push(paths.dashboard.user.details(currentUser?.id));
+        router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
       if (error?.errors) {
