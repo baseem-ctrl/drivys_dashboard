@@ -367,7 +367,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -412,7 +412,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -499,8 +499,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                            // variant="outlined"
-                            // margin="normal"
+                          // variant="outlined"
+                          // margin="normal"
                           />
                           {/* Optional: Show the uploaded file as a clickable link */}
                           {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
@@ -740,7 +740,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     label={item?.label}
                     variant="outlined"
                     sx={{ my: 1, width: '100%' }}
-                    // onChange={(e) => field.onChange(e.target.value)}
+                  // onChange={(e) => field.onChange(e.target.value)}
                   />
                 )}
               />
@@ -913,7 +913,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {details?.vendor_user?.user?.phone && (
           <Typography variant="body2">
             {details?.vendor_user?.user?.country_code
-              ? details?.vendor_user?.user?.country_code - details?.vendor_user?.user?.phone
+              ? (details?.vendor_user?.user?.country_code + "-" + details?.vendor_user?.user?.phone)
               : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
           </Typography>
         )}
@@ -921,7 +921,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
         )}
         {details?.vendor_user?.user?.dob && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
+          <Typography variant="body2">{details?.vendor_user?.user?.dob?.split('T')[0] ?? 'NA'}</Typography>
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
