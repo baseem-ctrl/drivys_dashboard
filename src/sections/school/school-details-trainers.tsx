@@ -78,7 +78,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const NewUserSchema = Yup.object().shape({
     cash_clearance_date: Yup.string(),
     cash_in_hand: Yup.string().required('Mention the Cash in hand '),
-    vendor_commission_in_percentage: Yup.string().nullable(),
+    vendor_commission_in_percentage: Yup.string().required('Mention vendor commission '),
     trainer_id: Yup.mixed().required(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
