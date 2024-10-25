@@ -54,7 +54,7 @@ export default function PackageCreateForm({
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
-  const [selectedLocale, setSelectedLocale] = useState<string | null>();
+  const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
 
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -154,9 +154,9 @@ export default function PackageCreateForm({
     saveCurrentLocaleTranslation();
 
     const formData = new FormData();
-    formData.append('number_of_sessions', data?.number_of_sessions);
+    if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? '1' : '0');
-    formData.append('vendor_id', data?.vendor_id?.value);
+    if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     formData.append(`package_translation[0][name]`, data?.name);
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
@@ -204,6 +204,7 @@ export default function PackageCreateForm({
               <RHFSelect
                 name="locale (Language)"
                 label="Locale"
+                value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
                 {localeOptions?.map((option: any) => (
