@@ -317,6 +317,7 @@ export default function UserDetailsContent({
     router.push(paths.dashboard.user.edit(details?.id));
   }, [details?.id]);
 
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -379,7 +380,7 @@ export default function UserDetailsContent({
                 {
                   label: 'Is Active',
                   value:
-                    details?.is_active === '1' ? (
+                    details?.is_active ? (
                       <Chip label="Active" color="success" variant="soft" />
                     ) : (
                       <Chip label="In Active" color="error" variant="soft" />
