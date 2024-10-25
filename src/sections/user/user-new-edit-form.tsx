@@ -143,6 +143,7 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
     ),
   });
 
+
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -156,7 +157,7 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
         : '',
       photo_url: currentUser?.photo_url || '',
-      is_active: currentUser?.is_active || 1,
+      is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
       languages: dialect
         ? currentUser?.languages?.map((lang) => ({
           id:
