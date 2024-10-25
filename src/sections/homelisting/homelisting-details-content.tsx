@@ -344,6 +344,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                         labelId="catalogue-type-label"
                         value={selectedCatalogue || ''}
                         onChange={handleChangeCatalogue}
+                        label="Catalogue Type"
                       >
                         {catalogueOptions?.map((option: any) => (
                           <MenuItem key={option?.value} value={option?.value}>
