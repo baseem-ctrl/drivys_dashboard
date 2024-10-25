@@ -55,6 +55,9 @@ import { useGetAllDialect } from 'src/api/dialect';
 
 type Props = {
   currentUser?: any;
+  detailsLoading?: any;
+  id?: any;
+  revalidateDetails?: any;
 };
 
 const fluencyOptions = [
@@ -64,9 +67,9 @@ const fluencyOptions = [
   { name: 'NATIVE', value: 'NATIVE' },
 ];
 
-export default function UserNewEditForm({ loading, id }: Props) {
-  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
-  const currentUser = details;
+export default function UserNewEditForm({ currentUser, detailsLoading, id, revalidateDetails }: Props) {
+  // const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
+  // const currentUser = currentUser ?? "";
   const router = useRouter();
   const { user } = useAuthContext();
 
@@ -281,7 +284,10 @@ export default function UserNewEditForm({ loading, id }: Props) {
       if (response) {
 
         enqueueSnackbar(currentUser ? response?.message : response?.message);
-        revalidateDetails();
+        if (currentUser?.id) {
+          revalidateDetails();
+        }
+
         reset();
         router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
@@ -333,7 +339,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
   const confirm = useBoolean();
   if (
     (id && detailsLoading) ||
-    loading ||
+    // loading ||
     languageLoading ||
     enumLoading ||
     genderLoading ||
