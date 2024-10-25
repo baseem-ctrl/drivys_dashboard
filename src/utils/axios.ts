@@ -216,4 +216,9 @@ export const endpoints = {
     deleteById: 'admin/package-doc/delete-doc',
     deleteAllByPackageId: 'admin/package-doc/delete-package-docs',
   },
+  packageTrainer: {
+    list: 'admin/package-trainer/get-trainer-packages',
+    delete: 'admin/package-trainer/create-packge-trainer/',
+    create: 'admin/package-trainer/create-packge-trainer',
+  },
 };
