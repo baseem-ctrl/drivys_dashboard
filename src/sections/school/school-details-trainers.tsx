@@ -145,6 +145,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       }
     } finally {
       setLoadingButton(false);
+      setSearch('')
     }
   };
   const handlePopoverOpen = (e, trainer: any) => {
