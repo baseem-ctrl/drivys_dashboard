@@ -124,14 +124,18 @@ export default function SchoolTableRow({
     const selectedLocaleObject = translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
-
+    console.log(selectedLocaleObject, "selectedLocaleObject");
     // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
-      setValue('title', selectedLocaleObject.name); // Update name to match the locale
+      setValue('title', selectedLocaleObject?.title); // Update name to match the locale
+      setValue('description', selectedLocaleObject?.description); // Update name to match the description
     } else {
       setValue('title', '');
+      setValue('description', '');
     }
   };
+
+
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedCatalogue(event.target.value);
   };
