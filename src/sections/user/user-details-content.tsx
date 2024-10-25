@@ -365,8 +365,8 @@ export default function UserDetailsContent({
                     : details?.phone ?? 'NA',
                 },
                 { label: 'User Type', value: details?.user_type ?? 'NA' },
-
-                { label: 'Preffered Language', value: details?.locale ?? 'NA' },
+                { label: 'Date of birth', value: details?.dob?.split('T')[0] ?? 'NA' },
+                { label: 'Preffered Language', value: (details?.locale === "undefined" ? "N/A" : details?.locale) ?? 'NA' },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
                 // Updated Languages Section to display each language in a separate row
