@@ -17,6 +17,8 @@ import CityListPage from 'src/pages/dashboard/city/city';
 import StateListPage from 'src/pages/dashboard/state/state';
 import DialectListPage from 'src/pages/dashboard/dialect/dialect';
 import HomeListingDetailsPage from 'src/pages/dashboard/homelisting/details';
+import BookingListView from 'src/sections/booking/view/booking-list-view';
+import BookingDetailsPage from 'src/pages/dashboard/booking/booking';
 
 // ----------------------------------------------------------------------
 
@@ -200,6 +202,14 @@ const allroutes = [
   { path: 'kanban', element: <KanbanPage /> },
   { path: 'permission', element: <PermissionDeniedPage /> },
   { path: 'blank', element: <BlankPage /> },
+  {
+    path: 'booking',
+    children: [
+      { element: <BookingListView />, index: true },
+      { path: 'list', element: <BookingDetailsPage /> },
+      // { path: 'new', element: <HomeSliderCreatePage /> },
+    ],
+  },
 ];
 
 const schooladminRoutes = [
