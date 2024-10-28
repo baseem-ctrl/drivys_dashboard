@@ -178,6 +178,12 @@ export const endpoints = {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
     getStudents: 'admin/student/get-student-list',
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
+    workingHours: {
+      createUpdate: 'admin/trainer-working-hours/create-update',
+      deleteById: 'admin/trainer-working-hours/delete-by-id',
+      getList: 'admin/trainer-working-hours/get-by-user-id',
+      getByUserId: 'admin/trainer-working-hours/get-by-user-id',
+    },
   },
   slider: {
     list: 'admin/slider/get-slider-list',
