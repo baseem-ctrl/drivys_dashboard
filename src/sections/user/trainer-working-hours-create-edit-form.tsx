@@ -83,7 +83,18 @@ export default function WorkingHoursCreateEditForm({
   }, [currentWorkingHour, defaultValues, reset]);
 
   const isOffDay = watch('is_off_day');
+  const isFullDay = watch('is_full_day');
 
+  useEffect(() => {
+    if (isFullDay) {
+      reset((formValues) => ({
+        ...formValues,
+        start_time: new Date(new Date().setHours(0, 0, 0)),
+        end_time: new Date(new Date().setHours(0, 0, 0)),
+        is_off_day: false,
+      }));
+    }
+  }, [isFullDay, reset]);
   useEffect(() => {
     if (isOffDay) {
       reset((formValues) => ({ ...formValues, is_full_day: false }));

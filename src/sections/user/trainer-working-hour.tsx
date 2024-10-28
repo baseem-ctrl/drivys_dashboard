@@ -56,7 +56,6 @@ export default function TrainerWorkingHour({ userId }: Props) {
     { key: 'full_day', label: 'Full Day' },
     { key: 'off_day', label: 'Off Day' },
   ];
-
   function formatTimestamp(isoTimestamp) {
     const date = new Date(isoTimestamp);
 
@@ -64,11 +63,11 @@ export default function TrainerWorkingHour({ userId }: Props) {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
+      timeZone: 'UTC',
     });
 
     return formattedTime;
   }
-
   if (workingHoursLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', margin: '10px' }}>
@@ -147,7 +146,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
                           }}
                         >
                           {hour.is_full_day
-                            ? 'All Day'
+                            ? formatTimestamp(hour.start_time)
                             : hour.is_off_day
                             ? 'N/A'
                             : formatTimestamp(hour.start_time)}
@@ -161,7 +160,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
                           }}
                         >
                           {hour.is_full_day
-                            ? 'All Day'
+                            ? formatTimestamp(hour.end_time)
                             : hour.is_off_day
                             ? 'N/A'
                             : formatTimestamp(hour.end_time)}
