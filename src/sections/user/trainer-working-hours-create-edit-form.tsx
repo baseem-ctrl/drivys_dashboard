@@ -183,6 +183,7 @@ export default function WorkingHoursCreateEditForm({
                     {...field}
                     ampm={false}
                     onChange={(newValue) => field.onChange(newValue)}
+                    disabled={isFullDay || isOffDay}
                   />
                 )}
               />
@@ -203,6 +204,7 @@ export default function WorkingHoursCreateEditForm({
                     {...field}
                     ampm={false}
                     onChange={(newValue) => field.onChange(newValue)}
+                    disabled={isFullDay || isOffDay}
                   />
                 )}
               />
