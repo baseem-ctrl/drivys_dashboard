@@ -54,8 +54,7 @@ type Props = {
 
 export default function TrainerDetailsContent({ id }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(id);
-
-
+  1;
   // const [selectedLanguage, setSelectedLanguage] = useState(
   //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   // );
@@ -65,8 +64,6 @@ export default function TrainerDetailsContent({ id }: Props) {
   const [currentTab, setCurrentTab] = useState('details');
 
   const currentTrainer = details;
-
-
 
   // const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
   //   useGetAllLanguage(0, 1000);
@@ -164,24 +161,24 @@ export default function TrainerDetailsContent({ id }: Props) {
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowded in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowded in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -204,9 +201,7 @@ export default function TrainerDetailsContent({ id }: Props) {
     </Stack>
   );
 
-
-  console.log(Array.isArray(details), details, "details");
-
+  console.log(Array.isArray(details), details, 'details');
 
   return (
     <>
@@ -221,46 +216,48 @@ export default function TrainerDetailsContent({ id }: Props) {
         >
           <CircularProgress />
         </Box>
-      ) : (
-
-        details?.length > 0 ?
-          <>
-            <Grid container spacing={2} >
-
-                {Array.isArray(details) && details.map((item: any) => (
-                   <Grid item xs={12} sm={6} md={3}>
-                  <Stack
-                    component={Card}
-                    direction="column"
-                    key={item?.id}
-                  >
-                    <Stack sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}>{item?.number_of_sessions} Sessions</Stack>
-                    <hr style={{ width: "100%", height: "0.5px", border: "none", backgroundColor: "#CF5A0D" }} />
+      ) : details?.length > 0 ? (
+        <>
+          <Grid container spacing={2}>
+            {Array.isArray(details) &&
+              details.map((item: any) => (
+                <Grid item xs={12} sm={6} md={3} key={item?.id}>
+                  <Stack component={Card} direction="column">
+                    <Stack sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}>
+                      {item?.number_of_sessions} Sessions
+                    </Stack>
+                    <hr
+                      style={{
+                        width: '100%',
+                        height: '0.5px',
+                        border: 'none',
+                        backgroundColor: '#CF5A0D',
+                      }}
+                    />
 
                     <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
-                      <Typography variant="h5" color="#CF5A0D" > {item?.package_translations[0]?.name} </Typography>
-                      <Typography sx={{ fontSize: "12px", fontWeight: "700" }}> What's included </Typography>
+                      <Typography variant="h5" color="#CF5A0D">
+                        {item?.package_translations?.[0]?.name || 'N/A'}
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                        What's included
+                      </Typography>
 
                       <Stack direction="row" spacing={1}>
-                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> <Typography>  {item?.package_translations[0]?.session_inclusions} </Typography>
+                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
+                        <Typography>
+                          {item?.package_translations?.[0]?.session_inclusions || 'N/A'}
+                        </Typography>
                       </Stack>
                     </Stack>
-
                   </Stack>
-                  </Grid>
-                ))}
-
-
-
-
-
-              {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
-            </Grid>
-          </> : "No Packages"
-      )
-      }
+                </Grid>
+              ))}
+          </Grid>
+        </>
+      ) : (
+        'No Packages'
+      )}
     </>
   );
 }

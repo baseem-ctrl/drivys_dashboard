@@ -1158,10 +1158,21 @@ export default function UserDetailsContent({
                 renderUserPreferences}
             </Grid>
             <Grid xs={12}>
+              {currentTab === 'details' &&
+                details?.user_preference?.id &&
+                details?.user_type === 'TRAINER' && (
+                  <UserDocumentDetails
+                    documents={userDocuments}
+                    reload={revalidateUserDocuments}
+                    id={details.id}
+                  />
+                )}
+            </Grid>
+            {/* <Grid xs={12}>
               {(details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') && (
                 <UserDocumentDetails documents={userDocuments} reload={revalidateUserDocuments} />
               )}
-            </Grid>
+            </Grid> */}
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>

@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Iconify from 'src/components/iconify';
 import { Box, Button, TextField, Menu, MenuItem } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
-
+import { Select, FormControl, InputLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,6 +16,8 @@ import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { createOrUpdatePackageDocument, deletePackageDocumentById } from 'src/api/packageDocument';
 import Switch from '@mui/material/Switch';
+import { createUserDocument, deleteUserDocumentById } from 'src/api/user-document';
+import UserDocumentCreateUpdate from './user-document-create-form';
 
 type Document = {
   id: number;
@@ -34,10 +36,11 @@ type Props = {
   reload: VoidFunction;
 };
 
-export default function UserDocumentDetails({ documents, reload }: Props) {
+export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const [editMode, setEditMode] = useState<number | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
   const [docID, setDocID] = useState<number | null>(null);
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -52,6 +55,7 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
       setSelectedImage(URL.createObjectURL(file));
     }
   };
+  console.log('documentsdocumentsdocuments', documents);
   const [confirm, setConfirm] = useState({
     value: false,
     onFalse: () => setConfirm({ ...confirm, value: false }),
@@ -97,7 +101,7 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
   useEffect(() => {
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
-      setValue('title', document.title || '');
+      setValue('doc', document.title || '');
       setValue('status', document.status || '');
       setValue('type', document.type || '');
       setValue('file', document.file || '');
@@ -114,33 +118,46 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
     setEditMode(editIndex);
     setAnchorEl(null);
   };
+  function convertToCustomFormat(dateString) {
+    const date = new Date(dateString);
+
+    // Get day, month, year, hours, and minutes
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
+    const hours = String(date.getHours()).padStart(2, '0'); // Ensure two digits
+    const minutes = String(date.getMinutes()).padStart(2, '0'); // Ensure two digits
+
+    // Return formatted string
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
       const updatedDocument = new FormData();
-      if (filePreviewURL) {
-        updatedDocument.append('file', filePreviewURL);
-      }
+      // if (filePreviewURL) {
+      //   updatedDocument.append('file', filePreviewURL);
+      // }
       console.log('formData', formData);
-      updatedDocument.append('doc_id', document.id);
-      updatedDocument.append('title', formData.title || document.title);
-      updatedDocument.append('session_no', formData.session || document.session_no);
-      updatedDocument.append('type', formData.type || document.type);
-      updatedDocument.append('status', formData.status || document.status);
+      updatedDocument.append('user_id', id);
+      updatedDocument.append('doc_type', formData.doc_type || document.doc_type);
+      updatedDocument.append('doc_side', formData.doc_side || document.doc_side);
+      updatedDocument.append('doc_file', formData.doc_file || document.doc_file);
+      updatedDocument.append('expiry', formData.expiry || document.expiry);
 
       // Now pass this `updatedDocument` to the API
-      const response = await createOrUpdatePackageDocument(updatedDocument);
+      const response = await createUserDocument(updatedDocument);
 
-      if (response) {
-        enqueueSnackbar('Document updated successfully!', { variant: 'success' });
-      } else {
-        enqueueSnackbar('Failed to update document!', { variant: 'error' });
-      }
+      // if (response) {
+      //   enqueueSnackbar('Document updated successfully!', { variant: 'success' });
+      // } else {
+      //   enqueueSnackbar('Failed to update document!', { variant: 'error' });
+      // }
     } catch (error: any) {
       enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
     } finally {
-      setSelectedImage(null);
-      setEditMode(null);
-      reload();
+      // setSelectedImage(null);
+      // setEditMode(null);
+      // reload();
     }
   };
 
@@ -148,7 +165,7 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
   const handleDelete = async (id: number) => {
     setAnchorEl(null);
     try {
-      const response = await deletePackageDocumentById(id);
+      const response = await deleteUserDocumentById(id);
 
       if (response) {
         enqueueSnackbar('Document deleted successfully!', { variant: 'success' });
@@ -162,44 +179,65 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
       setSelectedImage(null);
     }
   };
+  const handleOpenFile = (fileUrl) => {
+    // Open the file in a new tab
+    window.open(fileUrl, '_blank');
+  };
   const openDeleteDialog = (id: number) => {
     setConfirm({ value: true, id });
   };
-
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
   // Handle menu open
   const handleClick = (event: React.MouseEvent<HTMLElement>, index: number, docId: number) => {
     setAnchorEl(event.currentTarget);
     setEditIndex(index);
     setDocID(docId);
   };
-  const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'pending', label: 'Pending' },
-  ];
-  const typeOptions = [
-    { value: 'image', label: 'Image' },
-    { value: 'video', label: 'Video' },
-    { value: 'pdf', label: 'PDF' },
-  ];
+
   // Handle menu close
   const handleClose = () => {
     setAnchorEl(null);
     setEditMode(null);
   };
+  const docTypeOptions = [
+    { value: 'Card', label: 'Card' },
+    { value: 'ID', label: 'ID' },
+    { value: 'Passport', label: 'Passport' },
+    { value: 'License', label: 'License' },
+  ];
+
+  const docSideOptions = [
+    { value: 'Front', label: 'Front' },
+    { value: 'Back', label: 'Back' },
+  ];
+
   return (
     <>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Iconify icon="eva:plus-fill" />}
+        sx={{ mt: 7, ml: 5 }}
+        onClick={handleOpenDialog}
+      >
+        Add user document
+      </Button>
       <Stack component={Card} spacing={1} sx={{ p: 3 }}>
         <Scrollbar>
           {documents &&
           documents[0]?.user?.user_docs &&
           documents[0]?.user?.user_docs.length > 0 ? (
-            <Grid spacing={1}>
+            <Grid spacing={3} container>
               {documents[0].user.user_docs.map((doc, index) => (
                 <Grid item xs={12} sm={6} key={doc.id} sx={{ fontSize: '12px' }}>
                   <Stack
                     component={Card}
-                    spacing={1}
+                    spacing={2}
                     sx={{
                       //   mb: 3,
                       border: '1px solid #ccc',
@@ -207,6 +245,9 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
                       borderRadius: '4px',
                       position: 'relative',
                       height: 'auto',
+                      // width: 'auto',
+                      overflowX: 'auto', // Enable horizontal scrolling
+                      whiteSpace: 'nowrap', // Prevent content from wrapping
                     }}
                   >
                     {editMode !== index && (
@@ -240,6 +281,8 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
                             fontSize: '16px',
                             alignSelf: 'flex-start',
                             marginBottom: 3,
+                            marginTop: 2,
+                            marginLeft: 3,
                           }}
                         >
                           Document Details:
@@ -331,7 +374,7 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
                               >
-                                {doc?.created_at ? doc.created_at : 'N/A'}
+                                {doc?.created_at ? convertToCustomFormat(doc.created_at) : 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -357,11 +400,15 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
                             >
                               :
                             </Typography>
-                            <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
-                            >
-                              {doc.doc_file ?? 'N/A'}
-                            </Typography>
+
+                            <Tooltip title={doc.doc_file} arrow>
+                              <Typography
+                                onClick={() => handleOpenFile(doc.doc_file)}
+                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              >
+                                {doc.doc_file.slice(0, 8)}...${doc.doc_file.slice(-6) ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
                           </Box>
                           <Box
                             sx={{
@@ -454,204 +501,82 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
                           flexDirection: 'column',
                           alignItems: 'stretch',
                           marginTop: '20px',
-                          height: '570px',
+                          // height: '570px',
                           width: '100%',
                         }}
                       >
                         <Stack
-                          spacing={2}
-                          alignItems="center"
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            padding: 2,
-                            width: '100%',
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              position: 'relative',
-                              width: 140,
-                              height: 140,
-                              borderRadius: '50%',
-                              overflow: 'hidden',
-                              border: '2px solid #ccc',
-                              cursor: 'pointer',
-                              '&:hover .overlay': {
-                                display: 'flex',
-                              },
-                            }}
-                            onClick={() => document.getElementById('imageUpload')?.click()}
-                          >
-                            <input
-                              id="imageUpload"
-                              type="file"
-                              accept={acceptedFileTypes}
-                              style={{ display: 'none' }}
-                              onChange={handleImageUpload}
-                            />
-                            {doc.file && doc.type === 'image' ? (
-                              <img
-                                src={doc.file}
-                                alt=""
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
-                            ) : doc.type === 'image' ? (
-                              <span
-                                style={{
-                                  fontSize: '16px',
-                                  color: '#999',
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  width: '100%',
-                                  height: '100%',
-                                  margin: 0,
-                                }}
-                              >
-                                No Image
-                              </span>
-                            ) : (
-                              <span
-                                style={{
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#999',
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  width: '100%',
-                                  height: '100%',
-                                  margin: 0,
-                                }}
-                                onClick={() => handleFileClick(doc.file)}
-                              >
-                                Click to open
-                              </span>
-                            )}
-                            <div
-                              className="overlay"
-                              style={{
-                                display: 'none',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                color: '#fff',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <Typography variant="body2">Click to upload new image</Typography>
-                            </div>
-                          </Box>
-                          {doc.type === 'pdf' ||
-                            (doc.type === 'video' && (
-                              <Typography
-                                sx={{
-                                  mt: 3,
-                                  fontSize: '14px',
-                                  mx: 'auto',
-                                  display: 'block',
-                                  textAlign: 'center',
-                                  color: 'text.disabled',
-                                }}
-                              >
-                                Preview unavailable for videos and PDFs. Click here to view the
-                                uploaded file
-                              </Typography>
-                            ))}
-                        </Stack>
-                        <Stack
-                          spacing={2}
+                          spacing={4}
                           alignItems="flex-start"
                           sx={{ typography: 'body2', padding: 2, width: '100%' }}
                         >
                           <Controller
-                            name="title"
+                            name="doc_type"
                             control={control}
-                            defaultValue={doc.title}
+                            defaultValue={doc.doc_type}
+                            render={({ field }) => (
+                              <FormControl variant="outlined" sx={{ width: '100%' }}>
+                                <InputLabel>Document Type</InputLabel>
+                                <Select {...field} label="Document Type">
+                                  {docTypeOptions.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            )}
+                          />
+                          <Controller
+                            name="doc_side"
+                            control={control}
+                            defaultValue={doc.doc_side}
+                            render={({ field }) => (
+                              <FormControl variant="outlined" sx={{ width: '100%' }}>
+                                <InputLabel>Document Side</InputLabel>
+                                <Select {...field} label="Document Side">
+                                  {docSideOptions.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            )}
+                          />
+                          <Controller
+                            name="doc_file"
+                            control={control}
+                            defaultValue={doc.doc_file}
                             render={({ field }) => (
                               <TextField
                                 {...field}
-                                label="Title"
+                                label="Document File"
                                 variant="outlined"
-                                required
                                 sx={{ width: '100%' }}
                               />
                             )}
                           />
                           <Controller
-                            name="file"
+                            name="expiry"
                             control={control}
-                            defaultValue={doc.file}
+                            defaultValue={doc.expiry}
                             render={({ field }) => (
                               <TextField
                                 {...field}
-                                label="File Name"
+                                label="Expiry"
+                                type="date"
                                 variant="outlined"
-                                required
-                                sx={{ width: '100%' }}
-                                disabled
-                              />
-                            )}
-                          />
-                          <Controller
-                            name="type"
-                            control={control}
-                            defaultValue={doc.type}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Type"
-                                variant="outlined"
-                                required
-                                sx={{ width: '100%' }}
-                                disabled
-                              />
-                            )}
-                          />
-                          <Controller
-                            name="status"
-                            control={control}
-                            defaultValue={doc.status}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Status"
-                                variant="outlined"
-                                required
-                                sx={{ width: '100%' }}
-                              />
-                            )}
-                          />
-                          <Controller
-                            name="session_no"
-                            control={control}
-                            defaultValue={doc.session_no}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Session No."
-                                variant="outlined"
-                                required
                                 sx={{ width: '100%' }}
                               />
                             )}
                           />
                         </Stack>
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                          justifyContent="space-between"
-                          sx={{ mt: 2 }}
-                        >
+                        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
                           <Button variant="contained" type="submit">
                             Save
                           </Button>
-                          <Button variant="outlined" onClick={() => setEditMode(-1)}>
+                          <Button variant="outlined" onClick={handleCancel}>
                             Cancel
                           </Button>
                         </Stack>
@@ -662,8 +587,8 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
               ))}
             </Grid>
           ) : (
-            <Typography variant="h6" sx={{ textAlign: 'center', color: 'text.disabled' }}>
-              No documents found.
+            <Typography variant="h8" sx={{ textAlign: 'teft', color: 'primary', ml: 2 }}>
+              No documents found for this user. You can add a document by clicking on Add Document.
             </Typography>
           )}
         </Scrollbar>
@@ -695,6 +620,12 @@ export default function UserDocumentDetails({ documents, reload }: Props) {
             Delete
           </Button>
         }
+      />
+      <UserDocumentCreateUpdate
+        reload={reload}
+        open={openDialog}
+        onClose={handleCloseDialog}
+        user_id={id}
       />
     </>
   );

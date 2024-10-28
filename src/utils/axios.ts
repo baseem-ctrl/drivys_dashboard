@@ -177,7 +177,7 @@ export const endpoints = {
       createOrUpdate: 'admin/user-docs/create-user-docs',
       getList: 'admin/user-docs/get-user-doc-list',
       getById: 'admin/user-docs/get-doc',
-      deleteById: 'admin/user-docs/delete-doc',
+      deleteById: 'admin/user-docs/delete-user-doc',
       deleteAllByUserId: 'admin/user-docs/delete-user-docs',
     },
   },
