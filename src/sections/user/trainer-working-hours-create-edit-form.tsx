@@ -43,16 +43,23 @@ export default function WorkingHoursCreateEditForm({
     start_time: Yup.date().required('Start time is required'),
     end_time: Yup.date().required('End time is required'),
     is_off_day: Yup.boolean(),
-    is_full_day: Yup.boolean(),
+    is_full_day: Yup.boolean().test(
+      'is-full-day-only-if-not-off-day',
+      'Cannot be full day if it is an off day',
+      function (value) {
+        const { is_off_day } = this.parent;
+        return !is_off_day || !value;
+      }
+    ),
   });
-
+  const defaultTime = new Date();
   const defaultValues = useMemo(
     () => ({
       day_of_week: currentWorkingHour?.day_of_week || 'MONDAY',
       start_time: currentWorkingHour?.start_time
-        ? formatTimestamp(currentWorkingHour.start_time)
-        : null,
-      end_time: currentWorkingHour?.end_time ? formatTimestamp(currentWorkingHour.end_time) : null,
+        ? new Date(currentWorkingHour.start_time)
+        : defaultTime,
+      end_time: currentWorkingHour?.end_time ? new Date(currentWorkingHour.end_time) : defaultTime,
       is_off_day: currentWorkingHour?.is_off_day || false,
       is_full_day: currentWorkingHour?.is_full_day || false,
     }),
@@ -66,15 +73,22 @@ export default function WorkingHoursCreateEditForm({
 
   const {
     reset,
+    watch,
     handleSubmit,
     control,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
-
   useEffect(() => {
     reset(defaultValues);
   }, [currentWorkingHour, defaultValues, reset]);
 
+  const isOffDay = watch('is_off_day');
+
+  useEffect(() => {
+    if (isOffDay) {
+      reset((formValues) => ({ ...formValues, is_full_day: false }));
+    }
+  }, [isOffDay, reset]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = {
@@ -108,7 +122,15 @@ export default function WorkingHoursCreateEditForm({
       enqueueSnackbar(error.message, { variant: 'error' });
     }
   });
-
+  const daysOfWeek = [
+    { value: 'MONDAY', label: 'Monday' },
+    { value: 'TUESDAY', label: 'Tuesday' },
+    { value: 'WEDNESDAY', label: 'Wednesday' },
+    { value: 'THURSDAY', label: 'Thursday' },
+    { value: 'FRIDAY', label: 'Friday' },
+    { value: 'SATURDAY', label: 'Saturday' },
+    { value: 'SUNDAY', label: 'Sunday' },
+  ];
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -125,44 +147,68 @@ export default function WorkingHoursCreateEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="day_of_week" label="Day of Week">
-              <MenuItem value="MONDAY">Monday</MenuItem>
-              <MenuItem value="TUESDAY">Tuesday</MenuItem>
-              <MenuItem value="WEDNESDAY">Wednesday</MenuItem>
-              <MenuItem value="THURSDAY">Thursday</MenuItem>
-              <MenuItem value="FRIDAY">Friday</MenuItem>
-              <MenuItem value="SATURDAY">Saturday</MenuItem>
-              <MenuItem value="SUNDAY">Sunday</MenuItem>
-            </RHFSelect>
-
-            <Controller
-              name="start_time"
-              control={control}
-              render={({ field }) => (
-                <TimePicker
-                  label="Start Time"
-                  {...field}
-                  ampm={false}
-                  onChange={(newValue) => field.onChange(newValue)}
-                />
+            <Box>
+              <RHFSelect name="day_of_week" label="Day of Week">
+                {daysOfWeek.map((day) => (
+                  <MenuItem key={day.value} value={day.value}>
+                    {day.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+              {errors.day_of_week && (
+                <Box color="error.main" fontSize="small" mt={0.5}>
+                  {errors.day_of_week.message}
+                </Box>
               )}
-            />
+            </Box>
 
-            <Controller
-              name="end_time"
-              control={control}
-              render={({ field }) => (
-                <TimePicker
-                  label="End Time"
-                  {...field}
-                  ampm={false}
-                  onChange={(newValue) => field.onChange(newValue)}
-                />
+            <Box>
+              <Controller
+                name="start_time"
+                control={control}
+                render={({ field }) => (
+                  <TimePicker
+                    label="Start Time"
+                    {...field}
+                    ampm={false}
+                    onChange={(newValue) => field.onChange(newValue)}
+                  />
+                )}
+              />
+              {errors.start_time && (
+                <Box color="error.main" fontSize="small" mt={0.5}>
+                  {errors.start_time.message}
+                </Box>
               )}
-            />
+            </Box>
 
-            <RHFSwitch name="is_off_day" label="Is Off Day" />
-            <RHFSwitch name="is_full_day" label="Is Full Day" />
+            <Box>
+              <Controller
+                name="end_time"
+                control={control}
+                render={({ field }) => (
+                  <TimePicker
+                    label="End Time"
+                    {...field}
+                    ampm={false}
+                    onChange={(newValue) => field.onChange(newValue)}
+                  />
+                )}
+              />
+              {errors.end_time && (
+                <Box color="error.main" fontSize="small" mt={0.5}>
+                  {errors.end_time.message}
+                </Box>
+              )}
+            </Box>
+
+            <Box>
+              <RHFSwitch name="is_off_day" label="Is Off Day" />
+            </Box>
+
+            <Box>
+              <RHFSwitch name="is_full_day" label="Is Full Day" />
+            </Box>
           </Box>
         </DialogContent>
 

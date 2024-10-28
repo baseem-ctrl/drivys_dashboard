@@ -49,14 +49,16 @@ export default function TrainerWorkingHour({ userId }: Props) {
       console.error('Error deleting working hour:', response.statusText);
     }
   };
+  const workingHoursHeaders = [
+    { key: 'day', label: 'Day' },
+    { key: 'start_time', label: 'Start Time' },
+    { key: 'end_time', label: 'End Time' },
+    { key: 'full_day', label: 'Full Day' },
+    { key: 'off_day', label: 'Off Day' },
+  ];
+
   function formatTimestamp(isoTimestamp) {
     const date = new Date(isoTimestamp);
-
-    const formattedDate = date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit',
-    });
 
     const formattedTime = date.toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -64,7 +66,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
       hour12: true,
     });
 
-    return `${formattedDate} ${formattedTime}`;
+    return formattedTime;
   }
 
   if (workingHoursLoading) {
@@ -81,89 +83,133 @@ export default function TrainerWorkingHour({ userId }: Props) {
       </Box>
     );
   }
-
-  if (!workingHours || workingHours.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', mt: 2 }}>
-        <Typography variant="body1">No working hours available.</Typography>
-      </Box>
-    );
-  }
+  const handleCreateWorkingHours = () => {
+    setSelectedWorkingHour(null);
+    quickEdit.onTrue();
+  };
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Card>
-          <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
-            {' '}
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Typography variant="h6">Day</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6">Start Time</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6">End Time</Typography>
-                  </TableCell>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
+          {!workingHours || workingHours.length === 0 ? (
+            <Box sx={{ textAlign: 'left', mt: 2 }}>
+              <Typography variant="body1">
+                No working hours available. You can add using 'Add Work Hours'.
+              </Typography>
+            </Box>
+          ) : null}
 
-                  <TableCell>
-                    <Typography variant="h6">Full Day</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6">Off Day</Typography>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {workingHours.map((hour) => (
-                  <TableRow key={hour.id}>
-                    <TableCell>
-                      <Typography variant="body2">{hour.day_of_week}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{formatTimestamp(hour.start_time)}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">{formatTimestamp(hour.end_time)}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: hour.is_full_day ? 'green' : 'red' }}
-                      >
-                        {hour.is_full_day ? 'Yes' : 'No'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ color: hour.is_off_day ? 'green' : 'red' }}>
-                        {hour.is_off_day ? 'Yes' : 'No'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      onClick={() => {
-                        setWorkingHourID(hour.id);
-                        setSelectedWorkingHour(hour);
-                      }}
-                    >
-                      <IconButton
-                        color={popover.open ? 'inherit' : 'default'}
-                        onClick={popover.onOpen}
-                      >
-                        <Iconify icon="eva:more-vertical-fill" />
-                      </IconButton>
-                    </TableCell>
+          <Button
+            sx={{ mb: 4, mt: 2 }}
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => handleCreateWorkingHours()}
+          >
+            Add Work Hours
+          </Button>
+        </Box>
+
+        {workingHours && workingHours.length > 0 && (
+          <Card>
+            <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {workingHoursHeaders.map((header) => (
+                      <TableCell key={header.key}>
+                        <Typography>{header.label}</Typography>
+                      </TableCell>
+                    ))}
+                    <TableCell></TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Card>
+                </TableHead>
+
+                <TableBody>
+                  {workingHours.map((hour) => (
+                    <TableRow key={hour.id}>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
+                          }}
+                        >
+                          {hour.day_of_week}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
+                          }}
+                        >
+                          {hour.is_full_day
+                            ? 'All Day'
+                            : hour.is_off_day
+                            ? 'N/A'
+                            : formatTimestamp(hour.start_time)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
+                          }}
+                        >
+                          {hour.is_full_day
+                            ? 'All Day'
+                            : hour.is_off_day
+                            ? 'N/A'
+                            : formatTimestamp(hour.end_time)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
+                          }}
+                        >
+                          {hour.is_full_day ? 'Yes' : 'No'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
+                          }}
+                        >
+                          {hour.is_off_day ? 'Yes' : 'No'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell
+                        align="right"
+                        onClick={() => {
+                          setWorkingHourID(hour.id);
+                          setSelectedWorkingHour(hour);
+                        }}
+                      >
+                        <IconButton
+                          color={popover.open ? 'inherit' : 'default'}
+                          onClick={popover.onOpen}
+                        >
+                          <Iconify icon="eva:more-vertical-fill" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
+        )}
       </Grid>
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -180,7 +226,6 @@ export default function TrainerWorkingHour({ userId }: Props) {
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>
-
         <MenuItem
           onClick={() => {
             quickEdit.onTrue();
@@ -191,6 +236,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
           Edit
         </MenuItem>
       </CustomPopover>
+
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -210,6 +256,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
           </Button>
         }
       />
+
       <WorkingHoursCreateEditForm
         formatTimestamp={formatTimestamp}
         currentWorkingHour={selectedWorkingHour}
