@@ -30,37 +30,54 @@ const TrainerPackageCreateEditForm = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState({});
   const [formValues, setFormValues] = useState({
     trainer_price: '',
-    switch_status: '',
-    is_published: '',
+    switch_status: false,
+    is_published: false,
     package_id: '',
   });
-  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (open) {
       if (editMode === 'Edit' && selectedPackage) {
         setLoading(true);
         setFormValues({
-          trainer_price: selectedPackage.trainer_price,
-          switch_status: selectedPackage.switch_status,
-          is_published: selectedPackage.is_published,
-          package_id: selectedPackage.package_id,
+          trainer_price: selectedPackage?.price || '',
+          switch_status: selectedPackage.status === '1' ? true : false, // Convert to boolean
+          is_published: selectedPackage.is_published === '1' ? true : false, // Convert to boolean
+          package_id: selectedPackage.package_id || '',
         });
         setLoading(false);
       } else {
-        // Reset form values for adding a new package
         setFormValues({
-          switch_status: '',
+          switch_status: false,
           trainer_price: '',
-          is_published: '',
+          is_published: false,
           package_id: '',
         });
         setErrors({});
       }
     }
   }, [selectedPackage, editMode, open]);
+
+  const handleSwitchChange = (e) => {
+    const { name, checked } = e.target;
+
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: checked,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
+  };
+
   const { packageList, packageLoading } = useGetPackage();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({
@@ -77,11 +94,12 @@ const TrainerPackageCreateEditForm = ({
   const validateFields = () => {
     const newErrors = {};
     if (!formValues.trainer_price) newErrors.trainer_price = 'Trainer Price is required.';
-    if (!formValues.switch_status) newErrors.switch_status = 'Status is required.';
-    if (!formValues.is_published) newErrors.is_published = 'Publish status is required.';
+    if (!formValues.package_id) newErrors.package_id = 'Package ID is required.';
     return newErrors;
   };
+
   const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_id);
+
   const handleSubmit = () => {
     // setIsSubmitting(true);
     const newErrors = validateFields();
@@ -91,21 +109,19 @@ const TrainerPackageCreateEditForm = ({
       return;
     }
 
-    const { package_id, trainer_price, switch_status, is_published } = formValues;
-
     if (!trainer_id) {
       console.error('Trainer ID is required.');
       return;
     }
-
+    console.log('formValuesformValuesformValues', formValues);
     const convertedValues = {
       package_id: formValues.package_id,
       trainer_ids: [
         {
           id: trainer_id,
           price: formValues.trainer_price,
-          is_published: formValues.is_published === 'on' ? 1 : 0,
-          status: formValues.switch_status === 'on' ? 1 : 0,
+          is_published: formValues.is_published ? 1 : 0,
+          status: formValues.switch_status ? 1 : 0,
         },
       ],
     };
@@ -182,7 +198,7 @@ const TrainerPackageCreateEditForm = ({
                 <Switch
                   name="switch_status"
                   checked={formValues.switch_status}
-                  onChange={handleChange}
+                  onChange={handleSwitchChange}
                   color="primary"
                 />
               }
@@ -192,8 +208,8 @@ const TrainerPackageCreateEditForm = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={formValues.is_published}
-                  onChange={handleChange}
+                  checked={formValues.is_published ? 1 : 0}
+                  onChange={handleSwitchChange}
                   name="is_published"
                   color="primary"
                 />

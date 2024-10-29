@@ -80,7 +80,7 @@ export default function UserDetailsContent({
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  // const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -371,9 +371,9 @@ export default function UserDetailsContent({
                 // Updated Languages Section to display each language in a separate row
                 ...(details?.languages?.length > 0
                   ? details.languages.map((lang: any, index: number) => ({
-                    label: `Language ${index + 1}`,
-                    value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
-                  }))
+                      label: `Language ${index + 1}`,
+                      value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
+                    }))
                   : [{ label: 'Languages', value: 'NA' }]),
 
                 {
@@ -387,24 +387,24 @@ export default function UserDetailsContent({
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowed in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowed in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -885,7 +885,7 @@ export default function UserDetailsContent({
                     });
                     // handleEditAddress(index, address);
                   }}
-                // sx={{ mt: 1 }}
+                  // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? 'Hide Map' : 'Show Map'}
                 </Button>
@@ -1113,8 +1113,6 @@ export default function UserDetailsContent({
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
           <Grid container spacing={1} rowGap={1}>
-
-
             <Grid xs={12} md={12}>
               {/* For all other user types */}
               {details?.user_type !== 'TRAINER' && renderContent}
@@ -1124,18 +1122,16 @@ export default function UserDetailsContent({
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
-              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+              {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
 
-
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && renderAddress}
             </Grid>
-
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
@@ -1147,8 +1143,6 @@ export default function UserDetailsContent({
                 details?.user_preference?.id &&
                 renderUserPreferences}
             </Grid>
-
-
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>

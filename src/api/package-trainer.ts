@@ -54,7 +54,7 @@ export function useGetPackageTrainerList({ limit, page }: useGetPackageTrainerLi
 // ----------------------------------------------------------------------
 // Get package trainer details by ID
 export function useGetPackageTrainerById(packageTrainerId: number | string) {
-  const getPackageTrainerUrl = () => `${endpoints.packageTrainer.details}${packageTrainerId}`;
+  const getPackageTrainerUrl = () => `${endpoints.packageTrainer.list}/${packageTrainerId}`;
   const { data, isLoading, error, isValidating } = useSWR(
     packageTrainerId ? getPackageTrainerUrl() : null,
     drivysFetcher

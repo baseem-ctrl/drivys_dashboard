@@ -5,6 +5,8 @@ import Avatar from '@mui/material/Avatar';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Label from 'src/components/label';
+import LoadingButton from '@mui/lab/LoadingButton';
+
 import {
   Card,
   Typography,
@@ -68,6 +70,7 @@ export default function TrainerDetailsContent({ id }: Props) {
   const [selectedPackageId, setSelectedPackageId] = useState(null);
   const [editMode, setEditMode] = useState('');
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // const [selectedLanguage, setSelectedLanguage] = useState(
   //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
@@ -221,13 +224,16 @@ export default function TrainerDetailsContent({ id }: Props) {
   };
   const handleCreatePackage = async (newPackage) => {
     try {
+      setIsSubmitting(true);
       const response = await createPackageTrainer(newPackage);
       revalidateDetails();
       enqueueSnackbar(response.message);
+      setIsSubmitting(false);
       quickEdit.onFalse();
       setEditMode('');
     } catch (error) {
       setEditMode('');
+      setIsSubmitting(false);
       console.error('Error creating package:', error);
     }
   };
@@ -256,12 +262,15 @@ export default function TrainerDetailsContent({ id }: Props) {
   };
   const handleDeletePackage = async (id) => {
     try {
+      setIsSubmitting(true);
       const response = await deletePackageTrainerById(id);
       revalidateDetails();
       enqueueSnackbar('Package City Mapping Deleted successfully.');
+      setIsSubmitting(false);
       quickEdit.onFalse();
       confirm.onFalse();
     } catch (error) {
+      setIsSubmitting(false);
       console.error('Error deleting package:', error);
     }
   };
@@ -309,11 +318,11 @@ export default function TrainerDetailsContent({ id }: Props) {
         >
           <CircularProgress />
         </Box>
-      ) : details?.length > 0 ? (
+      ) : details?.length ? (
         <>
           <Grid container spacing={2} rowGap={1}>
             {Array.isArray(details) &&
-              details.map((item: any) => (
+              details.map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item?.id}>
                   <Stack
                     component={Card}
@@ -335,12 +344,14 @@ export default function TrainerDetailsContent({ id }: Props) {
                         color="#CF5A0D"
                         sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        {item?.package_translations[0]?.name?.toUpperCase() || 'UNNAMED PACKAGE'}
+                        {item?.package?.package_translations?.[0]?.name?.toUpperCase() ||
+                          'UNNAMED PACKAGE'}
                       </Typography>
 
-                      {/* IconButton for the three dots menu */}
                       <IconButton
-                        onClick={(e) => handleClick(e, item, item?.package_translations[0]?.id)}
+                        onClick={(e) =>
+                          handleClick(e, item, item?.package?.package_translations?.[0]?.id)
+                        }
                       >
                         <Iconify icon="eva:more-vertical-outline" />
                       </IconButton>
@@ -356,7 +367,9 @@ export default function TrainerDetailsContent({ id }: Props) {
                         overflow: 'auto',
                       }}
                     >
-                      <Typography variant="body2">{item?.number_of_sessions} Sessions</Typography>
+                      <Typography variant="body2">
+                        {item?.package?.number_of_sessions} Sessions
+                      </Typography>
                       <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
                         What's included
                       </Typography>
@@ -366,7 +379,7 @@ export default function TrainerDetailsContent({ id }: Props) {
                           component="span"
                           dangerouslySetInnerHTML={{
                             __html:
-                              item?.package_translations[0]?.session_inclusions ||
+                              item?.package?.package_translations?.[0]?.session_inclusions ||
                               'No inclusions available',
                           }}
                         />
@@ -380,7 +393,7 @@ export default function TrainerDetailsContent({ id }: Props) {
                         border: 'none',
                         backgroundColor: '#CF5A0D',
                         position: 'absolute',
-                        top: '70px', // Adjust the position as necessary
+                        top: '70px',
                         left: '0',
                       }}
                     />
@@ -402,13 +415,15 @@ export default function TrainerDetailsContent({ id }: Props) {
             <Button onClick={confirm.onFalse} color="primary">
               Cancel
             </Button>
-            <Button
+
+            <LoadingButton
+              loading={isSubmitting}
               variant="contained"
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
               Delete
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </Dialog>
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>

@@ -218,7 +218,7 @@ export const endpoints = {
   },
   packageTrainer: {
     list: 'admin/package-trainer/get-trainer-packages',
-    delete: 'admin/package-trainer/create-packge-trainer/',
+    delete: 'admin/package-trainer/delete-packge-trainer',
     create: 'admin/package-trainer/create-packge-trainer',
   },
 };
