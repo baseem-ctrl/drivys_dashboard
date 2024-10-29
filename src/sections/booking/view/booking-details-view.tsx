@@ -26,7 +26,15 @@ const BookingDetailsComponent = ({ booking }) => {
     <Grid container spacing={4} justifyContent="center" sx={{ maxWidth: 1200, mx: 'auto', mt: 4 }}>
       {/* User Information */}
       <Grid item xs={12} md={6}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2, minHeight: cardHeight }}>
+        <Card
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            minHeight: cardHeight,
+            minWidth: 400,
+            overflow: 'auto',
+          }}
+        >
           <CardContent
             sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
           >
@@ -123,7 +131,15 @@ const BookingDetailsComponent = ({ booking }) => {
 
       {/* Driver Information */}
       <Grid item xs={12} md={6}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2, minHeight: cardHeight }}>
+        <Card
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            minHeight: cardHeight,
+            minWidth: 400,
+            overflow: 'auto',
+          }}
+        >
           <CardContent
             sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
           >
@@ -187,7 +203,15 @@ const BookingDetailsComponent = ({ booking }) => {
 
       {/* Package Details */}
       <Grid item xs={12} md={6}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2, minHeight: cardHeight }}>
+        <Card
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            minHeight: cardHeight,
+            minWidth: 400,
+            overflow: 'auto',
+          }}
+        >
           <CardContent
             sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
           >
@@ -236,7 +260,15 @@ const BookingDetailsComponent = ({ booking }) => {
 
       {/* Pickup Location */}
       <Grid item xs={12} md={6}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2, minHeight: cardHeight }}>
+        <Card
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            minHeight: cardHeight,
+            minWidth: 400,
+            overflow: 'auto',
+          }}
+        >
           <CardContent
             sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
           >
@@ -298,7 +330,15 @@ const BookingDetailsComponent = ({ booking }) => {
 
       {/* Booking Summary */}
       <Grid item xs={12}>
-        <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <Card
+          sx={{
+            boxShadow: 3,
+            borderRadius: 2,
+            minHeight: cardHeight,
+            minWidth: 400,
+            overflow: 'auto',
+          }}
+        >
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
               Booking Summary:
