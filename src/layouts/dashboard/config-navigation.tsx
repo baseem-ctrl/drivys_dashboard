@@ -87,18 +87,17 @@ export function useNavData() {
     //   ],
     // },
 
-    // BLOG
-    // {
-    //   title: t('blog'),
-    //   path: paths.dashboard.post.root,
-    //   icon: ICONS.blog,
-    //   children: [
-    //     { title: t('list'), path: paths.dashboard.post.root },
-    //     { title: t('details'), path: paths.dashboard.post.demo.details },
-    //     { title: t('create'), path: paths.dashboard.post.new },
-    //     { title: t('edit'), path: paths.dashboard.post.demo.edit },
-    //   ],
-    // },
+    // BOOKING
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
+      // children: [
+      //   { title: t('booking'), path: paths.dashboard.booking.root },
+      //   { title: t('list'), path: paths.dashboard.booking.list },
+      //   { title: t('create'), path: paths.dashboard.booking.new },
+      // ],
+    },
 
     // JOB
     // {

@@ -222,4 +222,8 @@ export const endpoints = {
     deleteById: 'admin/package-doc/delete-doc',
     deleteAllByPackageId: 'admin/package-doc/delete-package-docs',
   },
+  booking: {
+    getList: 'admin/booking/get-bookings-list',
+    getById: `admin/booking/get-booking-by-id`,
+  },
 };
