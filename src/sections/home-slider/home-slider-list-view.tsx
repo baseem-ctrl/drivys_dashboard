@@ -62,7 +62,7 @@ const TABLE_HEAD = [
 
 export default function HomeSliderListView() {
   const router = useRouter();
-  const table = useTable({ defaultRowsPerPage: 10 });
+  const table = useTable({ defaultRowsPerPage: 5 });
   const [tableData, setTableData] = useState<ISliderItem[]>([]);
   const { homeSlider, totalpages, revalidateHomeSlider, homeSliderError } = useGetHomeSlider(
     table.page,

@@ -55,6 +55,9 @@ import { useGetAllDialect } from 'src/api/dialect';
 
 type Props = {
   currentUser?: any;
+  detailsLoading?: any;
+  id?: any;
+  revalidateDetails?: any;
 };
 
 const fluencyOptions = [
@@ -64,9 +67,9 @@ const fluencyOptions = [
   { name: 'NATIVE', value: 'NATIVE' },
 ];
 
-export default function UserNewEditForm({ loading, id }: Props) {
-  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
-  const currentUser = details;
+export default function UserNewEditForm({ currentUser, detailsLoading, id, revalidateDetails }: Props) {
+  // const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
+  // const currentUser = currentUser ?? "";
   const router = useRouter();
   const { user } = useAuthContext();
 
@@ -140,6 +143,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
     ),
   });
 
+
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -153,30 +157,30 @@ export default function UserNewEditForm({ loading, id }: Props) {
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
         : '',
       photo_url: currentUser?.photo_url || '',
-      is_active: currentUser?.is_active || 1,
+      is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
       languages: dialect
         ? currentUser?.languages?.map((lang) => ({
-            id:
-              dialect?.length > 0
-                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
-                : '',
-            fluency_level: lang?.fluency_level || '',
-          }))
+          id:
+            dialect?.length > 0
+              ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+              : '',
+          fluency_level: lang?.fluency_level || '',
+        }))
         : [],
       gear:
         gearData?.length > 0
           ? gearData?.find(
-              (option) =>
-                option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
-            )?.value
+            (option) =>
+              option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
+          )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
       gender:
         genderData?.length > 0
           ? genderData?.find(
-              (option) =>
-                option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
-            )?.value
+            (option) =>
+              option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
+          )?.value
           : '',
       city_id: currentUser?.user_preference?.city_id || '',
     }),
@@ -279,10 +283,14 @@ export default function UserNewEditForm({ loading, id }: Props) {
         response = await createUser(body);
       }
       if (response) {
+
         enqueueSnackbar(currentUser ? response?.message : response?.message);
-        revalidateDetails();
+        if (currentUser?.id) {
+          revalidateDetails();
+        }
+
         reset();
-        router.push(paths.dashboard.user.details(currentUser?.id));
+        router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
       if (error?.errors) {
@@ -332,7 +340,7 @@ export default function UserNewEditForm({ loading, id }: Props) {
   const confirm = useBoolean();
   if (
     (id && detailsLoading) ||
-    loading ||
+    // loading ||
     languageLoading ||
     enumLoading ||
     genderLoading ||

@@ -20,7 +20,7 @@ type Props = {
 
 export default function UserEditView({ id }: Props) {
   const settings = useSettingsContext();
-  const { details, detailsLoading } = useGetUserDetails(id);
+  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const currentUser = details;
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -42,7 +42,7 @@ export default function UserEditView({ id }: Props) {
         }}
       />
 
-      {currentUser?.id && <UserNewEditForm currentUser={currentUser} loading={detailsLoading} id={id} />}
+      {currentUser?.id && <UserNewEditForm currentUser={currentUser} detailsLoading={detailsLoading} id={id} revalidateDetails={() => revalidateDetails} />}
     </Container>
   );
 }

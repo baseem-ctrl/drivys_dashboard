@@ -49,6 +49,7 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
 import StudentDetailsContent from './student-details-content';
+import TrainerWorkingHour from './trainer-working-hour';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -364,8 +365,11 @@ export default function UserDetailsContent({
                     : details?.phone ?? 'NA',
                 },
                 { label: 'User Type', value: details?.user_type ?? 'NA' },
-
-                { label: 'Preffered Language', value: details?.locale ?? 'NA' },
+                { label: 'Date of birth', value: details?.dob?.split('T')[0] ?? 'NA' },
+                {
+                  label: 'Preffered Language',
+                  value: (details?.locale === 'undefined' ? 'N/A' : details?.locale) ?? 'NA',
+                },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
                 // Updated Languages Section to display each language in a separate row
@@ -378,12 +382,11 @@ export default function UserDetailsContent({
 
                 {
                   label: 'Is Active',
-                  value:
-                    details?.is_active === '1' ? (
-                      <Chip label="Active" color="success" variant="soft" />
-                    ) : (
-                      <Chip label="In Active" color="error" variant="soft" />
-                    ),
+                  value: details?.is_active ? (
+                    <Chip label="Active" color="success" variant="soft" />
+                  ) : (
+                    <Chip label="In Active" color="error" variant="soft" />
+                  ),
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
@@ -1125,6 +1128,9 @@ export default function UserDetailsContent({
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
+              {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
+                <TrainerWorkingHour userId={details?.id} />
+              )}
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
@@ -1135,7 +1141,10 @@ export default function UserDetailsContent({
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
-              {currentTab === 'details' && details?.user_preference?.id && renderUserPreferences}
+              {currentTab === 'details' &&
+                details?.user_preference?.id &&
+                details?.user_type === 'TRAINER' &&
+                renderUserPreferences}
             </Grid>
             {/* User preferences For all other user types */}
             <Grid xs={12}>

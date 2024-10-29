@@ -122,7 +122,7 @@ export default function HomeSliderDialog({
       //   display_order: trainer?.display_order || ''
       // })) : [],
       trainers: users ? updateValue?.trainers?.map((trainer) => {
-        const user = users.find((option) => option.id === trainer.trainer.id);
+        const user = users.find((option) => option.id === trainer?.trainer?.id);
         return {
           id: user ? { label: user?.name, value: user?.id } : '',
           display_order: trainer.display_order || '',
@@ -153,7 +153,7 @@ export default function HomeSliderDialog({
     formState: { isSubmitting },
   } = methods;
 
-  const { fields, remove } = useFieldArray({
+  const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
   })
@@ -215,16 +215,23 @@ export default function HomeSliderDialog({
 
   // Function to add more pairs
   const handleAddMore = () => {
-    setTrainer([...trainers, { id: '', display_order: '' }]);
+    append({ id: '', display_order: '' });
+    onReload()
+    // setTrainer([...trainers, { id: '', display_order: '' }]);
 
   };
 
   // Function to remove a pair
   const handleRemove = (index: number) => {
-    const trainer = [...trainers];
-    trainer.splice(index, 1); // Remove the pair at the specified index
-    setTrainer(trainer);
+    // Create a new array without the trainer at the specified index
+    // const updatedTrainers = trainers?.filter((_, i) => i !== index);
+
+    // // Update the state
+    // setTrainer(updatedTrainers);
+
+    // Remove the trainer from react-hook-form
     remove(index);
+
   };
 
 
@@ -376,12 +383,8 @@ export default function HomeSliderDialog({
             </Box>
 
             <h5>Trainers:</h5>
-            {trainers?.map((trainerItem: any, index: Key | null | undefined) => (
-              <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-
-
-
-
+            {fields?.map((trainerItem: any, index: number) => (
+              <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5} >
                   <RHFAutocomplete
                     name={`trainers[${index}].id`} // Dynamic name for react-hook-form

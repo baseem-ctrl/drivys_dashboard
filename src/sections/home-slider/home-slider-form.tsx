@@ -64,8 +64,8 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const today = moment().format('YYYY-MM-DD');
 
   const NewProductSchema = Yup.object().shape({
-    name: Yup.string().required(t('name is required')),
-    display_order: Yup.string(),
+    name: Yup.string().required(t('Name is required')),
+    display_order: Yup.string().required(t('Display order is required')),
     // type: Yup.string(),
     published: Yup.boolean(),
     Category: Yup.array().nullable(),
@@ -205,7 +205,14 @@ export default function HomeSliderForm({ updateValue }: Props) {
         router.push(paths.dashboard.slider.root);
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error.errors) {
+        // Iterate over each error and enqueue them in the snackbar
+        Object.values(error.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   });
 
