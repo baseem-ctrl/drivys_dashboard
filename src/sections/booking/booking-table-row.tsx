@@ -9,6 +9,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { formatDate } from 'src/utils/format-date';
+import { Typography } from '@mui/material';
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
 // ----------------------------------------------------------------------
@@ -37,81 +39,42 @@ export default function BookingTableRow({
 
   const { user, driver, booking_method, payment_status, total, created_at, sessions } = row;
 
+  console.log('rowrow', row);
   const handleRowClick = (bookingId: number) => {
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
   console.log('user', user);
+  console.log('driver', driver);
   return (
     <>
       <TableRow hover selected={selected}>
         <TableCell onClick={() => handleRowClick(row.id)}>{user?.name}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{user?.email}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{payment_status}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{total}</TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name}</TableCell>
+
+        <TableCell onClick={() => handleRowClick(row.id)}>
+          <Label variant="soft" color={row?.driver_status === 'PENDING' ? 'warning' : 'success'}>
+            {row?.driver_status}
+          </Label>
+        </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
           <Label variant="soft" color={row.booking_status === 'PENDING' ? 'warning' : 'success'}>
             {row.booking_status}
           </Label>
         </TableCell>
-        <TableCell align="right">
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+
+        <TableCell onClick={() => handleRowClick(row.id)}>{row?.sub_total}</TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>{row?.payment_method}</TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>
+          {row.coupon_code ? row.coupon_code : 'No Coupon'}
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>
+          {formatDate(row?.created_at)}
+          <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+            Updated {formatDate(row?.updated_at)}
+          </Typography>
         </TableCell>
       </TableRow>
-
-      {/* <BookingCreateEditForm
-        title="Edit Booking"
-        currentBooking={row}
-        open={quickEdit.value}
-        onClose={quickEdit.onFalse}
-        reload={reload}
-      /> */}
-
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
-      >
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            quickEdit.onTrue();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
-      </CustomPopover>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure you want to delete this booking?"
-        onConfirm={() => {
-          confirm.onFalse();
-          onDeleteRow();
-        }}
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
-          </Button>
-        }
-      />
     </>
   );
 }

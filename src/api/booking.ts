@@ -1,19 +1,17 @@
 import useSWR, { mutate } from 'swr';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
-import { IOrderItem } from 'src/types/order';
+import { endpoints, drivysFetcher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
 export function useGetBookings(filters = {}) {
-  const { city_id, category_id, driver_id, booking_status, limit, page } = filters;
+  console.log('filters from api', filters);
+  const { search, driver_id, payment_status, limit, page } = filters;
   const queryParams = new URLSearchParams();
-
-  if (city_id !== undefined) queryParams.append('city_id', city_id);
-  if (category_id !== undefined) queryParams.append('category_id', category_id);
-  if (driver_id !== undefined) queryParams.append('driver_id', driver_id);
-  if (booking_status !== undefined) queryParams.append('booking_status', booking_status);
+  if (search !== undefined) queryParams.append('search', search);
+  if (driver_id) queryParams.append('driver_id', driver_id);
+  if (payment_status !== undefined) queryParams.append('booking_status', payment_status);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (page !== undefined) queryParams.append('page', page);
 
@@ -23,15 +21,17 @@ export function useGetBookings(filters = {}) {
     revalidateOnFocus: false,
   });
 
-  const memoizedValue = useMemo(
-    () => ({
-      bookings: (data?.data as any) || [],
+  const memoizedValue = useMemo(() => {
+    const bookings = data?.data || [];
+    const totalCount = data?.totalCount || 0;
+    return {
+      bookings,
+      totalCount,
       bookingsError: error,
       bookingsLoading: isLoading,
       bookingsValidating: isValidating,
-    }),
-    [data?.data, error, isLoading, isValidating]
-  );
+    };
+  }, [data, error, isLoading, isValidating]);
 
   const revalidateBookings = () => {
     mutate(URL);

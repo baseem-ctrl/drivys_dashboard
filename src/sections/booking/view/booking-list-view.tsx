@@ -15,6 +15,8 @@ import {
   Skeleton,
   TableCell,
   TableRow,
+  Typography,
+  Box,
 } from '@mui/material';
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -35,26 +37,50 @@ import { useGetBookings } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import BookingTableRow from '../booking-table-row';
+import BookingTableToolbar from '../booking-table-tool-bar';
+import { useGetUsers } from 'src/api/users';
+import BookingDetailsComponent from './booking-details-view';
 
 const TABLE_HEAD = {
   all: [
-    { id: 'customerName', label: 'Customer Name', width: 200 },
-    { id: 'customerEmail', label: 'Email', width: 250 },
-    { id: 'bookingDate', label: 'Booking Date', width: 180 },
-    { id: 'status', label: 'Status', width: 100 },
+    { id: 'customerName', label: 'Customer Name', width: 180 },
+    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'totalAmount', label: 'Total Amount', width: 120 },
-    { id: 'remarks', label: 'Remarks', width: 200 },
-    { id: '', width: 88 },
+    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
+    { id: 'coupon', label: 'Coupon', width: 200 },
+    { id: 'created', label: 'Created', width: 200 },
   ],
   confirmed: [
-    { id: 'customerName', label: 'Customer Name' },
-    { id: 'customerEmail', label: 'Email' },
-    { id: 'bookingDate', label: 'Booking Date' },
-    { id: 'status', label: 'Status' },
-    { id: 'payment', label: 'Payment' },
-    { id: 'totalAmount', label: 'Total Amount' },
-    { id: '', width: 88 },
+    { id: 'customerName', label: 'Customer Name', width: 180 },
+    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'orderStatus', label: 'Booking Status', width: 150 },
+    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
+    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
+    { id: 'coupon', label: 'Coupon', width: 200 },
+    { id: 'created', label: 'Created', width: 200 },
+  ],
+  cancelled: [
+    { id: 'customerName', label: 'Customer Name', width: 180 },
+    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'orderStatus', label: 'Booking Status', width: 150 },
+    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
+    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
+    { id: 'coupon', label: 'Coupon', width: 200 },
+    { id: 'created', label: 'Created', width: 200 },
+  ],
+  pending: [
+    { id: 'customerName', label: 'Customer Name', width: 180 },
+    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'orderStatus', label: 'Booking Status', width: 150 },
+    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
+    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
+    { id: 'coupon', label: 'Coupon', width: 200 },
+    { id: 'created', label: 'Created', width: 200 },
   ],
 };
 
@@ -62,34 +88,56 @@ const defaultFilters = {
   customerName: '',
   status: '',
   bookingType: 'all',
+  paymentStatus: '',
+  vendor: '',
 };
 
 export default function BookingListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
   const [tableData, setTableData] = useState([]);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
   const [filters, setFilters] = useState(defaultFilters);
   // const [bookingTypeOptions, setBookingTypeOptions] = useState([]);
   const confirm = useBoolean();
   const bookingTypeOptions = [
     { value: 'all', label: 'ALL' },
     { value: 'pending', label: 'PENDING' },
-    { value: 'awaitingPayment', label: 'AWAITING PAYMENT' },
-    { value: 'awaitingConfirmation', label: 'AWAITING CONFIRMATION' },
-    { value: 'complete', label: 'COMPLETE' },
+    { value: 'confirmed', label: 'CONFIRMED' },
     { value: 'cancelled', label: 'CANCELLED' },
-    { value: 'expired', label: 'EXPIRED' },
   ];
-  const { bookings, bookingsLoading, revalidateBookings } = useGetBookings({
+  const statusMap = {
+    PENDING: 0,
+    CONFIRMED: 1,
+    CANCELLED: 2,
+  };
+
+  const paymentStatusCode = statusMap[filters.paymentStatus] ?? undefined;
+
+  const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookings({
     page: table.page,
     limit: table.rowsPerPage,
-    booking_type: filters.bookingType,
-    search: filters.customerName,
-    status: filters.status,
+    // booking_type: filters.bookingType,
+    // search: filters.customerName,
+    payment_status: paymentStatusCode,
+    driver_id: filters.vendor,
   });
-  console.log('bookings', bookings);
+  const { users, usersLoading } = useGetUsers({
+    page: 0,
+    limit: 1000,
+    user_types: 'TRAINER',
+  });
+
+  const vendorOptions = usersLoading
+    ? [{ label: 'Loading...', value: '' }]
+    : users.map((user) => ({
+        label: user.name,
+        value: user.id,
+      }));
   useEffect(() => {
     if (bookings?.length > 0) {
       setTableData(bookings);
@@ -97,6 +145,23 @@ export default function BookingListView() {
       setTableData([]);
     }
   }, [bookings]);
+  useEffect(() => {
+    if (bookings?.length > 0) {
+      const filteredBookings =
+        filters.bookingType === 'all'
+          ? bookings
+          : bookings.filter((booking) => {
+              const isMatch = booking.booking_status === filters.bookingType.toUpperCase();
+
+              return isMatch;
+            });
+
+      setTableData(filteredBookings);
+    } else {
+      console.log('No bookings available. Setting table data to empty.');
+      setTableData([]);
+    }
+  }, [bookings, filters.bookingType]);
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -109,30 +174,6 @@ export default function BookingListView() {
     [table]
   );
 
-  const handleDeleteRow = async (id) => {
-    // try {
-    //   const response = await deleteBooking(id);
-    //   if (response) {
-    //     enqueueSnackbar(response.message);
-    //     revalidateBookings();
-    //   }
-    // } catch (error) {
-    //   enqueueSnackbar(error.message, { variant: 'error' });
-    // }
-  };
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
-  }, [tableData, table]);
-
-  // const handleEditRow = useCallback(
-  //   (id) => {
-  //     router.push(paths.dashboard.booking.edit(id));
-  //   },
-  //   [router]
-  // );
-
   const handleTabChange = useCallback(
     (event, newValue) => {
       handleFilters('bookingType', newValue);
@@ -140,139 +181,235 @@ export default function BookingListView() {
     [handleFilters]
   );
 
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
+  const currentTableHeaders = (() => {
+    switch (filters.bookingType) {
+      case 'confirmed':
+        return TABLE_HEAD.confirmed;
+      case 'cancelled':
+        return TABLE_HEAD.cancelled;
+      case 'pending':
+        return TABLE_HEAD.pending;
+      default:
+        return TABLE_HEAD.all;
+    }
+  })();
 
-  const currentTableHeaders =
-    filters.bookingType === 'confirmed' ? TABLE_HEAD.confirmed : TABLE_HEAD.all;
+  const handleClear = (name) => () => {
+    handleFilters(name, '');
+  };
 
-  return (
-    <>
-      <Container maxWidth="xl">
+  const tabBackgroundColors = {
+    all: '#49525b',
+    pending: '#d3f2f7',
+    confirmed: '#dbf6e5',
+    cancelled: '#ffe4de',
+  };
+  const tabTextColors = {
+    all: '#ffff',
+    pending: '#212b36',
+    confirmed: '#4ca97e',
+    cancelled: '#ce605b',
+  };
+  const bookingCounts = bookingTypeOptions.reduce((acc, option) => {
+    acc[option.value] = bookings.filter(
+      (booking) => booking.booking_status === option.value.toUpperCase()
+    ).length;
+    return acc;
+  }, {});
+  const handleRowClick = (row: any) => {
+    console.log('row', row);
+    setSelectedBooking(row);
+    setShowDetail(true);
+  };
+  if (showDetail) {
+    return (
+      <>
+        {' '}
         <CustomBreadcrumbs
-          heading="Booking List"
+          heading="Booking Orders List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Order', href: paths.dashboard.booking.list },
+            {
+              name: 'Order',
+              href: paths.dashboard.booking.list,
+              onClick: () => {
+                setShowDetail(false);
+              },
+            },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              onClick={() => router.push(paths.dashboard.booking.new)}
-            >
-              New Booking
-            </Button>
-          }
           sx={{ mb: 3 }}
         />
-
-        <Card>
-          <Tabs
-            value={filters.bookingType}
-            onChange={handleTabChange}
-            sx={{
-              px: 2.5,
-              marginBottom: 4,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {bookingTypeOptions.map((tab) => (
-              <Tab key={tab.value} value={tab.value} label={tab.label} />
-            ))}
-          </Tabs>
-
-          {/* <BookingTableToolbar filters={filters} onFilters={handleFilters} /> */}
-
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={currentTableHeaders}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                />
-                <TableBody>
-                  {bookingsLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={currentTableHeaders.length}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData.map((row) => (
-                        <BookingTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                        />
-                      ))}
-                  {!bookingsLoading && !tableData.length && <TableNoData />}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </TableContainer>
-
-          {/* {bookingsLength > 0 && (
-            <TablePaginationCustom
-              count={bookingsLength}
-              page={table.page}
-              rowsPerPage={table.rowsPerPage}
-              onPageChange={table.onChangePage}
-              onRowsPerPageChange={table.onChangeRowsPerPage}
-              dense={table.dense}
-              onChangeDense={table.onChangeDense}
-            />
-          )} */}
-        </Card>
-      </Container>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete Bookings"
-        content={`Are you sure you want to delete ${table.selected.length} items?`}
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
+        <BookingDetailsComponent booking={selectedBooking} />
+      </>
+    );
+  }
+  return (
+    <Container maxWidth="xl">
+      <CustomBreadcrumbs
+        heading="Booking Orders List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Order', href: paths.dashboard.booking.list },
+          { name: 'List' },
+        ]}
+        sx={{ mb: 3 }}
       />
-    </>
+
+      <Card>
+        <Tabs
+          value={filters.bookingType}
+          onChange={handleTabChange}
+          sx={{
+            px: 2.5,
+            marginBottom: 4,
+            boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+            '& .MuiTabs-scroller': {
+              overflow: 'hidden',
+            },
+            '& .MuiTabs-scrollButtons': {
+              display: 'none',
+            },
+          }}
+        >
+          {bookingTypeOptions.map((tab) => {
+            const count = bookingCounts[tab.value] || 0;
+            const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
+            const textColor = tabTextColors[tab.value] || '#000';
+
+            return (
+              <Tab
+                key={tab.value}
+                value={tab.value}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '8px',
+                  borderRadius: '4px',
+                }}
+                label={
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>{tab.label}</span>
+                    <Typography
+                      sx={{
+                        backgroundColor: backgroundColor,
+                        display: 'inline-block',
+                        padding: '4px 9px',
+                        borderRadius: '4px',
+                        marginLeft: '8px',
+                        color: textColor,
+                      }}
+                    >
+                      {count}
+                    </Typography>
+                  </div>
+                }
+              />
+            );
+          })}
+        </Tabs>
+        <BookingTableToolbar
+          filters={filters}
+          onFilters={handleFilters}
+          vendorOptions={vendorOptions}
+        />
+        <Box display="flex" flexDirection="row" gap={1} marginBottom={4} marginLeft={2}>
+          {filters.paymentStatus && (
+            <Box display="flex" flexDirection="row" alignItems="center">
+              <Typography variant="body2">{`Payment Status: ${filters.paymentStatus}`}</Typography>
+              <IconButton size="small" onClick={handleClear('paymentStatus')}>
+                <Iconify icon="mdi:close" />
+              </IconButton>
+            </Box>
+          )}
+          {filters.vendor && (
+            <Box display="flex" alignItems="center">
+              <Typography variant="body2">{`Vendor: ${vendorOptions.find(
+                (v) => v.value === filters.vendor
+              )?.label}`}</Typography>
+              <IconButton size="small" onClick={handleClear('vendor')}>
+                <Iconify icon="mdi:close" />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableSelectedAction
+            dense={table.dense}
+            numSelected={table.selected.length}
+            rowCount={tableData.length}
+            onSelectAllRows={(checked) =>
+              table.onSelectAllRows(
+                checked,
+                tableData.map((row) => row.id)
+              )
+            }
+            action={
+              <Tooltip title="Delete">
+                <IconButton onClick={confirm.onTrue}>
+                  <Iconify icon="solar:trash-bin-trash-bold" />
+                </IconButton>
+              </Tooltip>
+            }
+          />
+
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={currentTableHeaders}
+                rowCount={tableData.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+              />
+              <TableBody>
+                {bookingsLoading &&
+                  Array.from(new Array(5)).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={currentTableHeaders.length}>
+                        <Skeleton animation="wave" height={40} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                {!bookingsLoading &&
+                  tableData.length > 0 &&
+                  tableData.map((row) => (
+                    <BookingTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => handleRowClick(row)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
+
+                {!bookingsLoading && tableData.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={currentTableHeaders.length} align="center">
+                      <Typography variant="h6" color="textSecondary">
+                        No data available
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </TableContainer>
+
+        <TablePaginationCustom
+          count={totalCount}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          dense={table.dense}
+          onChangeDense={table.onChangeDense}
+        />
+      </Card>
+    </Container>
   );
 }
