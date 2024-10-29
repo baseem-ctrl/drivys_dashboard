@@ -44,8 +44,7 @@ export default function BookingTableRow({
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
-  console.log('user', user);
-  console.log('driver', driver);
+
   return (
     <>
       <TableRow hover selected={selected}>

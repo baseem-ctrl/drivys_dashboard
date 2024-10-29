@@ -7,10 +7,11 @@ import { endpoints, drivysFetcher } from 'src/utils/axios';
 
 export function useGetBookings(filters = {}) {
   console.log('filters from api', filters);
-  const { search, driver_id, payment_status, limit, page } = filters;
+  const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
   if (driver_id) queryParams.append('driver_id', driver_id);
+  if (booking_type) queryParams.append('booking_type', booking_type);
   if (payment_status !== undefined) queryParams.append('booking_status', payment_status);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (page !== undefined) queryParams.append('page', page);

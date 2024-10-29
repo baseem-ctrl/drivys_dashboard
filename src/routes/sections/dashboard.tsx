@@ -19,6 +19,7 @@ import DialectListPage from 'src/pages/dashboard/dialect/dialect';
 import HomeListingDetailsPage from 'src/pages/dashboard/homelisting/details';
 import BookingListView from 'src/sections/booking/view/booking-list-view';
 import BookingDetailsPage from 'src/pages/dashboard/booking/booking';
+import BookingDetailsComponent from 'src/sections/booking/view/booking-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -206,7 +207,7 @@ const allroutes = [
     path: 'booking',
     children: [
       { element: <BookingListView />, index: true },
-      { path: 'list', element: <BookingDetailsPage /> },
+      { path: ':id', element: <BookingDetailsComponent /> },
       // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },

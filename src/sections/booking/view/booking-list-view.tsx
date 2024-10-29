@@ -99,8 +99,6 @@ export default function BookingListView() {
   const router = useRouter();
 
   const [tableData, setTableData] = useState([]);
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [showDetail, setShowDetail] = useState(false);
   const [filters, setFilters] = useState(defaultFilters);
   // const [bookingTypeOptions, setBookingTypeOptions] = useState([]);
   const confirm = useBoolean();
@@ -121,7 +119,7 @@ export default function BookingListView() {
   const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookings({
     page: table.page,
     limit: table.rowsPerPage,
-    // booking_type: filters.bookingType,
+    booking_type: filters.bookingType,
     // search: filters.customerName,
     payment_status: paymentStatusCode,
     driver_id: filters.vendor,
@@ -131,6 +129,32 @@ export default function BookingListView() {
     limit: 1000,
     user_types: 'TRAINER',
   });
+  const [bookingCounts, setBookingCounts] = useState({
+    all: 0,
+    pending: 0,
+    confirmed: 0,
+    cancelled: 0,
+  });
+
+  useEffect(() => {
+    if (bookings?.length > 0) {
+      const counts = bookings.reduce(
+        (acc, booking) => {
+          const status = booking.booking_status.toLowerCase();
+          acc.all += 1;
+
+          if (acc[status] !== undefined) {
+            acc[status] += 1;
+          }
+
+          return acc;
+        },
+        { all: 0, pending: 0, confirmed: 0, cancelled: 0 }
+      );
+
+      setBookingCounts(counts);
+    }
+  }, [bookings, filters.bookingType]);
 
   const vendorOptions = usersLoading
     ? [{ label: 'Loading...', value: '' }]
@@ -210,47 +234,18 @@ export default function BookingListView() {
     confirmed: '#4ca97e',
     cancelled: '#ce605b',
   };
-  const bookingCounts = bookingTypeOptions.reduce((acc, option) => {
-    acc[option.value] = bookings.filter(
-      (booking) => booking.booking_status === option.value.toUpperCase()
-    ).length;
-    return acc;
-  }, {});
+
   const handleRowClick = (row: any) => {
-    console.log('row', row);
-    setSelectedBooking(row);
-    setShowDetail(true);
+    router.push(paths.dashboard.booking.details(row?.id));
   };
-  if (showDetail) {
-    return (
-      <>
-        {' '}
-        <CustomBreadcrumbs
-          heading="Booking Orders List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            {
-              name: 'Order',
-              href: paths.dashboard.booking.list,
-              onClick: () => {
-                setShowDetail(false);
-              },
-            },
-            { name: 'List' },
-          ]}
-          sx={{ mb: 3 }}
-        />
-        <BookingDetailsComponent booking={selectedBooking} />
-      </>
-    );
-  }
+
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
         heading="Booking Orders List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Order', href: paths.dashboard.booking.list },
+          { name: 'Dashboard', href: paths.dashboard.booking.root },
+          { name: 'Order', href: paths.dashboard.booking.root },
           { name: 'List' },
         ]}
         sx={{ mb: 3 }}
