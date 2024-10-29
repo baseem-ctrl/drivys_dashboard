@@ -226,4 +226,9 @@ export const endpoints = {
     getList: 'admin/booking/get-bookings-list',
     getById: `admin/booking/get-booking-by-id`,
   },
+  packageTrainer: {
+    list: 'admin/package-trainer/get-trainer-packages',
+    delete: 'admin/package-trainer/delete-packge-trainer',
+    create: 'admin/package-trainer/create-packge-trainer',
+  },
 };

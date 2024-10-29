@@ -6,9 +6,8 @@ import { IOrderItem } from 'src/types/order';
 
 // ----------------------------------------------------------------------
 
-export function useGetPackagesDetailsByTrainer(trainerId: string |number) {
+export function useGetPackagesDetailsByTrainer(trainerId: string | number) {
   const URL = endpoints.trainer.getPackages + trainerId;
-
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });

@@ -81,7 +81,7 @@ export default function UserDetailsContent({
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  // const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
