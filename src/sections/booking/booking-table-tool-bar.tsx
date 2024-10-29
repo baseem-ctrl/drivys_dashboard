@@ -42,7 +42,7 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
       <TextField
         select
         variant="outlined"
-        label="Vendor"
+        label="Trainer"
         value={filters.vendor || ''}
         onChange={handleChange('vendor')}
         sx={{ flex: 1 }}
