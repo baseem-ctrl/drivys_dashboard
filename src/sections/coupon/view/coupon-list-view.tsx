@@ -12,6 +12,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import { Skeleton, TableCell, TableRow } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -20,7 +21,7 @@ import { RouterLink } from 'src/routes/components';
 import { _userList, _roles, USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-import { _discount_types, ACTIVE_OPTIONS } from "src/_mock"
+import { _discount_types, ACTIVE_OPTIONS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -40,7 +41,7 @@ import {
 } from 'src/components/table';
 // types
 import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
-import { ICouponFilter, ICouponItem } from "src/types/language"
+import { ICouponFilter, ICouponItem } from 'src/types/language';
 //
 import CouponTableRow from '../coupon-table-row';
 import UserTableToolbar from '../user-table-toolbar';
@@ -68,26 +69,23 @@ const TABLE_HEAD = [
   { id: 'limitation_times', label: 'Limitation times', width: 180 },
   { id: 'is_active', label: 'Is Active', width: 180 },
 
-
   { id: '', width: 88 },
 ];
-
 
 const defaultFilters: ICouponFilter = {
   name: '',
   discount_type_id: '',
   starting_date: null,
   ending_date: null,
-  is_active: 'all',
+  is_active: null,
   value: 0,
   id: '',
-
 };
 
 // ----------------------------------------------------------------------
 
 export default function CouponListView() {
-  const table = useTable();
+  const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
 
@@ -109,7 +107,6 @@ export default function CouponListView() {
 
   const discount_type_id_value = discountTypeMap[filters.discount_type_id] || null;
 
-
   const isActiveMap = {
     All: '',
     Active: '1',
@@ -117,29 +114,35 @@ export default function CouponListView() {
   };
 
   const is_active_value = isActiveMap[filters.is_active] || null;
+  // const dataFiltered = applyFilter({
+  //   inputData: tableData,
+  //   comparator: getComparator(table.order, table.orderBy),
+  //   filters,
+  // });
+  const formatDate = (date) => {
+    if (!date) return null;
 
+    const localDate = new Date(date);
 
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
+    return `${year}-${month}-${day}`;
+  };
+
+  // Usage
+
+  const { coupon, couponLoading, totalpages, revalidateCoupon, couponError } = useGetAllCoupon({
+    limit: table.rowsPerPage,
+    page: table.page + 1,
+    search: filters.name,
+    starting_date: filters?.starting_date ? formatDate(filters?.starting_date) : '',
+    ending_date: filters?.ending_date ? formatDate(filters?.ending_date) : '',
+    value: filters?.value,
+    discount_type_id: discount_type_id_value,
+    is_active: filters.is_active,
   });
-
-  const { coupon, couponLoading, totalpages, revalidateCoupon, couponError } =
-    useGetAllCoupon(
-      {
-        limit: table.rowsPerPage,
-        page: table.page + 1,
-        search: filters.name,
-        starting_date: filters?.starting_date?.toISOString()?.split('T')[0],
-        ending_date: filters?.ending_date?.toISOString()?.split('T')[0],
-        value: filters?.value,
-        discount_type_id: discount_type_id_value,
-        is_active: is_active_value
-      }
-
-    );
 
   useEffect(() => {
     if (coupon?.length) {
@@ -148,19 +151,18 @@ export default function CouponListView() {
       setTableData([]);
     }
   }, [coupon]);
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  // const dataInPage = dataFiltered.slice(
+  //   table.page * table.rowsPerPage,
+  //   table.page * table.rowsPerPage + table.rowsPerPage
+  // );
 
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  // const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const openFilters = useBoolean();
-
 
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
@@ -198,12 +200,11 @@ export default function CouponListView() {
       // Update the UI or state after successful deletion
       enqueueSnackbar(response?.message);
     } catch (error) {
-      console.log(error, "error");
+      console.log(error, 'error');
 
       enqueueSnackbar('error deleting coupon', { variant: 'error' });
     }
   };
-
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -226,12 +227,12 @@ export default function CouponListView() {
   const renderFilters = (
     <Stack
       spacing={3}
-      justifyContent="space-between"
+      justifyContent="flex-end"
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ paddingTop: 2, paddingLeft: 2 }}
     >
-      <CategorySearch query={filters.name} results={filters} onSearch={handleFilters} />
+      {/* <CategorySearch query={filters.name} results={filters} onSearch={handleFilters} /> */}
 
       <Stack direction="row" spacing={1} flexShrink={0}>
         <CouponFilters
@@ -246,14 +247,13 @@ export default function CouponListView() {
           onResetFilters={handleResetFilters}
           dateError={dateError}
           discountOptions={_discount_types}
-
-          activeOptions={['all', ...ACTIVE_OPTIONS.map((option) => option.label)]}
-        //
-        // locationOptions={countries}
-        // roleOptions={_roles}
-        // benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
-        // stockOptions={STOCK_OPTIONS}
-        // employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
+          activeOptions={[...ACTIVE_OPTIONS.map((option) => option.label)]}
+          //
+          // locationOptions={countries}
+          // roleOptions={_roles}
+          // benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
+          // stockOptions={STOCK_OPTIONS}
+          // employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
         />
       </Stack>
     </Stack>
@@ -309,7 +309,6 @@ export default function CouponListView() {
             {canReset && renderResults}
           </Stack>
 
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -339,45 +338,40 @@ export default function CouponListView() {
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(
-                //     checked,
-                //     tableData.map((row) => row.id)
-                //   )
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(
+                  //     checked,
+                  //     tableData.map((row) => row.id)
+                  //   )
+                  // }
                 />
-
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <CouponTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        reload={revalidateCoupon}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
+                  {couponLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData?.map((row) => (
+                        <CouponTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          reload={revalidateCoupon}
+                        />
+                      ))}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={totalpages}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -423,40 +417,40 @@ export default function CouponListView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: IUserItem[];
-  comparator: (a: any, b: any) => number;
-  filters: IUserTableFilters;
-}) {
-  const { name, status, role } = filters;
+// function applyFilter({
+//   inputData,
+//   comparator,
+//   filters,
+// }: {
+//   inputData: IUserItem[];
+//   comparator: (a: any, b: any) => number;
+//   filters: IUserTableFilters;
+// }) {
+//   const { name, status, role } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+//   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) return order;
+//     return a[1] - b[1];
+//   });
 
-  inputData = stabilizedThis.map((el) => el[0]);
+//   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
+//   if (name) {
+//     inputData = inputData.filter(
+//       (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+//     );
+//   }
 
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
+//   if (status !== 'all') {
+//     inputData = inputData.filter((user) => user.status === status);
+//   }
 
-  if (role?.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
-  }
+//   if (role?.length) {
+//     inputData = inputData.filter((user) => role.includes(user.role));
+//   }
 
-  return inputData;
-}
+//   return inputData;
+// }

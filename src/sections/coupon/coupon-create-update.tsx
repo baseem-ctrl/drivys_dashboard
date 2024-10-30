@@ -319,10 +319,9 @@ export default function CouponDialog({
                     </MenuItem>
                   ))}
                 </RHFSelect>
-                <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
 
                 <RHFTextField name="value" label={t('Discount Value')} />
-
+                <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
                 <RHFTextField
                   name="starting_date"
                   label={t('Start Date')}
