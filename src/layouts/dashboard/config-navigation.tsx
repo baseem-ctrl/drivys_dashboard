@@ -199,7 +199,13 @@ export function useNavData() {
       ],
     },
   ];
-  const schooladminRoutes: never[] = [];
+  const schooladminRoutes = [
+    {
+      title: t('My School'),
+      path: paths.dashboard.school.admin('admin'),
+      icon: ICONS.school,
+    },
+  ];
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
