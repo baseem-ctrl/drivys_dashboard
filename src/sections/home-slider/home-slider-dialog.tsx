@@ -39,7 +39,6 @@ interface Props {
   onReload: any;
 }
 
-
 export default function HomeSliderDialog({
   title = 'Upload Files',
   open,
@@ -61,27 +60,21 @@ export default function HomeSliderDialog({
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
-  const [trainers, setTrainer] = useState<any>([
-  ]);
+  const [trainers, setTrainer] = useState<any>([]);
 
-  const { language } =
-    useGetAllLanguage(0, 1000);
+  const { language } = useGetAllLanguage(0, 1000);
 
   // Fetch categories and products data
   const { category } = useGetAllCategory({ limit: 1000, page: 0 });
-  const { users } = useGetUsers(
-    {
-      page: 0,
-      limit: 1000,
-      user_types: "TRAINER",
-    }
-  );
-
+  const { users } = useGetUsers({
+    page: 0,
+    limit: 1000,
+    user_types: 'TRAINER',
+  });
 
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
 
   const today = moment().format('YYYY-MM-DD');
-
 
   // Validation schema
   const NewProductSchema = Yup.object().shape({
@@ -89,16 +82,14 @@ export default function HomeSliderDialog({
     display_order: Yup.string(),
     // type: Yup.string(),
     published: Yup.boolean(),
-    Category: Yup.array().nullable(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
     trainers: Yup.array().of(
       Yup.object().shape({
-        id: Yup.mixed().required("Trainer is required"), // Validate court add-on
-        display_order: Yup
-          .number()
+        id: Yup.mixed().required('Trainer is required'), // Validate court add-on
+        display_order: Yup.number()
           // .typeError("Number of Add Ons must be a number")
-          .required("Display order is required") // Validate the number of add-ons
+          .required('Display order is required'), // Validate the number of add-ons
       })
     ),
   });
@@ -112,35 +103,29 @@ export default function HomeSliderDialog({
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      Category:
-        updateValue?.categories?.map((category: any) => ({
-          label: category?.category_translations[0]?.name,
-          value: category?.id,
-        })) || [],
       // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
       //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
       //   display_order: trainer?.display_order || ''
       // })) : [],
-      trainers: users ? updateValue?.trainers?.map((trainer) => {
-        const user = users.find((option) => option.id === trainer?.trainer?.id);
-        return {
-          id: user ? { label: user?.name, value: user?.id } : '',
-          display_order: trainer.display_order || '',
-        };
-      }) : [],
+      trainers: users
+        ? updateValue?.trainers?.map((trainer) => {
+            const user = users.find((option) => option.id === trainer?.trainer?.id);
+            return {
+              id: user ? { label: user?.name, value: user?.id } : '',
+              display_order: trainer.display_order || '',
+            };
+          })
+        : [],
       //  updateValue?.trainers
       // Category: updateValue?.categories || [],
       // Product:
       //   updateValue?.products?.map((product: any) => product?.product_translations[0]?.name) || [],
-
     }),
     [updateValue, today, users]
   );
 
-
-
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
   });
 
@@ -156,7 +141,7 @@ export default function HomeSliderDialog({
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
-  })
+  });
 
   const mapOptions = (items: any[], translationKey: string) =>
     items?.map((item) => ({
@@ -170,14 +155,16 @@ export default function HomeSliderDialog({
       value: item.id,
     }));
 
-
   useEffect(() => {
     if (updateValue) {
       reset(defaultValues);
     }
-    console.log(updateValue?.pictures?.map((item: { picture_id: any; }) => item?.picture_id), "updateValue?.pictures");
+    console.log(
+      updateValue?.pictures?.map((item: { picture_id: any }) => item?.picture_id),
+      'updateValue?.pictures'
+    );
 
-    const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage
+    const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage;
 
     // setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
     setSelectedImageIds(
@@ -189,21 +176,17 @@ export default function HomeSliderDialog({
       updateValue?.pictures?.filter((item) => item?.locale === selectedLocale) // Filter for locale "en"
     );
 
-
     // selectedLanguage
-    setSelectedArrayIds(updateValue?.pictures)
+    setSelectedArrayIds(updateValue?.pictures);
 
-    setTrainer(updateValue?.trainers)
-
-
+    setTrainer(updateValue?.trainers);
   }, [updateValue, reset, defaultValues, selectedLanguage]);
 
   useEffect(() => {
     if (updateValue?.pictures) {
-      setSelectedLanguage(updateValue?.pictures[0]?.locale)
+      setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
-  }, [updateValue])
-
+  }, [updateValue]);
 
   // Populate category and product options when data is available
   useEffect(() => {
@@ -216,24 +199,14 @@ export default function HomeSliderDialog({
   // Function to add more pairs
   const handleAddMore = () => {
     append({ id: '', display_order: '' });
-    onReload()
+    onReload();
     // setTrainer([...trainers, { id: '', display_order: '' }]);
-
   };
 
   // Function to remove a pair
   const handleRemove = (index: number) => {
-    // Create a new array without the trainer at the specified index
-    // const updatedTrainers = trainers?.filter((_, i) => i !== index);
-
-    // // Update the state
-    // setTrainer(updatedTrainers);
-
-    // Remove the trainer from react-hook-form
     remove(index);
-
   };
-
 
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
@@ -242,18 +215,6 @@ export default function HomeSliderDialog({
       formData.append('slider_id', updateValue?.id);
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
-      // formData.append('type', selectedLanguage || '');
-
-      // Append category or product IDs based on the selected type
-      if (data.Category) {
-        data.Category.forEach((item: { value: string | Blob; }, index: any) =>
-          formData.append(`category_ids[${index}]`, item.value)
-        );
-      }
-      if (data.Product) {
-        data.Product.forEach((item: { value: string | Blob; }, index: any) => formData.append(`product_ids[${index}]`, item.value));
-      }
-
       formData.append('published', data.published ? '1' : '0');
       formData.append(
         'show_until',
@@ -267,21 +228,21 @@ export default function HomeSliderDialog({
       }
       if (selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
-          formData.append(`picture_ids[${index}][locale]`, selectedLanguage?.language_culture ?? selectedLanguage)
+          formData.append(
+            `picture_ids[${index}][locale]`,
+            selectedLanguage?.language_culture ?? selectedLanguage
+          )
         );
       }
 
-
       if (data?.trainers?.length > 0) {
         data?.trainers?.forEach((trainerItem, index) => {
-
           formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
 
           // Use nullish coalescing to handle cases where `value` might be 0
           formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
         });
       }
-
 
       // Send form data to API
       const response = await EditSlider(formData);
@@ -291,7 +252,14 @@ export default function HomeSliderDialog({
         onReload();
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error.errors) {
+        // Iterate over each error and enqueue them in the snackbar
+        Object.values(error.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   });
 
@@ -335,43 +303,12 @@ export default function HomeSliderDialog({
                   <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
                 )}
               </RHFSelect>
-
-
-              {/* <RHFSelect
-                name="type"
-                label="Type"
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-              >
-                {['Product', 'Category'].map((option, index) => (
-                  <MenuItem key={index} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </RHFSelect> */}
-
-              {/* {selectedLanguage === 'Product' ? (
-                <RHFMultiSelectAuto
-                  name="Product"
-                  label="Product"
-                  options={productOptions}
-                  defaultValue={defaultValues.Product}
-                />
-              ) : (
-                <RHFMultiSelectAuto
-                  name="Category"
-                  label="Category"
-                  options={categoryOptions}
-                  defaultValue={defaultValues.Category}
-                />
-              )} */}
-              <RHFMultiSelectAuto
+              {/* <RHFMultiSelectAuto
                 name="Category"
                 label="Category"
                 options={categoryOptions}
                 defaultValue={defaultValues.Category}
-              />
-
+              /> */}
 
               <RHFTextField
                 name="show_until"
@@ -385,7 +322,7 @@ export default function HomeSliderDialog({
             <h5>Trainers:</h5>
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
-                <Grid item xs={12} md={5} >
+                <Grid item xs={12} md={5}>
                   <RHFAutocomplete
                     name={`trainers[${index}].id`} // Dynamic name for react-hook-form
                     label={`Trainer ${index + 1}`}
@@ -395,18 +332,18 @@ export default function HomeSliderDialog({
                     options={userOptions}
                     renderOption={(props, option: any) => (
                       <li {...props} key={option?.value}>
-                        {option?.label ?? "Unknown"}
+                        {option?.label ?? 'Unknown'}
                       </li>
                     )}
                   />
                 </Grid>
 
                 {/* Value Field */}
-                <Grid item xs={12} md={5} >
-                  <RHFTextField name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1} display order`} />
-
-
+                <Grid item xs={12} md={5}>
+                  <RHFTextField
+                    name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
+                    label={`Trainer ${index + 1} display order`}
+                  />
                 </Grid>
 
                 {/* Delete Button */}
@@ -423,7 +360,7 @@ export default function HomeSliderDialog({
               </Button>
             </Grid>
             <h5>Images:</h5>
-            <Box >
+            <Box>
               {/* Button to open the image selection dialog */}
               <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
                 Select Images
@@ -450,7 +387,7 @@ export default function HomeSliderDialog({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => { }}
+            apiCall={() => {}}
             isSubmitting={isSubmitting}
           />
         </FormProvider>
