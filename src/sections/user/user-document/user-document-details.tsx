@@ -42,6 +42,8 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [docID, setDocID] = useState<number | null>(null);
+  const [isApproved, setIsApproved] = useState(false);
+
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   //   console.log('documents', documents[0]);
@@ -98,6 +100,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const handleFileClick = (file) => {
     window.open(file, '_blank'); // Open file in a new tab
   };
+  console.log('documentssss', documents);
   useEffect(() => {
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
@@ -107,6 +110,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       setValue('file', document.file || '');
       setValue('session', document.session_no || '');
       setValue('file', document.file || '');
+      setIsApproved(document.is_approved === '0' ? false : true);
       // setFilePreviewURL(document.file || '');
     }
   }, [documents, editMode]);
@@ -133,31 +137,36 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   }
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
+      console.log('formData', formData);
+      console.log('documentdata', document);
       const updatedDocument = new FormData();
       // if (filePreviewURL) {
       //   updatedDocument.append('file', filePreviewURL);
       // }
+      console.log('document.doc_id', document.doc_id);
       console.log('formData', formData);
       updatedDocument.append('user_id', id);
       updatedDocument.append('doc_type', formData.doc_type || document.doc_type);
       updatedDocument.append('doc_side', formData.doc_side || document.doc_side);
       updatedDocument.append('doc_file', formData.doc_file || document.doc_file);
       updatedDocument.append('expiry', formData.expiry || document.expiry);
+      updatedDocument.append('is_approved', formData.is_approved || isApproved);
+      updatedDocument.append('doc_id', document.id);
 
       // Now pass this `updatedDocument` to the API
       const response = await createUserDocument(updatedDocument);
 
-      // if (response) {
-      //   enqueueSnackbar('Document updated successfully!', { variant: 'success' });
-      // } else {
-      //   enqueueSnackbar('Failed to update document!', { variant: 'error' });
-      // }
+      if (response) {
+        enqueueSnackbar('Document updated successfully!', { variant: 'success' });
+      } else {
+        enqueueSnackbar('Failed to update document!', { variant: 'error' });
+      }
     } catch (error: any) {
       enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
     } finally {
-      // setSelectedImage(null);
-      // setEditMode(null);
-      // reload();
+      setSelectedImage(null);
+      setEditMode(null);
+      reload();
     }
   };
 
@@ -199,6 +208,9 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     setDocID(docId);
   };
 
+  const handleSwitchChange = (event) => {
+    setIsApproved(event.target.checked);
+  };
   // Handle menu close
   const handleClose = () => {
     setAnchorEl(null);
@@ -406,7 +418,9 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                 onClick={() => handleOpenFile(doc.doc_file)}
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
                               >
-                                {doc.doc_file.slice(0, 8)}...${doc.doc_file.slice(-6) ?? 'N/A'}
+                                {doc?.doc_file
+                                  ? `${doc.doc_file.slice(0, 8)}...${doc.doc_file.slice(-6)}`
+                                  : 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -570,6 +584,11 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                 sx={{ width: '100%' }}
                               />
                             )}
+                          />
+                          <Switch
+                            checked={isApproved}
+                            color="primary"
+                            onChange={handleSwitchChange}
                           />
                         </Stack>
                         <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
