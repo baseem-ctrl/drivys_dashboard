@@ -152,11 +152,11 @@ export function useNavData() {
 
     // to do
 
-    // {
-    //   title: t('coupon'),
-    //   path: paths.dashboard.coupon.root,
-    //   icon: ICONS.file,
-    // },
+    {
+      title: t('coupon'),
+      path: paths.dashboard.coupon.root,
+      icon: ICONS.file,
+    },
     {
       title: t('slider'),
       path: paths.dashboard.slider.root,
