@@ -11,7 +11,13 @@ import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 // import { AddCoupon, EditCoupon } from 'src/api/coupon';
-import FormProvider, { RHFAutocomplete, RHFMultiSelectAuto, RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import FormProvider, {
+  RHFAutocomplete,
+  RHFMultiSelectAuto,
+  RHFSelect,
+  RHFSwitch,
+  RHFTextField,
+} from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import * as Yup from 'yup';
 import MenuItem from '@mui/material/MenuItem';
@@ -27,7 +33,11 @@ interface Props extends DialogProps {
   updateValue?: any;
 }
 
-const discountTypeOptions = [{ label: 'ALL', value: '0' }, { label: 'PRODUCT', value: '1' }, { label: 'CATEGORY', value: '2' }]
+const discountTypeOptions = [
+  { label: 'ALL', value: '0' },
+  { label: 'PRODUCT', value: '1' },
+  { label: 'CATEGORY', value: '2' },
+];
 export default function CouponDialog({
   title = 'Upload Files',
   open,
@@ -37,18 +47,13 @@ export default function CouponDialog({
   updateValue,
   ...other
 }: Props) {
-
   const { t } = useTranslation();
 
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
 
   const { category } = useGetAllCategory(0, 1000);
-  const {
-    products,
-  } = useGetProducts({ page: 0, limit: 1000 });
-
-
+  const { products } = useGetProducts({ page: 0, limit: 1000 });
 
   const getValidationSchema = () => {
     return Yup.object().shape({
@@ -94,14 +99,16 @@ export default function CouponDialog({
           return true;
         },
       }),
-      limitation_times: Yup.number().required(t('Limitation Times is required')).positive(t('Limitation Times must be greater than 0')),
+      limitation_times: Yup.number()
+        .required(t('Limitation Times is required'))
+        .positive(t('Limitation Times must be greater than 0')),
       use_percentage: Yup.boolean(),
       is_active: Yup.boolean().nullable(),
       starting_date: Yup.date().required(t('starting_date is required')),
       ending_date: Yup.date().required(t('ending_date is required')),
       discount_type_id: Yup.string().required(t('Is required')),
       Category: Yup.mixed().nullable(),
-      Product: Yup.mixed().nullable()
+      Product: Yup.mixed().nullable(),
     });
   };
 
@@ -122,20 +129,16 @@ export default function CouponDialog({
   // };
 
   const mapOptions = (items: any[], options: any[]) => {
-    return (
-      items?.map((item) => {
-        // Find the corresponding option in the provided options array
-        const foundOption = options?.find((option) => option.value === item.id);
+    return items?.map((item) => {
+      // Find the corresponding option in the provided options array
+      const foundOption = options?.find((option) => option.value === item.id);
 
-        return {
-          label: foundOption?.label,
-          value: item.id
-        };
-      })
-    );
+      return {
+        label: foundOption?.label,
+        value: item.id,
+      };
+    });
   };
-
-
 
   const defaultValues = useMemo(
     () => ({
@@ -143,8 +146,8 @@ export default function CouponDialog({
       coupon_code: updateValue?.coupon_code || '',
       limitation_times: updateValue?.limitation_times || '',
       value: updateValue?.value || '',
-      use_percentage: updateValue?.use_percentage === "1" ? true : false,
-      is_active: updateValue?.is_active === "1" ? true : false,
+      use_percentage: updateValue?.use_percentage === '1' ? true : false,
+      is_active: updateValue?.is_active === '1' ? true : false,
       discount_type_id: updateValue?.discount_type_id || '',
       starting_date:
         moment(updateValue?.starting_date).format('YYYY-MM-DD') ||
@@ -154,7 +157,15 @@ export default function CouponDialog({
       Category: mapOptions(updateValue?.categories, categoryOptions),
       Product: mapOptions(updateValue?.products, productOptions),
     }),
-    [updateValue?.name, updateValue?.use_percentage, updateValue?.is_active, updateValue?.value, updateValue?.discount_type_id, updateValue, categoryOptions]
+    [
+      updateValue?.name,
+      updateValue?.use_percentage,
+      updateValue?.is_active,
+      updateValue?.value,
+      updateValue?.discount_type_id,
+      updateValue,
+      categoryOptions,
+    ]
   );
 
   const methods = useForm({
@@ -202,17 +213,12 @@ export default function CouponDialog({
   useOptionsEffect(products, 'product_translations', setProductOptions);
 
   // useOptionsEffect(productOptions, setProductOptions);
-
-
+  console.log('hagshag');
   useEffect(() => {
     if (updateValue) {
-      reset(defaultValues);
+      // reset(defaultValues);
     }
-
-
   }, [updateValue?.name, defaultValues, reset, categoryOptions]);
-
-
 
   const { formState } = methods;
   const { enqueueSnackbar } = useSnackbar();
@@ -226,18 +232,18 @@ export default function CouponDialog({
     }
 
     try {
-
       const formData = new FormData();
       formData.append('name', data.name || '');
       formData.append('coupon_code', data.coupon_code || '');
       formData.append('value', data.value);
       formData.append('limitation_times', data.limitation_times || '');
+
       data.Category.map((item: any, index: number) =>
         formData.append(`category_ids[${index}]`, item.value)
       );
-      data.Product.map((item: any, index: number) =>
-        formData.append(`product_ids[${index}]`, item.value)
-      );
+      // data.Product.map((item: any, index: number) =>
+      //   formData.append(`product_ids[${index}]`, item.value)
+      // );
       formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
       formData.append('is_active', data.is_active === true ? 1 : 0);
 
@@ -251,11 +257,10 @@ export default function CouponDialog({
         data.ending_date ? moment(data.ending_date).format('YYYY-MM-DD') : ''
       );
       if (updateValue?.id) {
-        formData.append("discount_id", updateValue?.id)
+        formData.append('discount_id', updateValue?.id);
       }
 
-      const response = await createUpdateCoupon(formData)
-
+      const response = await createUpdateCoupon(formData);
       if (response) {
         reset();
         enqueueSnackbar(response.message ?? 'coupon created successfully', {
@@ -307,11 +312,7 @@ export default function CouponDialog({
               <>
                 <RHFTextField name="coupon_code" label={t('Coupon Code')} />
                 <RHFTextField name="limitation_times" label={t('Limitation Times')} />
-                <RHFSelect
-                  name="discount_type_id"
-                  label={t('Discount type')}
-                  multiline
-                >
+                <RHFSelect name="discount_type_id" label={t('Discount type')} multiline>
                   {discountTypeOptions?.map((option: any) => (
                     <MenuItem key={option.value} value={option?.value}>
                       {option?.label}
@@ -336,19 +337,26 @@ export default function CouponDialog({
                   // setSearchTerm={setSearchTermCategory}
                   defaultValue={defaultValues.Category}
                 />
-                <RHFMultiSelectAuto
+                {/* <RHFMultiSelectAuto
                   name="Product"
                   label="Product"
                   options={productOptions}
                   // setSearchTerm={setSearchTermCategory}
                   defaultValue={defaultValues.Product}
-                />
+                /> */}
                 <RHFSwitch name="is_active" label={t('Is active')} />
-
               </>
-
             </Box>
-            <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              spacing={2}
+              sx={{ mt: 3, mb: 3 }}
+            >
+              <LoadingButton variant="contained" onClick={onClose}>
+                {t('Cancel')}
+              </LoadingButton>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {updateValue?.name ? t('Save') : t('Create')}
               </LoadingButton>
