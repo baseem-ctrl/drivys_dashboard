@@ -40,7 +40,20 @@ export default function LanguageTableRow({
   onDeleteRow,
   reload,
 }: Props) {
-  const { name, coupon_code, discount_type_id, use_percentage, value, starting_date, ending_date, limitation_times, is_active, products, categories, id } = row;
+  const {
+    name,
+    coupon_code,
+    discount_type_id,
+    use_percentage,
+    value,
+    starting_date,
+    ending_date,
+    limitation_times,
+    is_active,
+    products,
+    categories,
+    id,
+  } = row;
 
   const confirm = useBoolean();
 
@@ -48,9 +61,8 @@ export default function LanguageTableRow({
 
   const popover = usePopover();
 
-  const discount_type_text = discount_type_id === '0' ? "All" : discount_type_id === '1' ? "Product" : "Category"
-
-
+  const discount_type_text =
+    discount_type_id === '0' ? 'All' : discount_type_id === '1' ? 'Product' : 'Category';
 
   return (
     <>
@@ -61,17 +73,20 @@ export default function LanguageTableRow({
 
         <TableCell>
           {name}
-          <Label sx={{ mb: 1, mt: 1 }} variant="soft" color="primary">
+          {/* <Label sx={{ mb: 1, mt: 1 }} variant="soft" color="primary">
             linked to  {products?.length} products
-          </Label>
-          <Label variant="soft" color="primary">
-            linked to  {categories?.length} categories
+          </Label> */}
+          <Label variant="soft" color="info">
+            linked to {categories?.length} categories
           </Label>
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{coupon_code}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{discount_type_text}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{value}{use_percentage === "1" ? " %" : " AED"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {value}
+          {use_percentage === '1' ? ' %' : ' AED'}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{limitation_times}</TableCell>
@@ -80,7 +95,6 @@ export default function LanguageTableRow({
             {is_active === '1' ? 'Active' : 'In Active'}
           </Label>
         </TableCell>
-
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
