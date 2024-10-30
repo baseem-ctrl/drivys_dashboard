@@ -199,8 +199,13 @@ export function useNavData() {
       ],
     },
   ];
-  const schooladminRoutes: never[] = [];
-
+  const schooladminRoutes = [
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
+    },
+  ];
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
     switch (userType) {

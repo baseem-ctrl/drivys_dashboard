@@ -225,5 +225,9 @@ export const endpoints = {
   booking: {
     getList: 'admin/booking/get-bookings-list',
     getById: `admin/booking/get-booking-by-id`,
+    schoolAdmin: {
+      getList: 'admin/booking/get-bookings-list',
+      getById: `admin/booking/get-booking-by-id`,
+    },
   },
 };

@@ -20,6 +20,8 @@ import HomeListingDetailsPage from 'src/pages/dashboard/homelisting/details';
 import BookingListView from 'src/sections/booking/view/booking-list-view';
 import BookingDetailsPage from 'src/pages/dashboard/booking/booking';
 import BookingDetailsComponent from 'src/sections/booking/view/booking-details-view';
+import BookingSchoolAdminListView from 'src/sections/bookin-school-admin/view/booking-list-view';
+import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin/view/booking-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -222,6 +224,14 @@ const schooladminRoutes = [
     children: [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
+  {
+    path: 'booking',
+    children: [
+      { element: <BookingSchoolAdminListView />, index: true },
+      { path: ':id', element: <BookingSchoolAdminDetailsComponent /> },
+      // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },
 ];
