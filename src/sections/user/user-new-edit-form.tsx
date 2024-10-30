@@ -67,7 +67,12 @@ const fluencyOptions = [
   { name: 'NATIVE', value: 'NATIVE' },
 ];
 
-export default function UserNewEditForm({ currentUser, detailsLoading, id, revalidateDetails }: Props) {
+export default function UserNewEditForm({
+  currentUser,
+  detailsLoading,
+  id,
+  revalidateDetails,
+}: Props) {
   // const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   // const currentUser = currentUser ?? "";
   const router = useRouter();
@@ -143,7 +148,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
     ),
   });
 
-
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -160,27 +164,27 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
       languages: dialect
         ? currentUser?.languages?.map((lang) => ({
-          id:
-            dialect?.length > 0
-              ? dialect?.find((option) => option?.id === lang?.dialect?.id)
-              : '',
-          fluency_level: lang?.fluency_level || '',
-        }))
+            id:
+              dialect?.length > 0
+                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+                : '',
+            fluency_level: lang?.fluency_level || '',
+          }))
         : [],
       gear:
         gearData?.length > 0
           ? gearData?.find(
-            (option) =>
-              option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
-          )?.value
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
+            )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
       gender:
         genderData?.length > 0
           ? genderData?.find(
-            (option) =>
-              option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
-          )?.value
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
+            )?.value
           : '',
       city_id: currentUser?.user_preference?.city_id || '',
     }),
@@ -234,7 +238,7 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      if (data?.gear) body.append('gear', data?.gear);
+      body.append('gear', data?.gear);
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
@@ -283,7 +287,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
         response = await createUser(body);
       }
       if (response) {
-
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         if (currentUser?.id) {
           revalidateDetails();
