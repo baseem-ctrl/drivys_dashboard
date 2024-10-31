@@ -100,44 +100,46 @@ const BookingDetailsComponent = () => {
         </div>
 
         {/* Payment Status Select */}
-        <FormControl
-          variant="outlined"
-          size="small"
-          sx={{
-            minWidth: 190,
-            backgroundColor: '#eeeeef',
-            '& .MuiInputBase-root': {
-              color: 'black',
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'black',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'black',
-            },
-          }}
-        >
-          <Select
-            value={paymentStatus}
-            onChange={handlePaymentStatusChange}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Payment Status' }}
+        {value === 1 && (
+          <FormControl
+            variant="outlined"
+            size="small"
             sx={{
-              '&:focus': {
-                backgroundColor: '#eeeeef',
+              minWidth: 190,
+              backgroundColor: '#eeeeef',
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black',
               },
             }}
           >
-            <MenuItem value="" disabled>
-              Select Payment Status
-            </MenuItem>
-            {paymentStatusOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            <Select
+              value={paymentStatus}
+              onChange={handlePaymentStatusChange}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Payment Status' }}
+              sx={{
+                '&:focus': {
+                  backgroundColor: '#eeeeef',
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select Payment Status
               </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+              {paymentStatusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </Grid>
 
       <Grid item xs={12}>
