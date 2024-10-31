@@ -227,12 +227,12 @@ export default function CouponListView() {
   const renderFilters = (
     <Stack
       spacing={3}
-      justifyContent="flex-end"
+      justifyContent="space-between"
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ paddingTop: 2, paddingLeft: 2 }}
     >
-      {/* <CategorySearch query={filters.name} results={filters} onSearch={handleFilters} /> */}
+      <CategorySearch query={filters.name} results={filters} onSearch={handleFilters} />
 
       <Stack direction="row" spacing={1} flexShrink={0}>
         <CouponFilters
