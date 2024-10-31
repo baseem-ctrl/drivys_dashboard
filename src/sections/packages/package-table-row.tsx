@@ -69,7 +69,6 @@ export default function PackageTableRow({
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
 
-
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const handleEditClick = () => {
@@ -147,8 +146,6 @@ export default function PackageTableRow({
       setValue('name', '');
     }
   };
-
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
@@ -156,7 +153,9 @@ export default function PackageTableRow({
           {
             name: data?.name || package_translations?.name,
             locale: selectedLanguage || package_translations?.locale,
-            session_inclusions: selectedLocaleObject?.session_inclusions,
+            session_inclusions:
+              selectedLocaleObject?.session_inclusions ||
+              package_translations[0]?.session_inclusions,
           },
         ],
         contact_email: data?.email || email,
@@ -165,10 +164,8 @@ export default function PackageTableRow({
         vendor_id: data?.vendor_id || vendor?.vendor_user?.vendor_id,
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
-        package_id: row?.id
-
+        package_id: row?.id,
       };
-
       const response = await createUpdatePackage(payload);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -273,8 +270,6 @@ export default function PackageTableRow({
           )}
         </TableCell>
 
-
-
         <TableCell>
           {editingRowId === row.id ? (
             <Controller
@@ -297,7 +292,9 @@ export default function PackageTableRow({
             <Label
               variant="soft"
               color={
-                (is_published === '1' && 'success') || (is_published === '0' && 'error') || 'default'
+                (is_published === '1' && 'success') ||
+                (is_published === '0' && 'error') ||
+                'default'
               }
             >
               {is_published === '0' ? 'Un Published' : 'Published'}
@@ -313,7 +310,9 @@ export default function PackageTableRow({
                 <Select {...field} value={field?.value || ''}>
                   {schoolList.map((option: any) => (
                     <MenuItem key={option.id} value={option.id}>
-                      {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                      {option?.vendor_translations.find(
+                        (item) => item?.locale?.toLowerCase() === 'en'
+                      )?.name || 'Unknown'}
                     </MenuItem>
                   ))}
                 </Select>
@@ -321,7 +320,10 @@ export default function PackageTableRow({
             />
           ) : (
             <ListItemText
-              primary={vendor?.vendor_translations?.find(item => item?.locale?.toLowerCase() === "en")?.name ?? 'NA'}
+              primary={
+                vendor?.vendor_translations?.find((item) => item?.locale?.toLowerCase() === 'en')
+                  ?.name ?? 'NA'
+              }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
                 component: 'span',
