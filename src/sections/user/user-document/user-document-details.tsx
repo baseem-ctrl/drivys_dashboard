@@ -145,18 +145,30 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       // }
       console.log('document.doc_id', document.doc_id);
       console.log('formData', formData);
-      updatedDocument.append('user_id', id);
-      updatedDocument.append('doc_type', formData.doc_type || document.doc_type);
-      updatedDocument.append('doc_side', formData.doc_side || document.doc_side);
-      updatedDocument.append('doc_file', formData.doc_file || document.doc_file);
-      updatedDocument.append('expiry', formData.expiry || document.expiry);
-      updatedDocument.append('is_approved', formData.is_approved || isApproved);
+      // updatedDocument.append('user_id', id);
+      if (formData.doc_type) {
+        updatedDocument.append('doc_type', formData.doc_type);
+      }
+      if (formData.doc_side) {
+        updatedDocument.append('doc_side', formData.doc_side);
+      }
+      if (formData.doc_file) {
+        updatedDocument.append('doc_file', formData.doc_file);
+      }
+      if (formData.expiry) {
+        updatedDocument.append('expiry', formData.expiry);
+      }
+      const is_approved = isApproved ? 1 : 0;
+
+      updatedDocument.append('is_approved', is_approved);
+
       updatedDocument.append('doc_id', document.id);
 
       // Now pass this `updatedDocument` to the API
       const response = await createUserDocument(updatedDocument);
 
       if (response) {
+        reload();
         enqueueSnackbar('Document updated successfully!', { variant: 'success' });
       } else {
         enqueueSnackbar('Failed to update document!', { variant: 'error' });
@@ -169,7 +181,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       reload();
     }
   };
-
+  console.log('isApproved', isApproved);
   // Handle delete document
   const handleDelete = async (id: number) => {
     setAnchorEl(null);
@@ -500,7 +512,11 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               :
                             </Typography>
                             <Stack direction="row" alignItems="center">
-                              <Switch checked={doc.is_approved === 1} color="primary" />
+                              <Switch
+                                checked={doc.is_approved === '1'}
+                                color="primary"
+                                name="is_approved"
+                              />
                             </Stack>
                           </Box>
                         </Stack>
