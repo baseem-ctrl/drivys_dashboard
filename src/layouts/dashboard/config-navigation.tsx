@@ -46,6 +46,8 @@ const ICONS = {
   language: icon('ic_setting'),
   delivery: icon('ic_delivery'),
   school: icon('ic_school'),
+
+  package: icon('ic_package'),
 };
 
 // ----------------------------------------------------------------------
@@ -142,7 +144,7 @@ export function useNavData() {
     {
       title: t('package'),
       path: paths.dashboard.package.root,
-      icon: ICONS.booking,
+      icon: ICONS.blank,
       // children: [
       //   { title: t('list'), path: paths.dashboard.school.root }
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
