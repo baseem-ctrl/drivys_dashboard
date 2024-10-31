@@ -90,23 +90,19 @@ export default function CouponFilters({
     (newValue: Date | null) => {
       if (newValue) {
         onFilters('starting_date', newValue);
-        console.log(formattedDate, 'formattedDate');
       }
-
-
     },
     [onFilters]
   );
 
   const handleFilterDiscount = useCallback(
     (newValue: Date | null) => {
-      console.log(newValue, "discount_type_id");
+      console.log(newValue, 'discount_type_id');
 
       onFilters('discount_type_id', newValue);
     },
     [onFilters]
   );
-
 
   const handleFilterEndDate = useCallback(
     (newValue: Date | null) => {
@@ -115,16 +111,21 @@ export default function CouponFilters({
     [onFilters]
   );
 
-
   const handleFilterActive = useCallback(
     (newValue: string) => {
-      console.log(newValue, "BBBBBBB");
+      let isActiveFilterValue;
 
-      onFilters('is_active', newValue);
+      if (newValue === 'Show All Active') {
+        isActiveFilterValue = '1';
+      } else if (newValue === 'Show All Inactive') {
+        isActiveFilterValue = '0';
+      } else {
+        isActiveFilterValue = '';
+      }
+      onFilters('is_active', isActiveFilterValue);
     },
     [onFilters]
   );
-
 
   const renderHead = (
     <Stack
@@ -184,7 +185,7 @@ export default function CouponFilters({
   );
 
   const renderIsActive = (
-    <Stack >
+    <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 2 }}>
         Status
       </Typography>
@@ -193,13 +194,17 @@ export default function CouponFilters({
           key={option}
           control={
             <Radio
-              checked={option === filters.is_active}
+              checked={
+                (option === 'all' && filters.is_active === '') ||
+                (option === 'Show All Active' && filters.is_active === '1') ||
+                (option === 'Show All Inactive' && filters.is_active === '0')
+              }
               onClick={() => handleFilterActive(option)}
             />
           }
           label={option}
           sx={{
-            ...(option === 'all' && {
+            ...(option === 'Show All' && {
               textTransform: 'capitalize',
             }),
           }}
@@ -225,7 +230,13 @@ export default function CouponFilters({
       <Typography variant="subtitle2">Range</Typography>
 
       <Stack spacing={2}>
-        <DatePicker label="Start date" value={filters.starting_date} onChange={handleFilterStartDate} />
+        <DatePicker
+          label="Start date"
+          value={filters.starting_date}
+          onChange={(newValue) => {
+            handleFilterStartDate(newValue);
+          }}
+        />
 
         <DatePicker
           label="End date"
@@ -279,7 +290,6 @@ export default function CouponFilters({
             {renderDiscountType}
             {renderIsActive}
           </Stack>
-
         </Scrollbar>
       </Drawer>
     </>
@@ -296,8 +306,6 @@ type InputRangeProps = {
 };
 
 function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
-
-
   const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
     onFilters(filterName, value); // Call the function with max value

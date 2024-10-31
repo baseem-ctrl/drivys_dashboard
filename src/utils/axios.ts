@@ -185,6 +185,13 @@ export const endpoints = {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
     getStudents: 'admin/student/get-student-list',
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
+    workingHours: {
+      createUpdate: 'admin/trainer-working-hours/create-update',
+      deleteById: 'admin/trainer-working-hours/delete-by-id',
+      getList: 'admin/trainer-working-hours/get-by-user-id',
+      getByUserId: 'admin/trainer-working-hours/get-by-user-id',
+    },
+    noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {
     list: 'admin/slider/get-slider-list',
@@ -222,5 +229,14 @@ export const endpoints = {
     getById: 'admin/package-doc/get-doc',
     deleteById: 'admin/package-doc/delete-doc',
     deleteAllByPackageId: 'admin/package-doc/delete-package-docs',
+  },
+  booking: {
+    getList: 'admin/booking/get-bookings-list',
+    getById: `admin/booking/get-booking-by-id`,
+  },
+  packageTrainer: {
+    list: 'admin/package-trainer/get-trainer-packages',
+    delete: 'admin/package-trainer/delete-packge-trainer',
+    create: 'admin/package-trainer/create-packge-trainer',
   },
 };

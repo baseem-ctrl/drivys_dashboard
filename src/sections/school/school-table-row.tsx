@@ -331,10 +331,10 @@ export default function SchoolTableRow({
                 </Select>
               )}
             />
-          ) : (
+          ) : (status ?
             <Label variant="outlined" color={'default'}>
               {status}
-            </Label>
+            </Label> : "N/A"
           )}
         </TableCell>
         <TableCell>

@@ -59,7 +59,7 @@ export default function DialectCreateEditForm({
     ),
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, reset, } = methods;
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -83,6 +83,7 @@ export default function DialectCreateEditForm({
         enqueueSnackbar(response.message);
         reload(); // Refresh or reload data
         onClose(); // Close the form
+        reset();
       }
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' });

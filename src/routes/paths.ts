@@ -183,6 +183,12 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/slider/new`,
       list: `${ROOTS.DASHBOARD}/home-slider/list`,
     },
+    booking: {
+      root: `${ROOTS.DASHBOARD}/booking`,
+      new: `${ROOTS.DASHBOARD}/booking/new`,
+      // list: `${ROOTS.DASHBOARD}/booking/list`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/booking/${id}`,
+    },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,

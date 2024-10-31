@@ -46,6 +46,8 @@ const ICONS = {
   language: icon('ic_setting'),
   delivery: icon('ic_delivery'),
   school: icon('ic_school'),
+
+  package: icon('ic_package'),
 };
 
 // ----------------------------------------------------------------------
@@ -87,18 +89,17 @@ export function useNavData() {
     //   ],
     // },
 
-    // BLOG
-    // {
-    //   title: t('blog'),
-    //   path: paths.dashboard.post.root,
-    //   icon: ICONS.blog,
-    //   children: [
-    //     { title: t('list'), path: paths.dashboard.post.root },
-    //     { title: t('details'), path: paths.dashboard.post.demo.details },
-    //     { title: t('create'), path: paths.dashboard.post.new },
-    //     { title: t('edit'), path: paths.dashboard.post.demo.edit },
-    //   ],
-    // },
+    // BOOKING
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
+      // children: [
+      //   { title: t('booking'), path: paths.dashboard.booking.root },
+      //   { title: t('list'), path: paths.dashboard.booking.list },
+      //   { title: t('create'), path: paths.dashboard.booking.new },
+      // ],
+    },
 
     // JOB
     // {
@@ -143,7 +144,7 @@ export function useNavData() {
     {
       title: t('package'),
       path: paths.dashboard.package.root,
-      icon: ICONS.booking,
+      icon: ICONS.blank,
       // children: [
       //   { title: t('list'), path: paths.dashboard.school.root }
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
@@ -153,11 +154,11 @@ export function useNavData() {
 
     // to do
 
-    // {
-    //   title: t('coupon'),
-    //   path: paths.dashboard.coupon.root,
-    //   icon: ICONS.file,
-    // },
+    {
+      title: t('coupon'),
+      path: paths.dashboard.coupon.root,
+      icon: ICONS.file,
+    },
     {
       title: t('slider'),
       path: paths.dashboard.slider.root,
@@ -200,7 +201,13 @@ export function useNavData() {
       ],
     },
   ];
-  const schooladminRoutes: never[] = [];
+  const schooladminRoutes = [
+    {
+      title: t('My School'),
+      path: paths.dashboard.school.admin('admin'),
+      icon: ICONS.school,
+    },
+  ];
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {

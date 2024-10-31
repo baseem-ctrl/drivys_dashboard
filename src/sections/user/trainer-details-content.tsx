@@ -1,13 +1,32 @@
 // @mui
 import Chip from '@mui/material/Chip';
-import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Label from 'src/components/label';
+import LoadingButton from '@mui/lab/LoadingButton';
+
+import {
+  Card,
+  Typography,
+  Box,
+  Button,
+  Grid,
+  Stack,
+  IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  CircularProgress,
+  Select,
+  Switch,
+  TextField,
+} from '@mui/material';
 
 import ListItemText from '@mui/material/ListItemText';
 // utils
@@ -18,17 +37,6 @@ import { IJobItem } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  Switch,
-  TextField,
-} from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -46,6 +54,8 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import { useGetPackagesDetailsByTrainer } from 'src/api/trainer';
 import Divider from '@mui/material/Divider';
+import { createPackageTrainer, deletePackageTrainerById } from 'src/api/package-trainer';
+import TrainerPackageCreateEditForm from './trainer-package-create-edit-form';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -54,7 +64,14 @@ type Props = {
 
 export default function TrainerDetailsContent({ id }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(id);
-  1;
+  const quickEdit = useBoolean();
+  const confirm = useBoolean();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
+  const [editMode, setEditMode] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // const [selectedLanguage, setSelectedLanguage] = useState(
   //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   // );
@@ -99,7 +116,7 @@ export default function TrainerDetailsContent({ id }: Props) {
     router.push(paths.dashboard.user.edit(details?.id));
   }, [router]);
   const renderContent = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+    <Stack component={Card} spacing={3} sx={{ p: 5 }}>
       <Stack
         alignItems="end"
         sx={{
@@ -113,7 +130,7 @@ export default function TrainerDetailsContent({ id }: Props) {
         <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} />
       </Stack>
       <Stack
-        spacing={1}
+        spacing={3}
         alignItems={{ xs: 'center', md: 'center' }}
         direction={{
           xs: 'column',
@@ -128,7 +145,7 @@ export default function TrainerDetailsContent({ id }: Props) {
         <Avatar
           alt={details?.name}
           src={details?.photo_url}
-          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2 }}
+          sx={{ width: 300, height: 300, borderRadius: 2, ml: 2 }}
           variant="square"
         />
         {/* </Grid> */}
@@ -200,11 +217,96 @@ export default function TrainerDetailsContent({ id }: Props) {
       </Stack>
     </Stack>
   );
+  const handleAddPackageClick = () => {
+    setEditMode('');
+    setSelectedPackage(null);
+    quickEdit.onTrue();
+  };
+  const handleCreatePackage = async (newPackage) => {
+    try {
+      setIsSubmitting(true);
+      const response = await createPackageTrainer(newPackage);
+      revalidateDetails();
+      enqueueSnackbar(response.message);
+      setIsSubmitting(false);
+      quickEdit.onFalse();
+      setEditMode('');
+    } catch (error) {
+      setEditMode('');
+      setIsSubmitting(false);
+      console.error('Error creating package:', error);
+    }
+  };
 
-  console.log(Array.isArray(details), details, 'details');
+  const handleEditPackage = (packageItem) => {
+    setEditMode('Edit');
+    setSelectedPackage(packageItem);
+    quickEdit.onTrue();
+    handleClose();
+  };
+
+  const handleClick = (event, packageItem, id) => {
+    console.log('packageItem', packageItem);
+    setAnchorEl(event.currentTarget);
+    setSelectedPackageId(packageItem.id);
+    setSelectedPackage(packageItem);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDeleteClick = (id) => {
+    setSelectedPackageId(id);
+    confirm.onTrue();
+  };
+  const handleDeletePackage = async (id) => {
+    try {
+      setIsSubmitting(true);
+      const response = await deletePackageTrainerById(id);
+      revalidateDetails();
+      enqueueSnackbar('Package City Mapping Deleted successfully.');
+      setIsSubmitting(false);
+      quickEdit.onFalse();
+      confirm.onFalse();
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error('Error deleting package:', error);
+    }
+  };
 
   return (
     <>
+      {details?.length < 1 && (
+        <Grid item xs={12}>
+          <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
+            No packages available. Click Add Package to create a new one.
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid container item xs={12} justifyContent="flex-start">
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={handleAddPackageClick}
+            sx={{
+              backgroundColor: '#CF5A0D',
+              color: 'white',
+              marginTop: '12px',
+              marginBottom: '19px',
+              '&:hover': {
+                backgroundColor: '#FB8C00',
+              },
+            }}
+          >
+            Add Package
+          </Button>
+        </Grid>
+      </Grid>
+
       {detailsLoading ? (
         <Box
           sx={{
@@ -216,48 +318,141 @@ export default function TrainerDetailsContent({ id }: Props) {
         >
           <CircularProgress />
         </Box>
-      ) : details?.length > 0 ? (
+      ) : details?.length ? (
         <>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} rowGap={1}>
             {Array.isArray(details) &&
-              details.map((item: any) => (
+              details.map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item?.id}>
-                  <Stack component={Card} direction="column">
-                    <Stack sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}>
-                      {item?.number_of_sessions} Sessions
+                  <Stack
+                    component={Card}
+                    direction="column"
+                    sx={{
+                      marginBottom: '16px',
+                      height: '260px',
+                      position: 'relative',
+                    }}
+                  >
+                    <Stack
+                      sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="h8"
+                        color="#CF5A0D"
+                        sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        {item?.package?.package_translations?.[0]?.name?.toUpperCase() ||
+                          'UNNAMED PACKAGE'}
+                      </Typography>
+
+                      <IconButton
+                        onClick={(e) =>
+                          handleClick(e, item, item?.package?.package_translations?.[0]?.id)
+                        }
+                      >
+                        <Iconify icon="eva:more-vertical-outline" />
+                      </IconButton>
                     </Stack>
+
+                    <Stack
+                      spacing={2}
+                      sx={{
+                        px: 3,
+                        pt: 3,
+                        pb: 2,
+                        flexGrow: 1,
+                        overflow: 'auto',
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {item?.package?.number_of_sessions} Sessions
+                      </Typography>
+                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                        What's included
+                      </Typography>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
+                        <Typography
+                          component="span"
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              item?.package?.package_translations?.[0]?.session_inclusions ||
+                              'No inclusions available',
+                          }}
+                        />
+                      </Stack>
+                    </Stack>
+
                     <hr
                       style={{
                         width: '100%',
                         height: '0.5px',
                         border: 'none',
                         backgroundColor: '#CF5A0D',
+                        position: 'absolute',
+                        top: '70px',
+                        left: '0',
                       }}
                     />
-
-                    <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
-                      <Typography variant="h5" color="#CF5A0D">
-                        {item?.package_translations?.[0]?.name || 'N/A'}
-                      </Typography>
-                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
-                        What's included
-                      </Typography>
-
-                      <Stack direction="row" spacing={1}>
-                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
-                        <Typography>
-                          {item?.package_translations?.[0]?.session_inclusions || 'N/A'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
                   </Stack>
                 </Grid>
               ))}
           </Grid>
         </>
       ) : (
-        'No Packages'
+        ''
       )}
+      <>
+        <Dialog open={confirm.value} onClose={confirm.onFalse}>
+          <DialogTitle>Delete Package</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={confirm.onFalse} color="primary">
+              Cancel
+            </Button>
+
+            <LoadingButton
+              loading={isSubmitting}
+              variant="contained"
+              color="error"
+              onClick={() => handleDeletePackage(selectedPackageId)}
+            >
+              Delete
+            </LoadingButton>
+          </DialogActions>
+        </Dialog>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+          <MenuItem
+            onClick={() => {
+              handleEditPackage(selectedPackage);
+            }}
+          >
+            Edit Package
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleDeleteClick(selectedPackage.id);
+              handleClose();
+            }}
+          >
+            Delete Package
+          </MenuItem>
+        </Menu>
+        <TrainerPackageCreateEditForm
+          editMode={editMode}
+          open={quickEdit.value}
+          onClose={quickEdit.onFalse}
+          onSubmit={handleCreatePackage}
+          selectedPackage={selectedPackage}
+          trainer_id={id}
+          setEditMode={setEditMode}
+        />
+      </>
     </>
   );
 }

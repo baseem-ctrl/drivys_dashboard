@@ -192,7 +192,7 @@ export default function CategoryListView() {
           publishOptions={['all', ...PUBLISH_OPTIONS.map((option) => option.label)]}
         />
 
-        <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
+        {/* <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} /> */}
       </Stack>
     </Stack>
   );
@@ -205,7 +205,7 @@ export default function CategoryListView() {
       canReset={canReset}
       onFilters={handleFilters}
       //
-      results={dataFiltered.length}
+      results={tableData.length}
     />
   );
 
@@ -258,7 +258,7 @@ export default function CategoryListView() {
         reload={revalidateCategory}
         setTableData={setTableData}
         setAddOnlyOneCategory={setAddOnlyOneCategory}
-      // parentCategoryValues={category}
+        // parentCategoryValues={category}
       />
       <TablePaginationCustom
         count={totalpages}
@@ -267,9 +267,9 @@ export default function CategoryListView() {
         onPageChange={table.onChangePage}
         onRowsPerPageChange={table.onChangeRowsPerPage}
 
-      // dense={table.dense}
-      // onChangeDense={table.onChangeDense}
-      //
+        // dense={table.dense}
+        // onChangeDense={table.onChangeDense}
+        //
       />
     </Container>
   );
