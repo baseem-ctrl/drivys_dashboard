@@ -48,18 +48,15 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const [imageDialogOpen, setImageDialogOpen] = useState(false); // state for image dialog visibility
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
-  const { language } =
-    useGetAllLanguage(0, 1000);
+  const { language } = useGetAllLanguage(0, 1000);
 
   const { category } = useGetAllCategory({ limit: 1000, page: 0 });
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
-  const { users } = useGetUsers(
-    {
-      page: 0,
-      limit: 1000,
-      user_types: "TRAINER",
-    }
-  );
+  const { users } = useGetUsers({
+    page: 0,
+    limit: 1000,
+    user_types: 'TRAINER',
+  });
 
   const today = moment().format('YYYY-MM-DD');
 
@@ -68,16 +65,14 @@ export default function HomeSliderForm({ updateValue }: Props) {
     display_order: Yup.string().required(t('Display order is required')),
     // type: Yup.string(),
     published: Yup.boolean(),
-    Category: Yup.array().nullable(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
     trainers: Yup.array().of(
       Yup.object().shape({
-        id: Yup.mixed().required("Trainer is required"), // Validate court add-on
-        display_order: Yup
-          .number()
+        id: Yup.mixed().required('Trainer is required'), // Validate court add-on
+        display_order: Yup.number()
           // .typeError("Number of Add Ons must be a number")
-          .required("Display order is required") // Validate the number of add-ons
+          .required('Display order is required'), // Validate the number of add-ons
       })
     ),
   });
@@ -90,15 +85,14 @@ export default function HomeSliderForm({ updateValue }: Props) {
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      Category: updateValue?.categories || [],
       // Product: updateValue?.products || [],
-      trainers: []
+      trainers: [],
     }),
     [updateValue, today]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
   });
 
@@ -114,8 +108,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const { fields, remove } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
-  })
-
+  });
 
   const mapOptions = (items: any[], translationKey: string) =>
     items?.map((item) => ({
@@ -129,21 +122,16 @@ export default function HomeSliderForm({ updateValue }: Props) {
       value: item.id,
     }));
 
-
   useEffect(() => {
     if (category) setCategoryOptions(mapOptions(category, 'category_translations'));
     // if (products) setProductOptions(mapOptions(products, 'product_translations'));
     if (users) setUserOptions(mapOptionsUser(users));
-
-
   }, [category, users]);
 
-  const [trainers, setTrainer] = useState<any>([
-  ]);
+  const [trainers, setTrainer] = useState<any>([]);
   // Function to add more pairs
   const handleAddMore = () => {
     setTrainer([...trainers, { id: '', display_order: '' }]);
-
   };
 
   // Function to remove a pair
@@ -154,33 +142,20 @@ export default function HomeSliderForm({ updateValue }: Props) {
     remove(index);
   };
 
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
-      // formData.append('type', selectedType || '');
-
-      if (data.Category) {
-        data.Category.forEach((item: { value: string | Blob; }, index: any) =>
-          formData.append(`category_ids[${index}]`, item.value)
-        );
-      }
-      // if (data.Product) {
-      //   data.Product.forEach((item, index) => formData.append(`product_ids[${index}]`, item.value));
-      // }
-
       formData.append('published', data.published ? '1' : '0');
       formData.append(
         'show_until',
         data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''
       );
-      console.log(data?.trainers, "data?.trainers");
+      console.log(data?.trainers, 'data?.trainers');
 
       if (data?.trainers?.length > 0) {
         data?.trainers?.forEach((trainerItem, index) => {
-
           formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
 
           // Use nullish coalescing to handle cases where `value` might be 0
@@ -195,7 +170,10 @@ export default function HomeSliderForm({ updateValue }: Props) {
       }
       if (selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
-          formData.append(`picture_ids[${index}][locale]`, selectedLanguage?.language_culture ?? selectedLanguage)
+          formData.append(
+            `picture_ids[${index}][locale]`,
+            selectedLanguage?.language_culture ?? selectedLanguage
+          )
         );
       }
 
@@ -216,7 +194,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
     }
   });
 
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid xs={12} md={8}>
@@ -231,42 +208,12 @@ export default function HomeSliderForm({ updateValue }: Props) {
         >
           <RHFTextField name="name" label={t('Name')} />
           <RHFTextField name="display_order" label={t('Display Order')} />
-
-          {/* <RHFSelect
-            name="type"
-            label="Type"
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          >
-            {['Product', 'Category'].map((option, index) => (
-              <MenuItem key={index} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </RHFSelect> */}
-
-          {/* {selectedType === 'Product' ? (
-            <RHFMultiSelectAuto
-              name="Product"
-              label="Product"
-              options={productOptions}
-              defaultValue={defaultValues.Product}
-            />
-          ) : (
-            <RHFMultiSelectAuto
-              name="Category"
-              label="Category"
-              options={categoryOptions}
-              defaultValue={defaultValues.Category}
-            />
-          )} */}
-
-          <RHFMultiSelectAuto
+          {/* <RHFMultiSelectAuto
             name="Category"
             label="Category"
             options={categoryOptions}
             defaultValue={defaultValues.Category}
-          />
+          /> */}
 
           <RHFSelect
             name="language"
@@ -292,7 +239,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
               defaultValue={defaultValues.Category}
             /> */}
 
-
           <RHFTextField
             name="show_until"
             label={t('Show Until')}
@@ -304,11 +250,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
 
         {trainers?.map((trainerItem: any, index: React.Key | null | undefined) => (
           <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-
-
-
-
-            <Grid item xs={12} md={5} >
+            <Grid item xs={12} md={5}>
               <RHFAutocomplete
                 name={`trainers[${index}].id`} // Dynamic name for react-hook-form
                 label={`Trainer ${index + 1}`}
@@ -318,18 +260,18 @@ export default function HomeSliderForm({ updateValue }: Props) {
                 options={userOptions}
                 renderOption={(props, option: any) => (
                   <li {...props} key={option?.value}>
-                    {option?.label ?? "Unknown"}
+                    {option?.label ?? 'Unknown'}
                   </li>
                 )}
               />
             </Grid>
 
             {/* Value Field */}
-            <Grid item xs={12} md={5} >
-              <RHFTextField name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
-                label={`Trainer ${index + 1} display order`} />
-
-
+            <Grid item xs={12} md={5}>
+              <RHFTextField
+                name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
+                label={`Trainer ${index + 1} display order`}
+              />
             </Grid>
 
             {/* Delete Button */}
@@ -373,7 +315,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
         onClose={() => setImageDialogOpen(false)}
         setSelectedImageIds={setSelectedImageIds}
         selectedImageIds={selectedImageIds}
-        apiCall={() => { }}
+        apiCall={() => {}}
         isSubmitting={isSubmitting}
       />
     </FormProvider>
