@@ -23,7 +23,7 @@ import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createSchool, useGetSchoolAdmin } from 'src/api/school';
+import { createSchool, useGetAllSchoolAdmin, useGetSchoolAdmin } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'src/routes/hooks';
@@ -62,7 +62,7 @@ export default function SchoolTableRow({
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -331,10 +331,12 @@ export default function SchoolTableRow({
                 </Select>
               )}
             />
-          ) : (status ?
+          ) : status ? (
             <Label variant="outlined" color={'default'}>
               {status}
-            </Label> : "N/A"
+            </Label>
+          ) : (
+            'N/A'
           )}
         </TableCell>
         <TableCell>
