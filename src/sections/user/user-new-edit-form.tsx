@@ -273,9 +273,7 @@ export default function UserNewEditForm({
           'certificate_commission_in_percentage',
           data?.certificate_commission_in_percentage
         );
-      if (data?.doc_side) body.append('doc_side[0]', data?.doc_side[0]);
-      if (data?.is_pickup_enabled) body.append('is_pickup_enabled', data?.is_pickup_enabled);
-      if (data?.license_file) body.append('license_file', data?.license_file);
+      if (data?.is_pickup_enabled) body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
       if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
 
       if (data?.min_price) body.append('min_price', data?.min_price);
@@ -511,30 +509,6 @@ export default function UserNewEditForm({
                   label="Certificate Commission (%)"
                   type="number"
                 />
-              )}
-
-              {values.user_type === 'TRAINER' && (
-                <Controller
-                  name="license_file"
-                  control={control}
-                  render={({ field: { onChange, ref }, fieldState: { error } }) => (
-                    <TextField
-                      type="file"
-                      label="License File"
-                      InputLabelProps={{ shrink: true }}
-                      inputRef={ref}
-                      onChange={(e) => onChange(e.target.files[0])}
-                      helperText={error ? error.message : ''}
-                    />
-                  )}
-                />
-              )}
-              {values.user_type === 'TRAINER' && (
-                <RHFSelect name="doc_side" label="Document Side">
-                  <MenuItem value="">Select Document Side</MenuItem>
-                  <MenuItem value="front">Front</MenuItem>
-                  <MenuItem value="back">Back</MenuItem>
-                </RHFSelect>
               )}
 
               <RHFAutocomplete
