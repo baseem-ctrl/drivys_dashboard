@@ -49,6 +49,8 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
 import StudentDetailsContent from './student-details-content';
+import UserDocumentDetails from './user-document/user-document-details';
+import { useGetUserDocumentList } from 'src/api/user-document';
 import TrainerWorkingHour from './trainer-working-hour';
 // ----------------------------------------------------------------------
 
@@ -68,7 +70,7 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset } = useForm();
-
+  console.log('details', details);
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -81,7 +83,14 @@ export default function UserDetailsContent({
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  // const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const {
+    userDocuments,
+    userDocumentLoading,
+    userDocumentError,
+    totalPages,
+    revalidateUserDocuments,
+  } = useGetUserDocumentList({ userId: details.id });
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,

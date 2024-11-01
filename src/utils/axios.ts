@@ -173,6 +173,13 @@ export const endpoints = {
     addressList: 'admin/user/address/get-user-address-list',
     deleteAddressFromList: 'admin/user/address/delete-user-address',
     createNewAdressForUser: 'admin/user/address/create-update-user-address',
+    userDocument: {
+      createOrUpdate: 'admin/user-docs/create-user-docs',
+      getList: 'admin/user-docs/get-user-doc-list',
+      getById: 'admin/user-docs/get-doc',
+      deleteById: 'admin/user-docs/delete-user-doc',
+      deleteAllByUserId: 'admin/user-docs/delete-user-docs',
+    },
   },
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
