@@ -119,6 +119,7 @@ export default function SchoolTableRow({
     user_id: Yup.string(),
     commission_in_percentage: Yup.string(),
   });
+
   const defaultValues = useMemo(
     () => ({
       name: selectedLocaleObject?.name || '',
@@ -166,13 +167,17 @@ export default function SchoolTableRow({
         contact_email: data?.email || email,
         contact_phone_number: data?.phone_number || phone_number,
         status: data?.status || status,
-        user_id: data?.user_id || vendor_user?.user !== null ? vendor_user?.user_id : '',
+        user_id:
+          data?.user_id !== undefined
+            ? data.user_id
+            : vendor_user?.user !== null
+            ? vendor_user.user_id
+            : '',
         is_active: data?.is_active ? '1' : '0',
         commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
         create_new_user: 0,
         vendor_id: row?.id,
       };
-      console.log(data, 'data');
 
       const response = await createSchool(payload);
       if (response) {

@@ -284,6 +284,8 @@ export function useGetAllSchoolAdmin(limit: number, page: number) {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
+    params.has_school = 0;
+
     return params;
   }, [limit, page]);
 
