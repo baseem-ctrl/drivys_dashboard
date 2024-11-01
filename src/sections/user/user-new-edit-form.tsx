@@ -42,7 +42,7 @@ import {
   useGetUserDetails,
   useGetUserTypeEnum,
 } from 'src/api/users';
-import { CircularProgress, IconButton, InputAdornment, MenuItem } from '@mui/material';
+import { CircularProgress, IconButton, InputAdornment, MenuItem, TextField } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -147,7 +147,6 @@ export default function UserNewEditForm({
       })
     ),
   });
-
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -155,6 +154,7 @@ export default function UserNewEditForm({
       email: currentUser?.email || '',
       password: '',
       phone: currentUser?.phone || '',
+
       country_code: '971',
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
@@ -187,6 +187,21 @@ export default function UserNewEditForm({
             )?.value
           : '',
       city_id: currentUser?.user_preference?.city_id || '',
+      school_commission_in_percentage:
+        currentUser?.user_preference?.school_commission_in_percentage || '',
+      price_per_km: currentUser?.user_preference?.price_per_km || '',
+      doc_side: currentUser?.user_preference?.doc_side || '',
+      min_price: currentUser?.user_preference?.min_price || '',
+      max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
+      is_pickup_enabled: currentUser?.id
+        ? currentUser?.user_preference?.is_pickup_enabled
+          ? 1
+          : 0
+        : 1,
+      certificate_commission_in_percentage:
+        currentUser?.user_preference?.certificate_commission_in_percentage || '',
+      bio: currentUser?.user_preference?.bio || '',
+      license_file: currentUser?.user_preference?.license_file || '',
     }),
     [currentUser?.locale, dialect, language]
   );
@@ -252,6 +267,19 @@ export default function UserNewEditForm({
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
+      if (data?.certificate_commission_in_percentage)
+        body.append(
+          'certificate_commission_in_percentage',
+          data?.certificate_commission_in_percentage
+        );
+      if (data?.is_pickup_enabled) body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
+      if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
+
+      if (data?.min_price) body.append('min_price', data?.min_price);
+      if (data?.bio) body.append('bio', data?.bio);
+      if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+      if (data?.school_commission_in_percentage)
+        body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
 
       // if (data?.languages && Array.isArray(data?.languages)) {
       //   console.log(data?.languages, "data?.languages");
@@ -454,6 +482,34 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
+
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="min_price" label="Minimum Price" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name="school_commission_in_percentage"
+                  label="School Commission (%)"
+                  type="number"
+                />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name="certificate_commission_in_percentage"
+                  label="Certificate Commission (%)"
+                  type="number"
+                />
+              )}
+
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
@@ -478,6 +534,9 @@ export default function UserNewEditForm({
               />
 
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="bio" label="Bio" multiline rows={4} />
+              )}
             </Box>
             {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
               <>
