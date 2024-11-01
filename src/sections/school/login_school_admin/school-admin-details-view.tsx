@@ -15,7 +15,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import { useGetSchoolByIdAdmin } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolAdminDetailsContent from './school-admin-details-content';
 import SchoolAdminTrainers from './school-admin-details-trainers';
@@ -32,8 +32,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
 
   const currentSchool = details[0]?.vendor;
 
-  console.log(details, "currentSchool");
-
+  console.log(details, 'currentSchool');
 
   const [currentTab, setCurrentTab] = useState('details');
 
@@ -41,7 +40,6 @@ export default function SchoolAdminDetailsView({ id }: Props) {
     setCurrentTab(newValue);
   }, []);
 
-  ;
   const quickCreate = useBoolean();
   const renderTabs = (
     <Tabs
@@ -79,9 +77,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Schools Details"
-        links={[
-          {}
-        ]}
+        links={[{}]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
@@ -93,24 +89,29 @@ export default function SchoolAdminDetailsView({ id }: Props) {
           )
         }
       />
+      {details?.length > 0 ? (
+        <>
+          {renderTabs}
 
-      {renderTabs}
+          {currentTab === 'details' && (
+            <SchoolAdminDetailsContent
+              details={currentSchool}
+              loading={detailsLoading}
+              reload={revalidateDetails}
+            />
+          )}
 
-      {currentTab === 'details' && (
-        <SchoolAdminDetailsContent
-          details={currentSchool}
-          loading={detailsLoading}
-          reload={revalidateDetails}
-        />
-      )}
-
-      {currentTab === 'trainers' && (
-        <SchoolAdminTrainers
-          candidates={details}
-          create={quickCreate.value}
-          onCreate={handleAddTrainer}
-          vendor_id={details[0]?.vendor_id}
-        />
+          {currentTab === 'trainers' && (
+            <SchoolAdminTrainers
+              candidates={details}
+              create={quickCreate.value}
+              onCreate={handleAddTrainer}
+              vendor_id={currentSchool?.id}
+            />
+          )}
+        </>
+      ) : (
+        <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
       )}
     </Container>
   );

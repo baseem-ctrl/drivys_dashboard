@@ -15,7 +15,7 @@ export default function SchoolAdminDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Job Details</title>
+        <title> Dashboard: School Details</title>
       </Helmet>
 
       <SchoolAdminDetailsView id={`${id}`} />

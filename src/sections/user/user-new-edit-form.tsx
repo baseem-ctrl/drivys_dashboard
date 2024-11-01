@@ -147,7 +147,6 @@ export default function UserNewEditForm({
       })
     ),
   });
-  console.log('currentUsercurrentUsercurrentUser', currentUser);
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -254,7 +253,7 @@ export default function UserNewEditForm({
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      if (data?.gear) body.append('gear', data?.gear);
+      body.append('gear', data?.gear);
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);

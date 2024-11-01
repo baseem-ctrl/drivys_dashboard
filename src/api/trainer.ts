@@ -33,3 +33,39 @@ export function deleteTrainer(id: any) {
   const response = barrySmasher(URL);
   return response;
 }
+export function useGetTrainerNoSchool({ page, limit, search }: any) {
+  const getTheFullUrl = () => {
+    const queryParams: { [key: string]: any } = {
+      page: page + 1,
+      limit,
+    };
+    if (search) queryParams.search = search;
+    return `${endpoints.trainer.noschool}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      trainers: data?.data || [],
+      trainersLoading: isLoading,
+      trainersError: error,
+      trainersValidating: isValidating,
+      trainersEmpty: !isLoading && !data?.data?.length,
+      trainersLength: data?.total,
+      trainersFilter: data?.total,
+    }),
+    [data, isLoading, error, isValidating]
+  );
+
+  const revalidateUsers = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return {
+    ...memoizedValue,
+    revalidateUsers,
+  };
+}

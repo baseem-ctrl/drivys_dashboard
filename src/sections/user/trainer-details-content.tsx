@@ -116,7 +116,7 @@ export default function TrainerDetailsContent({ id }: Props) {
     router.push(paths.dashboard.user.edit(details?.id));
   }, [router]);
   const renderContent = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+    <Stack component={Card} spacing={3} sx={{ p: 5 }}>
       <Stack
         alignItems="end"
         sx={{
@@ -130,7 +130,7 @@ export default function TrainerDetailsContent({ id }: Props) {
         <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} />
       </Stack>
       <Stack
-        spacing={1}
+        spacing={3}
         alignItems={{ xs: 'center', md: 'center' }}
         direction={{
           xs: 'column',
@@ -145,7 +145,7 @@ export default function TrainerDetailsContent({ id }: Props) {
         <Avatar
           alt={details?.name}
           src={details?.photo_url}
-          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2 }}
+          sx={{ width: 300, height: 300, borderRadius: 2, ml: 2 }}
           variant="square"
         />
         {/* </Grid> */}

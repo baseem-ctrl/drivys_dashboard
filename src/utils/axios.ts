@@ -184,6 +184,7 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {
     list: 'admin/slider/get-slider-list',

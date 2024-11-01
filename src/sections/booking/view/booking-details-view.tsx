@@ -26,19 +26,21 @@ import {
   Chip,
   Switch,
 } from '@mui/material';
-
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
 
 import { Phone, Email } from '@mui/icons-material';
 import { useGetBookingById } from 'src/api/booking';
 import EditIcon from '@mui/icons-material/Edit';
-import { useParams } from 'src/routes/hooks';
+import { useParams, useRouter } from 'src/routes/hooks';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 
 const BookingDetailsComponent = () => {
   const { id } = useParams();
   const theme = useTheme();
+  const router = useRouter();
+
   const { bookingDetails, bookingError, bookingLoading, revalidateBooking } = useGetBookingById(id);
   const { user, package: pkg, driver, pickup_location, total, sessions } = bookingDetails;
   const [value, setValue] = useState(0);
@@ -52,7 +54,9 @@ const BookingDetailsComponent = () => {
     { value: 'pending', label: 'Pending' },
     { value: 'failed', label: 'Failed' },
   ];
-
+  const handleBackClick = () => {
+    router.push(paths.dashboard.booking.root);
+  };
   console.log('bookingDetails', bookingDetails);
   const cardHeight = 370;
   if (bookingLoading) {
@@ -81,23 +85,61 @@ const BookingDetailsComponent = () => {
         sx={{ mb: 3 }}
       />
 
-      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 190 }}>
-          {' '}
-          <InputLabel id="payment-status-label">Payment Status</InputLabel>
-          <Select
-            labelId="payment-status-label"
-            value={paymentStatus}
-            onChange={handlePaymentStatusChange}
-            label="Payment Status"
+      <Grid
+        item
+        xs={12}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
+      >
+        {/* Back Arrow and Order Label */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <ChevronLeftIcon
+            onClick={handleBackClick}
+            sx={{ cursor: 'pointer', fontSize: '1.5rem', mr: 1 }}
+          />{' '}
+          <Typography sx={{ fontSize: '15px' }}>Order_{bookingDetails.id}</Typography>
+        </div>
+
+        {/* Payment Status Select */}
+        {value === 1 && (
+          <FormControl
+            variant="outlined"
+            size="small"
+            sx={{
+              minWidth: 190,
+              backgroundColor: '#eeeeef',
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black',
+              },
+            }}
           >
-            {paymentStatusOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            <Select
+              value={paymentStatus}
+              onChange={handlePaymentStatusChange}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Payment Status' }}
+              sx={{
+                '&:focus': {
+                  backgroundColor: '#eeeeef',
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select Payment Status
               </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+              {paymentStatusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </Grid>
 
       <Grid item xs={12}>

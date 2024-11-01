@@ -348,7 +348,7 @@ export default function UserDetailsContent({
         <Avatar
           alt={details?.name}
           src={details?.photo_url}
-          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2 }}
+          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2, mr: 3 }}
           variant="square"
         />
         {/* </Grid> */}
@@ -357,35 +357,35 @@ export default function UserDetailsContent({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 { label: 'Name', value: details?.name ?? 'N/A' },
-                { label: 'Email', value: details?.email ?? 'NA' },
+                { label: 'Email', value: details?.email ?? 'N/A' },
                 {
                   label: 'Phone Number',
                   value: details?.country_code
-                    ? `${details?.country_code}-${details?.phone}`
-                    : details?.phone ?? 'NA',
+                    ? `${details.country_code}-${details.phone}`
+                    : details.phone ?? 'N/A',
                 },
-                { label: 'User Type', value: details?.user_type ?? 'NA' },
-                { label: 'Date of birth', value: details?.dob?.split('T')[0] ?? 'NA' },
+                { label: 'User Type', value: details?.user_type ?? 'N/A' },
+                { label: 'Date of Birth', value: details?.dob?.split('T')[0] ?? 'N/A' },
                 {
-                  label: 'Preffered Language',
-                  value: (details?.locale === 'undefined' ? 'N/A' : details?.locale) ?? 'NA',
+                  label: 'Preferred Language',
+                  value: details?.locale !== 'undefined' ? details.locale : 'N/A',
                 },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
-                { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
-                // Updated Languages Section to display each language in a separate row
-                ...(details?.languages?.length > 0
-                  ? details.languages.map((lang: any, index: number) => ({
+                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'N/A' },
+                { label: 'Wallet Points', value: details?.wallet_points ?? 'N/A' },
+                ...(details?.languages?.length
+                  ? details.languages.map((lang, index) => ({
                       label: `Language ${index + 1}`,
                       value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
                     }))
-                  : [{ label: 'Languages', value: 'NA' }]),
-
+                  : [{ label: 'Languages', value: 'N/A' }]),
                 {
                   label: 'Is Active',
-                  value: details?.is_active ? (
-                    <Chip label="Active" color="success" variant="soft" />
-                  ) : (
-                    <Chip label="In Active" color="error" variant="soft" />
+                  value: (
+                    <Chip
+                      label={details?.is_active ? 'Active' : 'Inactive'}
+                      color={details?.is_active ? 'success' : 'error'}
+                      variant="soft"
+                    />
                   ),
                 },
                 ...(details?.user_type === 'TRAINER'
@@ -420,7 +420,6 @@ export default function UserDetailsContent({
                   <Box component="span" sx={{ flex: 1 }}>
                     {item.value ?? 'N/A'}
                   </Box>
-                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>
               ))}
             </Stack>
@@ -1143,15 +1142,10 @@ export default function UserDetailsContent({
             <Grid xs={12}>
               {currentTab === 'details' &&
                 details?.user_preference?.id &&
-                details?.user_type === 'TRAINER' &&
+                (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
             </Grid>
             {/* User preferences For all other user types */}
-            <Grid xs={12}>
-              {details?.user_type !== 'TRAINER' &&
-                details?.user_preference?.id &&
-                renderUserPreferences}
-            </Grid>
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>
