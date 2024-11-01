@@ -143,6 +143,7 @@ export const endpoints = {
     create: 'admin/vendor/create-vendor-translation',
     update: 'admin/delivery-slot/create-delivery-slot-translation',
     admin: 'admin/user/get-list',
+    getSchoolAdmin: 'admin/user/get-school-admin-list',
     address: 'admin/vendor/address/create-update-address',
     trainers: 'admin/trainers/get-trainer-list',
     addTrainer: 'admin/trainers/create-trainer',

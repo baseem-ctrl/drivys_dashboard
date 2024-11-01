@@ -23,7 +23,7 @@ import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createSchool, useGetSchoolAdmin } from 'src/api/school';
+import { createSchool, useGetAllSchoolAdmin, useGetSchoolAdmin } from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'src/routes/hooks';
@@ -62,7 +62,7 @@ export default function SchoolTableRow({
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -119,6 +119,7 @@ export default function SchoolTableRow({
     user_id: Yup.string(),
     commission_in_percentage: Yup.string(),
   });
+
   const defaultValues = useMemo(
     () => ({
       name: selectedLocaleObject?.name || '',
@@ -166,13 +167,17 @@ export default function SchoolTableRow({
         contact_email: data?.email || email,
         contact_phone_number: data?.phone_number || phone_number,
         status: data?.status || status,
-        user_id: data?.user_id || vendor_user?.user !== null ? vendor_user?.user_id : '',
+        user_id:
+          data?.user_id !== undefined
+            ? data.user_id
+            : vendor_user?.user !== null
+            ? vendor_user.user_id
+            : '',
         is_active: data?.is_active ? '1' : '0',
         commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
         create_new_user: 0,
         vendor_id: row?.id,
       };
-      console.log(data, 'data');
 
       const response = await createSchool(payload);
       if (response) {
@@ -331,10 +336,12 @@ export default function SchoolTableRow({
                 </Select>
               )}
             />
-          ) : (status ?
+          ) : status ? (
             <Label variant="outlined" color={'default'}>
               {status}
-            </Label> : "N/A"
+            </Label>
+          ) : (
+            'N/A'
           )}
         </TableCell>
         <TableCell>
