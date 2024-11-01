@@ -30,14 +30,17 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
 
 import { Phone, Email } from '@mui/icons-material';
-import { useGetBookingById } from 'src/api/booking';
+import { updatePaymentBookingStatus, useGetBookingById } from 'src/api/booking';
 import EditIcon from '@mui/icons-material/Edit';
+import { useSnackbar } from 'src/components/snackbar';
 import { useParams, useRouter } from 'src/routes/hooks';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 
 const BookingDetailsComponent = () => {
   const { id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
+
   const theme = useTheme();
   const router = useRouter();
 
@@ -45,14 +48,64 @@ const BookingDetailsComponent = () => {
   const { user, package: pkg, driver, pickup_location, total, sessions } = bookingDetails;
   const [value, setValue] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState('');
+  const [bookingStatus, setBookingStatus] = useState('');
 
-  const handlePaymentStatusChange = (event) => {
-    setPaymentStatus(event.target.value);
+  const PAYMENT_STATUS_MAP = {
+    PENDING: 0,
+    CONFIRMED: 1,
+    CANCELLED: 2,
+  };
+  const handleBookingStatusChange = async (event) => {
+    const selectedStatus = event.target.value;
+    setBookingStatus(selectedStatus);
+    const selectedPaymentStatus = PAYMENT_STATUS_MAP[selectedStatus.toUpperCase()];
+    const formData = new FormData();
+    formData.append('booking_status', selectedPaymentStatus);
+    formData.append('id', id);
+
+    try {
+      const response = await updatePaymentBookingStatus(formData);
+      enqueueSnackbar(response.message ?? 'Status Updated successfully', {
+        variant: 'success',
+      });
+
+      revalidateBooking();
+      console.log('Payment status updated:', response);
+    } catch (error) {
+      console.error('Failed to update payment status:', error);
+      revalidateBooking();
+    }
+  };
+  const handlePaymentStatusChange = async (event) => {
+    const selectedStatus = event.target.value;
+    setPaymentStatus(selectedStatus);
+    const selectedPaymentStatus = PAYMENT_STATUS_MAP[selectedStatus.toUpperCase()];
+    const formData = new FormData();
+    formData.append('payment_status', selectedPaymentStatus);
+    formData.append('id', id);
+
+    try {
+      const response = await updatePaymentBookingStatus(formData);
+      enqueueSnackbar(response.message ?? 'Status Updated successfully', {
+        variant: 'success',
+      });
+
+      revalidateBooking();
+      console.log('Payment status updated:', response);
+    } catch (error) {
+      console.error('Failed to update payment status:', error);
+      revalidateBooking();
+    }
   };
   const paymentStatusOptions = [
-    { value: 'paid', label: 'Paid' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'failed', label: 'Failed' },
+    { value: 'PENDING', label: 'PENDING' },
+    { value: 'CONFIRMED', label: 'CONFIRMED' },
+    { value: 'CANCELLED', label: 'CANCELLED' },
+  ];
+  const bookingStatusOptions = [
+    { value: 'PENDING', label: 'PENDING' },
+    { value: 'CONFIRMED', label: 'CONFIRMED' },
+    { value: 'CANCELLED', label: 'CANCELLED' },
   ];
   const handleBackClick = () => {
     router.push(paths.dashboard.booking.root);
@@ -95,50 +148,93 @@ const BookingDetailsComponent = () => {
           <ChevronLeftIcon
             onClick={handleBackClick}
             sx={{ cursor: 'pointer', fontSize: '1.5rem', mr: 1 }}
-          />{' '}
+          />
           <Typography sx={{ fontSize: '15px' }}>Order_{bookingDetails.id}</Typography>
         </div>
 
-        {/* Payment Status Select */}
+        {/* Container for Select Boxes */}
         {value === 1 && (
-          <FormControl
-            variant="outlined"
-            size="small"
-            sx={{
-              minWidth: 190,
-              backgroundColor: '#eeeeef',
-              '& .MuiInputBase-root': {
-                color: 'black',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'black',
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'black',
-              },
-            }}
-          >
-            <Select
-              value={paymentStatus}
-              onChange={handlePaymentStatusChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Payment Status' }}
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            {/* Payment Status Select */}
+            <FormControl
+              variant="outlined"
+              size="small"
               sx={{
-                '&:focus': {
-                  backgroundColor: '#eeeeef',
+                minWidth: 190,
+                backgroundColor: '#eeeeef',
+                '& .MuiInputBase-root': {
+                  color: 'black',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black',
                 },
               }}
             >
-              <MenuItem value="" disabled>
-                Select Payment Status
-              </MenuItem>
-              {paymentStatusOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              <Select
+                value={paymentStatus}
+                onChange={handlePaymentStatusChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Payment Status' }}
+                sx={{
+                  '&:focus': {
+                    backgroundColor: '#eeeeef',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Payment Status
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                {paymentStatusOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Booking Status Select */}
+            <FormControl
+              variant="outlined"
+              size="small"
+              sx={{
+                minWidth: 190,
+                backgroundColor: '#eeeeef',
+                '& .MuiInputBase-root': {
+                  color: 'black',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'black',
+                },
+              }}
+            >
+              <Select
+                value={bookingStatus}
+                onChange={handleBookingStatusChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Booking Status' }}
+                sx={{
+                  '&:focus': {
+                    backgroundColor: '#eeeeef',
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Booking Status
+                </MenuItem>
+                {bookingStatusOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
         )}
       </Grid>
 
@@ -628,7 +724,17 @@ const BookingDetailsComponent = () => {
                   {`$${bookingDetails?.amount_paid}`}
                 </Box>
               </Box>
-
+              <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
+                <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                  Payment Status
+                </Box>
+                <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                  :
+                </Box>
+                <Box component="span" sx={{ flex: 1 }}>
+                  {`$${bookingDetails?.payment_status}`}
+                </Box>
+              </Box>
               <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                 <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                   Amount Refunded
@@ -638,6 +744,17 @@ const BookingDetailsComponent = () => {
                 </Box>
                 <Box component="span" sx={{ flex: 1 }}>
                   {`$${bookingDetails?.amount_refunded}`}
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
+                <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                  Booking Status
+                </Box>
+                <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                  :
+                </Box>
+                <Box component="span" sx={{ flex: 1 }}>
+                  {`$${bookingDetails?.booking_status}`}
                 </Box>
               </Box>
             </CardContent>
@@ -673,7 +790,7 @@ const BookingDetailsComponent = () => {
                     <TableRow>
                       <TableCell>Booking ID</TableCell>
                       <TableCell>Session No</TableCell>
-                      <TableCell>Status</TableCell>
+                      <TableCell>Session Status</TableCell>
                       <TableCell>Rating</TableCell>
                       <TableCell>Start Time</TableCell>
                       <TableCell>End Time</TableCell>

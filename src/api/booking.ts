@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
-import { endpoints, drivysFetcher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -63,4 +63,9 @@ export function useGetBookingById(id: string | number) {
   };
 
   return { ...memoizedValue, revalidateBooking };
+}
+// Function to update booking and payment status
+export function updatePaymentBookingStatus(body: FormData) {
+  const URL = endpoints.booking.updatePaymentBookingStatus;
+  return drivysCreator([URL, body]);
 }
