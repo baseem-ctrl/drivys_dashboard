@@ -110,6 +110,9 @@ const BookingDetailsComponent = () => {
   const handleBackClick = () => {
     router.push(paths.dashboard.booking.root);
   };
+  const handleClickDetails = (id) => {
+    router.push(paths.dashboard.user.details(id));
+  };
   console.log('bookingDetails', bookingDetails);
   const cardHeight = 370;
   if (bookingLoading) {
@@ -246,7 +249,13 @@ const BookingDetailsComponent = () => {
       </Grid>
       {/* User Information */}
       {value === 0 && (
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          onClick={() => handleClickDetails(user.id)}
+          sx={{ cursor: 'pointer' }}
+        >
           <Card
             sx={{
               boxShadow: 3,
@@ -399,7 +408,13 @@ const BookingDetailsComponent = () => {
 
       {/* Driver Information */}
       {value === 0 && (
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          onClick={() => handleClickDetails(driver.id)}
+          sx={{ cursor: 'pointer' }}
+        >
           <Card
             sx={{
               boxShadow: 3,
