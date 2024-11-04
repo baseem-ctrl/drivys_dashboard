@@ -107,9 +107,7 @@ const BookingDetailsComponent = () => {
     { value: 'CONFIRMED', label: 'CONFIRMED' },
     { value: 'CANCELLED', label: 'CANCELLED' },
   ];
-  const handleBackClick = () => {
-    router.push(paths.dashboard.booking.root);
-  };
+
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
@@ -144,17 +142,8 @@ const BookingDetailsComponent = () => {
       <Grid
         item
         xs={12}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 2 }}
       >
-        {/* Back Arrow and Order Label */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <ChevronLeftIcon
-            onClick={handleBackClick}
-            sx={{ cursor: 'pointer', fontSize: '1.5rem', mr: 1 }}
-          />
-          <Typography sx={{ fontSize: '15px' }}>Order_{bookingDetails?.id || 'N/A'}</Typography>
-        </div>
-
         {/* Container for Select Boxes */}
         {value === 1 && (
           <div style={{ display: 'flex', gap: '1rem' }}>
