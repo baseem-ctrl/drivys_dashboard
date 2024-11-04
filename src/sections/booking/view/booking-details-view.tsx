@@ -296,7 +296,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user?.name || 'N/A'}
+                      {user && user?.name ? user?.name : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -307,7 +307,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user?.email || 'N/A'}
+                      {user && user?.email ? user?.email : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -318,7 +318,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user?.phone || 'N/A'}
+                      {user && user?.phone ? user?.phone : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -329,7 +329,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user?.country_code || 'N/A'}
+                      {user && user?.country_code ? user?.country_code : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -340,7 +340,9 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {bookingDetails?.gear_type || 'N/A'}
+                      {bookingDetails && bookingDetails?.gear_type
+                        ? bookingDetails?.gear_type
+                        : 'N/A'}
                     </Box>
                   </Box>
 
@@ -352,7 +354,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A'}
+                      {user && user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -363,7 +365,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user?.locale || 'N/A'}
+                      {user && user?.locale ? user?.locale : 'N/A'}
                     </Box>
                   </Box>
                   {/* <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -393,7 +395,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user.is_active ? (
+                      {user && user?.is_active ? (
                         <Switch
                           checked={user.is_active}
                           color={user.is_active ? 'success' : 'error'}
@@ -437,7 +439,7 @@ const BookingDetailsComponent = () => {
               </Typography>
               <Grid container spacing={5} alignItems="center">
                 <Grid item>
-                  {user && driver?.photo_url ? (
+                  {driver && driver?.photo_url ? (
                     <Avatar
                       src={driver.photo_url}
                       alt={`${driver?.name}'s profile`}
@@ -471,7 +473,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.name || 'N/A'}
+                      {driver && driver?.locale ? driver?.name : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -482,7 +484,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.email || 'N/A'}
+                      {driver && driver?.email ? driver?.email : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -493,7 +495,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.phone || 'N/A'}
+                      {driver && driver?.phone ? driver?.phone : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -504,7 +506,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.country_code || 'N/A'}
+                      {driver && driver?.country_code ? driver?.country_code : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -515,7 +517,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.locale || 'N/A'}
+                      {driver && driver?.locale ? driver?.locale : 'N/A'}
                     </Box>
                   </Box>
 
@@ -527,7 +529,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {user.dob ? new Date(driver.dob).toLocaleDateString() : 'N/A'}
+                      {driver && driver.dob ? new Date(driver.dob).toLocaleDateString() : 'N/A'}
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
@@ -538,7 +540,7 @@ const BookingDetailsComponent = () => {
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1 }}>
-                      {driver?.is_active ? (
+                      {driver && driver?.is_active ? (
                         <Switch
                           checked={driver.is_active}
                           color={driver.is_active ? 'success' : 'error'}
