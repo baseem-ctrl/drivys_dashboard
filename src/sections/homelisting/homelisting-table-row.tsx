@@ -38,9 +38,12 @@ type Props = {
   onViewRow: VoidFunction;
 };
 
-const catalogueOptions = [{ label: "Drivers", value: "1" }, { label: "Categories", value: "2" }]
+const catalogueOptions = [
+  { label: 'Drivers', value: '1' },
+  { label: 'Categories', value: '2' },
+];
 
-export default function SchoolTableRow({
+export default function HomeListingTableRow({
   row,
   selected,
   onEditRow,
@@ -49,15 +52,8 @@ export default function SchoolTableRow({
   revalidateHomeListing,
   onViewRow,
 }: Props) {
-  const {
-    translations,
-    catalogue_type,
-    display_order,
-    is_active,
-    id,
-  } = row;
-  const { language } =
-    useGetAllLanguage(0, 1000);
+  const { translations, catalogue_type, display_order, is_active, id } = row;
+  const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(translations?.[0]?.locale ?? '');
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
@@ -66,7 +62,6 @@ export default function SchoolTableRow({
 
   const confirm = useBoolean();
   const handleEditClick = () => {
-
     setEditingRowId(row.id);
   };
   const popover = usePopover();
@@ -107,7 +102,7 @@ export default function SchoolTableRow({
       description: selectedLocaleObject?.description || '',
       display_order: display_order || '',
       is_active: is_active || 1,
-      catalogue_type: catalogue_type || ''
+      catalogue_type: catalogue_type || '',
     }),
     [selectedLocaleObject, row]
   );
@@ -124,7 +119,7 @@ export default function SchoolTableRow({
     const selectedLocaleObject = translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
-    console.log(selectedLocaleObject, "selectedLocaleObject");
+    console.log(selectedLocaleObject, 'selectedLocaleObject');
     // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
       setValue('title', selectedLocaleObject?.title); // Update name to match the locale
@@ -135,21 +130,20 @@ export default function SchoolTableRow({
     }
   };
 
-
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedCatalogue(event.target.value);
   };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const body = new FormData()
-      body.append("translation[0][locale]", selectedLanguage || translations?.locale)
-      body.append("translation[0][title]", data?.title || translations?.title)
-      body.append("translation[0][description]", data?.description || translations?.description)
-      body.append("display_order", data?.display_order || display_order)
-      body.append("catalogue_type", data?.catalogue_type || catalogue_type)
-      body.append("is_active", data?.is_active ? '1' : '0')
-      body.append("home_page_listing_id", selectedLocaleObject?.home_page_listing_id ?? row?.id)
+      const body = new FormData();
+      body.append('translation[0][locale]', selectedLanguage || translations?.locale);
+      body.append('translation[0][title]', data?.title || translations?.title);
+      body.append('translation[0][description]', data?.description || translations?.description);
+      body.append('display_order', data?.display_order || display_order);
+      body.append('catalogue_type', data?.catalogue_type || catalogue_type);
+      body.append('is_active', data?.is_active ? '1' : '0');
+      body.append('home_page_listing_id', selectedLocaleObject?.home_page_listing_id ?? row?.id);
 
       const response = await createHomeListing(body);
       if (response) {
@@ -173,12 +167,29 @@ export default function SchoolTableRow({
   const router = useRouter();
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        hover
+        onClick={(event) => {
+          // Prevent navigation if the target is the three dots icon, save button, or if editing
+          if (
+            editingRowId === row.id || // Prevent navigation if editing the current row
+            event.target.closest('.three-dot-icon') ||
+            event.target.closest('.save-button') ||
+            event.target.closest('.editor')
+          ) {
+            event.stopPropagation(); // Stop the event from bubbling up
+            // popover.onOpen(event); // Open your popover here
+          } else {
+            onViewRow(); // Navigate to the details page
+          }
+        }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
         <TableCell>{id}</TableCell>
-
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
@@ -255,9 +266,10 @@ export default function SchoolTableRow({
                 </Select>
               )}
             />
-
+          ) : catalogue_type === '2' ? (
+            'Drivers'
           ) : (
-            catalogue_type === "2" ? "Drivers" : "Categories" || 'N/A'
+            'Categories' || 'N/A'
           )}
         </TableCell>
 
@@ -280,7 +292,6 @@ export default function SchoolTableRow({
             display_order || 'N/A'
           )}
         </TableCell>
-
 
         <TableCell>
           {editingRowId === row.id ? (
@@ -323,9 +334,14 @@ export default function SchoolTableRow({
               {'Save'}
             </LoadingButton>
           ) : (
-
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <IconButton
+              color={popover.open ? 'inherit' : 'default'}
+              className="three-dot-icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                popover.onOpen(event);
+              }}
+            >
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}

@@ -201,7 +201,24 @@ export default function SchoolTableRow({
   const router = useRouter();
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        onClick={(event) => {
+          // Prevent navigation if the target is the three dots icon, save button, or if editing
+          if (
+            editingRowId === row.id || // Prevent navigation if editing the current row
+            event.target.closest('.three-dot-icon') ||
+            event.target.closest('.save-button') ||
+            event.target.closest('.editor')
+          ) {
+            event.stopPropagation(); // Stop the event from bubbling up
+            // popover.onOpen(event); // Open your popover here
+          } else {
+            onViewRow(); // Navigate to the details page
+          }
+        }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
@@ -211,6 +228,7 @@ export default function SchoolTableRow({
           {editingRowId === row.id ? (
             <Controller
               name="locale"
+              className="editor"
               control={control}
               render={({ field }) => (
                 <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
@@ -230,6 +248,7 @@ export default function SchoolTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="name"
               control={control}
               render={({ field }) => (
@@ -250,6 +269,7 @@ export default function SchoolTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="email"
               control={control}
               render={({ field }) => (
@@ -270,6 +290,7 @@ export default function SchoolTableRow({
           {' '}
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="phone_number"
               control={control}
               render={({ field }) => (
@@ -289,6 +310,7 @@ export default function SchoolTableRow({
           {' '}
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="commission_in_percentage"
               control={control}
               render={({ field }) => (
@@ -312,6 +334,7 @@ export default function SchoolTableRow({
         <TableCell>
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="status"
               control={control}
               render={({ field }) => (
@@ -347,6 +370,7 @@ export default function SchoolTableRow({
         <TableCell>
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="is_active"
               control={control}
               render={({ field }) => (
@@ -376,6 +400,7 @@ export default function SchoolTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
+              className="editor"
               name="user_id"
               control={control}
               render={({ field }) => (
@@ -403,6 +428,7 @@ export default function SchoolTableRow({
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton
+              className="save-button"
               sx={{ color: '#CF5A0D', borderColor: '#CF5A0D' }}
               type="submit"
               variant="outlined"
@@ -420,7 +446,13 @@ export default function SchoolTableRow({
             //   Save
             // </Button>
 
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <IconButton
+              className="three-dot-icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                popover.onOpen(event);
+              }}
+            >
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}

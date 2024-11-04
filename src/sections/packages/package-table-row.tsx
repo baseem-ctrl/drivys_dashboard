@@ -189,7 +189,24 @@ export default function PackageTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        onClick={(event) => {
+          // Prevent navigation if the target is the three dots icon, save button, or if editing
+          if (
+            editingRowId === row.id || // Prevent navigation if editing the current row
+            event.target.closest('.three-dot-icon') ||
+            event.target.closest('.save-button') ||
+            event.target.closest('.editor')
+          ) {
+            event.stopPropagation(); // Stop the event from bubbling up
+            // popover.onOpen(event); // Open your popover here
+          } else {
+            onViewRow(); // Navigate to the details page
+          }
+        }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
@@ -352,7 +369,14 @@ export default function PackageTableRow({
             //   Save
             // </Button>
 
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <IconButton
+              color={popover.open ? 'inherit' : 'default'}
+              className="three-dot-icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                popover.onOpen(event);
+              }}
+            >
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
