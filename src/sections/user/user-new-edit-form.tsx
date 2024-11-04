@@ -244,6 +244,11 @@ export default function UserNewEditForm({
     revalidateDetails();
   };
 
+  // Navigate to the previous page
+  const handleCancel = () => {
+    router.back();
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       let response;
@@ -641,7 +646,16 @@ export default function UserNewEditForm({
               </>
             )}
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="center"
+              spacing={2}
+              sx={{ mt: 3 }}
+            >
+              <Button variant="outlined" onClick={handleCancel}>
+                Cancel
+              </Button>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!currentUser ? 'Create User' : 'Save Changes'}
               </LoadingButton>

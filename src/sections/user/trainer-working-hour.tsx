@@ -93,7 +93,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
           {!workingHours || workingHours.length === 0 ? (
             <Box sx={{ textAlign: 'left', mt: 2 }}>
-              <Typography variant="body1">
+              <Typography variant="body1" sx={{ color: '#CF5A0D' }}>
                 No working hours available. You can add using 'Add Work Hours'.
               </Typography>
             </Box>
