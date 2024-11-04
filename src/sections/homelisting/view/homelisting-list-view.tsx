@@ -209,7 +209,7 @@ export default function HomelistingListView() {
   // );
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.school.details(id));
+      router.push(paths.dashboard.homelisting.details(id));
     },
     [router]
   );
