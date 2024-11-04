@@ -1,14 +1,9 @@
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { ConfirmDialog } from 'src/components/custom-dialog';
+import { usePopover } from 'src/components/custom-popover';
 import { formatDate } from 'src/utils/format-date';
 import { Typography } from '@mui/material';
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
@@ -48,17 +43,17 @@ export default function BookingTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell onClick={() => handleRowClick(row.id)}>{user?.name}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name}</TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>{user?.name || 'N/A'}</TableCell>
+        <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name || 'N/A'}</TableCell>
 
         <TableCell onClick={() => handleRowClick(row.id)}>
           <Label variant="soft" color={row?.driver_status === 'PENDING' ? 'warning' : 'success'}>
-            {row?.driver_status}
+            {row?.driver_status || 'N/A'}
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
           <Label variant="soft" color={row.booking_status === 'PENDING' ? 'warning' : 'success'}>
-            {row.booking_status}
+            {row.booking_status || 'N/A'}
           </Label>
         </TableCell>
 
