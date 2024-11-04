@@ -64,9 +64,16 @@ export default function BookingTableRow({
           {row.coupon_code ? row.coupon_code : 'No Coupon'}
         </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
-          {moment(row?.created_at).format('D/M/YYYY h:mm A')}
+          {moment
+            .utc(row?.created_at)
+            .local()
+            .format('D/M/YYYY h:mm A')}
           <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-            Updated {moment(row?.updated_at).format('D/M/YYYY h:mm A')}
+            Updated{' '}
+            {moment
+              .utc(row?.updated_at)
+              .local()
+              .format('D/M/YYYY h:mm A')}
           </Typography>
         </TableCell>
       </TableRow>
