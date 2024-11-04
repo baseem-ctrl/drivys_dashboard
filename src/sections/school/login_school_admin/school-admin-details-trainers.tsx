@@ -363,7 +363,11 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
             </Stack>
           ))
         ) : (
-          !create && <Box>No Trainers Found</Box>
+          !create && (
+            <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
+              No trainer under this school
+            </Typography>
+          )
         )
       ) : (
         <Box

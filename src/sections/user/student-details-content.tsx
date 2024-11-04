@@ -1,7 +1,8 @@
-import Box from '@mui/material/Box'
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 // components
 import { TablePaginationCustom, useTable } from 'src/components/table';
+import { Typography } from '@mui/material';
 import { useGetStudents } from 'src/api/student';
 import { UserCardsView } from './view';
 import { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ export default function StudentDetailsContent({ id }: Props) {
   const { students, studentsLoading, studentsLength, revalidateStudents } = useGetStudents({
     page: table.page,
     limit: table.rowsPerPage,
-    trainer_id: id
+    trainer_id: id,
   });
 
   useEffect(() => {
@@ -41,22 +42,23 @@ export default function StudentDetailsContent({ id }: Props) {
         >
           <CircularProgress />
         </Box>
+      ) : students?.length > 0 ? (
+        <>
+          <UserCardsView users={tableData} />
+
+          <TablePaginationCustom
+            count={studentsLength}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+          />
+        </>
       ) : (
-
-        students?.length > 0 ?
-          <>
-            <UserCardsView users={tableData} />
-
-            <TablePaginationCustom
-              count={studentsLength}
-              page={table.page}
-              rowsPerPage={table.rowsPerPage}
-              onPageChange={table.onChangePage}
-              onRowsPerPageChange={table.onChangeRowsPerPage}
-            />
-          </> : "No Students"
-      )
-      }
+        <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
+          No students under this trainer
+        </Typography>
+      )}
     </>
   );
 }
