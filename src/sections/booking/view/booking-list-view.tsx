@@ -33,7 +33,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
-import { useGetBookings } from 'src/api/booking';
+import { useGetBookings, useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import BookingTableRow from '../booking-table-row';
@@ -94,24 +94,20 @@ const defaultFilters = {
 
 export default function BookingListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
 
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-
+  console.log('bookingStatusEnum', bookingStatusEnum);
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
-  // const [bookingTypeOptions, setBookingTypeOptions] = useState([]);
   const confirm = useBoolean();
-  const bookingTypeOptions = [
-    { value: 'all', label: 'ALL' },
-    { value: 'pending', label: 'PENDING' },
-    { value: 'confirmed', label: 'CONFIRMED' },
-    { value: 'cancelled', label: 'CANCELLED' },
-  ];
+
   const statusMap = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
+    ALL: 0,
+    PENDING: 1,
+    CONFIRMED: 2,
+    CANCELLED: 3,
   };
 
   const paymentStatusCode = statusMap[filters.paymentStatus] ?? undefined;
@@ -119,7 +115,7 @@ export default function BookingListView() {
   const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookings({
     page: table.page,
     limit: table.rowsPerPage,
-    booking_type: filters.bookingType,
+    booking_status: filters.bookingType,
     // search: filters.customerName,
     payment_status: paymentStatusCode,
     driver_id: filters.vendor,
@@ -138,23 +134,32 @@ export default function BookingListView() {
 
   useEffect(() => {
     if (bookings?.length > 0) {
-      const counts = bookings.reduce(
-        (acc, booking) => {
-          const status = booking.booking_status.toLowerCase();
-          acc.all += 1;
+      const statusMap = bookingStatusEnum.reduce((map, status) => {
+        map[status.value] = status.name.toLowerCase();
+        return map;
+      }, {});
 
-          if (acc[status] !== undefined) {
-            acc[status] += 1;
-          }
+      const initialCounts = { all: 0 };
+      bookingStatusEnum.forEach((status) => {
+        initialCounts[status.value] = 0;
+      });
 
-          return acc;
-        },
-        { all: 0, pending: 0, confirmed: 0, cancelled: 0 }
-      );
+      const counts = bookings.reduce((acc, booking) => {
+        const status = booking.booking_status.toLowerCase();
+        console.log('statusstatusstatusstatusstatusstatus', status);
+        acc.all += 1;
+
+        const mappedStatus = Object.keys(statusMap).find((key) => statusMap[key] === status);
+        if (mappedStatus !== undefined) {
+          acc[mappedStatus] += 1;
+        }
+
+        return acc;
+      }, initialCounts);
 
       setBookingCounts(counts);
     }
-  }, [bookings, filters.bookingType]);
+  }, [bookings, filters.bookingType, bookingStatusEnum]);
 
   const vendorOptions = usersLoading
     ? [{ label: 'Loading...', value: '' }]
@@ -169,23 +174,6 @@ export default function BookingListView() {
       setTableData([]);
     }
   }, [bookings]);
-  useEffect(() => {
-    if (bookings?.length > 0) {
-      const filteredBookings =
-        filters.bookingType === 'all'
-          ? bookings
-          : bookings.filter((booking) => {
-              const isMatch = booking.booking_status === filters.bookingType.toUpperCase();
-
-              return isMatch;
-            });
-
-      setTableData(filteredBookings);
-    } else {
-      console.log('No bookings available. Setting table data to empty.');
-      setTableData([]);
-    }
-  }, [bookings, filters.bookingType]);
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -197,9 +185,30 @@ export default function BookingListView() {
     },
     [table]
   );
+  useEffect(() => {
+    if (bookings?.length > 0) {
+      const filteredBookings = bookings.filter((booking) => {
+        switch (filters.bookingType) {
+          case 1:
+            return booking.booking_status === 'CONFIRMED';
+          case 2:
+            return booking.booking_status === 'CANCELLED';
+          case 0:
+            return booking.booking_status === 'PENDING';
+          default:
+            return true;
+        }
+      });
+
+      setTableData(filteredBookings);
+    } else {
+      setTableData([]);
+    }
+  }, [bookings, filters.bookingType]);
 
   const handleTabChange = useCallback(
     (event, newValue) => {
+      console.log('newValuenewValuenewValue', newValue);
       handleFilters('bookingType', newValue);
     },
     [handleFilters]
@@ -224,9 +233,9 @@ export default function BookingListView() {
 
   const tabBackgroundColors = {
     all: '#49525b',
-    pending: '#d3f2f7',
-    confirmed: '#dbf6e5',
-    cancelled: '#ffe4de',
+    0: '#d3f2f7',
+    1: '#dbf6e5',
+    2: '#ffe4de',
   };
   const tabTextColors = {
     all: '#ffff',
@@ -256,21 +265,48 @@ export default function BookingListView() {
           value={filters.bookingType}
           onChange={handleTabChange}
           sx={{
-            px: 2.5,
-            marginBottom: 4,
-            boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            '& .MuiTabs-scroller': {
-              overflow: 'hidden',
-            },
-            '& .MuiTabs-scrollButtons': {
-              display: 'none',
-            },
+            borderBottom: 1,
+            borderColor: 'divider',
           }}
         >
-          {bookingTypeOptions.map((tab) => {
+          <Tab
+            value="all"
+            label={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span>All</span>
+                <Typography
+                  sx={{
+                    backgroundColor: '#f0f0f0',
+                    display: 'inline-block',
+                    padding: '4px 9px',
+                    borderRadius: '4px',
+                    marginLeft: '8px',
+                    color: '#000',
+                  }}
+                >
+                  {bookingCounts.all || 0}
+                </Typography>
+              </div>
+            }
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px',
+              borderRadius: '4px',
+            }}
+          />
+          {bookingStatusEnum.map((tab) => {
+            // Log the current tab being processed
+            console.log('Processing tab:', tab);
+
             const count = bookingCounts[tab.value] || 0;
+            console.log(`Count for ${tab.name}:`, count); // Log the count for the current tab
+
             const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
+            console.log(`Background color for ${tab.name}:`, backgroundColor); // Log the background color
+
             const textColor = tabTextColors[tab.value] || '#000';
+            console.log(`Text color for ${tab.name}:`, textColor); // Log the text color
 
             return (
               <Tab
@@ -284,7 +320,7 @@ export default function BookingListView() {
                 }}
                 label={
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{tab.label}</span>
+                    <span>{tab.name}</span>
                     <Typography
                       sx={{
                         backgroundColor: backgroundColor,

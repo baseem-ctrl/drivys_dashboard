@@ -69,3 +69,30 @@ export function updatePaymentBookingStatus(body: FormData) {
   const URL = endpoints.booking.updatePaymentBookingStatus;
   return drivysCreator([URL, body]);
 }
+// Function to get booking status enum
+export function useGetBookingStatusEnum() {
+  const URL = endpoints.booking.getBookingStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  console.log('API Response:', data); // Log the response for debugging
+
+  const memoizedValue = useMemo(() => {
+    // Access the values directly from the response
+    const bookingStatusEnum = data?.values || []; // Ensure we access the correct field
+    return {
+      bookingStatusEnum,
+      bookingStatusError: error,
+      bookingStatusLoading: isLoading,
+      bookingStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateBookingStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingStatusEnum };
+}
