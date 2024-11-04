@@ -48,13 +48,31 @@ export default function BookingTableRow({
         <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name || 'N/A'}</TableCell>
 
         <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row?.driver_status === 'PENDING' ? 'warning' : 'success'}>
-            {row?.driver_status || 'N/A'}
+          <Label
+            variant="soft"
+            color={
+              row?.booking_status === 'PENDING'
+                ? 'warning'
+                : row?.booking_status === 'CANCELLED'
+                ? 'error'
+                : 'success'
+            }
+          >
+            {row?.booking_status || 'N/A'}
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row.booking_status === 'PENDING' ? 'warning' : 'success'}>
-            {row.booking_status || 'N/A'}
+          <Label
+            variant="soft"
+            color={
+              row.payment_status === 'PENDING'
+                ? 'warning'
+                : row.payment_status === 'FAILED'
+                ? 'error'
+                : 'success'
+            }
+          >
+            {row.payment_status || 'N/A'}
           </Label>
         </TableCell>
 
