@@ -5,8 +5,10 @@ import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
 import { usePopover } from 'src/components/custom-popover';
 import { formatDate } from 'src/utils/format-date';
-import { Typography } from '@mui/material';
-import moment from 'moment';
+import { Link, Typography } from '@mui/material';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
 // ----------------------------------------------------------------------
@@ -14,7 +16,7 @@ import moment from 'moment';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: any;
+  row: IBookingItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
@@ -32,6 +34,7 @@ export default function BookingTableRow({
   const quickEdit = useBoolean();
   const popover = usePopover();
   const zerothIndex = 0;
+  const router = useRouter();
 
   const { user, driver, booking_method, payment_status, total, created_at, sessions } = row;
 
@@ -40,43 +43,87 @@ export default function BookingTableRow({
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
+  const handleClickDetails = (id) => {
+    router.push(paths.dashboard.user.details(id));
+  };
 
   return (
-    <>
-      <TableRow hover selected={selected}>
-        <TableCell onClick={() => handleRowClick(row.id)}>{user?.name || 'N/A'}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name || 'N/A'}</TableCell>
+    <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
+      <TableCell
+        sx={{
+          cursor: 'pointer',
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+      >
+        <Link
+          color="inherit"
+          sx={{
+            cursor: 'pointer',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' },
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleClickDetails(user?.id);
+          }}
+        >
+          {user?.name || 'N/A'}
+        </Link>
+      </TableCell>
 
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row?.driver_status === 'PENDING' ? 'warning' : 'success'}>
-            {row?.driver_status || 'N/A'}
-          </Label>
-        </TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row.booking_status === 'PENDING' ? 'warning' : 'success'}>
-            {row.booking_status || 'N/A'}
-          </Label>
-        </TableCell>
+      <TableCell
+        sx={{
+          cursor: 'pointer',
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          handleClickDetails(driver?.id);
+        }}
+      >
+        {driver?.name || 'N/A'}
+      </TableCell>
 
-        <TableCell onClick={() => handleRowClick(row.id)}>{row?.sub_total}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{row?.payment_method}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          {row.coupon_code ? row.coupon_code : 'No Coupon'}
-        </TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          {moment
-            .utc(row?.created_at)
-            .local()
-            .format('D/M/YYYY h:mm A')}
-          <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-            Updated{' '}
-            {moment
-              .utc(row?.updated_at)
-              .local()
-              .format('D/M/YYYY h:mm A')}
-          </Typography>
-        </TableCell>
-      </TableRow>
-    </>
+      <TableCell>
+        <Label
+          variant="soft"
+          color={
+            row?.booking_status === 'PENDING'
+              ? 'warning'
+              : row?.booking_status === 'CANCELLED'
+              ? 'error'
+              : 'success'
+          }
+        >
+          {row?.booking_status || 'N/A'}
+        </Label>
+      </TableCell>
+      <TableCell>
+        <Label
+          variant="soft"
+          color={
+            row.payment_status === 'PENDING'
+              ? 'warning'
+              : row.payment_status === 'FAILED'
+              ? 'error'
+              : 'success'
+          }
+        >
+          {row.payment_status || 'N/A'}
+        </Label>
+      </TableCell>
+
+      <TableCell>{row?.sub_total}</TableCell>
+      <TableCell>{row?.payment_method}</TableCell>
+      <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
+      <TableCell onClick={() => handleRowClick(row.id)}>
+        {formatDate(row?.created_at)}
+        <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+          Updated {formatDate(row?.updated_at)}
+        </Typography>
+      </TableCell>
+    </TableRow>
   );
 }
