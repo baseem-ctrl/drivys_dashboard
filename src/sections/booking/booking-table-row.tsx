@@ -6,6 +6,7 @@ import Label from 'src/components/label';
 import { usePopover } from 'src/components/custom-popover';
 import { formatDate } from 'src/utils/format-date';
 import { Typography } from '@mui/material';
+import moment from 'moment';
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
 // ----------------------------------------------------------------------
@@ -13,7 +14,7 @@ import { Typography } from '@mui/material';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IBookingItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
@@ -63,9 +64,9 @@ export default function BookingTableRow({
           {row.coupon_code ? row.coupon_code : 'No Coupon'}
         </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
-          {formatDate(row?.created_at)}
+          {moment(row?.created_at).format('D/M/YYYY h:mm A')}
           <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-            Updated {formatDate(row?.updated_at)}
+            Updated {moment(row?.updated_at).format('D/M/YYYY h:mm A')}
           </Typography>
         </TableCell>
       </TableRow>
