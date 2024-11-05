@@ -31,6 +31,7 @@ import Editor from '../../components/editor';
 import PackageDescription from './package-html-converter';
 import PackageDocumentCreateUpdate from './create-update-package-document-form';
 import PackageDocumentDetails from './view/package-document-details.tsx';
+import { useGetAllCategory } from 'src/api/category';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -55,7 +56,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     useGetAllLanguage(0, 1000);
 
   const { schoolList, schoolLoading } = useGetSchool(1000, 1);
-
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 1,
+  });
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.package_translations?.length > 0) {
@@ -91,6 +95,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     status: Yup.string(),
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),
+    category_id: Yup.string(),
   });
   const defaultVendorValues = useMemo(
     () => ({
@@ -100,6 +105,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       number_of_sessions: details?.number_of_sessions || '',
       is_published: true,
       vendor_id: details?.vendor_id,
+      category_id: details?.category_id,
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -132,6 +138,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       schoolSetValue('session_inclusions', ''); // Update name to match the locale
     }
   };
+  console.log('detailsdetails', details);
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -141,6 +148,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         session_inclusions: selectedLocaleObject?.session_inclusions || '',
         is_published: details?.is_published === '0' ? false : true,
         vendor_id: details?.vendor_id,
+        category_id: details?.category_id || '',
       };
       schoolReset(defaultVendorValues);
     }
@@ -165,6 +173,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
         vendor_id: data?.vendor_id || details?.vendor_id,
+        category_id: data?.category_id || details?.category_id,
       };
       let formData = new FormData();
 
@@ -174,6 +183,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
+      formData.append('category_id', payload.category_id || '');
 
       // Handle `package_translations` (assumes only one translation)
       if (payload.package_translations && payload.package_translations.length > 0) {
@@ -261,6 +271,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               ]) || []),
 
               { label: 'Number of sessions', value: details?.number_of_sessions ?? 'NA' },
+              {
+                label: 'Category',
+                value: (() => {
+                  const selectedCategory = category?.find((cat) => cat.id === details?.category_id);
+                  return selectedCategory
+                    ? selectedCategory.category_translations[0]?.name || 'N/A' // Adjust if you need a specific locale
+                    : 'N/A';
+                })(),
+              },
               {
                 label: 'Is Published',
                 value:
@@ -374,6 +393,34 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                           )?.name || 'Unknown'}
                         </MenuItem>
                       ))}
+                    </Select>
+                  )}
+                />
+                <Controller
+                  name="category_id"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      value={field.value || ''} // Ensure the field value is controlled
+                      displayEmpty // This prop allows the placeholder to be visible
+                    >
+                      <MenuItem value="" disabled>
+                        <em>Select a category</em>
+                      </MenuItem>
+                      {category?.length > 0 ? (
+                        category.map((item) =>
+                          item.category_translations.map((translation) => (
+                            <MenuItem key={`${item.id}-${translation.id}`} value={item.id}>
+                              {translation.name} ({translation.locale})
+                            </MenuItem>
+                          ))
+                        )
+                      ) : (
+                        <MenuItem disabled value="">
+                          <em>No categories available</em>
+                        </MenuItem>
+                      )}
                     </Select>
                   )}
                 />
