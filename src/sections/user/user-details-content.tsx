@@ -8,6 +8,15 @@ import Typography from '@mui/material/Typography';
 // import ListItemText from '@mui/material/ListItemText';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
 // import { fCurrency } from 'src/utils/format-number';
@@ -455,68 +464,60 @@ export default function UserDetailsContent({
   };
 
   const renderBookingContent = (
-    <Grid container spacing={4}>
-      {bookingDetails.map((booking) => (
-        <Grid item xs={12} sm={6} md={4} key={booking.id}>
-          <Card variant="outlined" style={{ padding: '10px', position: 'relative' }}>
-            <Chip
-              label={booking.booking_status}
-              color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-              variant="outlined"
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-              }}
-            />
-            <CardContent>
-              <Grid container spacing={1} sx={{ marginTop: '20px' }} alignItems="center">
-                <Grid item>
-                  <Avatar
-                    src={booking.user.photo_url}
-                    alt={booking.user.name}
-                    sx={{ width: 66, height: 66 }}
-                  />
-                </Grid>
-                <Grid item xs>
-                  <Typography variant="h6" gutterBottom>
-                    {booking.user.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {booking.user.email}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Divider style={{ margin: '16px 0' }} />
-              <Typography variant="body1">Payment Status: {booking.payment_status}</Typography>
-              <Typography style={{ marginTop: 10 }}>Total: ${booking.total}</Typography>
-              <Divider style={{ margin: '16px 0' }} />
-              <Typography variant="subtitle1" style={{ marginTop: 10 }}>
-                Sessions:
-              </Typography>
-              {booking.sessions.map((session) => (
-                <Typography key={session.id} variant="body2" style={{ margin: '16px 0' }}>
-                  {`Session ${session.id}: ${session.session_status} (from ${session.start_time} to ${session.end_time})`}
-                </Typography>
-              ))}
-              <Typography
-                variant="body2"
-                color="primary"
-                style={{
-                  marginTop: '20px',
-                  fontStyle: 'italic',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>User</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell align="center">Booking Status</TableCell>
+            <TableCell align="center">Payment Status</TableCell>
+            <TableCell align="center">Total</TableCell>
+            <TableCell align="center">Sessions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {bookingDetails.length > 0 &&
+            bookingDetails.map((booking) => (
+              <TableRow
+                key={booking.id}
                 onClick={() => handleBookingClick(booking.id)}
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
+                }}
               >
-                You can see the full booking details by clicking here
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+                <TableCell>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <Typography>{booking.user.name}</Typography>
+                    </Grid>
+                  </Grid>
+                </TableCell>
+                <TableCell>{booking.user.email}</TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking.booking_status}
+                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="center">{booking.payment_status}</TableCell>
+                <TableCell align="center">${booking.total}</TableCell>
+                <TableCell>
+                  {booking.sessions.map((session) => (
+                    <Typography key={session.id} align="center">
+                      {session.id}
+                    </Typography>
+                  ))}
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
