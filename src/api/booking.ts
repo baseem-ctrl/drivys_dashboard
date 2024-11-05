@@ -94,7 +94,7 @@ export function useGetBookingStatusEnum() {
 }
 // function to fetch booking details by a student's ID
 export function useGetBookingByTrainerId(trainer_id: string) {
-  const URL = `${endpoints.booking.getList}?trainer_id=${trainer_id}`;
+  const URL = `${endpoints.booking.getList}?driver_id=${trainer_id}`;
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
