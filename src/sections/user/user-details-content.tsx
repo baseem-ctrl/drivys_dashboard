@@ -19,7 +19,9 @@ import Iconify from 'src/components/iconify';
 import {
   Box,
   Button,
+  CardContent,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
   MenuItem,
@@ -32,7 +34,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool, createUpdateSchoolAddress, useGetSchoolAdmin } from 'src/api/school';
+import {
+  createSchool,
+  createUpdateSchoolAddress,
+  useGetBookingByStudentId,
+  useGetSchoolAdmin,
+} from 'src/api/school';
 import {
   createNewAddressForUser,
   deleteUserAddress,
@@ -52,6 +59,7 @@ import StudentDetailsContent from './student-details-content';
 import UserDocumentDetails from './user-document/user-document-details';
 import { useGetUserDocumentList } from 'src/api/user-document';
 import TrainerWorkingHour from './trainer-working-hour';
+import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -70,7 +78,6 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset } = useForm();
-  console.log('details', details);
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -80,10 +87,13 @@ export default function UserDetailsContent({
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
   const [currentTab, setCurrentTab] = useState('details');
+  const [studentTab, setStudentTab] = useState('details');
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
+    useGetBookingByStudentId(details?.id);
   const {
     userDocuments,
     userDocumentLoading,
@@ -318,6 +328,9 @@ export default function UserDetailsContent({
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
+  const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    setStudentTab(newValue);
+  }, []);
   // const handleCancel = () => {
   //   schoolReset(); // Reset to the original values
   //   setEditMode(false);
@@ -437,7 +450,74 @@ export default function UserDetailsContent({
       </Stack>
     </Stack>
   );
+  const handleBookingClick = (booking) => {
+    router.push(paths.dashboard.booking.details(booking));
+  };
 
+  const renderBookingContent = (
+    <Grid container spacing={4}>
+      {bookingDetails.map((booking) => (
+        <Grid item xs={12} sm={6} md={4} key={booking.id}>
+          <Card variant="outlined" style={{ padding: '10px', position: 'relative' }}>
+            <Chip
+              label={booking.booking_status}
+              color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
+              variant="outlined"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+              }}
+            />
+            <CardContent>
+              <Grid container spacing={1} sx={{ marginTop: '20px' }} alignItems="center">
+                <Grid item>
+                  <Avatar
+                    src={booking.user.photo_url}
+                    alt={booking.user.name}
+                    sx={{ width: 66, height: 66 }}
+                  />
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="h6" gutterBottom>
+                    {booking.user.name}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {booking.user.email}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider style={{ margin: '16px 0' }} />
+              <Typography variant="body1">Payment Status: {booking.payment_status}</Typography>
+              <Typography style={{ marginTop: 10 }}>Total: ${booking.total}</Typography>
+              <Divider style={{ margin: '16px 0' }} />
+              <Typography variant="subtitle1" style={{ marginTop: 10 }}>
+                Sessions:
+              </Typography>
+              {booking.sessions.map((session) => (
+                <Typography key={session.id} variant="body2" style={{ margin: '16px 0' }}>
+                  {`Session ${session.id}: ${session.session_status} (from ${session.start_time} to ${session.end_time})`}
+                </Typography>
+              ))}
+              <Typography
+                variant="body2"
+                color="primary"
+                style={{
+                  marginTop: '20px',
+                  fontStyle: 'italic',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => handleBookingClick(booking.id)}
+              >
+                You can see the full booking details by clicking here
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  );
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
@@ -486,6 +566,19 @@ export default function UserDetailsContent({
         </Grid>
       </Stack>
     </Stack>
+  );
+  const renderStudentTabs = (
+    <Tabs
+      value={studentTab}
+      onChange={handleStudentChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {STUDENT_DETAILS_TABS.map((tab) => (
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+    </Tabs>
   );
   const renderTabs = (
     <Tabs
@@ -1123,16 +1216,21 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
+          {details?.user_type === 'STUDENT' && renderStudentTabs}
+
           <Grid container spacing={1} rowGap={1}>
             <Grid xs={12} md={12}>
               {/* For all other user types */}
-              {details?.user_type !== 'TRAINER' && renderContent}
+              {details?.user_type !== 'TRAINER' && studentTab === 'details' && renderContent}
 
               {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
+              {/* {studentTab === 'details' && details?.user_type === 'STUDENT' && renderContent}
+              {studentTab === 'booking' && details?.user_type === 'STUDENT' && renderContent} */}
+
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
@@ -1144,12 +1242,16 @@ export default function UserDetailsContent({
             </Grid>
 
             <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && renderAddress}
+              {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'booking' && renderBookingContent}
             </Grid>
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' &&
+                studentTab === 'details' &&
                 details?.user_preference?.id &&
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}

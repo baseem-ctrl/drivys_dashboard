@@ -236,6 +236,7 @@ export const endpoints = {
     getById: `admin/booking/get-booking-by-id`,
     updatePaymentBookingStatus: 'admin/booking/update-booking-and-payment-status',
     getBookingStatus: 'public/enum/get-booking-status-enum',
+    getBookingById: 'admin/booking/get-bookings-by-student-id',
   },
   packageTrainer: {
     list: 'admin/package-trainer/get-trainer-packages',

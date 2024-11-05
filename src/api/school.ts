@@ -328,3 +328,26 @@ export function useGetAllSchoolAdmin(limit: number, page: number) {
     revalidateSchoolList,
   };
 }
+// function to fetch booking details by a student's ID
+export function useGetBookingByStudentId(studentId: string) {
+  const URL = `${endpoints.booking.getBookingById}?student_id=${studentId}`;
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      bookingDetails: (data?.data as any) || {},
+      bookingError: error,
+      bookingLoading: isLoading,
+      bookingValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateBookingDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingDetails };
+}
