@@ -69,6 +69,8 @@ import UserDocumentDetails from './user-document/user-document-details';
 import { useGetUserDocumentList } from 'src/api/user-document';
 import TrainerWorkingHour from './trainer-working-hour';
 import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
+import { useGetBookingByTrainerId } from 'src/api/booking';
+import BookingTrainerTable from './booking-details/trainer-booking-details';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -103,6 +105,8 @@ export default function UserDetailsContent({
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
     useGetBookingByStudentId(details?.id);
+  const { bookingTrainerDetails } = useGetBookingByTrainerId(details?.id);
+
   const {
     userDocuments,
     userDocumentLoading,
@@ -110,6 +114,7 @@ export default function UserDetailsContent({
     totalPages,
     revalidateUserDocuments,
   } = useGetUserDocumentList({ userId: details.id });
+  console.log('bookingTrainerDetails', bookingTrainerDetails);
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -470,10 +475,11 @@ export default function UserDetailsContent({
           <TableRow>
             <TableCell>User</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell align="center">Booking Status</TableCell>
-            <TableCell align="center">Payment Status</TableCell>
+
             <TableCell align="center">Total</TableCell>
             <TableCell align="center">Sessions</TableCell>
+            <TableCell align="center">Booking Status</TableCell>
+            <TableCell align="center">Payment Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -497,14 +503,7 @@ export default function UserDetailsContent({
                   </Grid>
                 </TableCell>
                 <TableCell>{booking.user.email}</TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={booking.booking_status}
-                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="center">{booking.payment_status}</TableCell>
+
                 <TableCell align="center">${booking.total}</TableCell>
                 <TableCell>
                   {booking.sessions.map((session) => (
@@ -512,6 +511,20 @@ export default function UserDetailsContent({
                       {session.id}
                     </Typography>
                   ))}
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking.booking_status}
+                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking.payment_status}
+                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
+                    variant="outlined"
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -1247,6 +1260,14 @@ export default function UserDetailsContent({
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'booking' && renderBookingContent}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
+                <BookingTrainerTable
+                  bookingDetails={bookingTrainerDetails.bookings}
+                  handleBookingClick={handleBookingClick}
+                />
+              )}
             </Grid>
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
