@@ -6,7 +6,6 @@ import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 export function useGetBookings(filters = {}) {
-  console.log('filters from api', filters);
   const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
@@ -68,4 +67,29 @@ export function useGetBookingById(id: string | number) {
 export function updatePaymentBookingStatus(body: FormData) {
   const URL = endpoints.booking.updatePaymentBookingStatus;
   return drivysCreator([URL, body]);
+}
+// Function to get booking status enum
+export function useGetBookingStatusEnum() {
+  const URL = endpoints.booking.getBookingStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    // Access the values directly from the response
+    const bookingStatusEnum = data?.values || [];
+    return {
+      bookingStatusEnum,
+      bookingStatusError: error,
+      bookingStatusLoading: isLoading,
+      bookingStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateBookingStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingStatusEnum };
 }

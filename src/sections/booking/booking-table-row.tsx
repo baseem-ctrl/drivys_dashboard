@@ -36,7 +36,8 @@ export default function BookingTableRow({
   const zerothIndex = 0;
   const router = useRouter();
 
-  const { user, driver, booking_method, payment_status, total, created_at, sessions } = row;
+  const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
+    row;
 
   console.log('rowrow', row);
   const handleRowClick = (bookingId: number) => {
@@ -80,7 +81,7 @@ export default function BookingTableRow({
         }}
         onClick={(event) => {
           event.stopPropagation();
-          handleClickDetails(driver?.id);
+          handleClickDetails(driver_id);
         }}
       >
         {driver?.name || 'N/A'}
