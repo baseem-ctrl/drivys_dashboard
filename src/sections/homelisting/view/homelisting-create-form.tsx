@@ -156,7 +156,7 @@ export default function SchoolCreateForm({ open, onClose, revalidateHomeListing 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Create Home Lisitng</DialogTitle>
+        <DialogTitle>Create Home Listing</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
