@@ -29,6 +29,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createUpdatePackage } from 'src/api/package';
+import { useGetAllCategory } from 'src/api/category';
 
 // ----------------------------------------------------------------------
 
@@ -62,9 +63,14 @@ export default function PackageTableRow({
     vendor,
     vendor_user,
     number_of_sessions,
+    category_id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 1,
+  });
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -109,6 +115,7 @@ export default function PackageTableRow({
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),
     number_of_sessions: Yup.string(),
+    category_id: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -121,6 +128,7 @@ export default function PackageTableRow({
       is_published: is_published || 1,
       vendor_id: vendor?.vendor_user?.vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
+      category_id: category_id || '',
     }),
     [selectedLocaleObject, row]
   );
@@ -164,6 +172,7 @@ export default function PackageTableRow({
         vendor_id: data?.vendor_id || vendor?.vendor_user?.vendor_id,
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
+        category_id: data?.category_id,
         package_id: row?.id,
       };
       const response = await createUpdatePackage(payload);
@@ -309,15 +318,14 @@ export default function PackageTableRow({
             <Label
               variant="soft"
               color={
-                (is_published === '1' && 'success') ||
-                (is_published === '0' && 'error') ||
-                'default'
+                (is_published === 1 && 'success') || (is_published === 0 && 'error') || 'default'
               }
             >
               {is_published === '0' ? 'Un Published' : 'Published'}
             </Label>
           )}
         </TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
@@ -349,6 +357,39 @@ export default function PackageTableRow({
             />
           )}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="category_id" // Ensure this matches your form state
+              control={control}
+              defaultValue={row.category_id} // Set the default value to the current category id
+              render={({ field }) => (
+                <Select {...field} value={field.value || ''}>
+                  {category.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.category_translations[0]?.name || 'N/A'}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          ) : (
+            <ListItemText
+              primary={(() => {
+                const selectedCategory = category?.find((cat) => cat.id === row.category_id);
+                return selectedCategory
+                  ? selectedCategory.category_translations[0]?.name || 'N/A'
+                  : 'N/A';
+              })()}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          )}
+        </TableCell>
+
         <TableCell sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton
