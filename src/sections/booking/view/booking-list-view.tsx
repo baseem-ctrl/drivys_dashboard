@@ -98,7 +98,6 @@ export default function BookingListView() {
 
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  console.log('bookingStatusEnum', bookingStatusEnum);
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
   const confirm = useBoolean();
@@ -109,9 +108,12 @@ export default function BookingListView() {
     CONFIRMED: 2,
     CANCELLED: 3,
   };
-
-  const paymentStatusCode = statusMap[filters.paymentStatus] ?? undefined;
-
+  const paymentStatusMap = {
+    PENDING: 0,
+    CONFIRMED: 1,
+    CANCELLED: 2,
+  };
+  const paymentStatusCode = paymentStatusMap[filters.paymentStatus] ?? undefined;
   const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookings({
     page: table.page,
     limit: table.rowsPerPage,
@@ -133,33 +135,22 @@ export default function BookingListView() {
   });
 
   useEffect(() => {
-    if (bookings?.length > 0) {
-      const statusMap = bookingStatusEnum.reduce((map, status) => {
-        map[status.value] = status.name.toLowerCase();
-        return map;
-      }, {});
-
+    if (bookings.booking_status_counts) {
       const initialCounts = { all: 0 };
       bookingStatusEnum.forEach((status) => {
         initialCounts[status.value] = 0;
       });
 
-      const counts = bookings.reduce((acc, booking) => {
-        const status = booking.booking_status.toLowerCase();
-        console.log('statusstatusstatusstatusstatusstatus', status);
-        acc.all += 1;
+      Object.keys(bookings.booking_status_counts).forEach((status) => {
+        const statusCount = bookings.booking_status_counts[status] || 0;
 
-        const mappedStatus = Object.keys(statusMap).find((key) => statusMap[key] === status);
-        if (mappedStatus !== undefined) {
-          acc[mappedStatus] += 1;
-        }
+        initialCounts[status] = statusCount;
+        initialCounts.all += statusCount;
+      });
 
-        return acc;
-      }, initialCounts);
-
-      setBookingCounts(counts);
+      setBookingCounts(initialCounts);
     }
-  }, [bookings, filters.bookingType, bookingStatusEnum]);
+  }, [bookings.booking_status_counts, bookingStatusEnum]);
 
   const vendorOptions = usersLoading
     ? [{ label: 'Loading...', value: '' }]
@@ -168,13 +159,12 @@ export default function BookingListView() {
         value: user.id,
       }));
   useEffect(() => {
-    if (bookings?.length > 0) {
-      setTableData(bookings);
+    if (bookings?.bookings?.length > 0) {
+      setTableData(bookings.bookings);
     } else {
       setTableData([]);
     }
   }, [bookings]);
-
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -186,8 +176,8 @@ export default function BookingListView() {
     [table]
   );
   useEffect(() => {
-    if (bookings?.length > 0) {
-      const filteredBookings = bookings.filter((booking) => {
+    if (bookings?.bookings?.length > 0) {
+      const filteredBookings = bookings.bookings.filter((booking) => {
         switch (filters.bookingType) {
           case 1:
             return booking.booking_status === 'CONFIRMED';
@@ -199,7 +189,6 @@ export default function BookingListView() {
             return true;
         }
       });
-
       setTableData(filteredBookings);
     } else {
       setTableData([]);
@@ -208,7 +197,6 @@ export default function BookingListView() {
 
   const handleTabChange = useCallback(
     (event, newValue) => {
-      console.log('newValuenewValuenewValue', newValue);
       handleFilters('bookingType', newValue);
     },
     [handleFilters]
@@ -296,17 +284,9 @@ export default function BookingListView() {
             }}
           />
           {bookingStatusEnum.map((tab) => {
-            // Log the current tab being processed
-            console.log('Processing tab:', tab);
-
-            const count = bookingCounts[tab.value] || 0;
-            console.log(`Count for ${tab.name}:`, count); // Log the count for the current tab
-
+            const count = bookingCounts[tab.name] || 0;
             const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
-            console.log(`Background color for ${tab.name}:`, backgroundColor); // Log the background color
-
             const textColor = tabTextColors[tab.value] || '#000';
-            console.log(`Text color for ${tab.name}:`, textColor); // Log the text color
 
             return (
               <Tab

@@ -6,7 +6,6 @@ const paymentMethodOptions = ['ONLINE', 'OFFLINE'];
 export default function BookingTableToolbar({ filters, onFilters, vendorOptions }) {
   const handleChange = (name) => (event) => {
     onFilters(name, event.target.value);
-    console.log('name, event.target.value', name, event.target.value);
   };
 
   const handleClear = (name) => () => {
@@ -21,7 +20,7 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
       gap={2}
       padding={2}
     >
-      <TextField
+      {/* <TextField
         select
         variant="outlined"
         label="Payment Status"
@@ -37,7 +36,7 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
             {status}
           </MenuItem>
         ))}
-      </TextField>
+      </TextField> */}
 
       <TextField
         select

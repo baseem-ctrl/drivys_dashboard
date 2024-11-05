@@ -6,7 +6,6 @@ import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 export function useGetBookings(filters = {}) {
-  console.log('filters from api', filters);
   const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
@@ -77,11 +76,9 @@ export function useGetBookingStatusEnum() {
     revalidateOnFocus: false,
   });
 
-  console.log('API Response:', data); // Log the response for debugging
-
   const memoizedValue = useMemo(() => {
     // Access the values directly from the response
-    const bookingStatusEnum = data?.values || []; // Ensure we access the correct field
+    const bookingStatusEnum = data?.values || [];
     return {
       bookingStatusEnum,
       bookingStatusError: error,
