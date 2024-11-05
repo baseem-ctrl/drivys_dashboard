@@ -8,6 +8,15 @@ import Typography from '@mui/material/Typography';
 // import ListItemText from '@mui/material/ListItemText';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
 // import { fCurrency } from 'src/utils/format-number';
@@ -19,7 +28,9 @@ import Iconify from 'src/components/iconify';
 import {
   Box,
   Button,
+  CardContent,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
   MenuItem,
@@ -32,7 +43,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool, createUpdateSchoolAddress, useGetSchoolAdmin } from 'src/api/school';
+import {
+  createSchool,
+  createUpdateSchoolAddress,
+  useGetBookingByStudentId,
+  useGetSchoolAdmin,
+} from 'src/api/school';
 import {
   createNewAddressForUser,
   deleteUserAddress,
@@ -52,6 +68,9 @@ import StudentDetailsContent from './student-details-content';
 import UserDocumentDetails from './user-document/user-document-details';
 import { useGetUserDocumentList } from 'src/api/user-document';
 import TrainerWorkingHour from './trainer-working-hour';
+import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
+import { useGetBookingByTrainerId } from 'src/api/booking';
+import BookingTrainerTable from './booking-details/trainer-booking-details';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -70,7 +89,6 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset } = useForm();
-  console.log('details', details);
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -80,10 +98,15 @@ export default function UserDetailsContent({
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
   const [currentTab, setCurrentTab] = useState('details');
+  const [studentTab, setStudentTab] = useState('details');
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
+    useGetBookingByStudentId(details?.id);
+  const { bookingTrainerDetails } = useGetBookingByTrainerId(details?.id);
+
   const {
     userDocuments,
     userDocumentLoading,
@@ -91,6 +114,7 @@ export default function UserDetailsContent({
     totalPages,
     revalidateUserDocuments,
   } = useGetUserDocumentList({ userId: details.id });
+  console.log('bookingTrainerDetails', bookingTrainerDetails);
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -318,6 +342,9 @@ export default function UserDetailsContent({
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
+  const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    setStudentTab(newValue);
+  }, []);
   // const handleCancel = () => {
   //   schoolReset(); // Reset to the original values
   //   setEditMode(false);
@@ -437,7 +464,74 @@ export default function UserDetailsContent({
       </Stack>
     </Stack>
   );
+  const handleBookingClick = (booking) => {
+    router.push(paths.dashboard.booking.details(booking));
+  };
 
+  const renderBookingContent = (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>User</TableCell>
+            <TableCell>Email</TableCell>
+
+            <TableCell align="center">Total</TableCell>
+            <TableCell align="center">Sessions</TableCell>
+            <TableCell align="center">Booking Status</TableCell>
+            <TableCell align="center">Payment Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {bookingDetails.length > 0 &&
+            bookingDetails.map((booking) => (
+              <TableRow
+                key={booking.id}
+                onClick={() => handleBookingClick(booking.id)}
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
+                }}
+              >
+                <TableCell>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <Typography>{booking.user.name}</Typography>
+                    </Grid>
+                  </Grid>
+                </TableCell>
+                <TableCell>{booking.user.email}</TableCell>
+
+                <TableCell align="center">${booking.total}</TableCell>
+                <TableCell>
+                  {booking.sessions.map((session) => (
+                    <Typography key={session.id} align="center">
+                      {session.id}
+                    </Typography>
+                  ))}
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking.booking_status}
+                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking.payment_status}
+                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
+                    variant="outlined"
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
@@ -486,6 +580,19 @@ export default function UserDetailsContent({
         </Grid>
       </Stack>
     </Stack>
+  );
+  const renderStudentTabs = (
+    <Tabs
+      value={studentTab}
+      onChange={handleStudentChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {STUDENT_DETAILS_TABS.map((tab) => (
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+    </Tabs>
   );
   const renderTabs = (
     <Tabs
@@ -1123,16 +1230,21 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
+          {details?.user_type === 'STUDENT' && renderStudentTabs}
+
           <Grid container spacing={1} rowGap={1}>
             <Grid xs={12} md={12}>
               {/* For all other user types */}
-              {details?.user_type !== 'TRAINER' && renderContent}
+              {details?.user_type !== 'TRAINER' && studentTab === 'details' && renderContent}
 
               {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
+              {/* {studentTab === 'details' && details?.user_type === 'STUDENT' && renderContent}
+              {studentTab === 'booking' && details?.user_type === 'STUDENT' && renderContent} */}
+
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
@@ -1144,12 +1256,24 @@ export default function UserDetailsContent({
             </Grid>
 
             <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && renderAddress}
+              {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'booking' && renderBookingContent}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
+                <BookingTrainerTable
+                  bookingDetails={bookingTrainerDetails.bookings}
+                  handleBookingClick={handleBookingClick}
+                />
+              )}
             </Grid>
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' &&
+                studentTab === 'details' &&
                 details?.user_preference?.id &&
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
