@@ -20,10 +20,9 @@ export function useGetBookings(filters = {}) {
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
-
   const memoizedValue = useMemo(() => {
     const bookings = data?.data || [];
-    const totalCount = data?.totalCount || 0;
+    const totalCount = data?.data?.bookings.length || 0;
     return {
       bookings,
       totalCount,
