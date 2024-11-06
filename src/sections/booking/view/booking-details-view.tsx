@@ -59,19 +59,10 @@ const BookingDetailsComponent = () => {
   const { bookingDetails, bookingError, bookingLoading, revalidateBooking } = useGetBookingById(id);
   const { user, package: pkg, driver, pickup_location, total, sessions } = bookingDetails;
   const [value, setValue] = useState(0);
-  const [paymentStatus, setPaymentStatus] = useState('');
-  const [bookingStatus, setBookingStatus] = useState('');
   const popover = usePopover();
 
-  const PAYMENT_STATUS_MAP = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
-  };
   const handleBookingStatusChange = async (event: any) => {
     const selectedStatus = event;
-    // setBookingStatus(selectedStatus);
-    // const selectedPaymentStatus = PAYMENT_STATUS_MAP[selectedStatus.toUpperCase()];
     const formData = new FormData();
     formData.append('booking_status', selectedStatus);
     formData.append('id', id);
@@ -94,7 +85,6 @@ const BookingDetailsComponent = () => {
     const formData = new FormData();
     formData.append('payment_status', selectedStatus);
     formData.append('id', id);
-
     try {
       const response = await updatePaymentBookingStatus(formData);
       enqueueSnackbar(response.message ?? 'Status Updated successfully', {
@@ -110,17 +100,6 @@ const BookingDetailsComponent = () => {
   };
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
   const { paymentStatusEnum, paymentStatusError, paymentStatusLoading } = useGetPaymentStatusEnum();
-
-  const paymentStatusOptions = [
-    { value: 'PENDING', label: 'PENDING' },
-    { value: 'CONFIRMED', label: 'CONFIRMED' },
-    { value: 'CANCELLED', label: 'CANCELLED' },
-  ];
-  const bookingStatusOptions = [
-    { value: 'PENDING', label: 'PENDING' },
-    { value: 'CONFIRMED', label: 'CONFIRMED' },
-    { value: 'CANCELLED', label: 'CANCELLED' },
-  ];
 
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
@@ -144,17 +123,9 @@ const BookingDetailsComponent = () => {
       </Box>
     );
   }
+
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {/* <CustomBreadcrumbs
-        heading="Booking Orders List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Order', href: paths.dashboard.booking.root },
-          { name: 'List' },
-        ]}
-        sx={{ mb: 3 }}
-      /> */}
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <BookingDetailsToolbar
         backLink={paths.dashboard.booking.root}
         orderNumber={bookingDetails?.id}

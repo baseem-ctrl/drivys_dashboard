@@ -13,7 +13,6 @@ export type IBookingItem = {
   payment_status: 'paid' | 'pending' | 'failed';
   total: number;
   created_at: string;
-  booking_status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   sessions: Array<{
     session_id: number;
     start_time: string;
