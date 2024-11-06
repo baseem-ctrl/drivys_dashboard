@@ -30,7 +30,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool, createUpdateSchoolAddress, useGetSchoolAdmin } from 'src/api/school';
+import {
+  createSchool,
+  createUpdateSchoolAddress,
+  useGetAllSchoolAdmin,
+  useGetSchoolAdmin,
+} from 'src/api/school';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
 import Scrollbar from 'src/components/scrollbar';
@@ -57,7 +62,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1);
 
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
@@ -95,7 +101,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   const selectedLocaleObject = details?.vendor_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
-  console.log(selectedLocaleObject, selectedLanguage, 'selectedLocaleObject');
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
@@ -133,7 +138,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       website: details?.website || '',
       status: details?.status || '',
       is_active: true,
-      user_id: details?.vendor_user?.user_id,
+      user_id: details?.vendor_user?.user_id || '',
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -151,7 +156,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
-  console.log(errors, 'errors');
   useEffect(() => {
     if (details?.license_file) {
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
@@ -183,7 +187,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         website: details?.website || '',
         status: details?.status || '',
         is_active: details?.is_active === '0' ? false : true,
-        user_id: details?.vendor_user?.user_id,
+        user_id: details?.vendor_user?.user_id || '',
       };
       schoolReset(defaultVendorValues);
     }
@@ -246,6 +250,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       }
     } catch (error) {
       if (error?.errors) {
+        enqueueSnackbar(error?.message, { variant: 'error' });
+        enqueueSnackbar(error?.message, { variant: 'error' });
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -367,7 +373,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -412,7 +418,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -499,8 +505,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                          // variant="outlined"
-                          // margin="normal"
+                            // variant="outlined"
+                            // margin="normal"
                           />
                           {/* Optional: Show the uploaded file as a clickable link */}
                           {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
@@ -533,24 +539,56 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   )}
                 />
                 <Controller
-                  name="user_id"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <Select {...field} value={field?.value || ''}>
-                      {schoolAdminList.map((option: any) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-                <Controller
                   name="is_active"
                   control={schoolControl}
                   render={({ field }) => (
                     <Switch {...field} error={!!errors.is_active} checked={field.value} />
                   )}
+                />
+                <Controller
+                  className="editor"
+                  control={schoolControl}
+                  name="user_id"
+                  render={({ field }) => {
+                    const selectedValue = schoolAdminList.some((admin) => admin.id === field.value)
+                      ? field.value
+                      : '';
+
+                    const currentVendorName = details?.vendor_user?.user?.name;
+
+                    return (
+                      <>
+                        <Select {...field} value={selectedValue} displayEmpty>
+                          <MenuItem value="" disabled>
+                            Select School Owner
+                          </MenuItem>
+
+                          {schoolAdminList.length === 0 ? (
+                            <MenuItem disabled>No users available</MenuItem>
+                          ) : (
+                            schoolAdminList.map((option: any) => (
+                              <MenuItem key={option.id} value={option.id}>
+                                {option.name}
+                              </MenuItem>
+                            ))
+                          )}
+                        </Select>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          gutterBottom
+                          sx={{
+                            mt: 2,
+                            mb: 1,
+                            ml: 2,
+                            color: 'primary.main',
+                          }}
+                        >
+                          Current Vendor: {currentVendorName}
+                        </Typography>
+                      </>
+                    );
+                  }}
                 />
               </Box>
             </Box>
@@ -740,7 +778,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     label={item?.label}
                     variant="outlined"
                     sx={{ my: 1, width: '100%' }}
-                  // onChange={(e) => field.onChange(e.target.value)}
+                    // onChange={(e) => field.onChange(e.target.value)}
                   />
                 )}
               />
@@ -913,7 +951,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {details?.vendor_user?.user?.phone && (
           <Typography variant="body2">
             {details?.vendor_user?.user?.country_code
-              ? (details?.vendor_user?.user?.country_code + "-" + details?.vendor_user?.user?.phone)
+              ? details?.vendor_user?.user?.country_code + '-' + details?.vendor_user?.user?.phone
               : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
           </Typography>
         )}
@@ -921,7 +959,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
         )}
         {details?.vendor_user?.user?.dob && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob?.split('T')[0] ?? 'NA'}</Typography>
+          <Typography variant="body2">
+            {details?.vendor_user?.user?.dob?.split('T')[0] ?? 'NA'}
+          </Typography>
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">

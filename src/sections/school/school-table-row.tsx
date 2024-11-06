@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './school-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, ListItemText, Select, TextField } from '@mui/material';
+import { Link, ListItemText, Select, TextField, Typography } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -63,6 +63,7 @@ export default function SchoolTableRow({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
+
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -128,12 +129,11 @@ export default function SchoolTableRow({
       phone_number: phone_number || '',
       status: status,
       is_active: is_active || 1,
-      user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
+      user_id: vendor_user?.user_id || '',
       commission_in_percentage: commission_in_percentage || 0,
     }),
     [selectedLocaleObject, row]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewSchema) as any,
     defaultValues,
@@ -187,6 +187,7 @@ export default function SchoolTableRow({
       }
     } catch (error) {
       if (error?.errors) {
+        enqueueSnackbar(error?.message, { variant: 'error' });
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -403,15 +404,41 @@ export default function SchoolTableRow({
               className="editor"
               name="user_id"
               control={control}
-              render={({ field }) => (
-                <Select {...field} value={field?.value || ''}>
-                  {schoolAdminList.map((option: any) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+              render={({ field }) => {
+                const selectedValue = schoolAdminList.some((admin) => admin.id === field.value)
+                  ? field.value
+                  : '';
+
+                const currentVendorName = vendor_user?.user?.name;
+
+                return (
+                  <>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      gutterBottom
+                      sx={{ color: 'primary.main', mr: 2 }}
+                    >
+                      Current School Admin: {currentVendorName}
+                    </Typography>
+                    <Select {...field} value={selectedValue} displayEmpty>
+                      <MenuItem value="" disabled>
+                        Select School Owner
+                      </MenuItem>
+
+                      {schoolAdminList.length === 0 ? (
+                        <MenuItem disabled>No users available</MenuItem>
+                      ) : (
+                        schoolAdminList.map((option: any) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                          </MenuItem>
+                        ))
+                      )}
+                    </Select>
+                  </>
+                );
+              }}
             />
           ) : (
             <ListItemText
@@ -425,6 +452,7 @@ export default function SchoolTableRow({
             />
           )}
         </TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton
