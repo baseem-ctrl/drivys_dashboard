@@ -1,9 +1,10 @@
 import { Box, TextField, MenuItem } from '@mui/material';
-
-const paymentStatusOptions = ['PENDING', 'CONFIRMED', 'CANCELLED'];
-const paymentMethodOptions = ['ONLINE', 'OFFLINE'];
+import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 
 export default function BookingTableToolbar({ filters, onFilters, vendorOptions }) {
+  const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
+  const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
+
   const handleChange = (name) => (event) => {
     onFilters(name, event.target.value);
   };

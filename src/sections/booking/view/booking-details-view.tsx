@@ -36,6 +36,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useParams, useRouter } from 'src/routes/hooks';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
+import { useGetBookingStatusEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 
 const BookingDetailsComponent = () => {
   const { id } = useParams();
@@ -50,17 +51,12 @@ const BookingDetailsComponent = () => {
   const [paymentStatus, setPaymentStatus] = useState('');
   const [bookingStatus, setBookingStatus] = useState('');
 
-  const PAYMENT_STATUS_MAP = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
-  };
   const handleBookingStatusChange = async (event) => {
     const selectedStatus = event.target.value;
+
     setBookingStatus(selectedStatus);
-    const selectedPaymentStatus = PAYMENT_STATUS_MAP[selectedStatus.toUpperCase()];
     const formData = new FormData();
-    formData.append('booking_status', selectedPaymentStatus);
+    formData.append('booking_status', selectedStatus);
     formData.append('id', id);
 
     try {
@@ -79,11 +75,10 @@ const BookingDetailsComponent = () => {
   const handlePaymentStatusChange = async (event) => {
     const selectedStatus = event.target.value;
     setPaymentStatus(selectedStatus);
-    const selectedPaymentStatus = PAYMENT_STATUS_MAP[selectedStatus.toUpperCase()];
-    const formData = new FormData();
-    formData.append('payment_status', selectedPaymentStatus);
-    formData.append('id', id);
 
+    const formData = new FormData();
+    formData.append('payment_status', selectedStatus);
+    formData.append('id', id);
     try {
       const response = await updatePaymentBookingStatus(formData);
       enqueueSnackbar(response.message ?? 'Status Updated successfully', {
@@ -97,16 +92,34 @@ const BookingDetailsComponent = () => {
       revalidateBooking();
     }
   };
-  const paymentStatusOptions = [
-    { value: 'PENDING', label: 'PENDING' },
-    { value: 'CONFIRMED', label: 'CONFIRMED' },
-    { value: 'CANCELLED', label: 'CANCELLED' },
-  ];
-  const bookingStatusOptions = [
-    { value: 'PENDING', label: 'PENDING' },
-    { value: 'CONFIRMED', label: 'CONFIRMED' },
-    { value: 'CANCELLED', label: 'CANCELLED' },
-  ];
+
+  // Fetch payment status options from the API
+  const {
+    paymentStatusEnum: paymentStatusValues,
+    paymentStatusLoading,
+    paymentStatusError,
+  } = useGetPaymentStatusEnum();
+
+  // Fetch booking status options from the API
+  const {
+    bookingStatusEnum: bookingStatusValues,
+    bookingStatusLoading,
+    bookingStatusError,
+  } = useGetBookingStatusEnum();
+
+  // Format the options as { value, label }
+  const paymentStatusOptions =
+    paymentStatusValues?.map((status) => ({
+      value: status.value,
+      label: status.name,
+    })) || [];
+
+  // Format the options as { value, label }
+  const bookingStatusOptions =
+    bookingStatusValues?.map((status) => ({
+      value: status.value,
+      label: status.name,
+    })) || [];
 
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
@@ -127,6 +140,9 @@ const BookingDetailsComponent = () => {
       </Box>
     );
   }
+  console.log('Payment Status Options:', paymentStatusOptions);
+  console.log('Booking Status Options:', bookingStatusOptions);
+
   return (
     <Grid container spacing={4} sx={{ maxWidth: 1200, mx: 'auto', mt: 4 }}>
       <CustomBreadcrumbs
