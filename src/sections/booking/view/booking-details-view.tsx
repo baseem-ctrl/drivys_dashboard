@@ -104,7 +104,6 @@ const BookingDetailsComponent = () => {
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
-  console.log('bookingDetails', bookingDetails);
   const cardHeight = 370;
   const statusId = bookingStatusEnum.find(
     (item: any) => item?.name === bookingDetails?.booking_status
