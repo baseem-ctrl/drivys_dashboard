@@ -2,7 +2,7 @@
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import { FormControl, InputLabel } from '@mui/material'
+import { FormControl, InputLabel } from '@mui/material';
 
 // components
 import Iconify from 'src/components/iconify';
@@ -19,12 +19,14 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import FormProvider, { RHFMultiSelectAuto } from 'src/components/hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
 import { useGetAllLanguage } from 'src/api/language';
 import { createHomeListing } from 'src/api/homelisting';
+import { useGetAllCategory } from 'src/api/category';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +35,10 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-const catalogueOptions = [{ label: "Drivers", value: "1" }, { label: "Categories", value: "2" }]
+const catalogueOptions = [
+  { label: 'Drivers', value: '1' },
+  { label: 'Categories', value: '2' },
+];
 
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
@@ -43,9 +48,18 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
 
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 
-  const { language } =
-    useGetAllLanguage(0, 1000);
+  const { language } = useGetAllLanguage(0, 1000);
+  const { category } = useGetAllCategory(0, 1000);
+  const categoryOptions = category
+    ?.map((cat) => cat.category_translations)
+    .flat()
+    .map((translation) => ({
+      value: translation.id,
+      label: translation.name,
+      locale: translation.locale,
+    }));
 
+  console.log('categoryOptions', categoryOptions);
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.translations?.length > 0) {
@@ -54,7 +68,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   }, [details]);
 
   const [localeOptions, setLocaleOptions] = useState([]);
-
+  console.log('category', category);
   useEffect(() => {
     if ((language && language?.length > 0) || details?.translations?.length > 0) {
       let initialLocaleOptions = [];
@@ -92,9 +106,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     title: Yup.string().required('Name is required'),
     description: Yup.string(),
     catalogue_type: Yup.mixed(),
+    category: Yup.mixed(),
     display_order: Yup.string(),
     is_active: Yup.boolean(),
-
   });
 
   const defaultVendorValues = useMemo(
@@ -103,15 +117,18 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       title: selectedLocaleObject?.title || '',
       description: selectedLocaleObject?.description || '',
       catalogue_type: details?.catalogue_type || '',
+      category: details?.category || '',
       display_order: details?.display_order || '',
       is_active: details?.is_active === '1' ? true : false,
     }),
     [selectedLocaleObject, details, editMode]
   );
+
   const HomeListingMethods = useForm({
-    resolver: yupResolver(VendorSchema) as any,
-    defaultVendorValues,
+    resolver: yupResolver(VendorSchema),
+    defaultValues: defaultVendorValues, // Ensure default values are passed correctly
   });
+
   const {
     reset: HomeListingReset,
     watch: HomeListingWatch,
@@ -120,7 +137,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     handleSubmit: HomeListingSubmit,
     formState: HomeListingFormState,
   } = HomeListingMethods;
-  const { isSubmitting, errors } = HomeListingFormState;
+  const { isSubmitting, errors, control } = HomeListingFormState;
 
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
@@ -143,24 +160,24 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
         locale: selectedLocaleObject?.locale || '',
         description: selectedLocaleObject?.description || '',
         display_order: details?.display_order || '',
-        is_active: details?.is_active === "1" ? true : false,
+        category: details?.category || [],
+        is_active: details?.is_active === '1' ? true : false,
         // user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
-        catalogue_type: details?.catalogue_type || ''
+        catalogue_type: details?.catalogue_type || '',
       };
       HomeListingReset(defaultVendorValues);
     }
   }, [details, HomeListingReset, selectedLocaleObject]);
   const onSubmitBasicInfo = HomeListingSubmit(async (data) => {
     try {
-
-      const body = new FormData()
-      body.append("translation[0][locale]", selectedLanguage)
-      body.append("translation[0][title]", data?.title)
-      body.append("translation[0][description]", data?.description)
-      body.append("display_order", data?.display_order)
-      body.append("catalogue_type", data?.catalogue_type)
-      body.append("is_active", data?.is_active ? '1' : '0')
-      body.append("home_page_listing_id", details?.id)
+      const body = new FormData();
+      body.append('translation[0][locale]', selectedLanguage);
+      body.append('translation[0][title]', data?.title);
+      body.append('translation[0][description]', data?.description);
+      body.append('display_order', data?.display_order);
+      body.append('catalogue_type', data?.catalogue_type);
+      body.append('is_active', data?.is_active ? '1' : '0');
+      body.append('home_page_listing_id', details?.id);
       const response = await createHomeListing(body);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -185,6 +202,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     HomeListingReset(); // Reset to the original values
     setEditMode(false);
   };
+  console.log('selectedCatalogue', selectedCatalogue);
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -215,7 +233,15 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               ]) || []),
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Display order', value: details?.display_order ?? 'NA' },
-              { label: 'Catalogue type', value: details?.catalogue_type ?? 'NA' },
+              {
+                label: 'Catalogue type',
+                value:
+                  details?.catalogue_type === 1
+                    ? 'Driver'
+                    : details?.catalogue_type === 2
+                    ? 'Categories'
+                    : 'NA',
+              },
 
               {
                 label: 'Is Active',
@@ -242,111 +268,39 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
             ))}
           </Stack>
         ) : (
-          <Box
-            component="form"
-            rowGap={2}
-            columnGap={2}
-            display="grid"
-            onSubmit={onSubmitBasicInfo}
-            pb={1}
-          >
+          <FormProvider>
+            {' '}
             <Box
-              mt={2}
-              rowGap={3}
+              component="form"
+              rowGap={2}
               columnGap={2}
               display="grid"
-              gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              onSubmit={onSubmitBasicInfo}
+              pb={1}
             >
               <Box
+                mt={2}
+                rowGap={3}
+                columnGap={2}
                 display="grid"
-                gap={1}
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  // sm: '25% 70% ',
-                  md: 'repeat(3, 1fr)',
-                }}
+                gridTemplateColumns="repeat(1, 1fr)"
+                // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
               >
-                <Controller
-                  name="locale"
-                  control={HomeListingControl}
-                  render={({ field }) => (
-                    <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
-                      {localeOptions?.map((option: any) => (
-                        <MenuItem key={option?.value} value={option?.value}>
-                          {option?.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-                <Controller
-                  name="title"
-                  control={HomeListingControl}
-                  render={({ field }) => (
-                    <TextField
-                      label="Title"
-                      {...field}
-                      error={errors?.title?.message}
-                      helperText={errors?.title ? errors?.title?.message : ''}
-                    />
-                  )}
-                />
-                <Controller
-                  name="description"
-                  control={HomeListingControl}
-                  render={({ field }) => (
-                    <TextField
-                      label="Description"
-                      {...field}
-                      error={errors?.description?.message}
-                      helperText={errors?.description ? errors?.description?.message : ''}
-                    />
-                  )}
-                />
-
-              </Box>
-            </Box>
-
-            <Box
-              mt={2}
-              rowGap={3}
-              columnGap={3}
-              display="grid"
-              gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
-            >
-              <Box
-                display="grid"
-                gap={1}
-                gridTemplateColumns={{
-                  // xs: 'repeat(1, 1fr)',
-                  sm: '48% 47% ',
-                  // md: 'repeat(2, 1fr)',
-                }}
-                pt={1}
-              >
-                <Controller
-                  name="display_order"
-                  control={HomeListingControl}
-                  render={({ field }) => (
-                    <TextField label="Display order" {...field} error={!!errors.display_order} />
-                  )}
-                />{' '}
-                <FormControl fullWidth>
-                  <InputLabel id="catalogue-type-label">Catalogue Type</InputLabel>
+                <Box
+                  display="grid"
+                  gap={1}
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    // sm: '25% 70% ',
+                    md: 'repeat(3, 1fr)',
+                  }}
+                >
                   <Controller
-                    name="catalogue_type"
+                    name="locale"
                     control={HomeListingControl}
                     render={({ field }) => (
-                      <Select
-                        {...field}
-                        labelId="catalogue-type-label"
-                        value={selectedCatalogue || ''}
-                        onChange={handleChangeCatalogue}
-                        label="Catalogue Type"
-                      >
-                        {catalogueOptions?.map((option: any) => (
+                      <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
+                        {localeOptions?.map((option: any) => (
                           <MenuItem key={option?.value} value={option?.value}>
                             {option?.label}
                           </MenuItem>
@@ -354,32 +308,115 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                       </Select>
                     )}
                   />
-                </FormControl>
+                  <Controller
+                    name="title"
+                    control={HomeListingControl}
+                    render={({ field }) => (
+                      <TextField
+                        label="Title"
+                        {...field}
+                        error={errors?.title?.message}
+                        helperText={errors?.title ? errors?.title?.message : ''}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="description"
+                    control={HomeListingControl}
+                    render={({ field }) => (
+                      <TextField
+                        label="Description"
+                        {...field}
+                        error={errors?.description?.message}
+                        helperText={errors?.description ? errors?.description?.message : ''}
+                      />
+                    )}
+                  />
+                </Box>
+              </Box>
 
-                <FormControlLabel
-                  control={
+              <Box
+                mt={2}
+                rowGap={3}
+                columnGap={3}
+                display="grid"
+                gridTemplateColumns="repeat(1, 1fr)"
+                // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              >
+                <Box
+                  display="grid"
+                  gap={1}
+                  gridTemplateColumns={{
+                    // xs: 'repeat(1, 1fr)',
+                    sm: '48% 47% ',
+                    // md: 'repeat(2, 1fr)',
+                  }}
+                  pt={1}
+                >
+                  <Controller
+                    name="display_order"
+                    control={HomeListingControl}
+                    render={({ field }) => (
+                      <TextField label="Display order" {...field} error={!!errors.display_order} />
+                    )}
+                  />{' '}
+                  <FormControl fullWidth>
+                    <InputLabel id="catalogue-type-label">Catalogue Type</InputLabel>
                     <Controller
-                      name="is_active"
+                      name="catalogue_type"
                       control={HomeListingControl}
                       render={({ field }) => (
-                        <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                        <Select
+                          {...field}
+                          labelId="catalogue-type-label"
+                          value={selectedCatalogue || ''}
+                          onChange={handleChangeCatalogue}
+                          label="Catalogue Type"
+                        >
+                          {catalogueOptions?.map((option: any) => (
+                            <MenuItem key={option?.value} value={option?.value}>
+                              {option?.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
                       )}
                     />
-                  }
-                  label="Is Active"
-                />
-
+                  </FormControl>
+                  <FormControlLabel
+                    control={
+                      <Controller
+                        name="is_active"
+                        control={HomeListingControl}
+                        render={({ field }) => (
+                          <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                        )}
+                      />
+                    }
+                    label="Is Active"
+                  />
+                  {selectedCatalogue === '2' && <>Haiiiii</>}
+                  {selectedCatalogue === '2' && (
+                    <Controller
+                      name="Category"
+                      control={control}
+                      defaultValue={defaultVendorValues.category || []} // Ensure it's an array
+                      render={({ field }) => (
+                        <RHFMultiSelectAuto {...field} label="Category" options={categoryOptions} />
+                      )}
+                    />
+                  )}
+                </Box>
               </Box>
+              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+                <Button variant="outlined" color="error" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="contained">
+                  Save
+                </Button>
+              </Stack>
             </Box>
-            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-              <Button variant="outlined" color="error" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="contained">
-                Save
-              </Button>
-            </Stack>
-          </Box>
+          </FormProvider>
         )}
       </Scrollbar>
       {/* <SchoolCreateForm
@@ -401,7 +438,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     </Stack>
   );
 
-
   return (
     <>
       {loading ? (
@@ -417,9 +453,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
         </Box>
       ) : (
         <Grid container spacing={1} rowGap={1}>
-          <Grid xs={12} >
-            {renderContent}
-          </Grid>
+          <Grid xs={12}>{renderContent}</Grid>
         </Grid>
       )}
     </>
