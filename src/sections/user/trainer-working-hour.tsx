@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 // @mui
 import {
   Box,
@@ -56,18 +58,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
     { key: 'full_day', label: 'Full Day' },
     { key: 'off_day', label: 'Off Day' },
   ];
-  function formatTimestamp(isoTimestamp) {
-    const date = new Date(isoTimestamp);
 
-    const formattedTime = date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-      timeZone: 'UTC',
-    });
-
-    return formattedTime;
-  }
   if (workingHoursLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', margin: '10px' }}>
@@ -146,10 +137,10 @@ export default function TrainerWorkingHour({ userId }: Props) {
                           }}
                         >
                           {hour.is_full_day
-                            ? formatTimestamp(hour.start_time)
+                            ? moment(hour.start_time).utc().format('h:mm A')
                             : hour.is_off_day
                             ? 'N/A'
-                            : formatTimestamp(hour.start_time)}
+                            : moment(hour.start_time).utc().format('h:mm A')}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -159,11 +150,12 @@ export default function TrainerWorkingHour({ userId }: Props) {
                             color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
                           }}
                         >
+                          {' '}
                           {hour.is_full_day
-                            ? formatTimestamp(hour.end_time)
+                            ? moment(hour.end_time).utc().format('h:mm A')
                             : hour.is_off_day
                             ? 'N/A'
-                            : formatTimestamp(hour.end_time)}
+                            : moment(hour.end_time).utc().format('h:mm A')}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -257,7 +249,6 @@ export default function TrainerWorkingHour({ userId }: Props) {
       />
 
       <WorkingHoursCreateEditForm
-        formatTimestamp={formatTimestamp}
         currentWorkingHour={selectedWorkingHour}
         userId={userId}
         open={quickEdit.value}
