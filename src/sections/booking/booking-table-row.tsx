@@ -92,7 +92,7 @@ export default function BookingTableRow({
           variant="soft"
           color={
             row?.booking_status === 'PENDING'
-              ? 'warning'
+              ? 'info'
               : row?.booking_status === 'CANCELLED'
               ? 'error'
               : 'success'

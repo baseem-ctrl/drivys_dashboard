@@ -92,6 +92,30 @@ export function useGetBookingStatusEnum() {
 
   return { ...memoizedValue, revalidateBookingStatusEnum };
 }
+export function useGetPaymentStatusEnum() {
+  const URL = endpoints.booking.getPaymentStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    // Access the values directly from the response
+    const paymentStatusEnum = data?.values || [];
+    return {
+      paymentStatusEnum,
+      paymentStatusError: error,
+      paymentStatusLoading: isLoading,
+      paymentStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateBookingStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingStatusEnum };
+}
 // function to fetch booking details by a student's ID
 export function useGetBookingByTrainerId(trainer_id: string) {
   const URL = `${endpoints.booking.getList}?driver_id=${trainer_id}`;
