@@ -243,4 +243,14 @@ export const endpoints = {
     delete: 'admin/package-trainer/delete-packge-trainer',
     create: 'admin/package-trainer/create-packge-trainer',
   },
+  enum: {
+    bookingMethodEnum: 'public/enum/get-booking-method-type-enum',
+    bookingStatusEnum: 'public/enum/get-booking-status-enum',
+    driverStatusEnum: 'public/enum/get-driver-status-type-enum',
+    paymentMethodEnum: 'public/enum/get-payment-method-type-enum',
+    paymentRefundStatusEnum: 'public/enum/get-payment-refund-status-type-enum',
+    paymentStatusEnum: 'public/enum/get-payment-status-type-enum',
+    sessionStatusEnum: 'public/enum/get-session-status-type-enum',
+    sessionTypeEnum: 'public/enum/get-session-type-enum',
+  },
 };

@@ -102,12 +102,6 @@ export default function BookingListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const confirm = useBoolean();
 
-  const statusMap = {
-    ALL: 0,
-    PENDING: 1,
-    CONFIRMED: 2,
-    CANCELLED: 3,
-  };
   const paymentStatusMap = {
     PENDING: 0,
     CONFIRMED: 1,
