@@ -210,7 +210,6 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-
   const {
     reset,
     watch,
@@ -251,6 +250,8 @@ export default function UserNewEditForm({
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log('data', data);
+
       let response;
       const body = new FormData();
       body.append('name', data?.name);
@@ -258,56 +259,43 @@ export default function UserNewEditForm({
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      body.append('gear', data?.gear);
+      // Only append gear if it exists
+      if (data?.gear) {
+        console.log('data?.gear', data?.gear);
+        body.append('gear', data?.gear);
+      }
+
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      // if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
-
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
+
+      if (data?.user_type === 'TRAINER') {
+        if (data?.is_pickup_enabled)
+          body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
+        if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+        if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
+        if (data?.min_price) body.append('min_price', data?.min_price);
+        if (data?.school_commission_in_percentage)
+          body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+        if (data?.certificate_commission_in_percentage)
+          body.append(
+            'certificate_commission_in_percentage',
+            data?.certificate_commission_in_percentage
+          );
+        if (data?.bio) body.append('bio', data?.bio);
+      }
+
       body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
-      if (data?.certificate_commission_in_percentage)
-        body.append(
-          'certificate_commission_in_percentage',
-          data?.certificate_commission_in_percentage
-        );
-      if (data?.is_pickup_enabled) body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
-      if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
 
-      if (data?.min_price) body.append('min_price', data?.min_price);
-      if (data?.bio) body.append('bio', data?.bio);
-      if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
-      if (data?.school_commission_in_percentage)
-        body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
-
-      // if (data?.languages && Array.isArray(data?.languages)) {
-      //   console.log(data?.languages, "data?.languages");
-
-      //   // Convert the array
-      //   const convertedArray = data?.languages.map((item: any, index: number) => ({
-      //     id: item?.court_attribute_id?.value,
-      //     fluency_level: Number(item.fluency_level.value)  // Convert "value" string to number
-      //   }));
-
-      //   convertedArray.forEach((addon, index) => {
-      //     if (addon.court_attribute_id) {
-      //       body.append(`attributes[${index}][court_attribute_id]`, addon.court_attribute_id);
-      //     }
-      //     // Use nullish coalescing to handle cases where `value` might be 0
-      //     body.append(`attributes[${index}][value]`, addon.value ?? '');
-      //   });
-      // }language[${index}].id
       if (data?.languages?.length > 0) {
-        data?.languages?.forEach((languageItem, index) => {
+        data?.languages.forEach((languageItem, index) => {
           body.append(`languages[${index}][id]`, languageItem?.id?.id);
-
-          // Use nullish coalescing to handle cases where `value` might be 0
           body.append(`languages[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
@@ -319,18 +307,18 @@ export default function UserNewEditForm({
       } else {
         response = await createUser(body);
       }
+
       if (response) {
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         if (currentUser?.id) {
           revalidateDetails();
         }
-
         reset();
         router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
+        Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
@@ -338,6 +326,7 @@ export default function UserNewEditForm({
       }
     }
   });
+
   useEffect(() => {
     if (currentUser) {
       reset(defaultValues);
@@ -395,7 +384,6 @@ export default function UserNewEditForm({
       </Box>
     );
   }
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
