@@ -64,7 +64,20 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1);
+  const currentVendorName = details?.user?.name;
 
+  const schoolAdmins = {
+    currentAdmin: currentVendorName,
+    admins: [
+      {
+        id: details?.vendor_user?.user?.id,
+        name: details?.vendor_user?.user?.name,
+        email: details?.vendor_user?.user?.email,
+        user_type: 'SCHOOL_ADMIN',
+      },
+      ...schoolAdminList,
+    ],
+  };
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
@@ -550,43 +563,32 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   name="user_id"
                   render={({ field }) => {
-                    const selectedValue = schoolAdminList.some((admin) => admin.id === field.value)
+                    const selectedValue = schoolAdmins.admins.some(
+                      (admin) => admin.id === field.value
+                    )
                       ? field.value
                       : '';
 
-                    const currentVendorName = details?.vendor_user?.user?.name;
-
                     return (
-                      <>
-                        <Select {...field} value={selectedValue} displayEmpty>
-                          <MenuItem value="" disabled>
-                            Select School Owner
-                          </MenuItem>
+                      <Select {...field} value={selectedValue} displayEmpty>
+                        <MenuItem value="" disabled>
+                          Select School Owner
+                        </MenuItem>
 
-                          {schoolAdminList.length === 0 ? (
-                            <MenuItem disabled>No users available</MenuItem>
-                          ) : (
-                            schoolAdminList.map((option: any) => (
-                              <MenuItem key={option.id} value={option.id}>
-                                {option.name}
-                              </MenuItem>
-                            ))
-                          )}
-                        </Select>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          gutterBottom
-                          sx={{
-                            mt: 2,
-                            mb: 1,
-                            ml: 2,
-                            color: 'primary.main',
-                          }}
-                        >
-                          Current Vendor: {currentVendorName}
-                        </Typography>
-                      </>
+                        {schoolAdmins.admins.length === 0 ? (
+                          <MenuItem disabled>No users available</MenuItem>
+                        ) : (
+                          schoolAdmins.admins.map((option: any) => (
+                            <MenuItem
+                              key={option.id}
+                              value={option.id}
+                              disabled={option.id === details?.vendor_user.user?.id} // Disable the current admin
+                            >
+                              {option.name}
+                            </MenuItem>
+                          ))
+                        )}
+                      </Select>
                     );
                   }}
                 />
