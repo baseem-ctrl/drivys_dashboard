@@ -64,6 +64,42 @@ export default function SchoolTableRow({
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
 
+  const currentVendorName = vendor_user?.user?.name;
+
+  const schoolAdmins = {
+    currentAdmin: currentVendorName,
+    admins: [
+      {
+        id: vendor_user?.user?.id,
+        name: currentVendorName,
+        email: vendor_user?.user?.email,
+        user_type: 'SCHOOL_ADMIN',
+        country_code: vendor_user?.user?.country_code ?? '',
+        phone: vendor_user?.user?.phone ?? '',
+        photo_url: null,
+        dob: vendor_user?.user?.dob ?? '',
+        is_active: true,
+        wallet_balance: 0,
+        wallet_points: 0,
+        locale: 'en',
+        gender: 'Not Specified',
+        languages: [],
+        user_preference: {
+          id: vendor_user?.user?.preference?.id ?? '',
+          user_id: vendor_user?.user?.id,
+          gear: 'Unknown',
+          gender: 'Not Specified',
+          vehicle_type_id: null,
+          vehicle_type: null,
+          city_id: null,
+          city: null,
+        },
+        user_docs: [],
+      },
+      ...schoolAdminList,
+    ],
+  };
+
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -405,38 +441,30 @@ export default function SchoolTableRow({
               name="user_id"
               control={control}
               render={({ field }) => {
-                const selectedValue = schoolAdminList.some((admin) => admin.id === field.value)
+                const selectedValue = schoolAdmins.admins.some((admin) => admin.id === field.value)
                   ? field.value
                   : '';
 
-                const currentVendorName = vendor_user?.user?.name;
-
                 return (
-                  <>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      gutterBottom
-                      sx={{ color: 'primary.main', mr: 2 }}
-                    >
-                      Current School Admin: {currentVendorName}
-                    </Typography>
-                    <Select {...field} value={selectedValue} displayEmpty>
-                      <MenuItem value="" disabled>
-                        Select School Owner
-                      </MenuItem>
+                  <Select {...field} value={selectedValue} displayEmpty>
+                    <MenuItem value="" disabled>
+                      Select School Owner
+                    </MenuItem>
 
-                      {schoolAdminList.length === 0 ? (
-                        <MenuItem disabled>No users available</MenuItem>
-                      ) : (
-                        schoolAdminList.map((option: any) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.name}
-                          </MenuItem>
-                        ))
-                      )}
-                    </Select>
-                  </>
+                    {schoolAdmins.admins.length === 0 ? (
+                      <MenuItem disabled>No users available</MenuItem>
+                    ) : (
+                      schoolAdmins.admins.map((option: any) => (
+                        <MenuItem
+                          key={option.id}
+                          value={option.id}
+                          disabled={option.id === vendor_user?.user?.id} // Disable the current admin
+                        >
+                          {option.name}
+                        </MenuItem>
+                      ))
+                    )}
+                  </Select>
                 );
               }}
             />
