@@ -71,6 +71,7 @@ import TrainerWorkingHour from './trainer-working-hour';
 import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
 import { useGetBookingByTrainerId } from 'src/api/booking';
 import BookingTrainerTable from './booking-details/trainer-booking-details';
+import BookingStudentTable from './booking-details/student-booking-details';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -103,9 +104,6 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-  const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
-    useGetBookingByStudentId(details?.id);
-  const { bookingTrainerDetails } = useGetBookingByTrainerId(details?.id);
 
   const {
     userDocuments,
@@ -114,7 +112,6 @@ export default function UserDetailsContent({
     totalPages,
     revalidateUserDocuments,
   } = useGetUserDocumentList({ userId: details.id });
-  console.log('bookingTrainerDetails', bookingTrainerDetails);
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -468,70 +465,6 @@ export default function UserDetailsContent({
     router.push(paths.dashboard.booking.details(booking));
   };
 
-  const renderBookingContent = (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Email</TableCell>
-
-            <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Sessions</TableCell>
-            <TableCell align="center">Booking Status</TableCell>
-            <TableCell align="center">Payment Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {bookingDetails.length > 0 &&
-            bookingDetails.map((booking) => (
-              <TableRow
-                key={booking.id}
-                onClick={() => handleBookingClick(booking.id)}
-                sx={{
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                  },
-                }}
-              >
-                <TableCell>
-                  <Grid container alignItems="center" spacing={1}>
-                    <Grid item>
-                      <Typography>{booking.user.name}</Typography>
-                    </Grid>
-                  </Grid>
-                </TableCell>
-                <TableCell>{booking.user.email}</TableCell>
-
-                <TableCell align="center">${booking.total}</TableCell>
-                <TableCell>
-                  {booking.sessions.map((session) => (
-                    <Typography key={session.id} align="center">
-                      {session.id}
-                    </Typography>
-                  ))}
-                </TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={booking.booking_status}
-                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={booking.payment_status}
-                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
@@ -1259,14 +1192,13 @@ export default function UserDetailsContent({
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && studentTab === 'booking' && renderBookingContent}
+              {details?.user_type === 'STUDENT' && studentTab === 'booking' && (
+                <BookingStudentTable id={details?.id} handleBookingClick={handleBookingClick} />
+              )}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
-                <BookingTrainerTable
-                  bookingDetails={bookingTrainerDetails.bookings}
-                  handleBookingClick={handleBookingClick}
-                />
+                <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
               )}
             </Grid>
 

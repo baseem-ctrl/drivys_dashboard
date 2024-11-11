@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import moment from 'moment';
 import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -24,7 +25,6 @@ type Props = {
   currentWorkingHour?: any;
   reload: VoidFunction;
   userId: number | string;
-  formatTimestamp?: any;
 };
 
 export default function WorkingHoursCreateEditForm({
@@ -34,10 +34,8 @@ export default function WorkingHoursCreateEditForm({
   onClose,
   reload,
   userId,
-  formatTimestamp,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
-
   const WorkingHoursSchema = Yup.object().shape({
     day_of_week: Yup.string().required('Day of week is required'),
     start_time: Yup.date().required('Start time is required'),
@@ -53,13 +51,16 @@ export default function WorkingHoursCreateEditForm({
     ),
   });
   const defaultTime = new Date();
+
   const defaultValues = useMemo(
     () => ({
       day_of_week: currentWorkingHour?.day_of_week || 'MONDAY',
       start_time: currentWorkingHour?.start_time
-        ? new Date(currentWorkingHour.start_time)
+        ? moment.utc(currentWorkingHour.start_time).toDate()
         : defaultTime,
-      end_time: currentWorkingHour?.end_time ? new Date(currentWorkingHour.end_time) : defaultTime,
+      end_time: currentWorkingHour?.end_time
+        ? moment.utc(currentWorkingHour.end_time).toDate()
+        : defaultTime,
       is_off_day: currentWorkingHour?.is_off_day || false,
       is_full_day: currentWorkingHour?.is_full_day || false,
     }),

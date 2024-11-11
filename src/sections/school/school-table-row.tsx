@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './school-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, ListItemText, Select, TextField } from '@mui/material';
+import { Link, ListItemText, Select, TextField, Typography } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -63,6 +63,43 @@ export default function SchoolTableRow({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
+
+  const currentVendorName = vendor_user?.user?.name;
+
+  const schoolAdmins = {
+    currentAdmin: currentVendorName,
+    admins: [
+      {
+        id: vendor_user?.user?.id,
+        name: currentVendorName,
+        email: vendor_user?.user?.email,
+        user_type: 'SCHOOL_ADMIN',
+        country_code: vendor_user?.user?.country_code ?? '',
+        phone: vendor_user?.user?.phone ?? '',
+        photo_url: null,
+        dob: vendor_user?.user?.dob ?? '',
+        is_active: true,
+        wallet_balance: 0,
+        wallet_points: 0,
+        locale: 'en',
+        gender: 'Not Specified',
+        languages: [],
+        user_preference: {
+          id: vendor_user?.user?.preference?.id ?? '',
+          user_id: vendor_user?.user?.id,
+          gear: 'Unknown',
+          gender: 'Not Specified',
+          vehicle_type_id: null,
+          vehicle_type: null,
+          city_id: null,
+          city: null,
+        },
+        user_docs: [],
+      },
+      ...schoolAdminList,
+    ],
+  };
+
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
@@ -128,12 +165,11 @@ export default function SchoolTableRow({
       phone_number: phone_number || '',
       status: status,
       is_active: is_active || 1,
-      user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
+      user_id: vendor_user?.user_id || '',
       commission_in_percentage: commission_in_percentage || 0,
     }),
     [selectedLocaleObject, row]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewSchema) as any,
     defaultValues,
@@ -187,6 +223,7 @@ export default function SchoolTableRow({
       }
     } catch (error) {
       if (error?.errors) {
+        enqueueSnackbar(error?.message, { variant: 'error' });
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -403,15 +440,33 @@ export default function SchoolTableRow({
               className="editor"
               name="user_id"
               control={control}
-              render={({ field }) => (
-                <Select {...field} value={field?.value || ''}>
-                  {schoolAdminList.map((option: any) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.name}
+              render={({ field }) => {
+                const selectedValue = schoolAdmins.admins.some((admin) => admin.id === field.value)
+                  ? field.value
+                  : '';
+
+                return (
+                  <Select {...field} value={selectedValue} displayEmpty>
+                    <MenuItem value="" disabled>
+                      Select School Owner
                     </MenuItem>
-                  ))}
-                </Select>
-              )}
+
+                    {schoolAdmins.admins.length === 0 ? (
+                      <MenuItem disabled>No users available</MenuItem>
+                    ) : (
+                      schoolAdmins.admins.map((option: any) => (
+                        <MenuItem
+                          key={option.id}
+                          value={option.id}
+                          disabled={option.id === vendor_user?.user?.id} // Disable the current admin
+                        >
+                          {option.name}
+                        </MenuItem>
+                      ))
+                    )}
+                  </Select>
+                );
+              }}
             />
           ) : (
             <ListItemText
@@ -425,6 +480,7 @@ export default function SchoolTableRow({
             />
           )}
         </TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton

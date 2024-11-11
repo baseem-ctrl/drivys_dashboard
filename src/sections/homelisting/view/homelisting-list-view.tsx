@@ -50,17 +50,20 @@ import HomeListingSearch from '../homelisting-search';
 import { STATUS_OPTIONS } from 'src/_mock/_school';
 import { deleteHomeListing, useGetHomeListing } from 'src/api/homelisting';
 import { useGetAllLanguage } from 'src/api/language';
+import HomeListingDialog from '../home-listing-dailogue';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'id', label: 'Id' },
-  { id: 'locale', label: 'Language' },
+  // { id: 'locale', label: 'Language' },
   { id: 'title', label: 'Title' },
-  { id: 'description', label: 'Description' },
+  // { id: 'description', label: 'Description' },
   { id: 'catalogue_type', label: 'Catalogue type' },
+  // { id: 'picture', label: 'Picture' },
+  { id: 'display_type', label: 'Display type' },
   { id: 'display_order', label: 'Display order' },
-  { id: 'is_active', label: 'Active Status ' },
+  // { id: 'is_active', label: 'Active Status ' },
   { id: 'action', label: 'Action' },
 
   // { id: '' },
@@ -287,7 +290,6 @@ export default function HomelistingListView() {
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
-                  orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
@@ -344,10 +346,10 @@ export default function HomelistingListView() {
           />
         </Card>
       </Container>
-      <HomeListingCreateForm
+      <HomeListingDialog
         open={quickCreate.value}
         onClose={quickCreate.onFalse}
-        revalidateHomeListing={revalidateHomeListing}
+        onReload={revalidateHomeListing}
       />
     </>
   );

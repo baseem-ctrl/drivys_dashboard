@@ -1,10 +1,10 @@
+import moment from 'moment';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
 import { usePopover } from 'src/components/custom-popover';
-import { formatDate } from 'src/utils/format-date';
 import { Link, Typography } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -39,7 +39,6 @@ export default function BookingTableRow({
   const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
     row;
 
-  console.log('rowrow', row);
   const handleRowClick = (bookingId: number) => {
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
@@ -66,13 +65,14 @@ export default function BookingTableRow({
           }}
           onClick={(event) => {
             event.stopPropagation();
-            handleClickDetails(user?.id);
+            if (user) {
+              handleClickDetails(user?.id);
+            }
           }}
         >
           {user?.name || 'N/A'}
         </Link>
       </TableCell>
-
       <TableCell
         sx={{
           cursor: 'pointer',
@@ -81,12 +81,13 @@ export default function BookingTableRow({
         }}
         onClick={(event) => {
           event.stopPropagation();
-          handleClickDetails(driver_id);
+          if (row.driver) {
+            handleClickDetails(driver_id);
+          }
         }}
       >
         {driver?.name || 'N/A'}
       </TableCell>
-
       <TableCell>
         <Label
           variant="soft"
@@ -115,14 +116,18 @@ export default function BookingTableRow({
           {row.payment_status || 'N/A'}
         </Label>
       </TableCell>
-
       <TableCell>{row?.sub_total}</TableCell>
       <TableCell>{row?.payment_method}</TableCell>
       <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
       <TableCell onClick={() => handleRowClick(row.id)}>
-        {formatDate(row?.created_at)}
+        {moment(row?.created_at)
+          .utc()
+          .format('DD/MM/YY h:mm a')}
         <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-          Updated {formatDate(row?.updated_at)}
+          Updated{' '}
+          {moment(row?.updated_at)
+            .utc()
+            .format('DD/MM/YY h:mm a')}
         </Typography>
       </TableCell>
     </TableRow>

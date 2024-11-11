@@ -11,7 +11,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import { useGetBookingByTrainerId } from 'src/api/booking';
+import { useGetBookingByStudentId } from 'src/api/school';
 
 // Define the props type for the component
 interface BookingTableProps {
@@ -30,9 +30,10 @@ interface BookingTableProps {
 }
 
 // Define the functional component
-const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
-  const { bookingTrainerDetails } = useGetBookingByTrainerId(id);
-  const bookingDetails = bookingTrainerDetails.bookings;
+const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
+  const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
+    useGetBookingByStudentId(id);
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -101,4 +102,4 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
   );
 };
 
-export default BookingTrainerTable;
+export default BookingStudentTable;

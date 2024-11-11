@@ -16,6 +16,8 @@ import {
   Select,
   Switch,
   TextField,
+  Paper,
+  Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -48,19 +50,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 
   const { language } = useGetAllLanguage(0, 1000);
-  const { category } = useGetAllCategory(0, 1000);
-
-  // Ensure the category options are mapped correctly
-  const categoryOptions = category
-    ?.map((cat) => cat.category_translations)
-    .flat()
-    .filter((translation) => translation?.id && translation?.name && translation?.locale) // Ensure each translation has necessary fields
-    .map((translation) => ({
-      value: translation.id,
-      label: translation.name,
-      locale: translation.locale,
-    }));
-
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.translations?.length > 0) {
@@ -161,7 +150,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
         locale: selectedLocaleObject?.locale || '',
         description: selectedLocaleObject?.description || '',
         display_order: details?.display_order || '',
-        category: details?.category || '', // Default to an empty array if category is undefined
         is_active: details?.is_active === '1' ? true : false,
         // user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
         catalogue_type: details?.catalogue_type || '',
@@ -177,12 +165,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       body.append('translation[0][title]', data?.title);
       body.append('translation[0][description]', data?.description);
       body.append('display_order', data?.display_order);
-      body.append('catalogue_type', selectedCatalogue ?? details?.catalogue_type);
-
+      body.append('catalogue_type', data?.catalogue_type);
       body.append('is_active', data?.is_active ? '1' : '0');
       body.append('home_page_listing_id', details?.id);
-      body.append('categories[0]', data?.category);
-
       const response = await createHomeListing(body);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -216,8 +201,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
             width: '-webkit-fill-available',
             cursor: 'pointer',
             position: 'absolute',
-            // top: '1.5rem',
+            top: '1.5rem',
             right: '1rem',
+            zIndex: '10',
           }}
         >
           <Iconify
@@ -229,48 +215,50 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       )}
       <Scrollbar>
         {!editMode ? (
-          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
-            {[
-              ...(details?.translations?.flatMap((itm: any) => [
-                { label: `Title (${itm?.locale})`, value: itm?.title ?? 'N/A' },
-                { label: `Description (${itm?.locale})`, value: itm?.description ?? 'N/A' },
-              ]) || []),
-              // { label: 'Name', value: items?.name ?? 'N/A' },
-              { label: 'Display order', value: details?.display_order ?? 'N/A' },
-              {
-                label: 'Catalogue type',
-                value:
-                  details?.catalogue_type === 1
-                    ? 'Driver'
-                    : details?.catalogue_type === 2
-                    ? 'Categories'
-                    : 'N/A',
-              },
+          <Paper elevation={3} sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
+            <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+              {/* Image Section */}
+              {/* <Box sx={{ minWidth: '120px', maxWidth: '150px' }}>
+                {details?.picture?.virtual_path ? (
+                  <img
+                    src={details.picture.virtual_path}
+                    alt="picture"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  'N/A'
+                )}
+              </Box> */}
 
-              {
-                label: 'Is Active',
-                value:
-                  details?.is_active === '1' ? (
-                    <Iconify color="green" icon="bi:check-square-fill" />
-                  ) : (
-                    <Iconify color="red" icon="bi:x-square-fill" />
-                  ),
-              },
-            ].map((item, index) => (
-              <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                  {item.label}
-                </Box>
-                <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                  :
-                </Box>
-                <Box component="span" sx={{ flex: 1 }}>
-                  {item.value ?? 'N/A'}
-                </Box>
-                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
-              </Box>
-            ))}
-          </Stack>
+              {/* Details Section */}
+              <Stack spacing={2} sx={{ flex: 1 }}>
+                {[
+                  { label: 'Title', value: details?.title ?? 'N/A' },
+                  { label: 'Display Order', value: details?.display_order ?? 'NA' },
+                  { label: 'Catalogue Type', value: details?.catalogue_type ?? 'NA' },
+                  { label: 'Display Type', value: details?.display_type ?? 'NA' },
+                ].map((item, index) => (
+                  <Box
+                    key={index}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', width: '200px' }}>
+                      {item.label}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', width: '130px' }}>
+                      :
+                    </Typography>
+                    <Box sx={{ flex: 1, overflowWrap: 'break-word' }}>{item.value ?? 'N/A'}</Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Stack>
+          </Paper>
         ) : (
           <Box
             component="form"
@@ -386,45 +374,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     )}
                   />
                 </FormControl>
-                {selectedCatalogue === '2' && (
-                  <Controller
-                    name="category"
-                    control={control}
-                    defaultValue={[]}
-                    render={({ field, fieldState: { error } }) => {
-                      console.log('Controller Rendered:', {
-                        field,
-                        error,
-                        fieldName: field.name,
-                      });
-
-                      return (
-                        <FormControl sx={{ width: '100%' }} error={!!error}>
-                          <InputLabel>Category</InputLabel>
-                          <Select
-                            {...field}
-                            defaultValue={defaultVendorValues.category}
-                            label="category"
-                            name="category"
-                            value={field.value || ''}
-                            onChange={(e) => {
-                              console.log('Previous Selected Value:', field.value);
-                              const { value } = e.target;
-                              field.onChange(value);
-                            }}
-                            sx={{ width: '100%' }}
-                          >
-                            {categoryOptions?.map((option) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      );
-                    }}
-                  />
-                )}
                 <FormControlLabel
                   control={
                     <Controller
