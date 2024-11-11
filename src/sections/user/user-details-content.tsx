@@ -72,6 +72,7 @@ import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
 import { useGetBookingByTrainerId } from 'src/api/booking';
 import BookingTrainerTable from './booking-details/trainer-booking-details';
 import BookingStudentTable from './booking-details/student-booking-details';
+import { Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -94,7 +95,7 @@ export default function UserDetailsContent({
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [load, setLoad] = useState(false);
-
+  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
@@ -350,7 +351,9 @@ export default function UserDetailsContent({
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
   }, [details?.id]);
-
+  const handleClickTrainer = (id) => {
+    router.push(paths.dashboard.school.details(id));
+  };
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -435,6 +438,25 @@ export default function UserDetailsContent({
                       {
                         label: 'Last Booking At',
                         value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Name',
+                        value: details?.vendor?.vendor_translations?.[0]?.name ? (
+                          <Link
+                            onClick={() => handleClickTrainer(details?.vendor?.id)}
+                            style={{
+                              textDecoration: 'underline',
+                              color: 'inherit',
+                              cursor: 'pointer',
+                            }}
+                            onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
+                            onMouseOut={(e) => (e.target.style.color = 'inherit')}
+                          >
+                            {details?.vendor?.vendor_translations?.[0]?.name}
+                          </Link>
+                        ) : (
+                          'N/A'
+                        ),
                       },
                       {
                         label: 'Vendor Commission',
