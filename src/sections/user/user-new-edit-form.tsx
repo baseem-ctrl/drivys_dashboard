@@ -50,6 +50,8 @@ import { useGetAllLanguage } from 'src/api/language';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetAllCity } from 'src/api/city';
 import { useGetAllDialect } from 'src/api/dialect';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useGetSchool } from 'src/api/school';
 
 // ----------------------------------------------------------------------
 
@@ -90,6 +92,11 @@ export default function UserNewEditForm({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,
+  });
+  const [searchValue, setSearchValue] = useState('');
+  const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
+    limit: 1000,
+    search: searchValue ?? '',
   });
 
   const { city } = useGetAllCity({
@@ -134,8 +141,17 @@ export default function UserNewEditForm({
     user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
-    gear: Yup.mixed().nullable(),
+    gear: Yup.mixed()
+      .nullable()
+      .test('gear-required-for-trainer', 'Gear is required for trainers', function (value) {
+        const { user_type } = this.parent; // Access other fields in the form
+        if (user_type === 'TRAINER') {
+          return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
+        }
+        return true; // Otherwise, `gear` is not required
+      }),
     vehicle_type_id: Yup.mixed().nullable(),
+    vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
@@ -179,6 +195,8 @@ export default function UserNewEditForm({
             )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
+      vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
+        ?.vendor_translations[0]?.name,
       gender:
         genderData?.length > 0
           ? genderData?.find(
@@ -266,6 +284,7 @@ export default function UserNewEditForm({
       }
 
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
+      if (data.vendor_id) body.append('vendor_id', data?.vendor_id?.value);
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
       body.append('country_code', data?.country_code);
@@ -293,6 +312,11 @@ export default function UserNewEditForm({
         body.append('photo_url', data?.photo_url);
       }
 
+      if (data?.min_price) body.append('min_price', data?.min_price);
+      if (data?.bio) body.append('bio', data?.bio);
+      if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+      if (data?.school_commission_in_percentage)
+        body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
       if (data?.languages?.length > 0) {
         data?.languages.forEach((languageItem, index) => {
           body.append(`languages[${index}][id]`, languageItem?.id?.id);
@@ -487,6 +511,20 @@ export default function UserNewEditForm({
                 <RHFTextField name="min_price" label="Minimum Price" type="number" />
               )}
               {values.user_type === 'TRAINER' && (
+                <RHFAutocompleteSearch
+                  name="vendor_id"
+                  label="Select School"
+                  placeholder="Search School..."
+                  options={schoolList.map((item: any) => ({
+                    label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                    value: item.id,
+                  }))}
+                  setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
+                  disableClearable={true}
+                  loading={schoolLoading}
+                />
+              )}
+              {values.user_type === 'TRAINER' && (
                 <RHFTextField
                   name="school_commission_in_percentage"
                   label="School Commission (%)"
@@ -552,7 +590,6 @@ export default function UserNewEditForm({
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
