@@ -256,11 +256,11 @@ export default function HomeListingDialog({
       formData.append('catalogue_type', selectedCatalogue || '');
       formData.append('published', data.published ? '1' : '0');
 
-      if (selectedImageIds.length > 0) {
-        selectedImageIds.forEach((id, index) =>
-          formData.append(`sliders[${index}]`, id.toString())
-        );
-      }
+      // if (selectedImageIds && selectedImageIds.length > 0) {
+      //   selectedImageIds.forEach((id, index) =>
+      //     formData.append(`sliders[${index}]`, id.toString())
+      //   );
+      // }
       //   if (selectedImageIds.length > 0) {
       //     selectedImageIds.forEach((id, index) =>
       //       formData.append(
