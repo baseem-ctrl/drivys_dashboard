@@ -9,4 +9,5 @@ export const STATUS_OPTIONS = [
 export const SCHOOL_DETAILS_TABS = [
   { value: 'details', label: 'School Details' },
   { value: 'trainers', label: 'Trainers' },
+  { value: 'package', label: 'Packages' },
 ];

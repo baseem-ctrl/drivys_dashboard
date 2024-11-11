@@ -19,6 +19,7 @@ import { Button, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolAdminDetailsContent from './school-admin-details-content';
 import SchoolAdminTrainers from './school-admin-details-trainers';
+import SchoolAdminPackageDetails from './school-admin-package-details';
 
 // ----------------------------------------------------------------------
 
@@ -109,6 +110,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
               vendor_id={currentSchool?.id}
             />
           )}
+          {currentTab === 'package' && <SchoolAdminPackageDetails id={currentSchool?.id} />}
         </>
       ) : (
         <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
