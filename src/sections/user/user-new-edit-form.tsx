@@ -155,7 +155,7 @@ export default function UserNewEditForm({
       password: '',
       phone: currentUser?.phone || '',
 
-      country_code: '971',
+      country_code: currentUser?.country_code,
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
@@ -456,7 +456,6 @@ export default function UserNewEditForm({
                     </MenuItem>
                   ))}
               </RHFSelect>
-
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField
@@ -475,7 +474,6 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
-
               {values.user_type === 'TRAINER' && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
@@ -502,7 +500,6 @@ export default function UserNewEditForm({
                   type="number"
                 />
               )}
-
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
@@ -518,14 +515,17 @@ export default function UserNewEditForm({
                   );
                 }}
               />
-              <RHFTextField name="phone" label="Phone Number" prefix="+971" />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <RHFTextField name="country_code" label="Country Code" sx={{ maxWidth: 100 }} />
+
+                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
+              </Stack>{' '}
               <RHFTextField
                 name="dob"
                 label="Date of Birth"
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
-
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
               {values.user_type === 'TRAINER' && (
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />
