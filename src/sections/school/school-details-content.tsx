@@ -199,7 +199,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         license_file: null,
         website: details?.website || '',
         status: details?.status || '',
-        is_active: details?.is_active === '0' ? false : true,
+        is_active: !!details?.is_active,
         user_id: details?.vendor_user?.user_id || '',
       };
       schoolReset(defaultVendorValues);
@@ -350,7 +350,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               {
                 label: 'Is Active',
                 value:
-                  details?.is_active === '1' ? (
+                  details?.is_active === 1 ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />
