@@ -2,7 +2,7 @@
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import { FormControl, InputLabel } from '@mui/material'
+import { FormControl, InputLabel } from '@mui/material';
 
 // components
 import Iconify from 'src/components/iconify';
@@ -16,15 +16,19 @@ import {
   Select,
   Switch,
   TextField,
+  Paper,
+  Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import FormProvider, { RHFMultiSelectAuto } from 'src/components/hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
 import { useGetAllLanguage } from 'src/api/language';
 import { createHomeListing } from 'src/api/homelisting';
+import { useGetAllCategory } from 'src/api/category';
 
 // ----------------------------------------------------------------------
 
@@ -33,19 +37,19 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-const catalogueOptions = [{ label: "Drivers", value: "1" }, { label: "Categories", value: "2" }]
+const catalogueOptions = [
+  { label: 'Drivers', value: '1' },
+  { label: 'Categories', value: '2' },
+];
 
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
-
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 
-  const { language } =
-    useGetAllLanguage(0, 1000);
-
+  const { language } = useGetAllLanguage(0, 1000);
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.translations?.length > 0) {
@@ -54,7 +58,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   }, [details]);
 
   const [localeOptions, setLocaleOptions] = useState([]);
-
   useEffect(() => {
     if ((language && language?.length > 0) || details?.translations?.length > 0) {
       let initialLocaleOptions = [];
@@ -92,9 +95,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     title: Yup.string().required('Name is required'),
     description: Yup.string(),
     catalogue_type: Yup.mixed(),
+    category: Yup.mixed(),
     display_order: Yup.string(),
     is_active: Yup.boolean(),
-
   });
 
   const defaultVendorValues = useMemo(
@@ -103,24 +106,28 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       title: selectedLocaleObject?.title || '',
       description: selectedLocaleObject?.description || '',
       catalogue_type: details?.catalogue_type || '',
+      category: details?.category || '',
       display_order: details?.display_order || '',
       is_active: details?.is_active === '1' ? true : false,
     }),
     [selectedLocaleObject, details, editMode]
   );
   const HomeListingMethods = useForm({
-    resolver: yupResolver(VendorSchema) as any,
-    defaultVendorValues,
+    resolver: yupResolver(VendorSchema),
+    defaultValues: defaultVendorValues, // Ensure default values are passed correctly
+    mode: 'onChange',
   });
+
   const {
     reset: HomeListingReset,
     watch: HomeListingWatch,
-    control: HomeListingControl,
     setValue: HomeListingSetValue,
     handleSubmit: HomeListingSubmit,
     formState: HomeListingFormState,
   } = HomeListingMethods;
+
   const { isSubmitting, errors } = HomeListingFormState;
+  const { control } = HomeListingMethods;
 
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
@@ -143,24 +150,24 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
         locale: selectedLocaleObject?.locale || '',
         description: selectedLocaleObject?.description || '',
         display_order: details?.display_order || '',
-        is_active: details?.is_active === "1" ? true : false,
+        is_active: details?.is_active === '1' ? true : false,
         // user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
-        catalogue_type: details?.catalogue_type || ''
+        catalogue_type: details?.catalogue_type || '',
       };
       HomeListingReset(defaultVendorValues);
     }
   }, [details, HomeListingReset, selectedLocaleObject]);
+
   const onSubmitBasicInfo = HomeListingSubmit(async (data) => {
     try {
-
-      const body = new FormData()
-      body.append("translation[0][locale]", selectedLanguage)
-      body.append("translation[0][title]", data?.title)
-      body.append("translation[0][description]", data?.description)
-      body.append("display_order", data?.display_order)
-      body.append("catalogue_type", data?.catalogue_type)
-      body.append("is_active", data?.is_active ? '1' : '0')
-      body.append("home_page_listing_id", details?.id)
+      const body = new FormData();
+      body.append('translation[0][locale]', selectedLanguage);
+      body.append('translation[0][title]', data?.title);
+      body.append('translation[0][description]', data?.description);
+      body.append('display_order', data?.display_order);
+      body.append('catalogue_type', data?.catalogue_type);
+      body.append('is_active', data?.is_active ? '1' : '0');
+      body.append('home_page_listing_id', details?.id);
       const response = await createHomeListing(body);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -194,8 +201,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
             width: '-webkit-fill-available',
             cursor: 'pointer',
             position: 'absolute',
-            // top: '1.5rem',
+            top: '1.5rem',
             right: '1rem',
+            zIndex: '10',
           }}
         >
           <Iconify
@@ -207,40 +215,50 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       )}
       <Scrollbar>
         {!editMode ? (
-          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
-            {[
-              ...(details?.translations?.flatMap((itm: any) => [
-                { label: `Title (${itm?.locale})`, value: itm?.title ?? 'N/A' },
-                { label: `Description (${itm?.locale})`, value: itm?.description ?? 'N/A' },
-              ]) || []),
-              // { label: 'Name', value: items?.name ?? 'N/A' },
-              { label: 'Display order', value: details?.display_order ?? 'NA' },
-              { label: 'Catalogue type', value: details?.catalogue_type ?? 'NA' },
+          <Paper elevation={3} sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
+            <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+              {/* Image Section */}
+              {/* <Box sx={{ minWidth: '120px', maxWidth: '150px' }}>
+                {details?.picture?.virtual_path ? (
+                  <img
+                    src={details.picture.virtual_path}
+                    alt="picture"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  'N/A'
+                )}
+              </Box> */}
 
-              {
-                label: 'Is Active',
-                value:
-                  details?.is_active === '1' ? (
-                    <Iconify color="green" icon="bi:check-square-fill" />
-                  ) : (
-                    <Iconify color="red" icon="bi:x-square-fill" />
-                  ),
-              },
-            ].map((item, index) => (
-              <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                  {item.label}
-                </Box>
-                <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                  :
-                </Box>
-                <Box component="span" sx={{ flex: 1 }}>
-                  {item.value ?? 'N/A'}
-                </Box>
-                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
-              </Box>
-            ))}
-          </Stack>
+              {/* Details Section */}
+              <Stack spacing={2} sx={{ flex: 1 }}>
+                {[
+                  { label: 'Title', value: details?.title ?? 'N/A' },
+                  { label: 'Display Order', value: details?.display_order ?? 'NA' },
+                  { label: 'Catalogue Type', value: details?.catalogue_type ?? 'NA' },
+                  { label: 'Display Type', value: details?.display_type ?? 'NA' },
+                ].map((item, index) => (
+                  <Box
+                    key={index}
+                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', width: '200px' }}>
+                      {item.label}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', width: '130px' }}>
+                      :
+                    </Typography>
+                    <Box sx={{ flex: 1, overflowWrap: 'break-word' }}>{item.value ?? 'N/A'}</Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Stack>
+          </Paper>
         ) : (
           <Box
             component="form"
@@ -256,7 +274,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -269,7 +287,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               >
                 <Controller
                   name="locale"
-                  control={HomeListingControl}
+                  control={control}
                   render={({ field }) => (
                     <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
                       {localeOptions?.map((option: any) => (
@@ -282,7 +300,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                 />
                 <Controller
                   name="title"
-                  control={HomeListingControl}
+                  control={control}
                   render={({ field }) => (
                     <TextField
                       label="Title"
@@ -294,7 +312,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                 />
                 <Controller
                   name="description"
-                  control={HomeListingControl}
+                  control={control}
                   render={({ field }) => (
                     <TextField
                       label="Description"
@@ -304,7 +322,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     />
                   )}
                 />
-
               </Box>
             </Box>
 
@@ -314,7 +331,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               columnGap={3}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-            // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
@@ -328,7 +345,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               >
                 <Controller
                   name="display_order"
-                  control={HomeListingControl}
+                  control={control}
                   render={({ field }) => (
                     <TextField label="Display order" {...field} error={!!errors.display_order} />
                   )}
@@ -336,13 +353,15 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                 <FormControl fullWidth>
                   <InputLabel id="catalogue-type-label">Catalogue Type</InputLabel>
                   <Controller
+                    defaultValue={defaultVendorValues.catalogue_type}
                     name="catalogue_type"
-                    control={HomeListingControl}
+                    control={control}
                     render={({ field }) => (
                       <Select
                         {...field}
                         labelId="catalogue-type-label"
                         value={selectedCatalogue || ''}
+                        name="catalogue_type"
                         onChange={handleChangeCatalogue}
                         label="Catalogue Type"
                       >
@@ -355,12 +374,11 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     )}
                   />
                 </FormControl>
-
                 <FormControlLabel
                   control={
                     <Controller
                       name="is_active"
-                      control={HomeListingControl}
+                      control={control}
                       render={({ field }) => (
                         <Switch {...field} error={!!errors.is_active} checked={field.value} />
                       )}
@@ -368,7 +386,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                   }
                   label="Is Active"
                 />
-
               </Box>
             </Box>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
@@ -401,7 +418,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
     </Stack>
   );
 
-
   return (
     <>
       {loading ? (
@@ -417,9 +433,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
         </Box>
       ) : (
         <Grid container spacing={1} rowGap={1}>
-          <Grid xs={12} >
-            {renderContent}
-          </Grid>
+          <Grid xs={12}>{renderContent}</Grid>
         </Grid>
       )}
     </>

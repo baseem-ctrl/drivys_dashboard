@@ -51,20 +51,21 @@ export default function UserTableRow({
 
   const quickEdit = useBoolean();
 
-
-
   const redirectToDetailsPage = () => {
     router.push(paths.dashboard.user.details(row?.id));
   };
 
-
   const popover = usePopover();
   const router = useRouter();
 
-
   return (
     <>
-      <TableRow hover selected={selected} sx={{ cursor: 'pointer' }} onClick={redirectToDetailsPage} >
+      <TableRow
+        hover
+        selected={selected}
+        sx={{ cursor: 'pointer' }}
+        onClick={redirectToDetailsPage}
+      >
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
@@ -85,20 +86,18 @@ export default function UserTableRow({
                 color: 'text.disabled',
               }}
             />
-            <Label
-              variant="soft"
-              color="info"
-            >
+            <Label variant="soft" color="info">
               {user_type}
             </Label>
           </Link>
-
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {country_code ? `${country_code}-${phone}` : phone || 'NA'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{new Date(dob).toISOString().split('T')[0] ?? 'NA'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {dob ? new Date(dob).toISOString().split('T')[0] : 'N/A'}
+        </TableCell>
 
         <TableCell>
           <Label
@@ -121,10 +120,13 @@ export default function UserTableRow({
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={(e) => {
-              quickEdit.onTrue()
-              e.stopPropagation();
-            }}>
+            <IconButton
+              color={quickEdit.value ? 'inherit' : 'default'}
+              onClick={(e) => {
+                quickEdit.onTrue();
+                e.stopPropagation();
+              }}
+            >
               <Iconify icon="solar:pen-bold" />
             </IconButton>
           </Tooltip>

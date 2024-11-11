@@ -21,13 +21,20 @@ export default function ImageTableRow({
   const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
-    setIsChecked(selectedImageIds.includes(id));
+    setIsChecked(selectedImageIds?.includes(id));
   }, [selectedImageIds, id]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
     setIsChecked(checked);
-    setSelectedImageIds((prev) => (checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)));
+    setSelectedImageIds((prev) => {
+      if (Array.isArray(prev)) {
+        return checked ? [...prev, id] : prev.filter((rowId) => rowId !== id);
+      } else {
+        console.error('prev is not an array', prev);
+        return checked ? [id] : [];
+      }
+    });
   };
 
   return (

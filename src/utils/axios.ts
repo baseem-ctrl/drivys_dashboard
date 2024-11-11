@@ -148,12 +148,15 @@ export const endpoints = {
     trainers: 'admin/trainers/get-trainer-list',
     addTrainer: 'admin/trainers/create-trainer',
     removeTrainer: 'admin/trainers/delete-trainer/',
+    package: {
+      getPackageBySchool: 'admin/package/get-school-packge-list',
+    },
   },
   homeListing: {
-    list: 'admin/home-page-listing/get-listing-list',
-    createUpdate: 'admin/home-page-listing/create-listing-translation',
-    details: 'admin/home-page-listing/get-listing/',
-    delete: 'admin/home-page-listing/delete-listing/',
+    list: 'admin/home-listing/get-home-listing-list',
+    createUpdate: 'admin/home-listing/create-home-listing',
+    details: 'admin/home-listing/get-home-listing/',
+    delete: 'admin/home-listing/delete-home-listing/',
   },
   package: {
     list: 'admin/package/get-packge-list',

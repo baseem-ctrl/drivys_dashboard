@@ -171,7 +171,7 @@ export default function UserNewEditForm({
       password: '',
       phone: currentUser?.phone || '',
 
-      country_code: '971',
+      country_code: currentUser?.country_code,
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
@@ -228,7 +228,6 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-
   const {
     reset,
     watch,
@@ -269,6 +268,8 @@ export default function UserNewEditForm({
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log('data', data);
+
       let response;
       const body = new FormData();
       body.append('name', data?.name);
@@ -276,28 +277,40 @@ export default function UserNewEditForm({
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      body.append('gear', data?.gear);
+      // Only append gear if it exists
+      if (data?.gear) {
+        console.log('data?.gear', data?.gear);
+        body.append('gear', data?.gear);
+      }
+
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
       if (data.vendor_id) body.append('vendor_id', data?.vendor_id?.value);
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      // if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
-
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
+
+      if (data?.user_type === 'TRAINER') {
+        if (data?.is_pickup_enabled)
+          body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
+        if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+        if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
+        if (data?.min_price) body.append('min_price', data?.min_price);
+        if (data?.school_commission_in_percentage)
+          body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+        if (data?.certificate_commission_in_percentage)
+          body.append(
+            'certificate_commission_in_percentage',
+            data?.certificate_commission_in_percentage
+          );
+        if (data?.bio) body.append('bio', data?.bio);
+      }
+
       body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
-      if (data?.certificate_commission_in_percentage)
-        body.append(
-          'certificate_commission_in_percentage',
-          data?.certificate_commission_in_percentage
-        );
-      if (data?.is_pickup_enabled) body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
-      if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
 
       if (data?.min_price) body.append('min_price', data?.min_price);
       if (data?.bio) body.append('bio', data?.bio);
@@ -305,10 +318,8 @@ export default function UserNewEditForm({
       if (data?.school_commission_in_percentage)
         body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
       if (data?.languages?.length > 0) {
-        data?.languages?.forEach((languageItem, index) => {
+        data?.languages.forEach((languageItem, index) => {
           body.append(`languages[${index}][id]`, languageItem?.id?.id);
-
-          // Use nullish coalescing to handle cases where `value` might be 0
           body.append(`languages[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
@@ -320,18 +331,18 @@ export default function UserNewEditForm({
       } else {
         response = await createUser(body);
       }
+
       if (response) {
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         if (currentUser?.id) {
           revalidateDetails();
         }
-
         reset();
         router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
+        Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
@@ -339,6 +350,7 @@ export default function UserNewEditForm({
       }
     }
   });
+
   useEffect(() => {
     if (currentUser) {
       reset(defaultValues);
@@ -396,7 +408,6 @@ export default function UserNewEditForm({
       </Box>
     );
   }
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -469,7 +480,6 @@ export default function UserNewEditForm({
                     </MenuItem>
                   ))}
               </RHFSelect>
-
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField
@@ -488,7 +498,6 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
-
               {values.user_type === 'TRAINER' && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
@@ -529,7 +538,6 @@ export default function UserNewEditForm({
                   type="number"
                 />
               )}
-
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
@@ -545,14 +553,17 @@ export default function UserNewEditForm({
                   );
                 }}
               />
-              <RHFTextField name="phone" label="Phone Number" prefix="+971" />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <RHFTextField name="country_code" label="Country Code" sx={{ maxWidth: 100 }} />
+
+                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
+              </Stack>{' '}
               <RHFTextField
                 name="dob"
                 label="Date of Birth"
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
-
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
               {values.user_type === 'TRAINER' && (
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />

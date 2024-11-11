@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
-import { createSchool, useGetSchoolAdmin } from 'src/api/school';
+import { createSchool, useGetAllSchoolAdmin, useGetSchoolAdmin } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -44,7 +44,8 @@ export default function SchoolCreateForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
+  const { revalidateSearch } = useGetSchoolAdmin(1000, 1);
+  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
@@ -238,6 +239,7 @@ export default function SchoolCreateForm({
       }
     } catch (error) {
       if (error?.errors) {
+        enqueueSnackbar(error?.message, { variant: 'error' });
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -253,9 +255,8 @@ export default function SchoolCreateForm({
     reset(defaultValues);
     onClose();
     setSelectedLocale('en');
-    setTranslations({})
+    setTranslations({});
   };
-
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>

@@ -351,3 +351,26 @@ export function useGetBookingByStudentId(studentId: string) {
 
   return { ...memoizedValue, revalidateBookingDetails };
 }
+export function useGetPackageBySchool(schoolId: string) {
+  const URL = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      packageDetails: (data?.data as any) || {},
+      packageError: error,
+      packageLoading: isLoading,
+      packageValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidatePackageDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidatePackageDetails };
+}
