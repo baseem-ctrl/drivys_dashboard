@@ -107,7 +107,7 @@ export default function HomeListingDialog({
     display_order: Yup.string(),
     // type: Yup.string(),
     published: Yup.boolean(),
-    picture_ids: Yup.array().nullable(),
+    sliders: Yup.array().nullable(),
     trainers: Yup.array().of(
       Yup.object().shape({
         id: Yup.mixed().required('Trainer is required'), // Validate court add-on
@@ -118,6 +118,7 @@ export default function HomeListingDialog({
     ),
   });
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
+    console.log('event.target.value', event.target.value);
     setSelectedCatalogue(event.target.value);
   };
   const handleChangeDisplayType = (event: { target: { value: SetStateAction<string> } }) => {
@@ -129,7 +130,7 @@ export default function HomeListingDialog({
       title: updateValue?.title || '',
       display_order: updateValue?.display_order || '',
       // type: updateValue?.type || '',
-      picture_ids: updateValue?.picture_ids || [],
+      sliders: updateValue?.sliders[0] || [],
       published: updateValue?.published === '1',
 
       display_type: updateValue?.display_type || '',
@@ -243,7 +244,7 @@ export default function HomeListingDialog({
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('selectedDisplayType', selectedDisplayType);
+      console.log('datadatadatadatadata', data);
       console.log('selectedCatalogue', selectedCatalogue);
 
       const formData = new FormData();
@@ -256,7 +257,7 @@ export default function HomeListingDialog({
       formData.append('catalogue_type', selectedCatalogue || '');
       formData.append('published', data.published ? '1' : '0');
 
-      if (selectedImageIds.length > 0) {
+      if (selectedImageIds && selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
           formData.append(`sliders[${index}]`, id.toString())
         );
