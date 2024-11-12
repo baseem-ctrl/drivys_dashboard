@@ -43,6 +43,7 @@ const catalogueOptions = [
 ];
 
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
+  console.log('details', details);
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
   );
@@ -108,7 +109,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       catalogue_type: details?.catalogue_type || '',
       category: details?.category || '',
       display_order: details?.display_order || '',
-      is_active: details?.is_active === '1' ? true : false,
+      is_active: details?.is_active === '1',
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -145,25 +146,23 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
 
   useEffect(() => {
     if (details) {
-      const defaultVendorValues = {
-        title: selectedLocaleObject?.title || '',
+      const newValues = {
         locale: selectedLocaleObject?.locale || '',
+        title: selectedLocaleObject?.title || '',
         description: selectedLocaleObject?.description || '',
-        display_order: details?.display_order || '',
-        is_active: details?.is_active === '1' ? true : false,
-        // user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
         catalogue_type: details?.catalogue_type || '',
+        category: details?.category || '',
+        display_order: details?.display_order || '',
+        is_active: details?.is_active === '1',
       };
-      HomeListingReset(defaultVendorValues);
+      HomeListingReset(newValues); // Reset the form with the new details
     }
   }, [details, HomeListingReset, selectedLocaleObject]);
 
   const onSubmitBasicInfo = HomeListingSubmit(async (data) => {
     try {
       const body = new FormData();
-      body.append('translation[0][locale]', selectedLanguage);
       body.append('translation[0][title]', data?.title);
-      body.append('translation[0][description]', data?.description);
       body.append('display_order', data?.display_order);
       body.append('catalogue_type', data?.catalogue_type);
       body.append('is_active', data?.is_active ? '1' : '0');
@@ -285,7 +284,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                   md: 'repeat(3, 1fr)',
                 }}
               >
-                <Controller
+                {/* <Controller
                   name="locale"
                   control={control}
                   render={({ field }) => (
@@ -297,7 +296,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                       ))}
                     </Select>
                   )}
-                />
+                /> */}
                 <Controller
                   name="title"
                   control={control}
@@ -310,7 +309,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     />
                   )}
                 />
-                <Controller
+                {/* <Controller
                   name="description"
                   control={control}
                   render={({ field }) => (
@@ -321,7 +320,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                       helperText={errors?.description ? errors?.description?.message : ''}
                     />
                   )}
-                />
+                /> */}
               </Box>
             </Box>
 
@@ -359,6 +358,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     render={({ field }) => (
                       <Select
                         {...field}
+                        defaultValue={defaultVendorValues.catalogue_type}
                         labelId="catalogue-type-label"
                         value={selectedCatalogue || ''}
                         name="catalogue_type"
