@@ -31,6 +31,7 @@ import { TextField, Typography } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
+import { useGetAllCategory } from 'src/api/category';
 
 type Props = {
   open: boolean;
@@ -48,9 +49,13 @@ export default function PackageCreateForm({
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 1,
+  });
+  console.log('category', category);
   const { schoolList, schoolLoading } = useGetSchool(1000, 1);
-  console.log(schoolList, "schoolList");
-
+  console.log(schoolList, 'schoolList');
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
@@ -67,6 +72,7 @@ export default function PackageCreateForm({
     session_inclusions: Yup.string().required('Session inclusions is required'),
     is_published: Yup.boolean(),
     number_of_sessions: Yup.number(),
+    category_id: Yup.number(),
     vendor_id: Yup.mixed(),
   });
 
@@ -142,7 +148,6 @@ export default function PackageCreateForm({
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
 
-
       // Update the previous locale
       previousLocaleRef.current = selectedLocale;
     }
@@ -160,7 +165,7 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][name]`, data?.name);
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
-
+    formData.append(`category_id`, data?.category_id);
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -231,18 +236,41 @@ export default function PackageCreateForm({
                 label="Select School"
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={schoolList?.map((item) => ({
-                  label: item?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown",
+                  label:
+                    item?.vendor_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                      ?.name || 'Unknown',
                   value: item?.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
                 loading={schoolAdminLoading}
               />
             </Grid>
+
+            <Grid item xs={6}>
+              {' '}
+              <RHFSelect
+                name="category_id"
+                label="Select Category" // Label for the select box
+              >
+                {category?.map((item) => {
+                  // Check if category_translations exists and has at least one item
+                  const translation = item.category_translations.find(
+                    (trans) => trans.locale === 'en'
+                  );
+                  return (
+                    translation && (
+                      <MenuItem key={item.id} value={item.id}>
+                        {translation.name} {/* Use the name from the selected locale */}
+                      </MenuItem>
+                    )
+                  );
+                })}
+              </RHFSelect>
+            </Grid>
             <Grid item xs={6}>
               <RHFCheckbox name="is_published" label="Publish" />
             </Grid>
             <Grid item xs={12}>
-
               <Stack spacing={1.5} mt={2}>
                 <Typography variant="subtitle2">Session inclusions</Typography>
                 <RHFEditor name="session_inclusions" />
@@ -250,11 +278,6 @@ export default function PackageCreateForm({
               {/* <RHFTextField name="session_inclusions" label="Session inclusions" /> */}
             </Grid>
           </Grid>
-
-
-
-
-
         </DialogContent>
 
         <DialogActions>

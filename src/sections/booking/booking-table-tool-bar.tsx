@@ -1,12 +1,12 @@
 import { Box, TextField, MenuItem } from '@mui/material';
-
-const paymentStatusOptions = ['PENDING', 'CONFIRMED', 'CANCELLED'];
-const paymentMethodOptions = ['ONLINE', 'OFFLINE'];
+import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 
 export default function BookingTableToolbar({ filters, onFilters, vendorOptions }) {
+  const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
+  const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
+
   const handleChange = (name) => (event) => {
     onFilters(name, event.target.value);
-    console.log('name, event.target.value', name, event.target.value);
   };
 
   const handleClear = (name) => () => {
@@ -21,7 +21,7 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
       gap={2}
       padding={2}
     >
-      <TextField
+      {/* <TextField
         select
         variant="outlined"
         label="Payment Status"
@@ -37,7 +37,7 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
             {status}
           </MenuItem>
         ))}
-      </TextField>
+      </TextField> */}
 
       <TextField
         select

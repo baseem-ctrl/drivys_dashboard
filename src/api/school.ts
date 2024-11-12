@@ -250,10 +250,7 @@ export function addTrainer(body: any) {
   return response;
 }
 
-
-
-
-//LOGIN AS SCHOOL ADMIN APIS
+// LOGIN AS SCHOOL ADMIN APIS
 export function useGetSchoolByIdAdmin(schoolId: string) {
   const URL = endpoints.school.detailsadmin;
 
@@ -280,4 +277,100 @@ export function RemoveTrainerFromSchool(id: any) {
   const URL = endpoints.school.removeTrainer + id;
   const response = barrySmasher(URL);
   return response;
+}
+export function useGetAllSchoolAdmin(limit: number, page: number) {
+  // Construct query parameters dynamically
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    params.has_school = 0;
+
+    return params;
+  }, [limit, page]);
+
+  const fullUrl = useMemo(() => {
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If the value is an array, append each item
+        value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
+      } else {
+        urlSearchParams.append(key, value as string);
+      }
+    });
+    return `${endpoints.school.getSchoolAdmin}?${urlSearchParams}`;
+  }, [queryParams]);
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidateSchoolList = () => {
+    mutate(fullUrl);
+  };
+
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolAdminList: DelivereyData,
+      schoolAdminLoading: isLoading,
+      schoolAdminError: error,
+      schoolAdminValidating: isValidating,
+      schoolAdminEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidateSchoolList,
+  };
+}
+// function to fetch booking details by a student's ID
+export function useGetBookingByStudentId(studentId: string) {
+  const URL = `${endpoints.booking.getBookingById}?student_id=${studentId}`;
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      bookingDetails: (data?.data as any) || {},
+      bookingError: error,
+      bookingLoading: isLoading,
+      bookingValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateBookingDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingDetails };
+}
+export function useGetPackageBySchool(schoolId: string) {
+  const URL = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      packageDetails: (data?.data as any) || {},
+      packageError: error,
+      packageLoading: isLoading,
+      packageValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidatePackageDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidatePackageDetails };
 }

@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import { useEffect, useMemo, useState } from 'react';
-import { Link, ListItemText, Select, TextField } from '@mui/material';
+import { Avatar, Link, ListItemText, Select, TextField, Typography } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -25,6 +25,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createHomeListing } from 'src/api/homelisting';
+import HomeSliderDialog from '../home-slider/home-slider-dialog';
+import HomeListingDialog from './home-listing-dailogue';
 
 // ----------------------------------------------------------------------
 
@@ -38,9 +40,20 @@ type Props = {
   onViewRow: VoidFunction;
 };
 
-const catalogueOptions = [{ label: "Drivers", value: "1" }, { label: "Categories", value: "2" }]
+const catalogueOptions = [
+  { label: 'SLIDER', value: '1' },
+  { label: 'CATEGORY', value: '2' },
+  { label: 'TRAINER', value: '3' },
+];
 
-export default function SchoolTableRow({
+const displayTypeOptions = [
+  { label: 'SLIDER', value: '1' },
+  { label: 'HORIZONTAL_SCROLL', value: '2' },
+  { label: 'VERTICAL_SCROLL', value: '3' },
+  { label: 'LIST', value: '4' },
+  { label: 'GRID', value: '5' },
+];
+export default function HomeListingTableRow({
   row,
   selected,
   onEditRow,
@@ -49,65 +62,64 @@ export default function SchoolTableRow({
   revalidateHomeListing,
   onViewRow,
 }: Props) {
-  const {
-    translations,
-    catalogue_type,
-    display_order,
-    is_active,
-    id,
-  } = row;
-  const { language } =
-    useGetAllLanguage(0, 1000);
+  const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
+  console.log('row', row);
+  console.log('title', title);
+  const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(translations?.[0]?.locale ?? '');
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
+  const [selectedDisplayType, setSelectedDisplayType] = useState(
+    displayTypeOptions[0]?.value ?? ''
+  );
 
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();
   const handleEditClick = () => {
-
     setEditingRowId(row.id);
   };
   const popover = usePopover();
-  useEffect(() => {
-    if ((language && language?.length > 0) || translations?.length > 0) {
-      let initialLocaleOptions = [];
-      if (Array.isArray(language)) {
-        initialLocaleOptions = language?.map((item: any) => ({
-          label: item.language_culture,
-          value: item.language_culture,
-        }));
-      }
-      const newLocales = translations
-        ?.map((category: any) => category.locale)
-        .filter(
-          (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
-        )
-        .map((locale: any) => ({ label: locale, value: locale }));
-      setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-    }
-  }, [language, translations, selectedLanguage]);
+  // useEffect(() => {
+  //   if ((language && language?.length > 0) || translations?.length > 0) {
+  //     let initialLocaleOptions = [];
+  //     if (Array.isArray(language)) {
+  //       initialLocaleOptions = language?.map((item: any) => ({
+  //         label: item.language_culture,
+  //         value: item.language_culture,
+  //       }));
+  //     }
+  //     const newLocales = translations
+  //       ?.map((category: any) => category.locale)
+  //       .filter(
+  //         (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
+  //       )
+  //       .map((locale: any) => ({ label: locale, value: locale }));
+  //     setLocaleOptions([...initialLocaleOptions, ...newLocales]);
+  //   }
+  // }, [language, translations, selectedLanguage]);
 
   const selectedLocaleObject = translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
   const NewSchema = Yup.object().shape({
     title: Yup.string(),
-    locale: Yup.mixed(),
-    description: Yup.string(),
+    // locale: Yup.mixed(),
+    // description: Yup.string(),
     is_active: Yup.boolean(),
     catalogue_type: Yup.string(),
     display_order: Yup.string(),
+    display_type: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
-      title: selectedLocaleObject?.title || '',
-      locale: selectedLocaleObject?.locale || '',
-      description: selectedLocaleObject?.description || '',
+      title: title || '',
+      // locale: selectedLocaleObject?.locale || '',
+      // description: selectedLocaleObject?.description || '',
       display_order: display_order || '',
+      display_type: display_type || '',
       is_active: is_active || 1,
-      catalogue_type: catalogue_type || ''
+      catalogue_type: catalogue_type || '',
     }),
     [selectedLocaleObject, row]
   );
@@ -124,7 +136,7 @@ export default function SchoolTableRow({
     const selectedLocaleObject = translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
-    console.log(selectedLocaleObject, "selectedLocaleObject");
+    console.log(selectedLocaleObject, 'selectedLocaleObject');
     // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
       setValue('title', selectedLocaleObject?.title); // Update name to match the locale
@@ -135,21 +147,28 @@ export default function SchoolTableRow({
     }
   };
 
-
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedCatalogue(event.target.value);
   };
-
+  const handleChangeDisplayType = (event: { target: { value: SetStateAction<string> } }) => {
+    setSelectedDisplayType(event.target.value);
+  };
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const body = new FormData()
-      body.append("translation[0][locale]", selectedLanguage || translations?.locale)
-      body.append("translation[0][title]", data?.title || translations?.title)
-      body.append("translation[0][description]", data?.description || translations?.description)
-      body.append("display_order", data?.display_order || display_order)
-      body.append("catalogue_type", data?.catalogue_type || catalogue_type)
-      body.append("is_active", data?.is_active ? '1' : '0')
-      body.append("home_page_listing_id", selectedLocaleObject?.home_page_listing_id ?? row?.id)
+      const body = new FormData();
+      console.log('data', data);
+      console.log(
+        'selectedLocaleObject?.home_page_listing_id',
+        selectedLocaleObject?.home_page_listing_id
+      );
+      // body.append('translation[0][locale]', selectedLanguage || translations?.locale);
+      body.append('title', data?.title || title);
+      // body.append('translation[0][description]', data?.description || translations?.description);
+      body.append('display_order', data?.display_order || display_order);
+      body.append('display_type', data?.display_type || display_type);
+      body.append('catalogue_type', data?.catalogue_type || catalogue_type || selectedCatalogue);
+      body.append('is_active', data?.is_active ? '1' : '0');
+      body.append('home_listing_id', id ?? row?.id);
 
       const response = await createHomeListing(body);
       if (response) {
@@ -173,32 +192,29 @@ export default function SchoolTableRow({
   const router = useRouter();
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        hover
+        onClick={(event) => {
+          // Prevent navigation if the target is the three dots icon, save button, or if editing
+          if (
+            editingRowId === row.id || // Prevent navigation if editing the current row
+            event.target.closest('.three-dot-icon') ||
+            event.target.closest('.save-button') ||
+            event.target.closest('.editor')
+          ) {
+            event.stopPropagation(); // Stop the event from bubbling up
+            // popover.onOpen(event); // Open your popover here
+          } else {
+            onViewRow(); // Navigate to the details page
+          }
+        }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
         <TableCell>{id}</TableCell>
-
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="locale"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
-                  {localeOptions?.map((option: any) => (
-                    <MenuItem key={option?.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          ) : (
-            selectedLanguage
-          )}
-        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
@@ -214,29 +230,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            <Link color="inherit" sx={{ cursor: 'pointer' }} onClick={onViewRow}>
-              {selectedLocaleObject?.title ?? 'N/A'}
-            </Link>
-          )}
-        </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.description}
-                  helperText={errors?.description ? errors?.description?.message : ''}
-                />
-              )}
-            />
-          ) : (
-            <Link color="inherit" sx={{ cursor: 'pointer' }} onClick={onViewRow}>
-              {selectedLocaleObject?.description ?? 'N/A'}
-            </Link>
+            title || 'N/A'
           )}
         </TableCell>
 
@@ -255,12 +249,36 @@ export default function SchoolTableRow({
                 </Select>
               )}
             />
-
           ) : (
-            catalogue_type === "2" ? "Drivers" : "Categories" || 'N/A'
+            row?.catalogue_type || 'N/A'
           )}
         </TableCell>
-
+        {/* <TableCell>
+          <Avatar alt={row.name} src={row?.sliders?.virtual_path} sx={{ mr: 2 }} />
+        </TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="display_type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  value={selectedDisplayType || ''}
+                  onChange={handleChangeDisplayType}
+                >
+                  {displayTypeOptions?.map((option: any) => (
+                    <MenuItem key={option?.value} value={option?.value}>
+                      {option?.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          ) : (
+            row?.display_type || 'N/A'
+          )}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}
           {editingRowId === row.id ? (
@@ -281,36 +299,6 @@ export default function SchoolTableRow({
           )}
         </TableCell>
 
-
-        <TableCell>
-          {editingRowId === row.id ? (
-            <Controller
-              name="is_active"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} value={field?.value || ''}>
-                  {/* {localeOptions.map((option: any) => ( */}
-                  <MenuItem key={'1'} value={'1'}>
-                    Active
-                  </MenuItem>
-                  <MenuItem key={'0'} value={'0'}>
-                    In Active
-                  </MenuItem>{' '}
-                  {/* ))} */}
-                </Select>
-              )}
-            />
-          ) : (
-            <Label
-              variant="soft"
-              color={
-                (is_active === '1' && 'success') || (is_active === '0' && 'error') || 'default'
-              }
-            >
-              {is_active === '0' ? 'In Active' : 'Active'}
-            </Label>
-          )}
-        </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton
@@ -323,15 +311,26 @@ export default function SchoolTableRow({
               {'Save'}
             </LoadingButton>
           ) : (
-
-
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <IconButton
+              color={popover.open ? 'inherit' : 'default'}
+              className="three-dot-icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                popover.onOpen(event);
+              }}
+            >
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
         </TableCell>
       </TableRow>
-
+      <HomeListingDialog
+        open={editingRowId !== null}
+        onClose={() => setEditingRowId(null)}
+        // title={t('Update Home Slider')}
+        updateValue={row}
+        onReload={revalidateHomeListing}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -347,6 +346,7 @@ export default function SchoolTableRow({
           </Button>
         }
       />
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}

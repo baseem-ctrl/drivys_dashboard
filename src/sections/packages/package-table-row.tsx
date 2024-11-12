@@ -29,6 +29,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createUpdatePackage } from 'src/api/package';
+import { useGetAllCategory } from 'src/api/category';
 
 // ----------------------------------------------------------------------
 
@@ -62,13 +63,17 @@ export default function PackageTableRow({
     vendor,
     vendor_user,
     number_of_sessions,
+    category_id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 1,
+  });
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
-
 
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -110,6 +115,7 @@ export default function PackageTableRow({
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),
     number_of_sessions: Yup.string(),
+    category_id: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -122,6 +128,7 @@ export default function PackageTableRow({
       is_published: is_published || 1,
       vendor_id: vendor?.vendor_user?.vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
+      category_id: category_id || '',
     }),
     [selectedLocaleObject, row]
   );
@@ -147,8 +154,6 @@ export default function PackageTableRow({
       setValue('name', '');
     }
   };
-
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
@@ -156,7 +161,9 @@ export default function PackageTableRow({
           {
             name: data?.name || package_translations?.name,
             locale: selectedLanguage || package_translations?.locale,
-            session_inclusions: selectedLocaleObject?.session_inclusions,
+            session_inclusions:
+              selectedLocaleObject?.session_inclusions ||
+              package_translations[0]?.session_inclusions,
           },
         ],
         contact_email: data?.email || email,
@@ -165,10 +172,9 @@ export default function PackageTableRow({
         vendor_id: data?.vendor_id || vendor?.vendor_user?.vendor_id,
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
-        package_id: row?.id
-
+        category_id: data?.category_id,
+        package_id: row?.id,
       };
-
       const response = await createUpdatePackage(payload);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -192,7 +198,24 @@ export default function PackageTableRow({
 
   return (
     <>
-      <TableRow hover selected={selected}>
+      <TableRow
+        hover
+        selected={selected}
+        onClick={(event) => {
+          // Prevent navigation if the target is the three dots icon, save button, or if editing
+          if (
+            editingRowId === row.id || // Prevent navigation if editing the current row
+            event.target.closest('.three-dot-icon') ||
+            event.target.closest('.save-button') ||
+            event.target.closest('.editor')
+          ) {
+            event.stopPropagation(); // Stop the event from bubbling up
+            // popover.onOpen(event); // Open your popover here
+          } else {
+            onViewRow(); // Navigate to the details page
+          }
+        }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
@@ -273,8 +296,6 @@ export default function PackageTableRow({
           )}
         </TableCell>
 
-
-
         <TableCell>
           {editingRowId === row.id ? (
             <Controller
@@ -297,13 +318,14 @@ export default function PackageTableRow({
             <Label
               variant="soft"
               color={
-                (is_published === '1' && 'success') || (is_published === '0' && 'error') || 'default'
+                (is_published === 1 && 'success') || (is_published === 0 && 'error') || 'default'
               }
             >
               {is_published === '0' ? 'Un Published' : 'Published'}
             </Label>
           )}
         </TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
@@ -313,7 +335,9 @@ export default function PackageTableRow({
                 <Select {...field} value={field?.value || ''}>
                   {schoolList.map((option: any) => (
                     <MenuItem key={option.id} value={option.id}>
-                      {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                      {option?.vendor_translations.find(
+                        (item) => item?.locale?.toLowerCase() === 'en'
+                      )?.name || 'Unknown'}
                     </MenuItem>
                   ))}
                 </Select>
@@ -321,7 +345,10 @@ export default function PackageTableRow({
             />
           ) : (
             <ListItemText
-              primary={vendor?.vendor_translations?.find(item => item?.locale?.toLowerCase() === "en")?.name ?? 'NA'}
+              primary={
+                vendor?.vendor_translations?.find((item) => item?.locale?.toLowerCase() === 'en')
+                  ?.name ?? 'NA'
+              }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
                 component: 'span',
@@ -330,6 +357,39 @@ export default function PackageTableRow({
             />
           )}
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {editingRowId === row.id ? (
+            <Controller
+              name="category_id" // Ensure this matches your form state
+              control={control}
+              defaultValue={row.category_id} // Set the default value to the current category id
+              render={({ field }) => (
+                <Select {...field} value={field.value || ''}>
+                  {category.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.category_translations[0]?.name || 'N/A'}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          ) : (
+            <ListItemText
+              primary={(() => {
+                const selectedCategory = category?.find((cat) => cat.id === row.category_id);
+                return selectedCategory
+                  ? selectedCategory.category_translations[0]?.name || 'N/A'
+                  : 'N/A';
+              })()}
+              primaryTypographyProps={{ typography: 'body2' }}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          )}
+        </TableCell>
+
         <TableCell sx={{ px: 1, whiteSpace: 'nowrap' }}>
           {editingRowId !== null ? (
             <LoadingButton
@@ -350,7 +410,14 @@ export default function PackageTableRow({
             //   Save
             // </Button>
 
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <IconButton
+              color={popover.open ? 'inherit' : 'default'}
+              className="three-dot-icon"
+              onClick={(event) => {
+                event.stopPropagation();
+                popover.onOpen(event);
+              }}
+            >
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}

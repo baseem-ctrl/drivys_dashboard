@@ -8,6 +8,15 @@ import Typography from '@mui/material/Typography';
 // import ListItemText from '@mui/material/ListItemText';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
 // import { fCurrency } from 'src/utils/format-number';
@@ -19,7 +28,9 @@ import Iconify from 'src/components/iconify';
 import {
   Box,
   Button,
+  CardContent,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
   MenuItem,
@@ -32,7 +43,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { createSchool, createUpdateSchoolAddress, useGetSchoolAdmin } from 'src/api/school';
+import {
+  createSchool,
+  createUpdateSchoolAddress,
+  useGetBookingByStudentId,
+  useGetSchoolAdmin,
+} from 'src/api/school';
 import {
   createNewAddressForUser,
   deleteUserAddress,
@@ -49,7 +65,14 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
 import StudentDetailsContent from './student-details-content';
+import UserDocumentDetails from './user-document/user-document-details';
+import { useGetUserDocumentList } from 'src/api/user-document';
 import TrainerWorkingHour from './trainer-working-hour';
+import { STUDENT_DETAILS_TABS } from 'src/_mock/student';
+import { useGetBookingByTrainerId } from 'src/api/booking';
+import BookingTrainerTable from './booking-details/trainer-booking-details';
+import BookingStudentTable from './booking-details/student-booking-details';
+import { Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -68,20 +91,28 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset } = useForm();
-
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [load, setLoad] = useState(false);
-
+  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
   const [currentTab, setCurrentTab] = useState('details');
+  const [studentTab, setStudentTab] = useState('details');
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+
+  const {
+    userDocuments,
+    userDocumentLoading,
+    userDocumentError,
+    totalPages,
+    revalidateUserDocuments,
+  } = useGetUserDocumentList({ userId: details.id });
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -309,6 +340,9 @@ export default function UserDetailsContent({
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
+  const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    setStudentTab(newValue);
+  }, []);
   // const handleCancel = () => {
   //   schoolReset(); // Reset to the original values
   //   setEditMode(false);
@@ -317,7 +351,9 @@ export default function UserDetailsContent({
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
   }, [details?.id]);
-
+  const handleClickTrainer = (id) => {
+    router.push(paths.dashboard.school.details(id));
+  };
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -348,7 +384,7 @@ export default function UserDetailsContent({
         <Avatar
           alt={details?.name}
           src={details?.photo_url}
-          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2 }}
+          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2, mr: 3 }}
           variant="square"
         />
         {/* </Grid> */}
@@ -357,35 +393,35 @@ export default function UserDetailsContent({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 { label: 'Name', value: details?.name ?? 'N/A' },
-                { label: 'Email', value: details?.email ?? 'NA' },
+                { label: 'Email', value: details?.email ?? 'N/A' },
                 {
                   label: 'Phone Number',
                   value: details?.country_code
-                    ? `${details?.country_code}-${details?.phone}`
-                    : details?.phone ?? 'NA',
+                    ? `${details.country_code}-${details.phone}`
+                    : details.phone ?? 'N/A',
                 },
-                { label: 'User Type', value: details?.user_type ?? 'NA' },
-                { label: 'Date of birth', value: details?.dob?.split('T')[0] ?? 'NA' },
+                { label: 'User Type', value: details?.user_type ?? 'N/A' },
+                { label: 'Date of Birth', value: details?.dob?.split('T')[0] ?? 'N/A' },
                 {
-                  label: 'Preffered Language',
-                  value: (details?.locale === 'undefined' ? 'N/A' : details?.locale) ?? 'NA',
+                  label: 'Preferred Language',
+                  value: details?.locale !== 'undefined' ? details.locale : 'N/A',
                 },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
-                { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
-                // Updated Languages Section to display each language in a separate row
-                ...(details?.languages?.length > 0
-                  ? details.languages.map((lang: any, index: number) => ({
+                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'N/A' },
+                { label: 'Wallet Points', value: details?.wallet_points ?? 'N/A' },
+                ...(details?.languages?.length
+                  ? details.languages.map((lang, index) => ({
                       label: `Language ${index + 1}`,
                       value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
                     }))
-                  : [{ label: 'Languages', value: 'NA' }]),
-
+                  : [{ label: 'Languages', value: 'N/A' }]),
                 {
                   label: 'Is Active',
-                  value: details?.is_active ? (
-                    <Chip label="Active" color="success" variant="soft" />
-                  ) : (
-                    <Chip label="In Active" color="error" variant="soft" />
+                  value: (
+                    <Chip
+                      label={details?.is_active ? 'Active' : 'Inactive'}
+                      color={details?.is_active ? 'success' : 'error'}
+                      variant="soft"
+                    />
                   ),
                 },
                 ...(details?.user_type === 'TRAINER'
@@ -404,6 +440,25 @@ export default function UserDetailsContent({
                         value: details?.last_booking_was ?? 'N/A',
                       },
                       {
+                        label: 'Vendor Name',
+                        value: details?.vendor?.vendor_translations?.[0]?.name ? (
+                          <Link
+                            onClick={() => handleClickTrainer(details?.vendor?.id)}
+                            style={{
+                              textDecoration: 'underline',
+                              color: 'inherit',
+                              cursor: 'pointer',
+                            }}
+                            onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
+                            onMouseOut={(e) => (e.target.style.color = 'inherit')}
+                          >
+                            {details?.vendor?.vendor_translations?.[0]?.name}
+                          </Link>
+                        ) : (
+                          'N/A'
+                        ),
+                      },
+                      {
                         label: 'Vendor Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
                       },
@@ -420,7 +475,6 @@ export default function UserDetailsContent({
                   <Box component="span" sx={{ flex: 1 }}>
                     {item.value ?? 'N/A'}
                   </Box>
-                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>
               ))}
             </Stack>
@@ -429,6 +483,9 @@ export default function UserDetailsContent({
       </Stack>
     </Stack>
   );
+  const handleBookingClick = (booking) => {
+    router.push(paths.dashboard.booking.details(booking));
+  };
 
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -478,6 +535,19 @@ export default function UserDetailsContent({
         </Grid>
       </Stack>
     </Stack>
+  );
+  const renderStudentTabs = (
+    <Tabs
+      value={studentTab}
+      onChange={handleStudentChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {STUDENT_DETAILS_TABS.map((tab) => (
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+    </Tabs>
   );
   const renderTabs = (
     <Tabs
@@ -1115,16 +1185,21 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
+          {details?.user_type === 'STUDENT' && renderStudentTabs}
+
           <Grid container spacing={1} rowGap={1}>
             <Grid xs={12} md={12}>
               {/* For all other user types */}
-              {details?.user_type !== 'TRAINER' && renderContent}
+              {details?.user_type !== 'TRAINER' && studentTab === 'details' && renderContent}
 
               {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <TrainerDetailsContent id={details?.id} />
               )}
+              {/* {studentTab === 'details' && details?.user_type === 'STUDENT' && renderContent}
+              {studentTab === 'booking' && details?.user_type === 'STUDENT' && renderContent} */}
+
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
@@ -1136,22 +1211,28 @@ export default function UserDetailsContent({
             </Grid>
 
             <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && renderAddress}
+              {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'booking' && (
+                <BookingStudentTable id={details?.id} handleBookingClick={handleBookingClick} />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
+                <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
+              )}
             </Grid>
 
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' &&
+                studentTab === 'details' &&
                 details?.user_preference?.id &&
-                details?.user_type === 'TRAINER' &&
+                (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
             </Grid>
             {/* User preferences For all other user types */}
-            <Grid xs={12}>
-              {details?.user_type !== 'TRAINER' &&
-                details?.user_preference?.id &&
-                renderUserPreferences}
-            </Grid>
           </Grid>
         </>
         // <Grid container spacing={1} rowGap={1}>

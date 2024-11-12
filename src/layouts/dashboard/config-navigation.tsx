@@ -46,6 +46,8 @@ const ICONS = {
   language: icon('ic_setting'),
   delivery: icon('ic_delivery'),
   school: icon('ic_school'),
+
+  package: icon('ic_package'),
 };
 
 // ----------------------------------------------------------------------
@@ -142,7 +144,7 @@ export function useNavData() {
     {
       title: t('package'),
       path: paths.dashboard.package.root,
-      icon: ICONS.booking,
+      icon: ICONS.blank,
       // children: [
       //   { title: t('list'), path: paths.dashboard.school.root }
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
@@ -152,11 +154,11 @@ export function useNavData() {
 
     // to do
 
-    // {
-    //   title: t('coupon'),
-    //   path: paths.dashboard.coupon.root,
-    //   icon: ICONS.file,
-    // },
+    {
+      title: t('coupon'),
+      path: paths.dashboard.coupon.root,
+      icon: ICONS.file,
+    },
     {
       title: t('slider'),
       path: paths.dashboard.slider.root,
@@ -205,7 +207,13 @@ export function useNavData() {
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
     },
+    {
+      title: t('My School'),
+      path: paths.dashboard.school.admin('admin'),
+      icon: ICONS.school,
+    },
   ];
+
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
     switch (userType) {

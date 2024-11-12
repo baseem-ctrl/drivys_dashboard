@@ -1,12 +1,11 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
-import { endpoints, drivysFetcher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
 export function useGetBookings(filters = {}) {
-  console.log('filters from api', filters);
   const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
@@ -21,10 +20,9 @@ export function useGetBookings(filters = {}) {
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
-
   const memoizedValue = useMemo(() => {
     const bookings = data?.data || [];
-    const totalCount = data?.totalCount || 0;
+    const totalCount = data?.data?.bookings.length || 0;
     return {
       bookings,
       totalCount,
@@ -63,4 +61,81 @@ export function useGetBookingById(id: string | number) {
   };
 
   return { ...memoizedValue, revalidateBooking };
+}
+// Function to update booking and payment status
+export function updatePaymentBookingStatus(body: FormData) {
+  const URL = endpoints.booking.updatePaymentBookingStatus;
+  return drivysCreator([URL, body]);
+}
+// Function to get booking status enum
+export function useGetBookingStatusEnum() {
+  const URL = endpoints.booking.getBookingStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    // Access the values directly from the response
+    const bookingStatusEnum = data?.values || [];
+    return {
+      bookingStatusEnum,
+      bookingStatusError: error,
+      bookingStatusLoading: isLoading,
+      bookingStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateBookingStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingStatusEnum };
+}
+export function useGetPaymentStatusEnum() {
+  const URL = endpoints.booking.getPaymentStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    // Access the values directly from the response
+    const paymentStatusEnum = data?.values || [];
+    return {
+      paymentStatusEnum,
+      paymentStatusError: error,
+      paymentStatusLoading: isLoading,
+      paymentStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateBookingStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingStatusEnum };
+}
+// function to fetch booking details by a student's ID
+export function useGetBookingByTrainerId(trainer_id: string) {
+  const URL = `${endpoints.booking.getList}?driver_id=${trainer_id}`;
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      bookingTrainerDetails: (data?.data as any) || {},
+      bookingError: error,
+      bookingLoading: isLoading,
+      bookingValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateBookingDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingDetails };
 }

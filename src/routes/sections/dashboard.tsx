@@ -173,10 +173,10 @@ const allroutes = [
   },
 
   // to do
-  // {
-  //   path: 'coupon',
-  //   children: [{ path: 'list', element: <CouponListPage />, index: true }],
-  // },
+  {
+    path: 'coupon',
+    children: [{ path: 'list', element: <CouponListPage />, index: true }],
+  },
 
   {
     path: 'system',

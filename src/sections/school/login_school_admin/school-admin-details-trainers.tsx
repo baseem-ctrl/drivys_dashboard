@@ -36,6 +36,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useGetTrainerNoSchool } from 'src/api/trainer';
 
 // ----------------------------------------------------------------------
 
@@ -64,13 +65,12 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     limit: table?.rowsPerPage,
     vendor_id: vendor_id,
   });
-  const { users, usersLoading, usersError, usersEmpty, usersLength } = useGetUsers({
-    page: table?.page,
-    limit: table?.rowsPerPage,
-    user_types: 'TRAINER',
-    search: search,
-    is_active: '1',
-  });
+  const { trainers, trainersLoading, trainersError, trainersEmpty, trainersLength } =
+    useGetTrainerNoSchool({
+      page: table?.page,
+      limit: table?.rowsPerPage,
+      search: search,
+    });
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
@@ -88,7 +88,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       vendor_commission_in_percentage: candidates?.vendor_commission_in_percentage || '',
       password: '',
       phone: candidates?.phone || '',
-      trainer_id: users?.find((option) => option?.id === candidates?.trainer_id) || '',
+      trainer_id: trainers?.find((option) => option?.id === candidates?.trainer_id) || '',
       max_cash_in_hand_allowed: candidates?.max_cash_in_hand_allowed || '',
     }),
     [candidates]
@@ -164,7 +164,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
               <RHFAutocomplete
                 name="trainer_id"
                 label="Trainer"
-                options={users} // Use the full list of user objects as options
+                options={trainers} // Use the full list of user objects as options
                 getOptionLabel={(option) => (option ? `${option.name}` : '')} // Display only the name in the input field
                 isOptionEqualToValue={(option, value) => option.id === value.id} // Compare based on IDs
                 onInputChange={(_, value) => setSearch(value)} // Set the search value when user types in the field
@@ -185,7 +185,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       ...params.InputProps,
                       endAdornment: (
                         <>
-                          {usersLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {trainersLoading ? <CircularProgress color="inherit" size={20} /> : null}
                           {params.InputProps.endAdornment}
                         </>
                       ),
@@ -363,7 +363,11 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
             </Stack>
           ))
         ) : (
-          !create && <Box>No Trainers Found</Box>
+          !create && (
+            <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
+              No trainer under this school
+            </Typography>
+          )
         )
       ) : (
         <Box

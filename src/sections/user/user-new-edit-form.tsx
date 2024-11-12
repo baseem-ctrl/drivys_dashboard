@@ -42,7 +42,7 @@ import {
   useGetUserDetails,
   useGetUserTypeEnum,
 } from 'src/api/users';
-import { CircularProgress, IconButton, InputAdornment, MenuItem } from '@mui/material';
+import { CircularProgress, IconButton, InputAdornment, MenuItem, TextField } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -50,6 +50,8 @@ import { useGetAllLanguage } from 'src/api/language';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetAllCity } from 'src/api/city';
 import { useGetAllDialect } from 'src/api/dialect';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useGetSchool } from 'src/api/school';
 
 // ----------------------------------------------------------------------
 
@@ -67,7 +69,12 @@ const fluencyOptions = [
   { name: 'NATIVE', value: 'NATIVE' },
 ];
 
-export default function UserNewEditForm({ currentUser, detailsLoading, id, revalidateDetails }: Props) {
+export default function UserNewEditForm({
+  currentUser,
+  detailsLoading,
+  id,
+  revalidateDetails,
+}: Props) {
   // const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   // const currentUser = currentUser ?? "";
   const router = useRouter();
@@ -85,6 +92,11 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,
+  });
+  const [searchValue, setSearchValue] = useState('');
+  const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
+    limit: 1000,
+    search: searchValue ?? '',
   });
 
   const { city } = useGetAllCity({
@@ -129,8 +141,17 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
     user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
-    gear: Yup.mixed().nullable(),
+    gear: Yup.mixed()
+      .nullable()
+      .test('gear-required-for-trainer', 'Gear is required for trainers', function (value) {
+        const { user_type } = this.parent; // Access other fields in the form
+        if (user_type === 'TRAINER') {
+          return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
+        }
+        return true; // Otherwise, `gear` is not required
+      }),
     vehicle_type_id: Yup.mixed().nullable(),
+    vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
@@ -142,8 +163,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       })
     ),
   });
-
-
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -151,7 +170,8 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       email: currentUser?.email || '',
       password: '',
       phone: currentUser?.phone || '',
-      country_code: '971',
+
+      country_code: currentUser?.country_code,
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
@@ -160,29 +180,46 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
       languages: dialect
         ? currentUser?.languages?.map((lang) => ({
-          id:
-            dialect?.length > 0
-              ? dialect?.find((option) => option?.id === lang?.dialect?.id)
-              : '',
-          fluency_level: lang?.fluency_level || '',
-        }))
+            id:
+              dialect?.length > 0
+                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+                : '',
+            fluency_level: lang?.fluency_level || '',
+          }))
         : [],
       gear:
         gearData?.length > 0
           ? gearData?.find(
-            (option) =>
-              option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
-          )?.value
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
+            )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
+      vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
+        ?.vendor_translations[0]?.name,
       gender:
         genderData?.length > 0
           ? genderData?.find(
-            (option) =>
-              option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
-          )?.value
+              (option) =>
+                option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
+            )?.value
           : '',
       city_id: currentUser?.user_preference?.city_id || '',
+      school_commission_in_percentage:
+        currentUser?.user_preference?.school_commission_in_percentage || '',
+      price_per_km: currentUser?.user_preference?.price_per_km || '',
+      doc_side: currentUser?.user_preference?.doc_side || '',
+      min_price: currentUser?.user_preference?.min_price || '',
+      max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
+      is_pickup_enabled: currentUser?.id
+        ? currentUser?.user_preference?.is_pickup_enabled
+          ? 1
+          : 0
+        : 1,
+      certificate_commission_in_percentage:
+        currentUser?.user_preference?.certificate_commission_in_percentage || '',
+      bio: currentUser?.user_preference?.bio || '',
+      license_file: currentUser?.user_preference?.license_file || '',
     }),
     [currentUser?.locale, dialect, language]
   );
@@ -191,7 +228,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-
   const {
     reset,
     watch,
@@ -225,8 +261,15 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
     revalidateDetails();
   };
 
+  // Navigate to the previous page
+  const handleCancel = () => {
+    router.back();
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log('data', data);
+
       let response;
       const body = new FormData();
       body.append('name', data?.name);
@@ -234,43 +277,49 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
 
-      if (data?.gear) body.append('gear', data?.gear);
-      if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      if (data?.gender) body.append('gender', data?.gender);
-      if (data?.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      // if (data?.gender) body.append('gender', data?.gender);
-      if (data?.city_id) body.append('city_id', data?.city_id);
+      // Only append gear if it exists
+      if (data?.gear) {
+        console.log('data?.gear', data?.gear);
+        body.append('gear', data?.gear);
+      }
 
+      if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
+      if (data.vendor_id) body.append('vendor_id', data?.vendor_id?.value);
+      if (data?.gender) body.append('gender', data?.gender);
+      if (data?.city_id) body.append('city_id', data?.city_id);
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', data?.dob);
       body.append('user_type', data?.user_type);
+
+      if (data?.user_type === 'TRAINER') {
+        if (data?.is_pickup_enabled)
+          body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
+        if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+        if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
+        if (data?.min_price) body.append('min_price', data?.min_price);
+        if (data?.school_commission_in_percentage)
+          body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+        if (data?.certificate_commission_in_percentage)
+          body.append(
+            'certificate_commission_in_percentage',
+            data?.certificate_commission_in_percentage
+          );
+        if (data?.bio) body.append('bio', data?.bio);
+      }
+
       body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
 
-      // if (data?.languages && Array.isArray(data?.languages)) {
-      //   console.log(data?.languages, "data?.languages");
-
-      //   // Convert the array
-      //   const convertedArray = data?.languages.map((item: any, index: number) => ({
-      //     id: item?.court_attribute_id?.value,
-      //     fluency_level: Number(item.fluency_level.value)  // Convert "value" string to number
-      //   }));
-
-      //   convertedArray.forEach((addon, index) => {
-      //     if (addon.court_attribute_id) {
-      //       body.append(`attributes[${index}][court_attribute_id]`, addon.court_attribute_id);
-      //     }
-      //     // Use nullish coalescing to handle cases where `value` might be 0
-      //     body.append(`attributes[${index}][value]`, addon.value ?? '');
-      //   });
-      // }language[${index}].id
+      if (data?.min_price) body.append('min_price', data?.min_price);
+      if (data?.bio) body.append('bio', data?.bio);
+      if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+      if (data?.school_commission_in_percentage)
+        body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
       if (data?.languages?.length > 0) {
-        data?.languages?.forEach((languageItem, index) => {
+        data?.languages.forEach((languageItem, index) => {
           body.append(`languages[${index}][id]`, languageItem?.id?.id);
-
-          // Use nullish coalescing to handle cases where `value` might be 0
           body.append(`languages[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
@@ -282,19 +331,18 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       } else {
         response = await createUser(body);
       }
-      if (response) {
 
+      if (response) {
         enqueueSnackbar(currentUser ? response?.message : response?.message);
         if (currentUser?.id) {
           revalidateDetails();
         }
-
         reset();
         router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
+        Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
@@ -302,6 +350,7 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       }
     }
   });
+
   useEffect(() => {
     if (currentUser) {
       reset(defaultValues);
@@ -359,7 +408,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
       </Box>
     );
   }
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -432,7 +480,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
                     </MenuItem>
                   ))}
               </RHFSelect>
-
               <RHFTextField name="name" label="Full Name" />
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField
@@ -451,6 +498,46 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
                   ),
                 }}
               />
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="min_price" label="Minimum Price" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFAutocompleteSearch
+                  name="vendor_id"
+                  label="Select School"
+                  placeholder="Search School..."
+                  options={schoolList.map((item: any) => ({
+                    label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                    value: item.id,
+                  }))}
+                  setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
+                  disableClearable={true}
+                  loading={schoolLoading}
+                />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name="school_commission_in_percentage"
+                  label="School Commission (%)"
+                  type="number"
+                />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name="certificate_commission_in_percentage"
+                  label="Certificate Commission (%)"
+                  type="number"
+                />
+              )}
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
@@ -466,15 +553,21 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
                   );
                 }}
               />
-              <RHFTextField name="phone" label="Phone Number" prefix="+971" />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <RHFTextField name="country_code" label="Country Code" sx={{ maxWidth: 100 }} />
+
+                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
+              </Stack>{' '}
               <RHFTextField
                 name="dob"
                 label="Date of Birth"
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
-
               {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="bio" label="Bio" multiline rows={4} />
+              )}
             </Box>
             {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
               <>
@@ -497,7 +590,6 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
@@ -579,7 +671,16 @@ export default function UserNewEditForm({ currentUser, detailsLoading, id, reval
               </>
             )}
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="center"
+              spacing={2}
+              sx={{ mt: 3 }}
+            >
+              <Button variant="outlined" onClick={handleCancel}>
+                Cancel
+              </Button>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!currentUser ? 'Create User' : 'Save Changes'}
               </LoadingButton>

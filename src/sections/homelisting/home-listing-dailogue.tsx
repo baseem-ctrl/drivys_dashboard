@@ -7,7 +7,8 @@ import { Box } from '@mui/system';
 import moment from 'moment';
 import Iconify from 'src/components/iconify';
 import { IconButton, InputAdornment } from '@mui/material';
-import { useFieldArray, useForm } from 'react-hook-form';
+
+import { useFieldArray, useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormProvider, {
   RHFAutocomplete,
@@ -22,14 +23,23 @@ import * as Yup from 'yup';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetProducts } from 'src/api/product';
 import { AddSlider, EditSlider } from 'src/api/home-slider';
-import { Button, Dialog, DialogContent, DialogTitle, MenuItem, Typography } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  Typography,
+  Select,
+} from '@mui/material';
 import { fData } from 'src/utils/format-number';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import ImagesSelectionForm from 'src/components/images-selection/select-images-dialog';
-import ImagePreview from './image-preview';
+import ImagePreview from '../home-slider/image-preview';
 import { useGetUsers } from 'src/api/users';
 import { useGetAllLanguage } from 'src/api/language';
+import { createHomeListing } from 'src/api/homelisting';
 
 interface Props {
   title?: string;
@@ -38,9 +48,21 @@ interface Props {
   updateValue: any;
   onReload: any;
 }
+const catalogueOptions = [
+  { label: 'SLIDER', value: 'SLIDER' },
+  { label: 'CATEGORY', value: 'CATEGORY' },
+  { label: 'TRAINER', value: 'TRAINER' },
+];
 
-export default function HomeSliderDialog({
-  title = 'Upload Files',
+const displayTypeOptions = [
+  { label: 'SLIDER', value: 'SLIDER' },
+  { label: 'HORIZONTAL_SCROLL', value: 'HORIZONTAL_SCROLL' },
+  { label: 'VERTICAL_SCROLL', value: 'VERTICAL_SCROLL' },
+  { label: 'LIST', value: 'LIST' },
+  { label: 'GRID', value: 'GRID' },
+];
+export default function HomeListingDialog({
+  title = 'Update Home Listing',
   open,
   onClose,
   onReload,
@@ -61,7 +83,10 @@ export default function HomeSliderDialog({
   const [productOptions, setProductOptions] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
   const [trainers, setTrainer] = useState<any>([]);
-
+  const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[1]?.value ?? '');
+  const [selectedDisplayType, setSelectedDisplayType] = useState(
+    displayTypeOptions[0]?.value ?? ''
+  );
   const { language } = useGetAllLanguage(0, 1000);
 
   // Fetch categories and products data
@@ -78,11 +103,10 @@ export default function HomeSliderDialog({
 
   // Validation schema
   const NewProductSchema = Yup.object().shape({
-    name: Yup.string().required(t('name is required')),
+    title: Yup.string().required(t('title is required')),
     display_order: Yup.string(),
     // type: Yup.string(),
     published: Yup.boolean(),
-    Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
     trainers: Yup.array().of(
       Yup.object().shape({
@@ -93,16 +117,24 @@ export default function HomeSliderDialog({
       })
     ),
   });
-
+  const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
+    setSelectedCatalogue(event.target.value);
+  };
+  const handleChangeDisplayType = (event: { target: { value: SetStateAction<string> } }) => {
+    setSelectedDisplayType(event.target.value);
+  };
   // Default values based on updateValue or initial form values
   const defaultValues = useMemo(
     () => ({
-      name: updateValue?.name || '',
+      title: updateValue?.title || '',
       display_order: updateValue?.display_order || '',
       // type: updateValue?.type || '',
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
-      show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
+
+      display_type: updateValue?.display_type || '',
+      is_active: updateValue?.is_active || 1,
+      catalogue_type: updateValue?.catalogue_type || '',
       // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
       //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
       //   display_order: trainer?.display_order || ''
@@ -211,41 +243,44 @@ export default function HomeSliderDialog({
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log('selectedDisplayType', selectedDisplayType);
+      console.log('selectedCatalogue', selectedCatalogue);
+
       const formData = new FormData();
-      formData.append('slider_id', updateValue?.id);
-      formData.append('name', data.name || '');
+      if (updateValue?.id) {
+        formData.append('home_listing_id', updateValue?.id);
+      }
+      formData.append('title', data.title || '');
       formData.append('display_order', data.display_order || '');
+      formData.append('display_type', selectedDisplayType || '');
+      formData.append('catalogue_type', selectedCatalogue || '');
       formData.append('published', data.published ? '1' : '0');
-      formData.append(
-        'show_until',
-        data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''
-      );
 
-      if (selectedImageIds.length > 0) {
-        selectedImageIds.forEach((id, index) =>
-          formData.append(`picture_ids[${index}][id]`, id.toString())
-        );
-      }
-      if (selectedImageIds.length > 0) {
-        selectedImageIds.forEach((id, index) =>
-          formData.append(
-            `picture_ids[${index}][locale]`,
-            selectedLanguage?.language_culture ?? selectedLanguage
-          )
-        );
-      }
+      // if (selectedImageIds && selectedImageIds.length > 0) {
+      //   selectedImageIds.forEach((id, index) =>
+      //     formData.append(`sliders[${index}]`, id.toString())
+      //   );
+      // }
+      //   if (selectedImageIds.length > 0) {
+      //     selectedImageIds.forEach((id, index) =>
+      //       formData.append(
+      //         `picture_ids[${index}][locale]`,
+      //         selectedLanguage?.language_culture ?? selectedLanguage
+      //       )
+      //     );
+      //   }
 
-      if (data?.trainers?.length > 0) {
-        data?.trainers?.forEach((trainerItem, index) => {
-          formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
+      //   if (data?.trainers?.length > 0) {
+      //     data?.trainers?.forEach((trainerItem, index) => {
+      //       formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
 
-          // Use nullish coalescing to handle cases where `value` might be 0
-          formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
-        });
-      }
+      //       // Use nullish coalescing to handle cases where `value` might be 0
+      //       formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
+      //     });
+      //   }
 
       // Send form data to API
-      const response = await EditSlider(formData);
+      const response = await createHomeListing(formData);
       if (response) {
         enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
         onClose();
@@ -284,25 +319,43 @@ export default function HomeSliderDialog({
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label={t('Name')} />
+              <RHFTextField name="title" label={t('Title')} />
               <RHFTextField name="display_order" label={t('Display Order')} />
-
-              <RHFSelect
-                name="language"
-                label="Language"
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-              >
-                {language && language.length > 0 ? (
-                  language.map((option, index) => (
-                    <MenuItem key={index} value={option?.language_culture}>
-                      {option?.language_culture}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
+              <Controller
+                name="catalogue_type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    value={selectedCatalogue || ''}
+                    onChange={handleChangeCatalogue}
+                  >
+                    {catalogueOptions?.map((option: any) => (
+                      <MenuItem key={option?.value} value={option?.value}>
+                        {option?.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 )}
-              </RHFSelect>
+              />
+              <Controller
+                name="display_type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    value={selectedDisplayType || ''}
+                    onChange={handleChangeDisplayType}
+                  >
+                    {displayTypeOptions?.map((option: any) => (
+                      <MenuItem key={option?.value} value={option?.value}>
+                        {option?.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+
               {/* <RHFMultiSelectAuto
                 name="Category"
                 label="Category"
@@ -310,12 +363,6 @@ export default function HomeSliderDialog({
                 defaultValue={defaultValues.Category}
               /> */}
 
-              <RHFTextField
-                name="show_until"
-                label={t('Show Until')}
-                type="date"
-                inputProps={{ min: today }}
-              />
               <RHFSwitch name="published" label={t('Published')} />
             </Box>
 

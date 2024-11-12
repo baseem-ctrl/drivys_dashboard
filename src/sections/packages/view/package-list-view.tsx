@@ -59,6 +59,7 @@ const TABLE_HEAD = [
   { id: 'number_of_sessions', label: 'Number of sessions' },
   { id: 'is_published', label: 'Is published' },
   { id: 'Vendor', label: 'School' },
+  { id: 'category', label: 'Category' },
   { id: 'action', label: 'Action' },
 
   // { id: '' },
@@ -72,7 +73,6 @@ const defaultFilters: any = {
   vendor_id: '',
   is_published: '',
   locale: '',
-
 };
 
 // ----------------------------------------------------------------------
@@ -93,13 +93,11 @@ export default function PackageListView() {
 
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
 
-  const [schoolOptions, setSchoolOptions] = useState([])
+  const [schoolOptions, setSchoolOptions] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const { schoolList, schoolLoading } = useGetSchool(1000, 1);
-
-
 
   const {
     packageList,
@@ -129,16 +127,14 @@ export default function PackageListView() {
   }, [packageList]);
 
   useEffect(() => {
-    const enNamesArray = schoolList
-      .flatMap(vendor =>
-        vendor.vendor_translations
-          .filter(trans => trans.locale.toLowerCase() === 'en')
-          .map(trans => trans.name)
-      );
+    const enNamesArray = schoolList.flatMap((vendor) =>
+      vendor.vendor_translations
+        .filter((trans) => trans.locale.toLowerCase() === 'en')
+        .map((trans) => trans.name)
+    );
 
     setSchoolOptions(enNamesArray);
   }, [schoolList]);
-
 
   const denseHeight = table.dense ? 52 : 72;
 
@@ -149,7 +145,7 @@ export default function PackageListView() {
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
       table.onResetPage();
-      console.log(name, value, "name");
+      console.log(name, value, 'name');
 
       setFilters((prevState) => ({
         ...prevState,
@@ -225,7 +221,7 @@ export default function PackageListView() {
   // );
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.school.details(id));
+      router.push(paths.dashboard.package.details(id));
     },
     [router]
   );
@@ -259,11 +255,8 @@ export default function PackageListView() {
           }}
         >
           {renderFilters}
-
         </Stack>
         <Card>
-
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -290,40 +283,42 @@ export default function PackageListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
 
                 <TableBody>
                   {packageLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <PackageTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={(e: any) => handleEditRow(e, row.id)}
-                        revalidatePackage={revalidatePackage}
-                        onViewRow={() => handleViewRow(row?.id)}
-                        schoolList={schoolList}
-                      />
-                    ))}
+                        <PackageTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={(e: any) => handleEditRow(e, row.id)}
+                          revalidatePackage={revalidatePackage}
+                          onViewRow={() => handleViewRow(row?.id)}
+                          schoolList={schoolList}
+                        />
+                      ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
                   /> */}
 
-                  {tableData?.length === 0 && !packageLoading && <TableNoData notFound={notFound} />}
+                  {tableData?.length === 0 && !packageLoading && (
+                    <TableNoData notFound={notFound} />
+                  )}
                 </TableBody>
               </Table>
             </Scrollbar>

@@ -22,6 +22,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import Iconify from 'src/components/iconify';
 import { Button } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
+import SchoolPackageDetails from './school-package-details';
 
 // ----------------------------------------------------------------------
 
@@ -131,6 +132,7 @@ export default function SchoolDetailsView({ id }: Props) {
           onCreate={handleAddTrainer}
         />
       )}
+      {currentTab === 'package' && <SchoolPackageDetails id={id} />}
     </Container>
   );
 }

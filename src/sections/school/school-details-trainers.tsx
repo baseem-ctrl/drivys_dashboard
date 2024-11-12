@@ -145,7 +145,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       }
     } finally {
       setLoadingButton(false);
-      setSearch('')
+      setSearch('');
     }
   };
   const handlePopoverOpen = (e, trainer: any) => {
@@ -331,7 +331,11 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
             </Stack>
           ))
         ) : (
-          !create && <Box>No Trainers Found</Box>
+          !create && (
+            <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
+              No trainer under this school
+            </Typography>
+          )
         )
       ) : (
         <Box

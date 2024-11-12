@@ -46,7 +46,13 @@ type Props = {
   detailsLoading: any;
 };
 
-export default function HomeListingTrainers({ homelistingdetails, create, onCreate, revalidateDetails, detailsLoading }: Props) {
+export default function HomeListingTrainers({
+  homelistingdetails,
+  create,
+  onCreate,
+  revalidateDetails,
+  detailsLoading,
+}: Props) {
   const params = useParams();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
@@ -66,7 +72,6 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
     search: search,
     is_active: '1',
   });
-
 
   const popover = usePopover();
   const confirm = useBoolean();
@@ -108,7 +113,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
     try {
       await deleteTrainer(id);
       enqueueSnackbar('Trainer deleted successfully!', { variant: 'success' });
-      revalidateUsers()
+      revalidateUsers();
     } catch (error) {
       enqueueSnackbar('Failed to delete trainer.', { variant: 'error' });
     }
@@ -116,17 +121,22 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
 
   const onSubmit = async (data: any) => {
     console.log(data, 'data');
-    const body = new FormData()
+    const body = new FormData();
 
-    homelistingdetails?.translations?.forEach((translation: { title: string | Blob; locale: string; description: string | Blob; }, index: any) => {
-      body.append(`translation[${index}][title]`, translation.title);
-      body.append(`translation[${index}][locale]`, translation.locale);
-      body.append(`translation[${index}][description]`, translation.description);
-    });
+    homelistingdetails?.translations?.forEach(
+      (
+        translation: { title: string | Blob; locale: string; description: string | Blob },
+        index: any
+      ) => {
+        body.append(`translation[${index}][title]`, translation.title);
+        body.append(`translation[${index}][locale]`, translation.locale);
+        body.append(`translation[${index}][description]`, translation.description);
+      }
+    );
 
-    body.append("trainers[0][id]", data?.trainer_id?.id)
-    body.append("trainers[0][display_order]", data?.display_order)
-    body.append("home_page_listing_id", params?.id ?? '')
+    body.append('trainers[0][id]', data?.trainer_id?.id);
+    body.append('trainers[0][display_order]', data?.display_order);
+    body.append('home_page_listing_id', params?.id ?? '');
 
     try {
       // setLoadingButton(true);
@@ -136,7 +146,7 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
         onCreate();
         revalidateDetails();
         reset(defaultValues);
-        setSearch('')
+        setSearch('');
       }
     } catch (error) {
       if (error?.errors) {
@@ -150,7 +160,6 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
       // setLoadingButton(false);
     }
   };
-
 
   const handlePopoverOpen = (e, trainer: any, deleteId) => {
     popover.onOpen(e);
@@ -257,7 +266,13 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
           homelistingdetails?.trainers?.map((trainerItem: any) => {
             const trainerdisplayed = trainerItem?.trainer;
             return (
-              <Stack component={Card} direction="column" spacing={2} key={trainerdisplayed?.id} sx={{ p: 3 }}>
+              <Stack
+                component={Card}
+                direction="column"
+                spacing={2}
+                key={trainerdisplayed?.id}
+                sx={{ p: 3 }}
+              >
                 <Stack direction="row" spacing={2} key={trainerdisplayed?.id}>
                   <IconButton
                     sx={{ position: 'absolute', top: 8, right: 8 }}
@@ -315,11 +330,14 @@ export default function HomeListingTrainers({ homelistingdetails, create, onCrea
                   ))}
                 </Stack>
               </Stack>
-            )
-
+            );
           })
         ) : (
-          !create && <Box>No Trainers Found</Box>
+          !create && (
+            <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
+              No trainer under this school
+            </Typography>
+          )
         )
       ) : (
         <Box
