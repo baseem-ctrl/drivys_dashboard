@@ -20,10 +20,12 @@ import {
   CircularProgress,
   Grid,
   IconButton,
+  InputAdornment,
   MenuItem,
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
@@ -45,6 +47,7 @@ import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { InfoOutlined } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 
@@ -472,6 +475,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title="Commission is for certificate" placement="top">
+                              <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
