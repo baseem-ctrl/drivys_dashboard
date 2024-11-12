@@ -89,7 +89,7 @@ export default function BookingAdminDetailsToolbar({
           alignItems="center"
           justifyContent="flex-end"
         >
-          <Button
+          {/* <Button
             color="inherit"
             variant="outlined"
             endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
@@ -97,7 +97,7 @@ export default function BookingAdminDetailsToolbar({
             sx={{ textTransform: 'capitalize' }}
           >
             {status}
-          </Button>
+          </Button> */}
 
           {/* <Button color="inherit" variant="contained" startIcon={<Iconify icon="solar:pen-bold" />}>
             Edit
@@ -105,7 +105,7 @@ export default function BookingAdminDetailsToolbar({
         </Stack>
       </Stack>
 
-      <CustomPopover
+      {/* <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="top-right"
@@ -123,7 +123,7 @@ export default function BookingAdminDetailsToolbar({
             {option.name}
           </MenuItem>
         ))}
-      </CustomPopover>
+      </CustomPopover> */}
     </>
   );
 }

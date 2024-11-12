@@ -27,7 +27,6 @@ import {
   Switch,
   Container,
 } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
 
 import { Phone, Email } from '@mui/icons-material';
@@ -590,7 +589,7 @@ const BookingDetailsComponent = () => {
                 minHeight: cardHeight,
                 minWidth: 400,
                 overflow: 'auto',
-                position: 'relative', // Added for positioning the icon
+                position: 'relative',
               }}
             >
               <CardContent
@@ -599,25 +598,84 @@ const BookingDetailsComponent = () => {
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
                   Payment Information:
                 </Typography>
-                <Box sx={{ display: 'flex', ml: 5 }}>
-                  <Button
-                    color={
-                      (bookingDetails.payment_status === 'PENDING' && 'info') ||
-                      (bookingDetails.payment_status === 'PAID' && 'success') ||
-                      (bookingDetails.payment_status === 'REFUNDED' && 'warning') ||
-                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'primary') ||
-                      (bookingDetails.payment_status === 'FAILED' && 'error') ||
-                      'inherit'
-                    }
-                    variant="soft"
-                    endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-                    onClick={popover.onOpen}
-                    sx={{ textTransform: 'capitalize', width: '100%' }}
+
+                {/* Payment Status */}
+                <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 3, ml: 5 }}>
+                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                    Payment Status
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{
+                      width: '150px',
+                      borderRadius: '10px',
+                      color:
+                        (bookingDetails?.payment_status === 'PENDING' && 'info.main') ||
+                        (bookingDetails?.payment_status === 'PAID' && 'success.main') ||
+                        (bookingDetails?.payment_status === 'REFUNDED' && 'warning.main') ||
+                        (bookingDetails?.payment_status === 'PARTIALLY PAID' && 'primary.main') ||
+                        (bookingDetails?.payment_status === 'FAILED' && 'error.main') ||
+                        'text.primary',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background:
+                        (bookingDetails?.payment_status === 'PENDING' &&
+                          'rgba(0, 123, 255, 0.1)') ||
+                        (bookingDetails?.payment_status === 'PAID' && 'rgba(0, 204, 102, 0.1)') ||
+                        (bookingDetails?.payment_status === 'REFUNDED' &&
+                          'rgba(255, 165, 0, 0.1)') ||
+                        (bookingDetails?.payment_status === 'PARTIALLY PAID' &&
+                          'rgba(0, 128, 255, 0.1)') ||
+                        (bookingDetails?.payment_status === 'FAILED' && 'rgba(255, 59, 48, 0.1)') || // light red for failed
+                        'grey',
+                    }}
                   >
-                    {bookingDetails.payment_status}
-                  </Button>
+                    {bookingDetails?.payment_status || 'N/A'}
+                  </Box>
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
+
+                {/* Booking Status */}
+                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
+                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                    Booking Status
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box
+                    component="span"
+                    sx={{
+                      width: '150px',
+                      background:
+                        (bookingDetails?.booking_status === 'CONFIRMED' &&
+                          'rgba(76, 175, 80, 0.1)') ||
+                        (bookingDetails?.booking_status === 'PENDING' &&
+                          'rgba(3, 169, 244, 0.1)') ||
+                        (bookingDetails?.booking_status === 'CANCELLED' &&
+                          'rgba(244, 67, 54, 0.1)') ||
+                        'grey',
+                      color:
+                        (bookingDetails?.booking_status === 'CONFIRMED' && 'success.main') ||
+                        (bookingDetails?.booking_status === 'PENDING' && 'info.main') ||
+                        (bookingDetails?.booking_status === 'CANCELLED' && 'error.main') ||
+                        'text.primary',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '10px',
+                    }}
+                  >
+                    {bookingDetails?.booking_status || 'N/A'}
+                  </Box>
+                </Box>
+                {/* Booking Method */}
+                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Booking Method
                   </Box>
@@ -629,6 +687,7 @@ const BookingDetailsComponent = () => {
                   </Box>
                 </Box>
 
+                {/* Amount Due */}
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Amount Due
@@ -637,9 +696,11 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_due || 'N/A'}`} {/* Format to currency */}
+                    {`$${bookingDetails?.amount_due || 'N/A'}`}
                   </Box>
                 </Box>
+
+                {/* Discount */}
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Discount
@@ -648,9 +709,11 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.discount || 'N/A'}`} {/* Format to currency */}
+                    {`$${bookingDetails?.discount || 'N/A'}`}
                   </Box>
                 </Box>
+
+                {/* Amount Paid */}
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Amount Paid
@@ -663,6 +726,7 @@ const BookingDetailsComponent = () => {
                   </Box>
                 </Box>
 
+                {/* Amount Refunded */}
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Amount Refunded
