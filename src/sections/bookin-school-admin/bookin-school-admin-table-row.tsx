@@ -52,13 +52,13 @@ export default function BookingSchoolAdminTableRow({
         <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name}</TableCell>
 
         <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row?.driver_status === 'PENDING' ? 'warning' : 'success'}>
-            {row?.driver_status}
+          <Label variant="soft" color={row?.booking_status === 'PENDING' ? 'warning' : 'success'}>
+            {row?.booking_status}
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row.booking_status === 'PENDING' ? 'warning' : 'success'}>
-            {row.booking_status}
+          <Label variant="soft" color={row.payment_status === 'PENDING' ? 'warning' : 'success'}>
+            {row.payment_status}
           </Label>
         </TableCell>
 

@@ -238,8 +238,8 @@ export const endpoints = {
     getList: 'admin/booking/get-bookings-list',
     getById: `admin/booking/get-booking-by-id`,
     schoolAdmin: {
-      getList: 'admin/booking/get-bookings-list',
-      getById: `admin/booking/get-booking-by-id`,
+      getList: 'admin/booking/school/get-bookings-list',
+      getById: `admin/booking/school/get-booking-by-id`,
     },
     updatePaymentBookingStatus: 'admin/booking/update-booking-and-payment-status',
     getBookingStatus: 'public/enum/get-booking-status-enum',

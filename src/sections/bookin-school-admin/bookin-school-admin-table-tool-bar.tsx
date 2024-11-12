@@ -3,7 +3,7 @@ import { Box, TextField, MenuItem } from '@mui/material';
 const paymentStatusOptions = ['PENDING', 'CONFIRMED', 'CANCELLED'];
 const paymentMethodOptions = ['ONLINE', 'OFFLINE'];
 
-export default function BookingSchoolAdminTableToolbar({ filters, onFilters, vendorOptions }) {
+export default function BookingSchoolAdminTableToolbar({ filters, onFilters }) {
   const handleChange = (name) => (event) => {
     onFilters(name, event.target.value);
     console.log('name, event.target.value', name, event.target.value);
@@ -25,7 +25,7 @@ export default function BookingSchoolAdminTableToolbar({ filters, onFilters, ven
         select
         variant="outlined"
         label="Payment Status"
-        value={filters.paymentStatus || ''}
+        // value={filters.paymentStatus || ''}
         onChange={handleChange('paymentStatus')}
         sx={{ flex: 1 }}
       >
@@ -39,7 +39,7 @@ export default function BookingSchoolAdminTableToolbar({ filters, onFilters, ven
         ))}
       </TextField>
 
-      <TextField
+      {/* <TextField
         select
         variant="outlined"
         label="Trainer"
@@ -55,7 +55,7 @@ export default function BookingSchoolAdminTableToolbar({ filters, onFilters, ven
             {vendor.label}
           </MenuItem>
         ))}
-      </TextField>
+      </TextField> */}
     </Box>
   );
 }

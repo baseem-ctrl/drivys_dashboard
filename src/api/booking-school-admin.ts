@@ -16,7 +16,7 @@ export function useGetBookingsSchoolAdmin(filters = {}) {
   if (limit !== undefined) queryParams.append('limit', limit);
   if (page !== undefined) queryParams.append('page', page);
 
-  const URL = `${endpoints.booking.getList}?${queryParams.toString()}`;
+  const URL = `${endpoints.booking.schoolAdmin.getList}?${queryParams.toString()}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
@@ -42,7 +42,7 @@ export function useGetBookingsSchoolAdmin(filters = {}) {
 }
 
 export function useGetBookingSchoolAdminById(id: string | number) {
-  const URL = `${endpoints.booking.getById}?id=${id}`;
+  const URL = `${endpoints.booking.schoolAdmin.getById}?id=${id}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
