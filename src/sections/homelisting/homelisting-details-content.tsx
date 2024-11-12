@@ -2,7 +2,7 @@
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import { FormControl, InputLabel } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel } from '@mui/material';
 
 // components
 import Iconify from 'src/components/iconify';
@@ -38,10 +38,18 @@ type Props = {
   reload: VoidFunction;
 };
 const catalogueOptions = [
-  { label: 'Drivers', value: '1' },
-  { label: 'Categories', value: '2' },
+  { label: 'TRAINER', value: 'TRAINER' },
+  { label: 'CATEGORY', value: 'CATEGORY' },
+  { label: 'SLIDER', value: 'SLIDER' },
 ];
 
+const displayTypeOptions = [
+  { label: 'SLIDER', value: 'SLIDER' },
+  { label: 'HORIZONTAL_SCROLL', value: 'HORIZONTAL_SCROLL' },
+  { label: 'VERTICAL_SCROLL', value: 'VERTICAL_SCROLL' },
+  { label: 'LIST', value: 'LIST' },
+  { label: 'GRID', value: 'GRID' },
+];
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
@@ -102,13 +110,12 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
 
   const defaultVendorValues = useMemo(
     () => ({
-      locale: selectedLocaleObject?.locale || '',
-      title: selectedLocaleObject?.title || '',
-      description: selectedLocaleObject?.description || '',
+      title: details?.title || '',
       catalogue_type: details?.catalogue_type || '',
       category: details?.category || '',
+      display_type: details?.display_type || '',
       display_order: details?.display_order || '',
-      is_active: details?.is_active === '1' ? true : false,
+      is_active: details?.is_active === '1',
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -145,29 +152,28 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
 
   useEffect(() => {
     if (details) {
-      const defaultVendorValues = {
-        title: selectedLocaleObject?.title || '',
+      const newValues = {
         locale: selectedLocaleObject?.locale || '',
-        description: selectedLocaleObject?.description || '',
-        display_order: details?.display_order || '',
-        is_active: details?.is_active === '1' ? true : false,
-        // user_id: vendor_user?.user !== null ? vendor_user?.user_id : '' || '',
+        title: details?.title || '',
         catalogue_type: details?.catalogue_type || '',
+        category: details?.category || '',
+        display_order: details?.display_order || '',
+        display_type: details?.display_type || '',
+        is_active: details?.is_active === 1,
       };
-      HomeListingReset(defaultVendorValues);
+      HomeListingReset(newValues); // Reset the form with the new details
     }
   }, [details, HomeListingReset, selectedLocaleObject]);
 
   const onSubmitBasicInfo = HomeListingSubmit(async (data) => {
     try {
       const body = new FormData();
-      body.append('translation[0][locale]', selectedLanguage);
-      body.append('translation[0][title]', data?.title);
-      body.append('translation[0][description]', data?.description);
+      body.append('title', data?.title);
       body.append('display_order', data?.display_order);
       body.append('catalogue_type', data?.catalogue_type);
+      body.append('display_type', data?.display_type);
       body.append('is_active', data?.is_active ? '1' : '0');
-      body.append('home_page_listing_id', details?.id);
+      body.append('home_listing_id', details?.id);
       const response = await createHomeListing(body);
       if (response) {
         enqueueSnackbar(response.message, {
@@ -242,6 +248,15 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                   { label: 'Display Order', value: details?.display_order ?? 'NA' },
                   { label: 'Catalogue Type', value: details?.catalogue_type ?? 'NA' },
                   { label: 'Display Type', value: details?.display_type ?? 'NA' },
+                  {
+                    label: 'Is Active',
+                    value: (
+                      <FormControlLabel
+                        control={<Switch checked={details?.is_active ?? false} disabled />}
+                        label={details?.is_active ? 'Active' : 'Inactive'}
+                      />
+                    ),
+                  },
                 ].map((item, index) => (
                   <Box
                     key={index}
@@ -265,7 +280,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
             rowGap={2}
             columnGap={2}
             display="grid"
-            onSubmit={onSubmitBasicInfo}
+            onSubmit={(e) => {
+              onSubmitBasicInfo(e);
+            }}
             pb={1}
           >
             <Box
@@ -274,53 +291,68 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               columnGap={2}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
                 gap={1}
                 gridTemplateColumns={{
                   xs: 'repeat(1, 1fr)',
-                  // sm: '25% 70% ',
                   md: 'repeat(3, 1fr)',
                 }}
               >
                 <Controller
-                  name="locale"
-                  control={control}
-                  render={({ field }) => (
-                    <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
-                      {localeOptions?.map((option: any) => (
-                        <MenuItem key={option?.value} value={option?.value}>
-                          {option?.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-                <Controller
                   name="title"
                   control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Title"
-                      {...field}
-                      error={errors?.title?.message}
-                      helperText={errors?.title ? errors?.title?.message : ''}
-                    />
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <TextField
+                        label="Title"
+                        {...field}
+                        error={!!errors.title}
+                        helperText={errors?.title?.message || ''}
+                      />
+                    );
+                  }}
                 />
                 <Controller
-                  name="description"
+                  name="display_order"
                   control={control}
-                  render={({ field }) => (
-                    <TextField
-                      label="Description"
-                      {...field}
-                      error={errors?.description?.message}
-                      helperText={errors?.description ? errors?.description?.message : ''}
-                    />
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <TextField
+                        label="Display Order"
+                        {...field}
+                        error={!!errors.display_order}
+                        helperText={errors?.display_order?.message || ''}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="catalogue_type"
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <FormControl fullWidth error={!!errors.catalogue_type}>
+                        <InputLabel>Catalogue Type</InputLabel>
+                        <Select
+                          label="Catalogue Type"
+                          {...field}
+                          value={field.value || ''} // Ensuring that the value is set, default to empty string if undefined
+                          onChange={(e) => field.onChange(e.target.value)} // Handling onChange
+                        >
+                          {catalogueOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.catalogue_type && (
+                          <FormHelperText>{errors.catalogue_type.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    );
+                  }}
                 />
               </Box>
             </Box>
@@ -331,65 +363,67 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               columnGap={3}
               display="grid"
               gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
             >
               <Box
                 display="grid"
                 gap={1}
                 gridTemplateColumns={{
-                  // xs: 'repeat(1, 1fr)',
-                  sm: '48% 47% ',
-                  // md: 'repeat(2, 1fr)',
+                  sm: '48% 47%',
                 }}
                 pt={1}
               >
                 <Controller
-                  name="display_order"
+                  name="display_type"
                   control={control}
-                  render={({ field }) => (
-                    <TextField label="Display order" {...field} error={!!errors.display_order} />
-                  )}
-                />{' '}
-                <FormControl fullWidth>
-                  <InputLabel id="catalogue-type-label">Catalogue Type</InputLabel>
-                  <Controller
-                    defaultValue={defaultVendorValues.catalogue_type}
-                    name="catalogue_type"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        labelId="catalogue-type-label"
-                        value={selectedCatalogue || ''}
-                        name="catalogue_type"
-                        onChange={handleChangeCatalogue}
-                        label="Catalogue Type"
-                      >
-                        {catalogueOptions?.map((option: any) => (
-                          <MenuItem key={option?.value} value={option?.value}>
-                            {option?.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                </FormControl>
+                  render={({ field }) => {
+                    return (
+                      <FormControl fullWidth error={!!errors.display_type}>
+                        <InputLabel>Display Type</InputLabel>
+                        <Select
+                          label="Display Type"
+                          {...field}
+                          value={field.value || ''}
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {displayTypeOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.display_type && (
+                          <FormHelperText>{errors.display_type.message}</FormHelperText>
+                        )}
+                      </FormControl>
+                    );
+                  }}
+                />
+
                 <FormControlLabel
                   control={
                     <Controller
                       name="is_active"
                       control={control}
-                      render={({ field }) => (
-                        <Switch {...field} error={!!errors.is_active} checked={field.value} />
-                      )}
+                      render={({ field }) => {
+                        return (
+                          <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                        );
+                      }}
                     />
                   }
                   label="Is Active"
                 />
               </Box>
             </Box>
+
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-              <Button variant="outlined" color="error" onClick={handleCancel}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  handleCancel();
+                }}
+              >
                 Cancel
               </Button>
               <Button type="submit" variant="contained">
