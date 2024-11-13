@@ -105,6 +105,7 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
+  console.log('detailsdetails', details);
 
   const {
     userDocuments,
@@ -354,6 +355,90 @@ export default function UserDetailsContent({
   const handleClickTrainer = (id) => {
     router.push(paths.dashboard.school.details(id));
   };
+  const handleClickSchool = (id) => {
+    router.push(paths.dashboard.school.details(id));
+  };
+  const renderSchool = (
+    <Stack
+      component={Paper}
+      variant="outlined"
+      spacing={3}
+      sx={{
+        p: 4,
+        borderRadius: 3,
+        cursor: 'pointer',
+        maxWidth: 400,
+        boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.15)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.05)',
+          boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
+        },
+        backgroundColor: 'background.paper',
+        position: 'relative',
+      }}
+      onClick={() => handleClickSchool(details?.school?.id)}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          borderRadius: '50%',
+          width: 10,
+          height: 10,
+          bgcolor: details?.school?.status === 'active' ? 'success.main' : 'grey.400',
+        }}
+      />
+
+      <Typography
+        variant="h6"
+        sx={{
+          color: 'primary.main',
+          fontWeight: 700,
+          textAlign: 'center',
+          borderBottom: '2px solid',
+          borderColor: 'primary.light',
+          pb: 1,
+          mb: 2,
+        }}
+      >
+        School Details
+      </Typography>
+
+      {details?.school && (
+        <Stack spacing={2}>
+          {details.school?.vendor_translations?.[0]?.name && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>School:</strong>{' '}
+              {details.school.vendor_translations[0].name ?? 'Name Not Available'}
+            </Typography>
+          )}
+          {details.school?.commission_in_percentage && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Commission:</strong> {details.school.commission_in_percentage}%
+            </Typography>
+          )}
+          {details.school?.status && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Status:</strong> {details.school.status}
+            </Typography>
+          )}
+          {details.school?.phone_number && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Contact:</strong> {details.school.phone_number}
+            </Typography>
+          )}
+          {details.school?.email && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Email:</strong> {details.school.email}
+            </Typography>
+          )}
+        </Stack>
+      )}
+    </Stack>
+  );
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -1209,7 +1294,6 @@ export default function UserDetailsContent({
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
-
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
             </Grid>
@@ -1223,7 +1307,6 @@ export default function UserDetailsContent({
                 <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
               )}
             </Grid>
-
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' &&
@@ -1231,6 +1314,10 @@ export default function UserDetailsContent({
                 details?.user_preference?.id &&
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
+            </Grid>
+
+            <Grid xs={12}>
+              {details?.user_type === 'SCHOOL_ADMIN' && details?.school && renderSchool}
             </Grid>
             {/* User preferences For all other user types */}
           </Grid>
