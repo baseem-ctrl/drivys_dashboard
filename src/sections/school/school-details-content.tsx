@@ -869,7 +869,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               <Box key={details.id} sx={{ width: '100%' }}>
                 {/* Address Section Title */}
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Address Details {index + 1}
+                  Barnch {index + 1}
                 </Typography>
 
                 {/* Address Details */}
