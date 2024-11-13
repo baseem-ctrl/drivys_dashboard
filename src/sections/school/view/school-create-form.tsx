@@ -25,9 +25,10 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { TextField } from '@mui/material';
+import { InputAdornment, TextField, Tooltip } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
+import { InfoOutlined } from '@mui/icons-material';
 
 type Props = {
   open: boolean;
@@ -328,15 +329,23 @@ export default function SchoolCreateForm({
               />
             </Grid>
 
-            <Box mt={2}>
-              <RHFTextField
-                name="commission_in_percentage"
-                label="Commission in (%)"
-                type="number"
-              />
-            </Box>
+            <RHFTextField
+              name="commission_in_percentage"
+              label="Commission in (%)"
+              type="number"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Commission is for certificate" placement="top">
+                      <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
             <RHFCheckbox name="is_active" label="Active" />
+
             <RHFCheckbox name="create_new_user" label="Create New User" />
           </Box>
           {!values?.create_new_user ? (
