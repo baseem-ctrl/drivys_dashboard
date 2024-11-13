@@ -71,9 +71,7 @@ export default function SchoolCreateForm({
       }
     ),
     contact_phone_number: Yup.number(),
-    commission_in_percentage: Yup.string()
-      .required('commission_in_percentage is required')
-      .typeError('commission_in_percentage must be a number'),
+    commission_in_percentage: Yup.string().typeError('commission_in_percentage must be a number'),
     status: Yup.string(),
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
