@@ -133,8 +133,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         return true; // Skip format check if value is empty
       }
     ),
-    phone_number: Yup.string().matches(/^\d{1,15}$/, 'Phone number must be less that 15 digits'),
-    commission_in_percentage: Yup.string(),
+    phone_number: Yup.string()
+      .nullable() // Allow null values
+      .test('valid-phone', 'Phone number must be less than 15 digits', function (value) {
+        // Apply regex validation only if phone_number has a value
+        if (value) {
+          return /^\d{1,15}$/.test(value);
+        }
+        return true; // No validation if the phone number is empty or null
+      }),
     license_expiry: Yup.string(),
     website: Yup.string().url('Invalid URL'),
     status: Yup.string(),
