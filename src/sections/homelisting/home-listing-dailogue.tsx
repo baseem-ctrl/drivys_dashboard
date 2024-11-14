@@ -253,31 +253,25 @@ export default function HomeListingDialog({
       formData.append('title', data.title || '');
       formData.append('display_order', data.display_order || '');
       formData.append('display_type', selectedDisplayType || '');
-      formData.append('catalogue_type', selectedCatalogue || '');
+      formData.append('catalogue_type', 'TRAINER');
       formData.append('published', data.published ? '1' : '0');
+      if (selectedImageIds.length > 0) {
+        selectedImageIds.forEach((id, index) =>
+          formData.append(
+            `picture_ids[${index}][locale]`,
+            selectedLanguage?.language_culture ?? selectedLanguage
+          )
+        );
+      }
 
-      // if (selectedImageIds && selectedImageIds.length > 0) {
-      //   selectedImageIds.forEach((id, index) =>
-      //     formData.append(`sliders[${index}]`, id.toString())
-      //   );
-      // }
-      //   if (selectedImageIds.length > 0) {
-      //     selectedImageIds.forEach((id, index) =>
-      //       formData.append(
-      //         `picture_ids[${index}][locale]`,
-      //         selectedLanguage?.language_culture ?? selectedLanguage
-      //       )
-      //     );
-      //   }
+      if (data?.trainers?.length > 0) {
+        data?.trainers?.forEach((trainerItem, index) => {
+          formData.append(`trainers[${index}][user_id]`, trainerItem?.id?.value);
 
-      //   if (data?.trainers?.length > 0) {
-      //     data?.trainers?.forEach((trainerItem, index) => {
-      //       formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
-
-      //       // Use nullish coalescing to handle cases where `value` might be 0
-      //       formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
-      //     });
-      //   }
+          // Use nullish coalescing to handle cases where `value` might be 0
+          formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
+        });
+      }
 
       // Send form data to API
       const response = await createHomeListing(formData);
@@ -305,7 +299,7 @@ export default function HomeListingDialog({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>{updateValue?.id ? title : 'Create Home Listing '}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid xs={12} md={8}>
@@ -321,7 +315,7 @@ export default function HomeListingDialog({
             >
               <RHFTextField name="title" label={t('Title')} />
               <RHFTextField name="display_order" label={t('Display Order')} />
-              <Controller
+              {/* <Controller
                 name="catalogue_type"
                 control={control}
                 render={({ field }) => (
@@ -337,7 +331,7 @@ export default function HomeListingDialog({
                     ))}
                   </Select>
                 )}
-              />
+              /> */}
               <Controller
                 name="display_type"
                 control={control}
