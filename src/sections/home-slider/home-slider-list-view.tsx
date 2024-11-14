@@ -210,9 +210,9 @@ export default function HomeSliderListView() {
                                   <TableCell>
                                     <Label
                                       variant="soft"
-                                      color={row.published === '1' ? 'success' : 'warning'}
+                                      color={row.published === 1 ? 'success' : 'warning'}
                                     >
-                                      {row.published === '1' ? 'Yes' : 'No'}
+                                      {row.published === 1 ? 'Yes' : 'No'}
                                     </Label>
                                   </TableCell>
                                   {/* <TableCell>
