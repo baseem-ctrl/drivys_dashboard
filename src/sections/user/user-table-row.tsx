@@ -22,7 +22,10 @@ import UserQuickEditForm from './user-quick-edit-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useState } from 'react';
-import { Link } from '@mui/material';
+import { Box, Link } from '@mui/material';
+import { updateUser } from 'src/api/users';
+import { useSnackbar } from 'src/components/snackbar';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +53,7 @@ export default function UserTableRow({
   const confirm = useBoolean();
 
   const quickEdit = useBoolean();
+  const { enqueueSnackbar } = useSnackbar();
 
   const redirectToDetailsPage = () => {
     router.push(paths.dashboard.user.details(row?.id));
@@ -57,7 +61,27 @@ export default function UserTableRow({
 
   const popover = usePopover();
   const router = useRouter();
-
+  const handleVerify = async () => {
+    try {
+      const body = {
+        user_id: row?.id,
+        is_verified: row?.verified_at === null ? '1' : '0',
+      };
+      const response = await updateUser(body);
+      if (response) {
+        enqueueSnackbar('Trainer Verified Successfully');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   return (
     <>
       <TableRow
@@ -78,7 +102,14 @@ export default function UserTableRow({
             onClick={() => router.push(paths.dashboard.user.details(row?.id))}
           >
             <ListItemText
-              primary={name ?? 'NA'}
+              primary={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {name ?? 'NA'}
+                  {user_type === 'TRAINER' && row?.verified_at !== null && (
+                    <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
+                  )}
+                </Box>
+              }
               secondary={email ?? 'NA'}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
@@ -117,6 +148,11 @@ export default function UserTableRow({
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>
           </>
+        )}
+        {currentUserType === 'TRAINER' && (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            {row?.verified_at !== null ? moment.utc(row?.verified_at).format('lll') : 'NA' ?? 'NA'}
+          </TableCell>
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>
@@ -185,6 +221,17 @@ export default function UserTableRow({
           <Iconify icon="solar:eye-bold" />
           View
         </MenuItem>
+        {user_type === 'TRAINER' && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              handleVerify();
+            }}
+          >
+            <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
+            {row?.verified_at === null ? 'Verify' : 'Unverify'}
+          </MenuItem>
+        )}
       </CustomPopover>
 
       <ConfirmDialog

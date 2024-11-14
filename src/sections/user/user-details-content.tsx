@@ -73,6 +73,7 @@ import { useGetBookingByTrainerId } from 'src/api/booking';
 import BookingTrainerTable from './booking-details/trainer-booking-details';
 import BookingStudentTable from './booking-details/student-booking-details';
 import { Link } from '@mui/material';
+import moment from 'moment';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -95,7 +96,6 @@ export default function UserDetailsContent({
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [load, setLoad] = useState(false);
-  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
@@ -105,7 +105,6 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-  console.log('detailsdetails', details);
 
   const {
     userDocuments,
@@ -546,6 +545,17 @@ export default function UserDetailsContent({
                       {
                         label: 'Vendor Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                      {
+                        label: 'Verified At',
+                        value:
+                          details?.verified_at === null ? (
+                            <Box>
+                              <Button variant="soft">Verify</Button>
+                            </Box>
+                          ) : (
+                            moment.utc(details?.verified_at).format('ll')
+                          ),
                       },
                     ]
                   : []),
