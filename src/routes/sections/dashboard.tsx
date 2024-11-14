@@ -22,6 +22,8 @@ import BookingDetailsPage from 'src/pages/dashboard/booking/booking';
 import BookingDetailsComponent from 'src/sections/booking/view/booking-details-view';
 import BookingSchoolAdminListView from 'src/sections/bookin-school-admin/view/booking-list-view';
 import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin/view/booking-details-view';
+import NotificationsListingListPage from 'src/pages/dashboard/notifications/notifications';
+import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 
 // ----------------------------------------------------------------------
 
@@ -172,6 +174,15 @@ const allroutes = [
     ],
   },
 
+  {
+    path: 'notifications',
+    children: [
+      { element: <NotificationsListingListPage />, index: true },
+
+      // { path: 'edit', element: <HomeListingDetailsPage /> },
+      // { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
   // to do
   {
     path: 'coupon',

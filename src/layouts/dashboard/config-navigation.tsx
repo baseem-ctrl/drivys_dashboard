@@ -120,6 +120,7 @@ export function useNavData() {
       path: paths.dashboard.category.root,
       icon: ICONS.job,
     },
+
     // DELIVERY
     {
       title: t('schools'),
@@ -139,6 +140,11 @@ export function useNavData() {
       //   { title: t('list'), path: paths.dashboard.school.root }
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
+    },
+    {
+      title: t('notifications'),
+      path: paths.dashboard.notification.root,
+      icon: ICONS.mail,
     },
     // PACKAGE
     {
