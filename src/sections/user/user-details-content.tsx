@@ -53,6 +53,7 @@ import {
   createNewAddressForUser,
   deleteUserAddress,
   updateExistingUserAddress,
+  updateUser,
 } from 'src/api/users';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
@@ -269,84 +270,33 @@ export default function UserDetailsContent({
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
-  // const onSubmitBasicInfo = schoolSubmit(async (data) => {
-  //   try {
-  //     let payload = {
-  //       vendor_translations: [
-  //         {
-  //           name: data?.name || selectedLocaleObject?.name,
-  //           locale: selectedLanguage || selectedLocaleObject?.locale,
-  //         },
-  //       ],
-  //       contact_email: data?.contact_email,
-  //       contact_phone_number: data?.phone_number,
-  //       status: data?.status,
-  //       is_active: data?.is_active ? '1' : '0',
-  //       commission_in_percentage: data?.commission_in_percentage,
-  //       create_new_user: 0,
-  //       license_expiry: data?.license_expiry,
-  //       license_file: data?.license_file,
-  //       user_id: data?.user_id,
-  //       vendor_id: details?.id,
-  //       website: data?.website,
-  //     };
-  //     let formData = new FormData();
-
-  //     // Append fields to FormData
-  //     formData.append('contact_email', payload.contact_email || '');
-  //     formData.append('contact_phone_number', payload.contact_phone_number || '');
-  //     formData.append('status', payload.status || '');
-  //     formData.append('is_active', payload.is_active);
-  //     formData.append('commission_in_percentage', payload.commission_in_percentage || '');
-  //     formData.append('create_new_user', payload.create_new_user.toString());
-  //     formData.append('license_expiry', payload.license_expiry || '');
-  //     formData.append('user_id', payload.user_id || '');
-  //     formData.append('vendor_id', payload.vendor_id || '');
-  //     formData.append('website', payload.website || '');
-
-  //     // Handle `vendor_translations` (assumes only one translation)
-  //     if (payload.vendor_translations && payload.vendor_translations.length > 0) {
-  //       formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
-  //       formData.append(
-  //         'vendor_translations[0][locale]',
-  //         payload.vendor_translations[0].locale || ''
-  //       );
-  //     }
-
-  //     // Append file field if it exists and is a File object
-  //     if (payload.license_file) {
-  //       formData.append('license_file', payload.license_file); // Assumes `license_file` is a File object
-  //     }
-
-  //     const response = await createSchool(formData);
-  //     if (response) {
-  //       enqueueSnackbar(response.message, {
-  //         variant: 'success',
-  //       });
-  //       setEditMode(false);
-  //     }
-  //   } catch (error) {
-  //     if (error?.errors) {
-  //       Object.values(error?.errors).forEach((errorMessage: any) => {
-  //         enqueueSnackbar(errorMessage[0], { variant: 'error' });
-  //       });
-  //     } else {
-  //       enqueueSnackbar(error.message, { variant: 'error' });
-  //     }
-  //   } finally {
-  //     reload();
-  //   }
-  // });
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
   const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setStudentTab(newValue);
   }, []);
-  // const handleCancel = () => {
-  //   schoolReset(); // Reset to the original values
-  //   setEditMode(false);
-  // };
+  const handleVerify = async () => {
+    try {
+      const body = {
+        user_id: details?.id,
+        is_verified: details?.verified_at === null ? 1 : 0,
+      };
+      const response = await updateUser(body);
+      if (response) {
+        enqueueSnackbar('Trainer Verified Successfully');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
@@ -551,7 +501,10 @@ export default function UserDetailsContent({
                         value:
                           details?.verified_at === null ? (
                             <Box>
-                              <Button variant="soft">Verify</Button>
+                              <Button variant="soft" onClick={handleVerify}>
+                                {' '}
+                                Verify
+                              </Button>
                             </Box>
                           ) : (
                             moment.utc(details?.verified_at).format('ll')

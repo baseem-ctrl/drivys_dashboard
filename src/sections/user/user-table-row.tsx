@@ -65,7 +65,7 @@ export default function UserTableRow({
     try {
       const body = {
         user_id: row?.id,
-        is_verified: row?.verified_at === null ? '1' : '0',
+        is_verified: row?.verified_at === null ? 1 : 0,
       };
       const response = await updateUser(body);
       if (response) {
