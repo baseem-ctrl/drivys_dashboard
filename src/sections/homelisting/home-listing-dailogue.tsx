@@ -20,7 +20,6 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import * as Yup from 'yup';
-import { useGetAllCategory } from 'src/api/category';
 import { useGetProducts } from 'src/api/product';
 import { AddSlider, EditSlider } from 'src/api/home-slider';
 import {
@@ -71,8 +70,6 @@ export default function HomeListingDialog({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  console.log('updateValue', updateValue);
-
   const router = useRouter();
 
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -90,7 +87,6 @@ export default function HomeListingDialog({
   const { language } = useGetAllLanguage(0, 1000);
 
   // Fetch categories and products data
-  const { category } = useGetAllCategory({ limit: 1000, page: 0 });
   const { users } = useGetUsers({
     page: 0,
     limit: 1000,
@@ -104,21 +100,17 @@ export default function HomeListingDialog({
   // Validation schema
   const NewProductSchema = Yup.object().shape({
     title: Yup.string().required(t('title is required')),
-    display_order: Yup.string(),
+    display_order: Yup.string().required(t('Display order is required')),
     // type: Yup.string(),
     published: Yup.boolean(),
     sliders: Yup.array().nullable(),
     trainers: Yup.array().of(
       Yup.object().shape({
-        id: Yup.mixed().required('Trainer is required'), // Validate court add-on
-        display_order: Yup.number()
-          // .typeError("Number of Add Ons must be a number")
-          .required('Display order is required'), // Validate the number of add-ons
+        id: Yup.mixed().required('Trainer is required'),
       })
     ),
   });
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
-    console.log('event.target.value', event.target.value);
     setSelectedCatalogue(event.target.value);
   };
   const handleChangeDisplayType = (event: { target: { value: SetStateAction<string> } }) => {
@@ -129,7 +121,6 @@ export default function HomeListingDialog({
     () => ({
       title: updateValue?.title || '',
       display_order: updateValue?.display_order || '',
-      category: updateValue?.categories?.[0]?.value || 21,
       // type: updateValue?.type || '',
       sliders: updateValue?.sliders[0] || [],
       published: updateValue?.published === '1',
@@ -146,7 +137,6 @@ export default function HomeListingDialog({
             const user = users.find((option) => option.id === trainer?.trainer?.id);
             return {
               id: user ? { label: user?.name, value: user?.id } : '',
-              display_order: trainer.display_order || '',
             };
           })
         : [],
@@ -193,10 +183,6 @@ export default function HomeListingDialog({
     if (updateValue) {
       reset(defaultValues);
     }
-    console.log(
-      updateValue?.pictures?.map((item: { picture_id: any }) => item?.picture_id),
-      'updateValue?.pictures'
-    );
 
     const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage;
 
@@ -221,14 +207,12 @@ export default function HomeListingDialog({
       setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
   }, [updateValue]);
-  console.log('default values', defaultValues);
   // Populate category and product options when data is available
   useEffect(() => {
-    if (category) setCategoryOptions(mapOptions(category, 'category_translations'));
     if (users) setUserOptions(mapOptionsUser(users));
 
     // if (products) setProductOptions(mapOptions(products, 'product_translations'));
-  }, [category, users]);
+  }, [users]);
 
   // Function to add more pairs
   const handleAddMore = () => {
@@ -244,11 +228,7 @@ export default function HomeListingDialog({
 
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data', data);
     try {
-      console.log('datadatadatadatadata', data);
-      console.log('selectedCatalogue', selectedCatalogue);
-
       const formData = new FormData();
       if (updateValue?.id) {
         formData.append('home_listing_id', updateValue?.id);
@@ -274,20 +254,21 @@ export default function HomeListingDialog({
       //   }
 
       if (data?.trainers?.length > 0) {
-        data?.trainers?.forEach((trainerItem, index) => {
-          formData.append(`trainers[${index}][user_id]`, trainerItem?.id?.value);
-          // Use nullish coalescing to handle cases where `value` might be 0
-          formData.append(`trainers[${index}][category]`, trainerItem?.category ?? '');
+        data.trainers.forEach((trainerItem, index) => {
+          const userId = trainerItem?.id?.value;
+
+          formData.append(`trainers[${index}][user_id]`, trainerItem.user_id.value);
+          // Logs the appended form data
         });
       }
 
       // Send form data to API
-      // const response = await createHomeListing(formData);
-      // if (response) {
-      //   enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
-      //   onClose();
-      //   onReload();
-      // }
+      const response = await createHomeListing(formData);
+      if (response) {
+        enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
+        onClose();
+        onReload();
+      }
     } catch (error) {
       if (error.errors) {
         // Iterate over each error and enqueue them in the snackbar
@@ -322,7 +303,7 @@ export default function HomeListingDialog({
               }}
             >
               <RHFTextField name="title" label={t('Title')} />
-
+              <RHFTextField name="display_order" label={t('Display Order')} />
               <RHFTextField
                 name="catalogue_type"
                 label={t('Catalogue Type')}
@@ -374,54 +355,6 @@ export default function HomeListingDialog({
                       </li>
                     )}
                   />
-                </Grid>
-
-                {/* Value Field */}
-                <Grid item xs={12} md={5}>
-                  <Select
-                    style={{ width: '100%' }}
-                    name={`trainers[${index}].category_id`}
-                    labelId="category-label"
-                    value={defaultValues.category || ''} // Ensure value is set to empty string if no category
-                    onChange={(e) => {
-                      // Log when category selection changes
-                      console.log(`Category ${index + 1} selected:`, e.target.value);
-                      console.log(`Updated value for category[${index}]:`, e.target.value);
-                    }}
-                    onOpen={() => {
-                      // Log when the dropdown menu is opened
-                      console.log(`Category ${index + 1} dropdown opened`);
-                    }}
-                    onClose={() => {
-                      // Log when the dropdown menu is closed
-                      console.log(`Category ${index + 1} dropdown closed`);
-                    }}
-                  >
-                    {/* Log placeholder rendering */}
-                    {defaultValues.category === '' || defaultValues.category === undefined
-                      ? console.log(
-                          `Category ${index + 1} has no default value, showing placeholder`
-                        )
-                      : console.log(
-                          `Category ${index + 1} has default value:`,
-                          defaultValues.category
-                        )}
-
-                    {/* Placeholder if no default value is selected */}
-                    <MenuItem value="" disabled>
-                      Select a Category
-                    </MenuItem>
-
-                    {/* Mapping through category options */}
-                    {categoryOptions.map((option) => {
-                      console.log(`Rendering category option:`, option); // Log each category option being rendered
-                      return (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
                 </Grid>
 
                 {/* Delete Button */}
