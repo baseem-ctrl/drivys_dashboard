@@ -77,11 +77,11 @@ export default function CityDetails({ onEdit, city }) {
                               <Typography
                                 variant="body2"
                                 sx={{
-                                  color: city.is_published === '1' ? 'success.main' : 'error.main',
+                                  color: city.is_published === 1 ? 'success.main' : 'error.main',
                                   fontWeight: 'bold',
                                 }}
                               >
-                                {city.is_published === '1' ? 'Yes' : 'No'}
+                                {city.is_published === 1 ? 'Yes' : 'No'}
                               </Typography>
                             </Box>
                           </Box>
