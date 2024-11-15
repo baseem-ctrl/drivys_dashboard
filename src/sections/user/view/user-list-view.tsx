@@ -68,6 +68,8 @@ const TABLE_HEAD = {
     { id: 'status', label: 'Status' },
     { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },
     { id: 'cash_in_hand', label: 'Cash in Hand' },
+    { id: 'verified_at', label: 'Verified At' },
+
     { id: '', width: 88 },
   ],
 };

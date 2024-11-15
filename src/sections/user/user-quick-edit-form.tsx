@@ -29,7 +29,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { updateUser, useGetUserTypeEnum } from 'src/api/users';
 import { useAuthContext } from 'src/auth/hooks';
-import { IconButton, InputAdornment } from '@mui/material';
+import { IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
@@ -71,13 +71,12 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
         : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,9}$/, 'Phone number shpuld not exceed 9 digits ')
+      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
       .nullable(),
     country_code: Yup.string().nullable(),
     is_active: Yup.boolean(),
     user_type: Yup.string(),
   });
-
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -85,7 +84,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       password: '',
       phone: currentUser?.phone || '',
       user_type: currentUser?.user_type || '',
-      country_code: '971',
+      country_code: currentUser?.country_code || '',
       is_active: currentUser?.is_active || 1,
     }),
     [currentUser]
@@ -216,7 +215,10 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 );
               }}
             /> */}
-            <RHFTextField name="phone" label="Phone Number" prefix="+971" />
+            <Stack direction="row" spacing={1} alignItems="center">
+              <RHFTextField name="country_code" label="Country" sx={{ maxWidth: 100 }} />
+              <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
+            </Stack>{' '}
             <RHFSwitch name="is_active" label="Is Active" />{' '}
           </Box>
         </DialogContent>

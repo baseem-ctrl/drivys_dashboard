@@ -253,9 +253,9 @@ export default function HomeListingTableRow({
             row?.catalogue_type || 'N/A'
           )}
         </TableCell>
-        <TableCell>
-          <Avatar alt={row.name} src={row?.picture?.virtual_path} sx={{ mr: 2 }} />
-        </TableCell>
+        {/* <TableCell>
+          <Avatar alt={row.name} src={row?.sliders?.virtual_path} sx={{ mr: 2 }} />
+        </TableCell> */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller

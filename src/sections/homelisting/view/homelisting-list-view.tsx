@@ -60,7 +60,7 @@ const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
   // { id: 'description', label: 'Description' },
   { id: 'catalogue_type', label: 'Catalogue type' },
-  { id: 'picture', label: 'Picture' },
+  // { id: 'picture', label: 'Picture' },
   { id: 'display_type', label: 'Display type' },
   { id: 'display_order', label: 'Display order' },
   // { id: 'is_active', label: 'Active Status ' },

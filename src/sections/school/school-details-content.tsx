@@ -20,10 +20,12 @@ import {
   CircularProgress,
   Grid,
   IconButton,
+  InputAdornment,
   MenuItem,
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
@@ -45,6 +47,7 @@ import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { InfoOutlined } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 
@@ -130,8 +133,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         return true; // Skip format check if value is empty
       }
     ),
-    phone_number: Yup.string().matches(/^\d{1,15}$/, 'Phone number must be less that 15 digits'),
-    commission_in_percentage: Yup.string(),
+    phone_number: Yup.string()
+      .nullable() // Allow null values
+      .test('valid-phone', 'Phone number must be less than 15 digits', function (value) {
+        // Apply regex validation only if phone_number has a value
+        if (value) {
+          return /^\d{1,15}$/.test(value);
+        }
+        return true; // No validation if the phone number is empty or null
+      }),
     license_expiry: Yup.string(),
     website: Yup.string().url('Invalid URL'),
     status: Yup.string(),
@@ -199,7 +209,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         license_file: null,
         website: details?.website || '',
         status: details?.status || '',
-        is_active: details?.is_active === '0' ? false : true,
+        is_active: !!details?.is_active,
         user_id: details?.vendor_user?.user_id || '',
       };
       schoolReset(defaultVendorValues);
@@ -350,7 +360,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               {
                 label: 'Is Active',
                 value:
-                  details?.is_active === '1' ? (
+                  details?.is_active === 1 ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />
@@ -472,6 +482,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title="Commission is for certificate" placement="top">
+                              <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -857,7 +876,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               <Box key={details.id} sx={{ width: '100%' }}>
                 {/* Address Section Title */}
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Address Details {index + 1}
+                  Barnch {index + 1}
                 </Typography>
 
                 {/* Address Details */}

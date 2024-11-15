@@ -101,7 +101,7 @@ export default function HomeSliderDialog({
       display_order: updateValue?.display_order || '',
       // type: updateValue?.type || '',
       picture_ids: updateValue?.picture_ids || [],
-      published: updateValue?.published === '1',
+      published: updateValue?.published === 1 ? true : false,
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
       // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
       //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',

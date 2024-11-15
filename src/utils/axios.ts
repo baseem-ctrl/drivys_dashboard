@@ -148,6 +148,9 @@ export const endpoints = {
     trainers: 'admin/trainers/get-trainer-list',
     addTrainer: 'admin/trainers/create-trainer',
     removeTrainer: 'admin/trainers/delete-trainer/',
+    package: {
+      getPackageBySchool: 'admin/package/get-school-packge-list',
+    },
   },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',
@@ -234,6 +237,10 @@ export const endpoints = {
   booking: {
     getList: 'admin/booking/get-bookings-list',
     getById: `admin/booking/get-booking-by-id`,
+    schoolAdmin: {
+      getList: 'admin/booking/school/get-bookings-list',
+      getById: `admin/booking/school/get-booking-by-id`,
+    },
     updatePaymentBookingStatus: 'admin/booking/update-booking-and-payment-status',
     getBookingStatus: 'public/enum/get-booking-status-enum',
     getBookingById: 'admin/booking/get-bookings-by-student-id',

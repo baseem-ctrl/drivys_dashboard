@@ -129,6 +129,7 @@ export default function HomeListingDialog({
     () => ({
       title: updateValue?.title || '',
       display_order: updateValue?.display_order || '',
+      category: updateValue?.categories?.[0]?.value || 21,
       // type: updateValue?.type || '',
       sliders: updateValue?.sliders[0] || [],
       published: updateValue?.published === '1',
@@ -220,7 +221,7 @@ export default function HomeListingDialog({
       setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
   }, [updateValue]);
-
+  console.log('default values', defaultValues);
   // Populate category and product options when data is available
   useEffect(() => {
     if (category) setCategoryOptions(mapOptions(category, 'category_translations'));
@@ -243,6 +244,7 @@ export default function HomeListingDialog({
 
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data', data);
     try {
       console.log('datadatadatadatadata', data);
       console.log('selectedCatalogue', selectedCatalogue);
@@ -254,7 +256,7 @@ export default function HomeListingDialog({
       formData.append('title', data.title || '');
       formData.append('display_order', data.display_order || '');
       formData.append('display_type', selectedDisplayType || '');
-      formData.append('catalogue_type', selectedCatalogue || '');
+      formData.append('catalogue_type', 'TRAINER' || '');
       formData.append('published', data.published ? '1' : '0');
 
       if (selectedImageIds && selectedImageIds.length > 0) {
@@ -271,22 +273,21 @@ export default function HomeListingDialog({
       //     );
       //   }
 
-      //   if (data?.trainers?.length > 0) {
-      //     data?.trainers?.forEach((trainerItem, index) => {
-      //       formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
-
-      //       // Use nullish coalescing to handle cases where `value` might be 0
-      //       formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
-      //     });
-      //   }
+      if (data?.trainers?.length > 0) {
+        data?.trainers?.forEach((trainerItem, index) => {
+          formData.append(`trainers[${index}][user_id]`, trainerItem?.id?.value);
+          // Use nullish coalescing to handle cases where `value` might be 0
+          formData.append(`trainers[${index}][category]`, trainerItem?.category ?? '');
+        });
+      }
 
       // Send form data to API
-      const response = await createHomeListing(formData);
-      if (response) {
-        enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
-        onClose();
-        onReload();
-      }
+      // const response = await createHomeListing(formData);
+      // if (response) {
+      //   enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
+      //   onClose();
+      //   onReload();
+      // }
     } catch (error) {
       if (error.errors) {
         // Iterate over each error and enqueue them in the snackbar
@@ -321,23 +322,12 @@ export default function HomeListingDialog({
               }}
             >
               <RHFTextField name="title" label={t('Title')} />
-              <RHFTextField name="display_order" label={t('Display Order')} />
-              <Controller
+
+              <RHFTextField
                 name="catalogue_type"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    value={selectedCatalogue || ''}
-                    onChange={handleChangeCatalogue}
-                  >
-                    {catalogueOptions?.map((option: any) => (
-                      <MenuItem key={option?.value} value={option?.value}>
-                        {option?.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                label={t('Catalogue Type')}
+                value="TRAINER"
+                disabled
               />
               <Controller
                 name="display_type"
@@ -372,7 +362,7 @@ export default function HomeListingDialog({
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
                   <RHFAutocomplete
-                    name={`trainers[${index}].id`} // Dynamic name for react-hook-form
+                    name={`trainers[${index}].user_id`} // Dynamic name for react-hook-form
                     label={`Trainer ${index + 1}`}
                     getOptionLabel={(option) => {
                       return option ? `${option?.label}` : '';
@@ -388,10 +378,50 @@ export default function HomeListingDialog({
 
                 {/* Value Field */}
                 <Grid item xs={12} md={5}>
-                  <RHFTextField
-                    name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1} display order`}
-                  />
+                  <Select
+                    style={{ width: '100%' }}
+                    name={`trainers[${index}].category_id`}
+                    labelId="category-label"
+                    value={defaultValues.category || ''} // Ensure value is set to empty string if no category
+                    onChange={(e) => {
+                      // Log when category selection changes
+                      console.log(`Category ${index + 1} selected:`, e.target.value);
+                      console.log(`Updated value for category[${index}]:`, e.target.value);
+                    }}
+                    onOpen={() => {
+                      // Log when the dropdown menu is opened
+                      console.log(`Category ${index + 1} dropdown opened`);
+                    }}
+                    onClose={() => {
+                      // Log when the dropdown menu is closed
+                      console.log(`Category ${index + 1} dropdown closed`);
+                    }}
+                  >
+                    {/* Log placeholder rendering */}
+                    {defaultValues.category === '' || defaultValues.category === undefined
+                      ? console.log(
+                          `Category ${index + 1} has no default value, showing placeholder`
+                        )
+                      : console.log(
+                          `Category ${index + 1} has default value:`,
+                          defaultValues.category
+                        )}
+
+                    {/* Placeholder if no default value is selected */}
+                    <MenuItem value="" disabled>
+                      Select a Category
+                    </MenuItem>
+
+                    {/* Mapping through category options */}
+                    {categoryOptions.map((option) => {
+                      console.log(`Rendering category option:`, option); // Log each category option being rendered
+                      return (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
                 </Grid>
 
                 {/* Delete Button */}
@@ -407,22 +437,22 @@ export default function HomeListingDialog({
                 Add Trainer
               </Button>
             </Grid>
-            <h5>Images:</h5>
-            <Box>
-              {/* Button to open the image selection dialog */}
-              <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
+            {/* <h5>Images:</h5> */}
+            {/* <Box> */}
+            {/* Button to open the image selection dialog */}
+            {/* <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
                 Select Images
-              </Button>
+              </Button> */}
 
-              {/* Image Preview Component */}
-              <ImagePreview
+            {/* Image Preview Component */}
+            {/* <ImagePreview
                 selectedImageIds={selectedImageIds}
                 setSelectedImageIds={setSelectedImageIds}
                 isUpdate
                 selectedImageArray={selectedImageArray}
                 reload={onReload}
-              />
-            </Box>
+              /> */}
+            {/* </Box> */}
 
             <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
