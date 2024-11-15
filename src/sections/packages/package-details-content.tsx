@@ -146,7 +146,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         name: selectedLocaleObject?.name || '',
         number_of_sessions: details?.number_of_sessions || '',
         session_inclusions: selectedLocaleObject?.session_inclusions || '',
-        is_published: details?.is_published === '0' ? false : true,
+        is_published: details?.is_published === 0 ? false : true,
         vendor_id: details?.vendor_id,
         category_id: details?.category_id || '',
       };
@@ -283,7 +283,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               {
                 label: 'Is Published',
                 value:
-                  details?.is_published === '1' ? (
+                  details?.is_published === 1 ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />

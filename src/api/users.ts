@@ -13,7 +13,10 @@ export function useGetUsers({
   is_active,
   shipping_status_id,
   payment_method_system_name,
-  city,
+  city_id,
+  vehicle_type_id,
+  gear,
+  vendor_id,
   start_date,
   end_date,
   type,
@@ -25,13 +28,24 @@ export function useGetUsers({
       page: page + 1,
       limit,
     };
-
     if (user_types !== 'all') {
-      queryParams['user_types[]'] = [user_types]; // Set as an array for URL params
+      queryParams['user_types[]'] = [user_types];
     }
 
     if (search) queryParams.search = search;
     if (is_active) queryParams.is_active = is_active;
+    if (city_id) queryParams.city_id = city_id;
+    if (vehicle_type_id) queryParams.vehicle_type_id = vehicle_type_id;
+    if (gear !== undefined && gear !== null) {
+      queryParams.gear = gear;
+    }
+    if (vendor_id) queryParams.vendor_id = vendor_id;
+
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+    if (type) queryParams.type = type;
+    if (store_id) queryParams.store_id = store_id;
+
     return `${endpoints.users.list}?${new URLSearchParams(queryParams)}`;
   };
 
