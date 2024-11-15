@@ -62,7 +62,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
-
+  const [showAllAddresses, setShowAllAddresses] = useState(false);
+  const maxVisibleAddresses = 2;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
@@ -758,7 +759,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   };
 
   const renderAddress = (
-    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
+    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2, width: '100%' }}>
       <Scrollbar>
         <Box>
           <Button
@@ -865,45 +866,58 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         )}
 
         <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-          {details?.vendor_addresses?.map((details: any, index: any) => {
-            // Map center position for each address
-            const defaultCenter = {
-              lat: parseFloat(details?.latitude) || 0,
-              lng: parseFloat(details?.longitude) || 0,
-            };
+          {details?.vendor_addresses
+            ?.slice(0, showAllAddresses ? details.vendor_addresses.length : maxVisibleAddresses)
+            ?.map((details, index) => {
+              // Map center position for each address
+              const defaultCenter = {
+                lat: parseFloat(details?.latitude) || 0,
+                lng: parseFloat(details?.longitude) || 0,
+              };
 
-            return (
-              <Box key={details.id} sx={{ width: '100%' }}>
-                {/* Address Section Title */}
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Barnch {index + 1}
-                </Typography>
+              return (
+                <Box key={details.id} sx={{ width: '100%' }}>
+                  {/* Address Section Title */}
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    Branch {index + 1}
+                  </Typography>
 
-                {/* Address Details */}
-                {[
-                  { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                  { label: 'City', value: details?.city ?? 'N/A' },
-                  { label: 'State', value: details?.state ?? 'N/A' },
-                  { label: 'Country', value: details?.country ?? 'N/A' },
-                ].map((item, idx) => (
-                  <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
-                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                      {item.label}
+                  {/* Address Details and Map */}
+                  <Box
+                    component={Card}
+                    sx={{
+                      p: 3,
+                      mb: 2,
+                      mt: 2,
+                      boxShadow: 3,
+                      borderRadius: 2,
+                      border: '1px solid #ddd',
+
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        sm: '1fr',
+                        md: '1fr 3fr',
+                      },
+                      gap: 2,
+                    }}
+                  >
+                    {/* Address Details */}
+                    <Box>
+                      {[
+                        { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                        { label: 'City', value: details?.city ?? 'N/A' },
+                        { label: 'State', value: details?.state ?? 'N/A' },
+                        { label: 'Country', value: details?.country ?? 'N/A' },
+                      ].map((item, idx) => (
+                        <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
+                          <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
+                          <Box>{item.value}</Box>
+                        </Box>
+                      ))}
                     </Box>
-                    <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                      :
-                    </Box>
-                    <Box component="span">{loading ? 'Loading...' : item.value}</Box>
-                  </Box>
-                ))}
 
-                {/* Map Section */}
-                {details?.latitude && details?.longitude ? (
-                  <>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-                      Map Location
-                    </Typography>
-                    <Box sx={{ pt: 2, pb: 2 }}>
+                    {/* Map on the right */}
+                    <Box>
                       {isLoaded && load ? (
                         <GoogleMap
                           mapContainerStyle={mapContainerStyle}
@@ -916,27 +930,33 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         <div>Loading Map...</div>
                       )}
                     </Box>
-                  </>
-                ) : (
-                  <Typography>No location data available</Typography>
-                )}
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setEditingIndex(index);
-                    reset(defaultValues); // Load address into form fields
-                  }}
-                  sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
-                >
-                  Edit
-                </Button>
-              </Box>
-            );
-          })}
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setEditingIndex(index);
+                        reset(defaultValues); // Load address into form fields
+                      }}
+                      sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                </Box>
+              );
+            })}
         </Stack>
+
+        {details?.vendor_addresses?.length > maxVisibleAddresses && (
+          <Box sx={{ mt: 3 }}>
+            <Button variant="outlined" onClick={() => setShowAllAddresses(!showAllAddresses)}>
+              {showAllAddresses ? 'Show Less' : 'Show More'}
+            </Button>
+          </Box>
+        )}
       </Scrollbar>
     </Stack>
   );
+
   const router = useRouter();
   const renderCompany = (
     <Stack
