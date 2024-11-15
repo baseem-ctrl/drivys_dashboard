@@ -17,6 +17,8 @@ interface useGetDelivereyParams {
   number_of_sessions?: number;
   vendor_id?: any;
   session_inclusions?: any;
+  city?: any;
+  is_public?: any;
 }
 
 export function useGetPackage({
@@ -30,6 +32,8 @@ export function useGetPackage({
   max_price,
   number_of_sessions,
   vendor_id,
+  city_id,
+  is_public,
 }: useGetDelivereyParams = {}) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
@@ -44,6 +48,8 @@ export function useGetPackage({
     if (max_price) params.max_price = max_price;
     if (number_of_sessions) params.number_of_sessions = number_of_sessions;
     if (vendor_id) params.vendor_id = vendor_id;
+    if (city_id) params.city_id = city_id;
+    if (is_public) params.is_public = is_public;
 
     return params;
   }, [
@@ -57,6 +63,8 @@ export function useGetPackage({
     max_price,
     number_of_sessions,
     vendor_id,
+    city_id,
+    is_public,
   ]);
 
   const fullUrl = useMemo(

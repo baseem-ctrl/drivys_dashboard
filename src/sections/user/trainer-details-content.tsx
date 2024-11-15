@@ -59,11 +59,13 @@ import TrainerPackageCreateEditForm from './trainer-package-create-edit-form';
 // ----------------------------------------------------------------------
 
 type Props = {
-  id: number | string;
+  Trainerdetails?: any;
 };
 
-export default function TrainerDetailsContent({ id }: Props) {
-  const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(id);
+export default function TrainerDetailsContent({ Trainerdetails }: Props) {
+  const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
+    Trainerdetails?.id
+  );
   const quickEdit = useBoolean();
   const confirm = useBoolean();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -449,7 +451,7 @@ export default function TrainerDetailsContent({ id }: Props) {
           onClose={quickEdit.onFalse}
           onSubmit={handleCreatePackage}
           selectedPackage={selectedPackage}
-          trainer_id={id}
+          trainer_details={Trainerdetails}
           setEditMode={setEditMode}
         />
       </>

@@ -23,7 +23,7 @@ const TrainerPackageCreateEditForm = ({
   open,
   onClose,
   onSubmit,
-  trainer_id,
+  trainer_details,
   selectedPackage,
   editMode,
   setEditMode,
@@ -75,8 +75,14 @@ const TrainerPackageCreateEditForm = ({
       [name]: undefined,
     }));
   };
+  console.log(trainer_details, 'details?.vendor?.id');
 
-  const { packageList, packageLoading } = useGetPackage();
+  useEffect(() => {});
+  const { packageList, packageLoading } = useGetPackage({
+    vendor_id: trainer_details?.vendor?.id,
+    city_id: trainer_details?.user_preference?.city_id,
+    is_public: 1,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -98,7 +104,7 @@ const TrainerPackageCreateEditForm = ({
     return newErrors;
   };
 
-  const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_id);
+  const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_details?.id);
 
   const handleSubmit = () => {
     // setIsSubmitting(true);
@@ -109,16 +115,15 @@ const TrainerPackageCreateEditForm = ({
       return;
     }
 
-    if (!trainer_id) {
+    if (!trainer_details?.id) {
       console.error('Trainer ID is required.');
       return;
     }
-    console.log('formValuesformValuesformValues', formValues);
     const convertedValues = {
       package_id: formValues.package_id,
       trainer_ids: [
         {
-          id: trainer_id,
+          id: trainer_details?.id,
           price: formValues.trainer_price,
           is_published: formValues.is_published ? 1 : 0,
           status: formValues.switch_status ? 1 : 0,
