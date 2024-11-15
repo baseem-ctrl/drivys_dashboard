@@ -72,7 +72,7 @@ export default function AllImagesForm({
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
