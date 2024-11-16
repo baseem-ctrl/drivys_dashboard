@@ -32,18 +32,6 @@ export default function CityDetails({ onEdit, city }) {
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                              City ID
-                            </Box>
-                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                              :
-                            </Box>
-                            <Box component="span" sx={{ flex: 1 }}>
-                              {translation.city_id ?? 'N/A'}
-                            </Box>
-                          </Box>
-
-                          <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                               City Name
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>

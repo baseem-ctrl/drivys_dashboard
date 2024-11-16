@@ -21,13 +21,7 @@ import { updateCityTranslation } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
-export default function CityNewEditForm({
-  handleClosePopup,
-  setSelectedCity,
-  city,
-  setViewMode,
-  reload,
-}) {
+export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const CitySchema = Yup.object().shape({
@@ -35,13 +29,12 @@ export default function CityNewEditForm({
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
   });
-
   const methods = useForm({
     resolver: yupResolver(CitySchema),
     defaultValues: {
       name: city?.city_translations?.[0]?.name || '',
       locale: city?.city_translations?.[0]?.locale || 'ar',
-      published: city?.is_published === '1',
+      published: city?.is_published === 1,
       id: city?.id || '',
     },
   });
@@ -93,8 +86,6 @@ export default function CityNewEditForm({
       if (response) {
         enqueueSnackbar('City translations updated successfully.');
 
-        setSelectedCity(response.data);
-        setViewMode('detail');
         handleClosePopup();
         reload();
       }
