@@ -825,22 +825,27 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           marker && typeof marker === 'string'
                             ? marker
                             : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
+                        scaledSize: new window.google.maps.Size(50, 50),
                       }}
                     />
                   )}
+
                   {(defaultValues?.latitude || defaultValues?.longitude) && (
                     <Marker
                       position={{
-                        lat: defaultValues?.latitude,
-                        lng: defaultValues?.longitude,
+                        lat: isNaN(Number(defaultValues?.latitude))
+                          ? 0
+                          : Number(defaultValues?.latitude), // Convert to number
+                        lng: isNaN(Number(defaultValues?.longitude))
+                          ? 0
+                          : Number(defaultValues?.longitude), // Convert to number
                       }}
                       icon={{
                         url:
                           marker && typeof marker === 'string'
                             ? marker
                             : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
+                        scaledSize: new window.google.maps.Size(50, 50),
                       }}
                     />
                   )}
