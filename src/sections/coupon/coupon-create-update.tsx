@@ -58,7 +58,6 @@ export default function CouponDialog({
   const { category } = useGetAllCategory(0, 1000);
   const { products } = useGetProducts({ page: 0, limit: 1000 });
   const { packageList, packageLoading } = useGetPackage();
-  console.log('packageList', packageList);
   const productOptions = packageList.flatMap((pkg) =>
     pkg.package_translations.map((trans) => ({
       value: pkg.id,
@@ -189,7 +188,6 @@ export default function CouponDialog({
 
     setSelectedDiscountType(defaultValues.discount_type_id || '');
   }, [updateValue?.discount_type_id, defaultValues?.discount_type_id]);
-  console.log('selected discount type', selectedDiscountType, selectedDiscountType === '1');
   const {
     reset,
     watch,
@@ -231,7 +229,6 @@ export default function CouponDialog({
   // useOptionsEffect(products, 'product_translations', setProductOptions);
 
   // useOptionsEffect(productOptions, setProductOptions);
-  console.log('hagshag');
   useEffect(() => {
     if (updateValue) {
       // reset(defaultValues);
@@ -242,7 +239,6 @@ export default function CouponDialog({
   const { enqueueSnackbar } = useSnackbar();
   const today = moment().format('YYYY-MM-DD');
   const onSubmit = handleSubmit(async (data) => {
-    console.log('datadatadata', data);
     const startDate = moment(data.starting_date).format('YYYY-MM-DD');
     const endDate = moment(data.ending_date).format('YYYY-MM-DD');
     if (startDate > endDate) {
@@ -252,31 +248,73 @@ export default function CouponDialog({
 
     try {
       const formData = new FormData();
-      formData.append('name', data.name || '');
-      formData.append('coupon_code', data.coupon_code || '');
-      formData.append('value', data.value);
-      formData.append('limitation_times', data.limitation_times || '');
 
-      data.Category.map((item: any, index: number) =>
-        formData.append(`category_ids[${index}]`, item.value)
-      );
-      data.Packages.map((item: any, index: number) =>
-        formData.append(`product_ids[${index}]`, item.value)
-      );
-      formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
-      formData.append('is_active', data.is_active === true ? 1 : 0);
+      // Only append if data.name exists
+      if (data.name) {
+        formData.append('name', data.name);
+      }
 
-      formData.append('discount_type_id', data.discount_type_id || 0);
-      formData.append(
-        'starting_date',
-        data.starting_date ? moment(data.starting_date).format('YYYY-MM-DD') : ''
-      );
-      formData.append(
-        'ending_date',
-        data.ending_date ? moment(data.ending_date).format('YYYY-MM-DD') : ''
-      );
+      // Only append if data.coupon_code exists
+      if (data.coupon_code) {
+        formData.append('coupon_code', data.coupon_code);
+      }
+
+      // Always append if data.value exists
+      if (data.value) {
+        formData.append('value', data.value);
+      }
+
+      // Only append if data.limitation_times exists
+      if (data.limitation_times) {
+        formData.append('limitation_times', data.limitation_times);
+      }
+
+      // Append category_ids only if data.Category has values
+      if (data.Category && data.Category.length > 0) {
+        data.Category.forEach((item, index) => {
+          if (item.value) {
+            formData.append(`category_ids[${index}]`, item.value);
+          }
+        });
+      }
+
+      // Append package_ids only if data.Packages has values
+      if (data.Packages && data.Packages.length > 0) {
+        data.Packages.forEach((item, index) => {
+          if (item.value) {
+            formData.append(`package_ids[${index}]`, item.value);
+          }
+        });
+      }
+
+      // Only append use_percentage if it's a boolean (true or false)
+      if (data.use_percentage !== undefined) {
+        formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
+      }
+
+      // Only append is_active if it's a boolean (true or false)
+      if (data.is_active !== undefined) {
+        formData.append('is_active', data.is_active === true ? 1 : 0);
+      }
+
+      // Only append discount_type_id if it exists or is a valid value
+      if (data.discount_type_id) {
+        formData.append('discount_type_id', data.discount_type_id);
+      }
+
+      // Only append starting_date if it exists
+      if (data.starting_date) {
+        formData.append('starting_date', moment(data.starting_date).format('YYYY-MM-DD'));
+      }
+
+      // Only append ending_date if it exists
+      if (data.ending_date) {
+        formData.append('ending_date', moment(data.ending_date).format('YYYY-MM-DD'));
+      }
+
+      // Only append discount_id if updateValue?.id exists
       if (updateValue?.id) {
-        formData.append('discount_id', updateValue?.id);
+        formData.append('discount_id', updateValue.id);
       }
 
       const response = await createUpdateCoupon(formData);
@@ -308,9 +346,7 @@ export default function CouponDialog({
   });
   const handleDiscountTypeChange = (event) => {
     const value = event.target.value;
-    console.log('valueeeeeee', value);
     setSelectedDiscountType(value);
-    console.log('Selected discount type:', value); // Optional: for debugging
   };
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
@@ -367,7 +403,15 @@ export default function CouponDialog({
                     defaultValue={defaultValues.packages}
                   />
                 )}
-
+                {selectedDiscountType === '2' && (
+                  <RHFMultiSelectAuto
+                    name="Category"
+                    label="Category"
+                    options={categoryOptions}
+                    // setSearchTerm={setSearchTermCategory}
+                    defaultValue={defaultValues.Category}
+                  />
+                )}
                 <RHFTextField name="value" label={t('Discount Value')} />
                 <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
                 <RHFTextField
@@ -377,15 +421,7 @@ export default function CouponDialog({
                   inputProps={{ min: today }}
                 />
                 <RHFTextField name="ending_date" label="End Date " type="date" />
-                {(selectedDiscountType === '1' || selectedDiscountType === '2') && (
-                  <RHFMultiSelectAuto
-                    name="Category"
-                    label="Category"
-                    options={categoryOptions}
-                    // setSearchTerm={setSearchTermCategory}
-                    defaultValue={defaultValues.Category}
-                  />
-                )}
+
                 {/* <RHFMultiSelectAuto
                   name="Product"
                   label="Product"
