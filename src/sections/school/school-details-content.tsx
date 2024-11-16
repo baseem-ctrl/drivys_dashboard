@@ -778,90 +778,94 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {/* Form for Adding or Editing an Address */}
         {(newAddress || editingIndex !== null) && (
           <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
               {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
             </Typography>
-            {[
-              { label: 'Street Address', name: 'street_address' },
-              { label: 'City', name: 'city' },
-              { label: 'State', name: 'state' },
-              { label: 'Country', name: 'country' },
-              { label: 'Latitude', name: 'latitude' },
-              { label: 'Longitude', name: 'longitude' },
-            ].map((item, idx) => (
-              <Controller
-                key={idx}
-                name={item?.name}
-                control={control}
-                // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={item?.label}
-                    variant="outlined"
-                    sx={{ my: 1, width: '100%' }}
-                    // onChange={(e) => field.onChange(e.target.value)}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                {[
+                  { label: 'Street Address', name: 'street_address' },
+                  { label: 'City', name: 'city' },
+                  { label: 'State', name: 'state' },
+                  { label: 'Country', name: 'country' },
+                  { label: 'Latitude', name: 'latitude' },
+                  { label: 'Longitude', name: 'longitude' },
+                ].map((item, idx) => (
+                  <Controller
+                    key={idx}
+                    name={item.name}
+                    control={control}
+                    // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label={item.label}
+                        variant="outlined"
+                        sx={{ my: 1, width: '100%' }}
+                        // onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    )}
                   />
-                )}
-              />
-            ))}
+                ))}
 
-            {/* Map Component for Selecting Location */}
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-              Select Location on Map
-            </Typography>
-            <Box sx={{ pt: 2, pb: 2 }}>
-              {isLoaded && load ? (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={markerPosition}
-                  zoom={12}
-                  onClick={handleMapClick}
-                >
-                  {markerPosition && (
-                    <Marker
-                      position={markerPosition}
-                      icon={{
-                        url: marker, // Specify the URL of your custom marker image
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                      }}
-                    />
-                  )}
-                  {(defaultValues?.latitude || defaultValues?.longitude) && (
-                    <Marker
-                      position={{
-                        lat: defaultValues?.latitude,
-                        lng: defaultValues?.longitude,
-                      }}
-                      icon={{
-                        url: marker, // Specify the URL of your custom marker image
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                      }}
-                    />
-                  )}
-                </GoogleMap>
-              ) : (
-                <div>Loading Map...</div>
-              )}
-            </Box>
+                <Box sx={{ mt: 2 }}>
+                  <Button variant="contained" type="submit" sx={{ mr: 1 }}>
+                    Save
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setEditingIndex(null);
+                      setNewAddress(null);
+                      reset(defaultValues);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </Grid>
 
-            {/* Save and Cancel Buttons */}
-            <Box>
-              <Button variant="contained" type="submit" sx={{ mr: 1 }}>
-                Save
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setEditingIndex(null);
-                  setNewAddress(null);
-                  reset(defaultValues); // Reset form to default values
-                  reset();
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
+              {/* Map Section */}
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Select Location on Map
+                </Typography>
+                <Box sx={{ height: 300 }}>
+                  {isLoaded && load ? (
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={markerPosition}
+                      zoom={12}
+                      onClick={handleMapClick}
+                    >
+                      {markerPosition && (
+                        <Marker
+                          position={markerPosition}
+                          icon={{
+                            url: marker, // Specify the URL of your custom marker image
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
+                      {(defaultValues?.latitude || defaultValues?.longitude) && (
+                        <Marker
+                          position={{
+                            lat: defaultValues.latitude,
+                            lng: defaultValues.longitude,
+                          }}
+                          icon={{
+                            url: marker,
+                            scaledSize: new window.google.maps.Size(50, 50),
+                          }}
+                        />
+                      )}
+                    </GoogleMap>
+                  ) : (
+                    <div>Loading Map...</div>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
         )}
 
