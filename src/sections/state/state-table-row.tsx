@@ -49,12 +49,10 @@ export default function StateTableRow({
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
           {translations[zerothIndex].locale}
         </TableCell>
+
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          {translations[zerothIndex].state_province_id}
-        </TableCell>
-        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
-            {is_published === '1' ? 'Published' : 'Unpublished'}
+          <Label variant="soft" color={is_published === 1 ? 'success' : 'error'}>
+            {is_published === 1 ? 'Published' : 'Unpublished'}
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>

@@ -259,7 +259,6 @@ export default function SchoolTableRow({
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
-        <TableCell>{id}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (

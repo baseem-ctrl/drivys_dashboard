@@ -55,7 +55,6 @@ import HomeListingDialog from '../home-listing-dailogue';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Id' },
   // { id: 'locale', label: 'Language' },
   { id: 'title', label: 'Title' },
   // { id: 'description', label: 'Description' },
