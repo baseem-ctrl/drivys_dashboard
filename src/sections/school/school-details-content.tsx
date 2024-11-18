@@ -292,7 +292,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     setEditMode(false);
   };
   const renderContent = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+    <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
         <Stack
           alignItems="end"
@@ -967,7 +967,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       component={Paper}
       variant="outlined"
       spacing={2}
-      sx={{ p: 3, borderRadius: 2, cursor: 'pointer' }}
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        cursor: 'pointer',
+        display: 'flex',
+
+        width: '100%',
+      }}
       height={350}
       onClick={() =>
         details?.vendor_user?.user?.id
@@ -979,7 +986,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         alt={details?.vendor_user?.user?.name}
         src={details?.vendor_user?.name?.user?.photo_url}
         variant="rounded"
-        sx={{ width: 64, height: 64 }}
+        sx={{ width: 64, height: 64, alignSelf: 'center', marginBottom: 3 }}
       />
 
       <Stack spacing={1}>
@@ -1035,14 +1042,21 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         </Box>
       ) : (
         <Grid container spacing={1} rowGap={1}>
-          <Grid xs={12} md={8}>
-            {renderContent}
+          <Grid item xs={12} md={8}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {renderContent}
+            </Card>
           </Grid>
 
-          <Grid xs={12} md={4}>
-            {renderCompany}
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {renderCompany}
+            </Card>
           </Grid>
-          <Grid md={12}>{renderAddress}</Grid>
+
+          <Grid item xs={12}>
+            {renderAddress}
+          </Grid>
         </Grid>
       )}
     </>
