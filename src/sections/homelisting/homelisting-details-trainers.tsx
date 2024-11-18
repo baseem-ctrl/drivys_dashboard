@@ -77,13 +77,11 @@ export default function HomeListingTrainers({
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
     trainer_id: Yup.mixed().required(),
-    display_order: Yup.number().nullable(), // not required
   });
 
   const defaultValues = useMemo(
     () => ({
       trainer_id: '',
-      display_order: '',
     }),
     [homelistingdetails]
   );
@@ -110,17 +108,54 @@ export default function HomeListingTrainers({
 
   // Function to delete trainer
   const handleDeleteTrainer = async (id: string | number) => {
+    const body = new FormData();
+    console.log('Deleting trainer with id:', id);
+
+    // Append translation details
+    homelistingdetails?.translations?.forEach(
+      (
+        translation: { title: string | Blob; locale: string; description: string | Blob },
+        index: any
+      ) => {
+        body.append(`translation[${index}][title]`, translation.title);
+        body.append(`translation[${index}][locale]`, translation.locale);
+        body.append(`translation[${index}][description]`, translation.description);
+      }
+    );
+
+    // Append trainers, but omit the trainer with the matching id
+    if (homelistingdetails?.trainers?.length > 0) {
+      homelistingdetails.trainers.forEach((trainer: { trainer_id: string }, index: number) => {
+        // Only append trainers that don't match the id to be deleted
+        if (trainer.trainer_id !== id) {
+          body.append(`trainers[${index}][user_id]`, trainer.trainer_id);
+        }
+      });
+    }
+
+    // Append home_listing_id
+    body.append('home_listing_id', params?.id ?? '');
+
     try {
-      await deleteTrainer(id);
-      enqueueSnackbar('Trainer deleted successfully!', { variant: 'success' });
-      revalidateUsers();
+      // Call the API with the updated FormData
+      const response = await createHomeListing(body);
+      if (response) {
+        enqueueSnackbar('Trainer Deleted Successfully!');
+        revalidateDetails(); // Assuming this revalidates the details
+      }
     } catch (error) {
-      enqueueSnackbar('Failed to delete trainer.', { variant: 'error' });
+      // Error handling
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
   const onSubmit = async (data: any) => {
-    console.log(data, 'data');
     const body = new FormData();
 
     homelistingdetails?.translations?.forEach(
@@ -134,9 +169,21 @@ export default function HomeListingTrainers({
       }
     );
 
-    body.append('trainers[0][id]', data?.trainer_id?.id);
-    body.append('trainers[0][display_order]', data?.display_order);
-    body.append('home_page_listing_id', params?.id ?? '');
+    if (homelistingdetails?.trainers?.length > 0) {
+      homelistingdetails.trainers.forEach((trainer: { id: string }, index: number) => {
+        body.append(`trainers[${index}][user_id]`, trainer.trainer_id);
+      });
+
+      // Append the latest trainer at the end of the existing list
+      const nextIndex = homelistingdetails.trainers.length;
+
+      body.append(`trainers[${nextIndex}][user_id]`, data?.trainer_id?.id);
+    } else {
+      // Append the latest trainer as the first entry
+      body.append(`trainers[0][user_id]`, data?.trainer_id?.id);
+    }
+
+    body.append('home_listing_id', params?.id ?? '');
 
     try {
       // setLoadingButton(true);
@@ -164,7 +211,7 @@ export default function HomeListingTrainers({
   const handlePopoverOpen = (e, trainer: any, deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
-    setTrainerMappingId(deleteId);
+    setTrainerMappingId(trainer?.id);
   };
   // const handleRemove = async () => {
   //   try {
@@ -234,8 +281,6 @@ export default function HomeListingTrainers({
                   />
                 )}
               />
-
-              <RHFTextField name="display_order" label="Display order" />
             </Box>
 
             <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
@@ -271,7 +316,7 @@ export default function HomeListingTrainers({
                 direction="column"
                 spacing={2}
                 key={trainerdisplayed?.id}
-                sx={{ p: 3 }}
+                sx={{ p: 3, cursor: 'pointer' }}
               >
                 <Stack direction="row" spacing={2} key={trainerdisplayed?.id}>
                   <IconButton
@@ -382,17 +427,17 @@ export default function HomeListingTrainers({
           View
         </MenuItem>
 
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             popover.onClose();
             confirm.onTrue();
-            // handleDeleteTrainer(trainerId)
+            // handleDeleteTrainer(trainerId);
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Remove
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
     </Box>
   );

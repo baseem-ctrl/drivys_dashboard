@@ -4,30 +4,40 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
 // components
-import { useGetPackageCityList } from 'src/api/city';
+import { useGetAllCities, useGetCityById, useGetPackageCityList } from 'src/api/city';
+import { useParams } from 'src/routes/hooks';
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle } from '@mui/material';
 
 // custom components for tabs
 import CityDetails from './city-detail';
 import CityPackageDetails from './city-package-details';
+import CityNewEditForm from '../city-new-edit-form';
+import { paths } from 'src/routes/paths';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  id: string;
-  setOpenEditPopup: any;
-  city: any;
-};
-
-export default function CityDetailsView({ city, setOpenEditPopup }: Props) {
+export default function CityDetailsView() {
   const [currentTab, setCurrentTab] = useState('cityDetails');
+  const { id } = useParams();
   const { packageCityList, packageCityListLoading, revalidatePackage } = useGetPackageCityList({
-    city_id: city.id,
+    id,
   });
+  const { revalidateCities } = useGetAllCities();
+  const { city, cityLoading, cityError } = useGetCityById(id);
+  const [openEditPopup, setOpenEditPopup] = useState(false);
+
   const CITY_DETAILS_TABS = [
     { value: 'cityDetails', label: 'City Details' },
     { value: 'package', label: 'Package' },
   ];
+  const handleEditClick = () => {
+    setOpenEditPopup(true);
+  };
 
+  const handleClosePopup = () => {
+    setOpenEditPopup(false);
+  };
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
@@ -39,9 +49,37 @@ export default function CityDetailsView({ city, setOpenEditPopup }: Props) {
       ))}
     </Tabs>
   );
+  if (cityLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ pb: 4 }}>
+      <CustomBreadcrumbs
+        heading="List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          {
+            name: 'City',
+            href: paths.dashboard.system.city,
+          },
+          { name: 'List' },
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      />
       {renderTabs}
 
       {currentTab === 'cityDetails' && <CityDetails city={city} onEdit={setOpenEditPopup} />}
@@ -54,6 +92,16 @@ export default function CityDetailsView({ city, setOpenEditPopup }: Props) {
           packageCityListLoading={packageCityListLoading}
         />
       )}
+      <Dialog open={openEditPopup} onClose={handleClosePopup}>
+        <DialogTitle>Edit City</DialogTitle>
+        <DialogContent>
+          <CityNewEditForm
+            city={city}
+            reload={revalidateCities}
+            handleClosePopup={handleClosePopup}
+          />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }

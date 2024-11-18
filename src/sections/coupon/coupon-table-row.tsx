@@ -62,7 +62,7 @@ export default function LanguageTableRow({
   const popover = usePopover();
 
   const discount_type_text =
-    discount_type_id === '0' ? 'All' : discount_type_id === '1' ? 'Product' : 'Category';
+    discount_type_id === 0 ? 'All' : discount_type_id === 1 ? 'Package' : 'Category';
 
   return (
     <>
@@ -91,8 +91,8 @@ export default function LanguageTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{limitation_times}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <Label variant="soft" color={is_active === '1' ? 'success' : 'error'}>
-            {is_active === '1' ? 'Active' : 'In Active'}
+          <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
+            {is_active === 1 ? 'Active' : 'In Active'}
           </Label>
         </TableCell>
 

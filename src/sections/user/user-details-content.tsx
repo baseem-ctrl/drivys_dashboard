@@ -53,6 +53,7 @@ import {
   createNewAddressForUser,
   deleteUserAddress,
   updateExistingUserAddress,
+  updateUser,
 } from 'src/api/users';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
 import marker from 'react-map-gl/dist/esm/components/marker';
@@ -73,6 +74,7 @@ import { useGetBookingByTrainerId } from 'src/api/booking';
 import BookingTrainerTable from './booking-details/trainer-booking-details';
 import BookingStudentTable from './booking-details/student-booking-details';
 import { Link } from '@mui/material';
+import moment from 'moment';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -95,7 +97,6 @@ export default function UserDetailsContent({
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [load, setLoad] = useState(false);
-  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
@@ -269,84 +270,33 @@ export default function UserDetailsContent({
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
-  // const onSubmitBasicInfo = schoolSubmit(async (data) => {
-  //   try {
-  //     let payload = {
-  //       vendor_translations: [
-  //         {
-  //           name: data?.name || selectedLocaleObject?.name,
-  //           locale: selectedLanguage || selectedLocaleObject?.locale,
-  //         },
-  //       ],
-  //       contact_email: data?.contact_email,
-  //       contact_phone_number: data?.phone_number,
-  //       status: data?.status,
-  //       is_active: data?.is_active ? '1' : '0',
-  //       commission_in_percentage: data?.commission_in_percentage,
-  //       create_new_user: 0,
-  //       license_expiry: data?.license_expiry,
-  //       license_file: data?.license_file,
-  //       user_id: data?.user_id,
-  //       vendor_id: details?.id,
-  //       website: data?.website,
-  //     };
-  //     let formData = new FormData();
-
-  //     // Append fields to FormData
-  //     formData.append('contact_email', payload.contact_email || '');
-  //     formData.append('contact_phone_number', payload.contact_phone_number || '');
-  //     formData.append('status', payload.status || '');
-  //     formData.append('is_active', payload.is_active);
-  //     formData.append('commission_in_percentage', payload.commission_in_percentage || '');
-  //     formData.append('create_new_user', payload.create_new_user.toString());
-  //     formData.append('license_expiry', payload.license_expiry || '');
-  //     formData.append('user_id', payload.user_id || '');
-  //     formData.append('vendor_id', payload.vendor_id || '');
-  //     formData.append('website', payload.website || '');
-
-  //     // Handle `vendor_translations` (assumes only one translation)
-  //     if (payload.vendor_translations && payload.vendor_translations.length > 0) {
-  //       formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
-  //       formData.append(
-  //         'vendor_translations[0][locale]',
-  //         payload.vendor_translations[0].locale || ''
-  //       );
-  //     }
-
-  //     // Append file field if it exists and is a File object
-  //     if (payload.license_file) {
-  //       formData.append('license_file', payload.license_file); // Assumes `license_file` is a File object
-  //     }
-
-  //     const response = await createSchool(formData);
-  //     if (response) {
-  //       enqueueSnackbar(response.message, {
-  //         variant: 'success',
-  //       });
-  //       setEditMode(false);
-  //     }
-  //   } catch (error) {
-  //     if (error?.errors) {
-  //       Object.values(error?.errors).forEach((errorMessage: any) => {
-  //         enqueueSnackbar(errorMessage[0], { variant: 'error' });
-  //       });
-  //     } else {
-  //       enqueueSnackbar(error.message, { variant: 'error' });
-  //     }
-  //   } finally {
-  //     reload();
-  //   }
-  // });
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
   const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setStudentTab(newValue);
   }, []);
-  // const handleCancel = () => {
-  //   schoolReset(); // Reset to the original values
-  //   setEditMode(false);
-  // };
+  const handleVerify = async () => {
+    try {
+      const body = {
+        user_id: details?.id,
+        is_verified: details?.verified_at === null ? 1 : 0,
+      };
+      const response = await updateUser(body);
+      if (response) {
+        enqueueSnackbar('Trainer Verified Successfully');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
@@ -354,6 +304,90 @@ export default function UserDetailsContent({
   const handleClickTrainer = (id) => {
     router.push(paths.dashboard.school.details(id));
   };
+  const handleClickSchool = (id) => {
+    router.push(paths.dashboard.school.details(id));
+  };
+  const renderSchool = (
+    <Stack
+      component={Paper}
+      variant="outlined"
+      spacing={3}
+      sx={{
+        p: 4,
+        borderRadius: 3,
+        cursor: 'pointer',
+        maxWidth: 400,
+        boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.15)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.05)',
+          boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
+        },
+        backgroundColor: 'background.paper',
+        position: 'relative',
+      }}
+      onClick={() => handleClickSchool(details?.school?.id)}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          borderRadius: '50%',
+          width: 10,
+          height: 10,
+          bgcolor: details?.school?.status === 'active' ? 'success.main' : 'grey.400',
+        }}
+      />
+
+      <Typography
+        variant="h6"
+        sx={{
+          color: 'primary.main',
+          fontWeight: 700,
+          textAlign: 'center',
+          borderBottom: '2px solid',
+          borderColor: 'primary.light',
+          pb: 1,
+          mb: 2,
+        }}
+      >
+        School Details
+      </Typography>
+
+      {details?.school && (
+        <Stack spacing={2}>
+          {details.school?.vendor_translations?.[0]?.name && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>School:</strong>{' '}
+              {details.school.vendor_translations[0].name ?? 'Name Not Available'}
+            </Typography>
+          )}
+          {details.school?.commission_in_percentage && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Commission:</strong> {details.school.commission_in_percentage}%
+            </Typography>
+          )}
+          {details.school?.status && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Status:</strong> {details.school.status}
+            </Typography>
+          )}
+          {details.school?.phone_number && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Contact:</strong> {details.school.phone_number}
+            </Typography>
+          )}
+          {details.school?.email && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <strong>Email:</strong> {details.school.email}
+            </Typography>
+          )}
+        </Stack>
+      )}
+    </Stack>
+  );
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -461,6 +495,20 @@ export default function UserDetailsContent({
                       {
                         label: 'Vendor Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                      {
+                        label: 'Verified At',
+                        value:
+                          details?.verified_at === null ? (
+                            <Box>
+                              <Button variant="soft" onClick={handleVerify}>
+                                {' '}
+                                Verify
+                              </Button>
+                            </Box>
+                          ) : (
+                            moment.utc(details?.verified_at).format('ll')
+                          ),
                       },
                     ]
                   : []),
@@ -759,20 +807,30 @@ export default function UserDetailsContent({
                       <Marker
                         position={markerPosition}
                         icon={{
-                          url: marker, // Specify the URL of your custom marker image
-                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          url:
+                            marker && typeof marker === 'string'
+                              ? marker
+                              : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
                         }}
                       />
                     )}
                     {(defaultValues?.latitude || defaultValues?.longitude) && (
                       <Marker
                         position={{
-                          lat: defaultValues?.latitude,
-                          lng: defaultValues?.longitude,
+                          lat: Number.isNaN(Number(defaultValues?.latitude))
+                            ? 0
+                            : Number(defaultValues?.latitude),
+                          lng: Number.isNaN(Number(defaultValues?.longitude))
+                            ? 0
+                            : Number(defaultValues?.longitude),
                         }}
                         icon={{
-                          url: marker, // Specify the URL of your custom marker image
-                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          url:
+                            marker && typeof marker === 'string'
+                              ? marker
+                              : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
                         }}
                       />
                     )}
@@ -991,7 +1049,10 @@ export default function UserDetailsContent({
                         <Marker
                           position={markerPosition}
                           icon={{
-                            url: marker, // Specify the URL of your custom marker image
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
@@ -999,8 +1060,12 @@ export default function UserDetailsContent({
                       {(defaultValues?.latitude || defaultValues?.longitude) && (
                         <Marker
                           position={{
-                            lat: defaultValues?.latitude,
-                            lng: defaultValues?.longitude,
+                            lat: Number.isNaN(Number(defaultValues?.latitude))
+                              ? 0
+                              : Number(defaultValues?.latitude), // Convert to number
+                            lng: Number.isNaN(Number(defaultValues?.longitude))
+                              ? 0
+                              : Number(defaultValues?.longitude), // Convert to number
                           }}
                           icon={{
                             url: marker, // Specify the URL of your custom marker image
@@ -1209,9 +1274,26 @@ export default function UserDetailsContent({
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
-
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (
+                <UserDocumentDetails
+                  id={details?.id}
+                  documents={userDocuments}
+                  reload={revalidateUserDocuments}
+                />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (
+                <UserDocumentDetails
+                  id={details?.id}
+                  documents={userDocuments}
+                  reload={revalidateUserDocuments}
+                />
+              )}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'booking' && (
@@ -1223,7 +1305,6 @@ export default function UserDetailsContent({
                 <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
               )}
             </Grid>
-
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
             <Grid xs={12}>
               {currentTab === 'details' &&
@@ -1231,6 +1312,10 @@ export default function UserDetailsContent({
                 details?.user_preference?.id &&
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
+            </Grid>
+
+            <Grid xs={12}>
+              {details?.user_type === 'SCHOOL_ADMIN' && details?.school && renderSchool}
             </Grid>
             {/* User preferences For all other user types */}
           </Grid>

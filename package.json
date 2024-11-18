@@ -55,7 +55,7 @@
     "@react-pdf/renderer": "^3.1.12",
     "apexcharts": "^3.42.0",
     "autosuggest-highlight": "^3.3.4",
-    "axios": "^1.5.0",
+    "axios": "^1.7.7",
     "date-fns": "^2.30.0",
     "firebase": "^10.3.0",
     "framer-motion": "^10.16.2",

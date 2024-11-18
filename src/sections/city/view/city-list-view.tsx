@@ -46,6 +46,7 @@ import CityNewEditForm from '../city-new-edit-form';
 import CityDetails from './city-details-view';
 import CityFilters from '../city-filters';
 import CitySearch from '../city-search';
+import { useRouter } from 'src/routes/hooks';
 import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
@@ -53,7 +54,6 @@ import { useGetAllLanguage } from 'src/api/language';
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'locale', label: 'Locale', width: 180 },
-  { id: 'city_id', label: 'City ID', width: 220 },
   { id: 'is_published', label: 'Published', width: 180 },
   { id: 'action1', label: '', width: 180 },
   { id: 'action2', label: '', width: 88 },
@@ -78,10 +78,10 @@ export default function CityListView() {
   const [selectedCity, setSelectedCity] = useState(null); // State to hold selected city
   const [viewMode, setViewMode] = useState('table'); // State to manage view mode
   const [rowId, setRowId] = useState(null);
-  const [openEditPopup, setOpenEditPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [localeFilter, setLocaleFilter] = useState('');
   const [originalTableData, setOriginalTableData] = useState<any>([]);
+  const router = useRouter();
 
   const [index, setIndex] = useState(null);
   const { cities, revalidateCities, totalpages, cityLoading } = useGetAllCities(
@@ -91,7 +91,7 @@ export default function CityListView() {
     localeFilter
   );
   const { language } = useGetAllLanguage(0, 1000);
-
+  console.log('cities', cities);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -135,6 +135,7 @@ export default function CityListView() {
   const handleRowClick = (row) => {
     setRowId(row.id);
     setSelectedCity(row);
+    router.push(paths.dashboard.system.viewDetails(row.id));
     setViewMode('detail');
   };
 
@@ -142,13 +143,7 @@ export default function CityListView() {
     setViewMode('table');
     setSelectedCity(null);
   };
-  const handleEditClick = () => {
-    setOpenEditPopup(true);
-  };
 
-  const handleClosePopup = () => {
-    setOpenEditPopup(false);
-  };
   const handleResetFilters = useCallback(() => {
     setLocaleFilter('');
     setFilters(defaultFilters);
@@ -230,101 +225,67 @@ export default function CityListView() {
         />
         {viewMode === 'table' && renderFilters}
         <Card>
-          {viewMode === 'table' && (
-            <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-              <TableSelectedAction
-                dense={table.dense}
-                numSelected={table.selected.length}
-                rowCount={tableData.length}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    tableData.map((row) => row.id)
-                  )
-                }
-                action={
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-
-              <Scrollbar>
-                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    rowCount={tableData.length}
-                    numSelected={table.selected.length}
-                  />
-                  <TableBody>
-                    {cityLoading
-                      ? Array.from(new Array(5)).map((_, index) => (
-                          <TableRow key={index}>
-                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                              <Skeleton animation="wave" height={40} />
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : dataFiltered?.map((row) => (
-                          <CityTableRow
-                            row={row}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => handleRowClick(row)}
-                            onDeleteRow={() => handleDeleteRow(row.id)}
-                            onEditRow={() => handleEditRow(row.id)}
-                            reload={revalidateCities}
-                          />
-                        ))}
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            </TableContainer>
-          )}
-
-          {viewMode === 'detail' && selectedCity && (
-            <CityDetails
-              city={selectedCity}
-              onEdit={handleEditClick}
-              onBack={handleBackToList}
-              reload={revalidateCities}
-              cityId={rowId}
-              index={index}
-              setOpenEditPopup={setOpenEditPopup}
+          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  tableData.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
             />
-          )}
 
-          <Dialog open={openEditPopup} onClose={handleClosePopup}>
-            <DialogTitle>Edit City</DialogTitle>
-            <DialogContent>
-              {selectedCity && (
-                <CityNewEditForm
-                  city={selectedCity}
-                  reload={revalidateCities}
-                  setViewMode={setViewMode}
-                  setSelectedCity={setSelectedCity}
-                  handleClosePopup={handleClosePopup}
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={tableData.length}
+                  numSelected={table.selected.length}
                 />
-              )}
-            </DialogContent>
-          </Dialog>
-          {viewMode === 'table' && (
-            <>
-              {' '}
-              <TablePaginationCustom
-                count={totalpages}
-                page={table.page}
-                rowsPerPage={table.rowsPerPage}
-                onPageChange={table.onChangePage}
-                onRowsPerPageChange={table.onChangeRowsPerPage}
-                dense={table.dense}
-                onChangeDense={table.onChangeDense}
-              />
-            </>
-          )}
+                <TableBody>
+                  {cityLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : dataFiltered?.map((row) => (
+                        <CityTableRow
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          reload={revalidateCities}
+                        />
+                      ))}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+          </TableContainer>{' '}
+          <TablePaginationCustom
+            count={totalpages}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
+          />
         </Card>
       </Container>
 
