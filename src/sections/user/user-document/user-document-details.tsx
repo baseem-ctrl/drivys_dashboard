@@ -100,7 +100,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const handleFileClick = (file) => {
     window.open(file, '_blank'); // Open file in a new tab
   };
-  console.log('documentssss', documents);
   useEffect(() => {
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
@@ -110,7 +109,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       setValue('file', document.file || '');
       setValue('session', document.session_no || '');
       setValue('file', document.file || '');
-      setIsApproved(document.is_approved === '0' ? false : true);
+      setIsApproved(document.is_approved === 0 ? false : true);
       // setFilePreviewURL(document.file || '');
     }
   }, [documents, editMode]);
@@ -137,8 +136,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   }
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
-      console.log('formData', formData);
-      console.log('documentdata', document);
       const updatedDocument = new FormData();
       // if (filePreviewURL) {
       //   updatedDocument.append('file', filePreviewURL);
@@ -181,7 +178,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       reload();
     }
   };
-  console.log('isApproved', isApproved);
   // Handle delete document
   const handleDelete = async (id: number) => {
     setAnchorEl(null);
@@ -242,16 +238,24 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<Iconify icon="eva:plus-fill" />}
-        sx={{ mt: 7, ml: 5 }}
-        onClick={handleOpenDialog}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          mt: 7,
+        }}
       >
-        Add user document
-      </Button>
-      <Stack component={Card} spacing={1} sx={{ p: 3 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+          onClick={handleOpenDialog}
+        >
+          Add user document
+        </Button>
+      </Box>
+
+      <Stack spacing={1} sx={{ p: 3 }}>
         <Scrollbar>
           {documents &&
           documents[0]?.user?.user_docs &&
@@ -513,7 +517,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             </Typography>
                             <Stack direction="row" alignItems="center">
                               <Switch
-                                checked={doc.is_approved === '1'}
+                                checked={doc.is_approved === 1}
                                 color="primary"
                                 name="is_approved"
                               />
@@ -622,7 +626,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
               ))}
             </Grid>
           ) : (
-            <Typography variant="h8" sx={{ textAlign: 'teft', color: 'primary', ml: 2 }}>
+            <Typography variant="h8" sx={{ textAlign: 'teft', ml: 2, color: '#CF5A0D' }}>
               No documents found for this user. You can add a document by clicking on Add Document.
             </Typography>
           )}

@@ -1278,6 +1278,24 @@ export default function UserDetailsContent({
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (
+                <UserDocumentDetails
+                  id={details?.id}
+                  documents={userDocuments}
+                  reload={revalidateUserDocuments}
+                />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (
+                <UserDocumentDetails
+                  id={details?.id}
+                  documents={userDocuments}
+                  reload={revalidateUserDocuments}
+                />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'booking' && (
                 <BookingStudentTable id={details?.id} handleBookingClick={handleBookingClick} />
               )}
