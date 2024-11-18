@@ -29,7 +29,7 @@ export default function ImageTableRow({
     setIsChecked(checked);
     setSelectedImageIds((prev) => {
       if (Array.isArray(prev)) {
-        return checked ? [...prev, id] : prev.filter((rowId) => rowId !== id);
+        return checked ? [id] : prev.filter((rowId) => rowId !== id);
       } else {
         console.error('prev is not an array', prev);
         return checked ? [id] : [];

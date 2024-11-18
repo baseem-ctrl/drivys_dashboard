@@ -54,7 +54,7 @@ const TABLE_HEAD = [
   { id: 'published', label: 'Published' },
   // { id: 'ISMonthly', label: 'Is Monthly' },
   { id: 'show_until', label: 'Show until' },
-  // { id: 'Type', label: 'Type' },
+  { id: 'display_order', label: 'Display Order' },
   { id: 'actions', label: '' },
 ];
 
@@ -223,7 +223,8 @@ export default function HomeSliderListView() {
                                       {row.is_monthly === true ? 'Yes' : 'No'}
                                     </Label>
                                   </TableCell> */}
-                                  <TableCell>{row.show_until}</TableCell>
+                                  <TableCell>{row?.show_until}</TableCell>
+                                  <TableCell>{row?.display_order}</TableCell>
 
                                   {/* <TableCell>{row?.type}</TableCell> */}
 
