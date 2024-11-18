@@ -62,7 +62,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
-
+  const [showAllAddresses, setShowAllAddresses] = useState(false);
+  const maxVisibleAddresses = 2;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
@@ -291,7 +292,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     setEditMode(false);
   };
   const renderContent = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+    <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
         <Stack
           alignItems="end"
@@ -758,7 +759,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   };
 
   const renderAddress = (
-    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
+    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2, width: '100%' }}>
       <Scrollbar>
         <Box>
           <Button
@@ -777,133 +778,152 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {/* Form for Adding or Editing an Address */}
         {(newAddress || editingIndex !== null) && (
           <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
               {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
             </Typography>
-            {[
-              { label: 'Street Address', name: 'street_address' },
-              { label: 'City', name: 'city' },
-              { label: 'State', name: 'state' },
-              { label: 'Country', name: 'country' },
-              { label: 'Latitude', name: 'latitude' },
-              { label: 'Longitude', name: 'longitude' },
-            ].map((item, idx) => (
-              <Controller
-                key={idx}
-                name={item?.name}
-                control={control}
-                // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={item?.label}
-                    variant="outlined"
-                    sx={{ my: 1, width: '100%' }}
-                    // onChange={(e) => field.onChange(e.target.value)}
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                {[
+                  { label: 'Street Address', name: 'street_address' },
+                  { label: 'City', name: 'city' },
+                  { label: 'State', name: 'state' },
+                  { label: 'Country', name: 'country' },
+                  { label: 'Latitude', name: 'latitude' },
+                  { label: 'Longitude', name: 'longitude' },
+                ].map((item, idx) => (
+                  <Controller
+                    key={idx}
+                    name={item.name}
+                    control={control}
+                    // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label={item.label}
+                        variant="outlined"
+                        sx={{ my: 1, width: '100%' }}
+                        // onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    )}
                   />
-                )}
-              />
-            ))}
+                ))}
 
-            {/* Map Component for Selecting Location */}
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-              Select Location on Map
-            </Typography>
-            <Box sx={{ pt: 2, pb: 2 }}>
-              {isLoaded && load ? (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={markerPosition}
-                  zoom={12}
-                  onClick={handleMapClick}
-                >
-                  {markerPosition && (
-                    <Marker
-                      position={markerPosition}
-                      icon={{
-                        url: marker, // Specify the URL of your custom marker image
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                      }}
-                    />
-                  )}
-                  {(defaultValues?.latitude || defaultValues?.longitude) && (
-                    <Marker
-                      position={{
-                        lat: defaultValues?.latitude,
-                        lng: defaultValues?.longitude,
-                      }}
-                      icon={{
-                        url: marker, // Specify the URL of your custom marker image
-                        scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                      }}
-                    />
-                  )}
-                </GoogleMap>
-              ) : (
-                <div>Loading Map...</div>
-              )}
-            </Box>
+                {/* Map Component for Selecting Location */}
 
-            {/* Save and Cancel Buttons */}
-            <Box>
-              <Button variant="contained" type="submit" sx={{ mr: 1 }}>
-                Save
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setEditingIndex(null);
-                  setNewAddress(null);
-                  reset(defaultValues); // Reset form to default values
-                  reset();
-                }}
-              >
-                Cancel
-              </Button>
-            </Box>
+                <Box sx={{ mt: 2 }}>
+                  <Button variant="contained" type="submit" sx={{ mr: 1 }}>
+                    Save
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setEditingIndex(null);
+                      setNewAddress(null);
+                      reset(defaultValues);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </Grid>
+
+              {/* Map Section */}
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Select Location on Map
+                </Typography>
+                <Box sx={{ height: 300 }}>
+                  {isLoaded && load ? (
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={markerPosition}
+                      zoom={12}
+                      onClick={handleMapClick}
+                    >
+                      {markerPosition && (
+                        <Marker
+                          position={markerPosition}
+                          icon={{
+                            url: marker, // Specify the URL of your custom marker image
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
+                      {(defaultValues?.latitude || defaultValues?.longitude) && (
+                        <Marker
+                          position={{
+                            lat: defaultValues.latitude,
+                            lng: defaultValues.longitude,
+                          }}
+                          icon={{
+                            url: marker,
+                            scaledSize: new window.google.maps.Size(50, 50),
+                          }}
+                        />
+                      )}
+                    </GoogleMap>
+                  ) : (
+                    <div>Loading Map...</div>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
         )}
 
         <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-          {details?.vendor_addresses?.map((details: any, index: any) => {
-            // Map center position for each address
-            const defaultCenter = {
-              lat: parseFloat(details?.latitude) || 0,
-              lng: parseFloat(details?.longitude) || 0,
-            };
+          {details?.vendor_addresses
+            ?.slice(0, showAllAddresses ? details.vendor_addresses.length : maxVisibleAddresses)
+            ?.map((details, index) => {
+              // Map center position for each address
+              const defaultCenter = {
+                lat: parseFloat(details?.latitude) || 0,
+                lng: parseFloat(details?.longitude) || 0,
+              };
 
-            return (
-              <Box key={details.id} sx={{ width: '100%' }}>
-                {/* Address Section Title */}
-                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                  Barnch {index + 1}
-                </Typography>
+              return (
+                <Box key={details.id} sx={{ width: '100%' }}>
+                  {/* Address Section Title */}
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    Branch {index + 1}
+                  </Typography>
 
-                {/* Address Details */}
-                {[
-                  { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                  { label: 'City', value: details?.city ?? 'N/A' },
-                  { label: 'State', value: details?.state ?? 'N/A' },
-                  { label: 'Country', value: details?.country ?? 'N/A' },
-                ].map((item, idx) => (
-                  <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
-                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                      {item.label}
+                  {/* Address Details and Map */}
+                  <Box
+                    component={Card}
+                    sx={{
+                      p: 3,
+                      mb: 2,
+                      mt: 2,
+                      boxShadow: 3,
+                      borderRadius: 2,
+                      border: '1px solid #ddd',
+
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        sm: '1fr',
+                        md: '1fr 3fr',
+                      },
+                      gap: 2,
+                    }}
+                  >
+                    {/* Address Details */}
+                    <Box>
+                      {[
+                        { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                        { label: 'City', value: details?.city ?? 'N/A' },
+                        { label: 'State', value: details?.state ?? 'N/A' },
+                        { label: 'Country', value: details?.country ?? 'N/A' },
+                      ].map((item, idx) => (
+                        <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
+                          <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
+                          <Box>{item.value}</Box>
+                        </Box>
+                      ))}
                     </Box>
-                    <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                      :
-                    </Box>
-                    <Box component="span">{loading ? 'Loading...' : item.value}</Box>
-                  </Box>
-                ))}
 
-                {/* Map Section */}
-                {details?.latitude && details?.longitude ? (
-                  <>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
-                      Map Location
-                    </Typography>
-                    <Box sx={{ pt: 2, pb: 2 }}>
+                    {/* Map on the right */}
+                    <Box>
                       {isLoaded && load ? (
                         <GoogleMap
                           mapContainerStyle={mapContainerStyle}
@@ -916,34 +936,47 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         <div>Loading Map...</div>
                       )}
                     </Box>
-                  </>
-                ) : (
-                  <Typography>No location data available</Typography>
-                )}
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setEditingIndex(index);
-                    reset(defaultValues); // Load address into form fields
-                  }}
-                  sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
-                >
-                  Edit
-                </Button>
-              </Box>
-            );
-          })}
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setEditingIndex(index);
+                        reset(defaultValues); // Load address into form fields
+                      }}
+                      sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                </Box>
+              );
+            })}
         </Stack>
+
+        {details?.vendor_addresses?.length > maxVisibleAddresses && (
+          <Box sx={{ mt: 3 }}>
+            <Button variant="outlined" onClick={() => setShowAllAddresses(!showAllAddresses)}>
+              {showAllAddresses ? 'Show Less' : 'Show More'}
+            </Button>
+          </Box>
+        )}
       </Scrollbar>
     </Stack>
   );
+
   const router = useRouter();
   const renderCompany = (
     <Stack
       component={Paper}
       variant="outlined"
       spacing={2}
-      sx={{ p: 3, borderRadius: 2, cursor: 'pointer' }}
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        cursor: 'pointer',
+        display: 'flex',
+
+        width: '100%',
+      }}
       height={350}
       onClick={() =>
         details?.vendor_user?.user?.id
@@ -955,7 +988,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         alt={details?.vendor_user?.user?.name}
         src={details?.vendor_user?.name?.user?.photo_url}
         variant="rounded"
-        sx={{ width: 64, height: 64 }}
+        sx={{ width: 64, height: 64, alignSelf: 'center', marginBottom: 3 }}
       />
 
       <Stack spacing={1}>
@@ -1011,14 +1044,21 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         </Box>
       ) : (
         <Grid container spacing={1} rowGap={1}>
-          <Grid xs={12} md={8}>
-            {renderContent}
+          <Grid item xs={12} md={8}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {renderContent}
+            </Card>
           </Grid>
 
-          <Grid xs={12} md={4}>
-            {renderCompany}
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {renderCompany}
+            </Card>
           </Grid>
-          <Grid md={12}>{renderAddress}</Grid>
+
+          <Grid item xs={12}>
+            {renderAddress}
+          </Grid>
         </Grid>
       )}
     </>
