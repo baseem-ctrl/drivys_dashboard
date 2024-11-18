@@ -46,7 +46,7 @@ type Props = {
 };
 
 export default function SchoolTrainers({ candidates, create, onCreate }: Props) {
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const table = useTable({ defaultRowsPerPage: 4, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -349,6 +349,15 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           <CircularProgress />
         </Box>
       )}
+      <TablePaginationCustom
+        count={totalPages}
+        page={table.page}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+        dense={table.dense}
+        onChangeDense={table.onChangeDense}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

@@ -328,33 +328,8 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     );
                   }}
                 />
-                <Controller
-                  name="catalogue_type"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <FormControl fullWidth error={!!errors.catalogue_type}>
-                        <InputLabel>Catalogue Type</InputLabel>
-                        <Select
-                          label="Catalogue Type"
-                          {...field}
-                          value={field.value || ''} // Ensuring that the value is set, default to empty string if undefined
-                          onChange={(e) => field.onChange(e.target.value)} // Handling onChange
-                        >
-                          {catalogueOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errors.catalogue_type && (
-                          <FormHelperText>{errors.catalogue_type.message}</FormHelperText>
-                        )}
-                      </FormControl>
-                    );
-                  }}
-                />
               </Box>
+              <TextField label="Catalogue Type" value="TRAINER" disabled variant="outlined" />
             </Box>
 
             <Box

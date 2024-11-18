@@ -78,12 +78,22 @@ const defaultFilters: any = {
   role: [],
   status: '',
   userTypes: 'all',
+  city_id: '',
+  vehicle_type_id: '',
+  gear: '',
+  vendor_id: '',
 };
+
 interface StatusOption {
   value: string;
   label: string;
 }
 // ----------------------------------------------------------------------
+const gearTypeMapping = {
+  BOTH: 0,
+  AUTOMATIC: 1,
+  MANUAL: 2,
+};
 
 export default function UserListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
@@ -96,7 +106,6 @@ export default function UserListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState([]);
-
   const [filters, setFilters] = useState(defaultFilters);
   const [userTypeOptions, setUserTypeOptions] = useState<StatusOption[]>([]);
   const { enumData, enumLoading } = useGetUserTypeEnum();
@@ -119,8 +128,13 @@ export default function UserListView() {
       user_types: filters.userTypes,
       search: filters.name,
       is_active: filters.status,
+      city_id: filters.city_id,
+      vehicle_type_id: filters.vehicle_type_id,
+      gear: filters.gear ? gearTypeMapping[filters.gear] : undefined,
+      vendor_id: filters.vendor_id,
     }
   );
+
   useEffect(() => {
     if (enumData && filteredValues) {
       // Log the type and structure of enumData
@@ -244,7 +258,7 @@ export default function UserListView() {
           <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
-            //
+            user_type={filters?.userTypes}
             roleOptions={_roles}
           />
 

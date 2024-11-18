@@ -94,7 +94,9 @@ export default function JobItem({
   //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.category_translations || [];
-    return translations.find(trans => trans.locale.toLowerCase() === 'en') ? 'en' : translations[0]?.locale || '';
+    return translations.find((trans) => trans.locale.toLowerCase() === 'en')
+      ? 'en'
+      : translations[0]?.locale || '';
   });
 
   const [isSubmittingImage, setIsSubmitting] = useState(false);
@@ -234,7 +236,6 @@ export default function JobItem({
     // setPublish(newValue);
   };
 
-
   const NewSchema = Yup.object().shape({
     name: Yup.string(),
     locale: Yup.mixed(),
@@ -266,11 +267,9 @@ export default function JobItem({
 
   useEffect(() => {
     // if (isCreateCategory) {
-    searchCategory('')
+    searchCategory('');
     // }
-
-  }, [isCreateCategory])
-
+  }, [isCreateCategory]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -306,7 +305,7 @@ export default function JobItem({
         enqueueSnackbar(response.message, {
           variant: 'success',
         });
-        setSearchValue('')
+        setSearchValue('');
       }
     } catch (error) {
       if (error?.errors) {
@@ -478,7 +477,7 @@ export default function JobItem({
                   </Grid>
                 ))}
 
-                {pictures?.length > 2 && (
+                {/* {pictures?.length > 2 && (
                   <Grid item xs={3}>
                     <Box
                       sx={{
@@ -529,8 +528,9 @@ export default function JobItem({
                       </Box>
                     </Box>
                   </Grid>
-                )}
+                )} */}
 
+                {/* {pictures?.length === 0 && ( */}
                 <Grid item>
                   <Box
                     sx={{
@@ -557,6 +557,7 @@ export default function JobItem({
                     />
                   </Box>
                 </Grid>
+                {/* // )} */}
               </Grid>
             </Stack>
           </Stack>

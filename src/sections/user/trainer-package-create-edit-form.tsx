@@ -45,8 +45,8 @@ const TrainerPackageCreateEditForm = ({
         setLoading(true);
         setFormValues({
           trainer_price: selectedPackage?.price || '',
-          switch_status: selectedPackage.status === '1' ? true : false, // Convert to boolean
-          is_published: selectedPackage.is_published === '1' ? true : false, // Convert to boolean
+          switch_status: selectedPackage.status === 1 ? true : false, // Convert to boolean
+          is_published: selectedPackage.is_published === 1 ? true : false, // Convert to boolean
           package_id: selectedPackage.package_id || '',
         });
         setLoading(false);
@@ -163,40 +163,32 @@ const TrainerPackageCreateEditForm = ({
                 helperText={errors.trainer_price}
                 sx={{ marginRight: 3 }}
               />
-              <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
-                <InputLabel id="package-id-label">Package ID</InputLabel>
-                <Select
-                  labelId="package-id-label"
-                  name="package_id"
-                  value={formValues.package_id}
-                  onChange={handleChange}
-                  label="Package ID"
-                >
-                  {packageLoading ? (
-                    <MenuItem disabled>Loading...</MenuItem>
-                  ) : (
-                    packageList.map((pkg) => {
-                      const packageTranslation = pkg.package_translations.find(
-                        (translation) => translation.locale === 'en'
-                      );
-                      const packageName = packageTranslation
-                        ? packageTranslation.name
-                        : 'Unknown Package';
-
-                      return (
-                        <MenuItem key={pkg.id} value={pkg.id}>
-                          {packageName} (ID: {pkg.id})
-                        </MenuItem>
-                      );
-                    })
-                  )}
-                </Select>
-                {errors.package_id && (
-                  <Typography color="error" variant="caption">
-                    {errors.package_id}
-                  </Typography>
-                )}
-              </FormControl>
+              {!selectedPackage && (
+                <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
+                  <InputLabel id="package-id-label">Package ID</InputLabel>
+                  <Select
+                    labelId="package-id-label"
+                    name="package_id"
+                    value={formValues.package_id}
+                    onChange={handleChange}
+                    label="Package ID"
+                  >
+                    {packageLoading ? (
+                      <MenuItem disabled>Loading...</MenuItem>
+                    ) : (
+                      packageList.map((pkg) => (
+                        <div key={pkg.id}>
+                          {pkg.package_translations.map((translation) => (
+                            <MenuItem key={translation.locale} value={pkg.id}>
+                              {translation.name} ({translation.locale}) (ID: {pkg.id})
+                            </MenuItem>
+                          ))}
+                        </div>
+                      ))
+                    )}
+                  </Select>
+                </FormControl>
+              )}
             </Box>
             <FormControlLabel
               control={

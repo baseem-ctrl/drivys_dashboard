@@ -63,8 +63,6 @@ export default function HomeListingTableRow({
   onViewRow,
 }: Props) {
   const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
-  console.log('row', row);
-  console.log('title', title);
   const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(translations?.[0]?.locale ?? '');
@@ -80,32 +78,12 @@ export default function HomeListingTableRow({
     setEditingRowId(row.id);
   };
   const popover = usePopover();
-  // useEffect(() => {
-  //   if ((language && language?.length > 0) || translations?.length > 0) {
-  //     let initialLocaleOptions = [];
-  //     if (Array.isArray(language)) {
-  //       initialLocaleOptions = language?.map((item: any) => ({
-  //         label: item.language_culture,
-  //         value: item.language_culture,
-  //       }));
-  //     }
-  //     const newLocales = translations
-  //       ?.map((category: any) => category.locale)
-  //       .filter(
-  //         (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
-  //       )
-  //       .map((locale: any) => ({ label: locale, value: locale }));
-  //     setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-  //   }
-  // }, [language, translations, selectedLanguage]);
 
   const selectedLocaleObject = translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
   const NewSchema = Yup.object().shape({
     title: Yup.string(),
-    // locale: Yup.mixed(),
-    // description: Yup.string(),
     is_active: Yup.boolean(),
     catalogue_type: Yup.string(),
     display_order: Yup.string(),
@@ -114,8 +92,6 @@ export default function HomeListingTableRow({
   const defaultValues = useMemo(
     () => ({
       title: title || '',
-      // locale: selectedLocaleObject?.locale || '',
-      // description: selectedLocaleObject?.description || '',
       display_order: display_order || '',
       display_type: display_type || '',
       is_active: is_active || 1,
@@ -136,7 +112,6 @@ export default function HomeListingTableRow({
     const selectedLocaleObject = translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
-    console.log(selectedLocaleObject, 'selectedLocaleObject');
     // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
       setValue('title', selectedLocaleObject?.title); // Update name to match the locale
@@ -156,11 +131,6 @@ export default function HomeListingTableRow({
   const onSubmit = handleSubmit(async (data) => {
     try {
       const body = new FormData();
-      console.log('data', data);
-      console.log(
-        'selectedLocaleObject?.home_page_listing_id',
-        selectedLocaleObject?.home_page_listing_id
-      );
       // body.append('translation[0][locale]', selectedLanguage || translations?.locale);
       body.append('title', data?.title || title);
       // body.append('translation[0][description]', data?.description || translations?.description);
@@ -214,7 +184,6 @@ export default function HomeListingTableRow({
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
-        <TableCell>{id}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (

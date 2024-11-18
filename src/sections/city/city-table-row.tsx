@@ -55,14 +55,17 @@ export default function CityTableRow({
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           {city_translations[zerothIndex].locale}
         </TableCell>
+
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].city_id}
-        </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
-            {is_published === '1' ? 'Published' : 'Unpublished'}
+          <Label
+            variant="soft"
+            color={is_published === 1 ? 'success' : 'error'} // Using color based on the published status
+            style={{ cursor: 'pointer' }} // Adding pointer cursor to indicate it's clickable
+          >
+            {is_published === 1 ? 'Published' : 'Unpublished'}
           </Label>
         </TableCell>
+
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           {display_order}
         </TableCell>
