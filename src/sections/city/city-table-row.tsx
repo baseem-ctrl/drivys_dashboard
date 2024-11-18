@@ -55,9 +55,7 @@ export default function CityTableRow({
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           {city_translations[zerothIndex].locale}
         </TableCell>
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].city_id}
-        </TableCell>
+
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           <Label
             variant="soft"

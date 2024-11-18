@@ -40,7 +40,7 @@ import { deleteDialect, useGetAllDialect } from 'src/api/dialect';
 const TABLE_HEAD = [
   { id: 'dialect_name', label: 'Dialect Name' },
   { id: 'language_name', label: 'Language Name', width: 220 },
-  { id: 'dialect_id', label: 'Dialect ID', width: 220 },
+  { id: 'order_id', label: 'Order', width: 220 },
   { id: 'is_published', label: 'Published', width: 180 },
   { id: 'action1', label: '', width: 220 },
   { id: 'action2', label: '', width: 88 },

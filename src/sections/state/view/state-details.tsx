@@ -29,18 +29,6 @@ export default function StateDetails({ onEdit, state }) {
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                              State ID
-                            </Box>
-                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                              :
-                            </Box>
-                            <Box component="span" sx={{ flex: 1 }}>
-                              {translation.state_province_id ?? 'N/A'}
-                            </Box>
-                          </Box>
-
-                          <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                               State Name
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -74,11 +62,11 @@ export default function StateDetails({ onEdit, state }) {
                               <Typography
                                 variant="body2"
                                 sx={{
-                                  color: state.is_published === '1' ? 'success.main' : 'error.main',
+                                  color: state.is_published === 1 ? 'success.main' : 'error.main',
                                   fontWeight: 'bold',
                                 }}
                               >
-                                {state.is_published === '1' ? 'Yes' : 'No'}
+                                {state.is_published === 1 ? 'Yes' : 'No'}
                               </Typography>
                             </Box>
                           </Box>

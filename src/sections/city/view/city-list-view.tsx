@@ -53,7 +53,6 @@ import { useGetAllLanguage } from 'src/api/language';
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'locale', label: 'Locale', width: 180 },
-  { id: 'city_id', label: 'City ID', width: 220 },
   { id: 'is_published', label: 'Published', width: 180 },
   { id: 'action1', label: '', width: 180 },
   { id: 'action2', label: '', width: 88 },
