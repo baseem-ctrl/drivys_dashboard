@@ -924,7 +924,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         <Marker
                           position={markerPosition}
                           icon={{
-                            url: marker, // Specify the URL of your custom marker image
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
@@ -932,11 +935,18 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {(defaultValues?.latitude || defaultValues?.longitude) && (
                         <Marker
                           position={{
-                            lat: defaultValues.latitude,
-                            lng: defaultValues.longitude,
+                            lat: Number.isNaN(Number(defaultValues?.latitude))
+                              ? 0
+                              : Number(defaultValues?.latitude), // Convert to number
+                            lng: Number.isNaN(Number(defaultValues?.longitude))
+                              ? 0
+                              : Number(defaultValues?.longitude), // Convert to number
                           }}
                           icon={{
-                            url: marker,
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                             scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
