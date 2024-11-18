@@ -18,14 +18,12 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import * as Yup from 'yup';
-import { useGetAllCategory } from 'src/api/category';
 // import { useGetProducts } from 'src/api/product';
 import { AddSlider } from 'src/api/home-slider';
 import { Typography, Button } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import ImagePreview from './image-preview';
-import { useGetUsers } from 'src/api/users';
 import { useGetAllLanguage } from 'src/api/language';
 const ImagesSelectionForm = React.lazy(
   () => import('src/components/images-selection/select-images-dialog')
@@ -39,24 +37,13 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-
-  // const [selectedType, setSelectedType] = useState('Product');
-  const [categoryOptions, setCategoryOptions] = useState([]);
-  const [productOptions, setProductOptions] = useState([]);
-  const [userOptions, setUserOptions] = useState([]);
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]); // state for image IDs
   const [imageDialogOpen, setImageDialogOpen] = useState(false); // state for image dialog visibility
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const { language } = useGetAllLanguage(0, 1000);
 
-  const { category } = useGetAllCategory({ limit: 1000, page: 0 });
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
-  const { users } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'TRAINER',
-  });
 
   const today = moment().format('YYYY-MM-DD');
 
@@ -67,14 +54,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
     published: Yup.boolean(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
-    trainers: Yup.array().of(
-      Yup.object().shape({
-        id: Yup.mixed().required('Trainer is required'), // Validate court add-on
-        display_order: Yup.number()
-          // .typeError("Number of Add Ons must be a number")
-          .required('Display order is required'), // Validate the number of add-ons
-      })
-    ),
   });
 
   const defaultValues = useMemo(
@@ -85,8 +64,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      // Product: updateValue?.products || [],
-      trainers: [],
     }),
     [updateValue, today]
   );
@@ -109,25 +86,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
     control,
     name: 'trainers', // Field array name for addons
   });
-
-  const mapOptions = (items: any[], translationKey: string) =>
-    items?.map((item) => ({
-      label: item[translationKey]?.[0]?.name || 'No Name',
-      value: item.id,
-    }));
-
-  const mapOptionsUser = (items: any[]) =>
-    items?.map((item) => ({
-      label: item?.name || 'No Name',
-      value: item.id,
-    }));
-
-  useEffect(() => {
-    if (category) setCategoryOptions(mapOptions(category, 'category_translations'));
-    // if (products) setProductOptions(mapOptions(products, 'product_translations'));
-    if (users) setUserOptions(mapOptionsUser(users));
-  }, [category, users]);
-
   const [trainers, setTrainer] = useState<any>([]);
   // Function to add more pairs
   const handleAddMore = () => {
@@ -152,16 +110,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
         'show_until',
         data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''
       );
-      console.log(data?.trainers, 'data?.trainers');
-
-      if (data?.trainers?.length > 0) {
-        data?.trainers?.forEach((trainerItem, index) => {
-          formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
-
-          // Use nullish coalescing to handle cases where `value` might be 0
-          formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
-        });
-      }
 
       if (selectedImageIds.length > 0) {
         selectedImageIds.forEach((id, index) =>
@@ -208,12 +156,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
         >
           <RHFTextField name="name" label={t('Name')} />
           <RHFTextField name="display_order" label={t('Display Order')} />
-          {/* <RHFMultiSelectAuto
-            name="Category"
-            label="Category"
-            options={categoryOptions}
-            defaultValue={defaultValues.Category}
-          /> */}
 
           <RHFSelect
             name="language"
@@ -247,46 +189,6 @@ export default function HomeSliderForm({ updateValue }: Props) {
           />
           <RHFSwitch name="published" label={t('Published')} />
         </Box>
-
-        {trainers?.map((trainerItem: any, index: React.Key | null | undefined) => (
-          <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-            <Grid item xs={12} md={5}>
-              <RHFAutocomplete
-                name={`trainers[${index}].id`} // Dynamic name for react-hook-form
-                label={`Trainer ${index + 1}`}
-                getOptionLabel={(option) => {
-                  return option ? `${option?.label}` : '';
-                }}
-                options={userOptions}
-                renderOption={(props, option: any) => (
-                  <li {...props} key={option?.value}>
-                    {option?.label ?? 'Unknown'}
-                  </li>
-                )}
-              />
-            </Grid>
-
-            {/* Value Field */}
-            <Grid item xs={12} md={5}>
-              <RHFTextField
-                name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
-                label={`Trainer ${index + 1} display order`}
-              />
-            </Grid>
-
-            {/* Delete Button */}
-            <Grid item xs={12} md={2}>
-              <IconButton onClick={() => handleRemove(index)}>
-                <Iconify icon="solar:trash-bin-trash-bold" />
-              </IconButton>
-            </Grid>
-          </Grid>
-        ))}
-        <Grid item xs={12} sx={{ mt: 2 }}>
-          <Button variant="contained" onClick={handleAddMore}>
-            Add Trainer
-          </Button>
-        </Grid>
 
         <Box pt={3}>
           {/* Button to open the image selection dialog */}
