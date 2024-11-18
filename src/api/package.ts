@@ -17,7 +17,7 @@ interface useGetDelivereyParams {
   number_of_sessions?: number;
   vendor_id?: any;
   session_inclusions?: any;
-  city?: any;
+  city_id?: any;
   is_public?: any;
 }
 

@@ -75,7 +75,6 @@ const TrainerPackageCreateEditForm = ({
       [name]: undefined,
     }));
   };
-  console.log(trainer_details, 'details?.vendor?.id');
 
   useEffect(() => {});
   const { packageList, packageLoading } = useGetPackage({
@@ -143,7 +142,7 @@ const TrainerPackageCreateEditForm = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>Create or Edit Package</DialogTitle>
+      <DialogTitle>Add Packages</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
