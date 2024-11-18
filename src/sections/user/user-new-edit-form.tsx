@@ -228,6 +228,7 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
+
   const {
     reset,
     watch,
@@ -284,7 +285,16 @@ export default function UserNewEditForm({
       }
 
       if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
-      if (data.vendor_id) body.append('vendor_id', data?.vendor_id?.value);
+      if (data?.vendor_id) {
+        const matchedVendor = schoolList.find(
+          (school) => school.vendor_translations[0]?.name === data.vendor_id
+        );
+        if (matchedVendor?.id) {
+          body.append('vendor_id', matchedVendor.id);
+        } else if (data?.vendor_id?.value) {
+          body.append('vendor_id', data.vendor_id.value);
+        }
+      }
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
       body.append('country_code', data?.country_code);
