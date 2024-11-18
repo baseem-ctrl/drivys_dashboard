@@ -11,7 +11,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { IJobCandidate } from 'src/types/job';
 // components
 import Iconify from 'src/components/iconify';
-import { addTrainer, useGetSchoolTrainers } from 'src/api/school';
+import { addTrainer, RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import {
   Autocomplete,
@@ -53,6 +53,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
+  const [trainerMappingId, setTrainerMappingId] = useState('');
 
   const {
     schoolTrainersList,
@@ -141,9 +142,30 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     }
   };
-  const handlePopoverOpen = (e, id: any) => {
+  const handlePopoverOpen = (e, trainer: any) => {
     popover.onOpen(e);
-    setTrainerId(id);
+    setTrainerId(trainer?.id);
+    setTrainerMappingId(trainer?.id);
+  };
+  const handleRemove = async () => {
+    try {
+      if (trainerMappingId) {
+        const response = await RemoveTrainerFromSchool(trainerMappingId);
+        if (response) {
+          enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
+          setTrainerId('');
+          revalidateTrainers();
+        }
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
   };
   return (
     <Box
@@ -234,7 +256,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
               <Stack direction="row" spacing={2} key={trainer?.id}>
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8 }}
-                  onClick={(e) => handlePopoverOpen(e, trainer?.user_id)}
+                  onClick={(e) => handlePopoverOpen(e, trainer)}
                 >
                   <Iconify icon="eva:more-vertical-fill" />
                 </IconButton>
@@ -388,6 +410,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         content="Are you sure want to delete?"
         onConfirm={() => {
           confirm.onFalse();
+          handleRemove();
         }}
         action={
           <Button variant="contained" color="error">
