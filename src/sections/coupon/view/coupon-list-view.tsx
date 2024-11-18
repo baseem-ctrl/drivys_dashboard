@@ -143,7 +143,7 @@ export default function CouponListView() {
     discount_type_id: discount_type_id_value,
     is_active: filters.is_active,
   });
-
+  console.log('coupon', coupon);
   useEffect(() => {
     if (coupon?.length) {
       setTableData(coupon);

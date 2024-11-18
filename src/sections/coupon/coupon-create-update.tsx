@@ -8,7 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Box } from '@mui/system';
 import moment from 'moment';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 // import { AddCoupon, EditCoupon } from 'src/api/coupon';
 import FormProvider, {
@@ -24,6 +24,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { createUpdateCoupon } from 'src/api/coupon';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetProducts } from 'src/api/product';
+import { useGetPackage } from 'src/api/package';
 interface Props extends DialogProps {
   title?: string;
   folderName?: string;
@@ -35,9 +36,10 @@ interface Props extends DialogProps {
 
 const discountTypeOptions = [
   { label: 'ALL', value: '0' },
-  { label: 'PRODUCT', value: '1' },
+  { label: 'PACKAGE', value: '1' },
   { label: 'CATEGORY', value: '2' },
 ];
+
 export default function CouponDialog({
   title = 'Upload Files',
   open,
@@ -50,11 +52,20 @@ export default function CouponDialog({
   const { t } = useTranslation();
 
   const [categoryOptions, setCategoryOptions] = useState([]);
-  const [productOptions, setProductOptions] = useState([]);
+  // const [productOptions, setProductOptions] = useState([]);
+  const [selectedDiscountType, setSelectedDiscountType] = useState('');
 
   const { category } = useGetAllCategory(0, 1000);
   const { products } = useGetProducts({ page: 0, limit: 1000 });
-
+  const { packageList, packageLoading } = useGetPackage();
+  const productOptions = packageList.flatMap((pkg) =>
+    pkg.package_translations.map((trans) => ({
+      value: pkg.id,
+      label: trans.name,
+      session_inclusions: trans.session_inclusions, // Optional: additional info can be included
+      vendor_name: pkg?.vendor?.vendor_translations.find((v) => v.locale === 'en')?.name, // Vendor name
+    }))
+  );
   const getValidationSchema = () => {
     return Yup.object().shape({
       name: Yup.string().required(t('name is required')),
@@ -106,7 +117,7 @@ export default function CouponDialog({
       is_active: Yup.boolean().nullable(),
       starting_date: Yup.date().required(t('starting_date is required')),
       ending_date: Yup.date().required(t('ending_date is required')),
-      discount_type_id: Yup.string().required(t('Is required')),
+      discount_type_id: Yup.string().required(t('Discount type is required')),
       Category: Yup.mixed().nullable(),
       Product: Yup.mixed().nullable(),
     });
@@ -139,6 +150,7 @@ export default function CouponDialog({
       };
     });
   };
+  console.log('updateValue?.discount_type_id', updateValue?.discount_type_id);
 
   const defaultValues = useMemo(
     () => ({
@@ -146,8 +158,8 @@ export default function CouponDialog({
       coupon_code: updateValue?.coupon_code || '',
       limitation_times: updateValue?.limitation_times || '',
       value: updateValue?.value || '',
-      use_percentage: updateValue?.use_percentage === '1' ? true : false,
-      is_active: updateValue?.is_active === '1' ? true : false,
+      use_percentage: updateValue?.use_percentage === 1 ? true : false,
+      is_active: updateValue?.is_active === 1 ? true : false,
       discount_type_id: updateValue?.discount_type_id || '',
       starting_date:
         moment(updateValue?.starting_date).format('YYYY-MM-DD') ||
@@ -172,6 +184,11 @@ export default function CouponDialog({
     resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
   });
+  useEffect(() => {
+    // Reset selected discount type when dialog opens
+
+    setSelectedDiscountType(defaultValues.discount_type_id || '');
+  }, [updateValue?.discount_type_id, defaultValues?.discount_type_id]);
   const {
     reset,
     watch,
@@ -210,10 +227,9 @@ export default function CouponDialog({
   useOptionsEffect(category, 'category_translations', setCategoryOptions);
 
   // Using the combined effect for products
-  useOptionsEffect(products, 'product_translations', setProductOptions);
+  // useOptionsEffect(products, 'product_translations', setProductOptions);
 
   // useOptionsEffect(productOptions, setProductOptions);
-  console.log('hagshag');
   useEffect(() => {
     if (updateValue) {
       // reset(defaultValues);
@@ -233,31 +249,73 @@ export default function CouponDialog({
 
     try {
       const formData = new FormData();
-      formData.append('name', data.name || '');
-      formData.append('coupon_code', data.coupon_code || '');
-      formData.append('value', data.value);
-      formData.append('limitation_times', data.limitation_times || '');
 
-      data.Category.map((item: any, index: number) =>
-        formData.append(`category_ids[${index}]`, item.value)
-      );
-      // data.Product.map((item: any, index: number) =>
-      //   formData.append(`product_ids[${index}]`, item.value)
-      // );
-      formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
-      formData.append('is_active', data.is_active === true ? 1 : 0);
+      // Only append if data.name exists
+      if (data.name) {
+        formData.append('name', data.name);
+      }
 
-      formData.append('discount_type_id', data.discount_type_id || 0);
-      formData.append(
-        'starting_date',
-        data.starting_date ? moment(data.starting_date).format('YYYY-MM-DD') : ''
-      );
-      formData.append(
-        'ending_date',
-        data.ending_date ? moment(data.ending_date).format('YYYY-MM-DD') : ''
-      );
+      // Only append if data.coupon_code exists
+      if (data.coupon_code) {
+        formData.append('coupon_code', data.coupon_code);
+      }
+
+      // Always append if data.value exists
+      if (data.value) {
+        formData.append('value', data.value);
+      }
+
+      // Only append if data.limitation_times exists
+      if (data.limitation_times) {
+        formData.append('limitation_times', data.limitation_times);
+      }
+
+      // Append category_ids only if data.Category has values
+      if (data.Category && data.Category.length > 0) {
+        data.Category.forEach((item, index) => {
+          if (item.value) {
+            formData.append(`category_ids[${index}]`, item.value);
+          }
+        });
+      }
+
+      // Append package_ids only if data.Packages has values
+      if (data.Packages && data.Packages.length > 0) {
+        data.Packages.forEach((item, index) => {
+          if (item.value) {
+            formData.append(`package_ids[${index}]`, item.value);
+          }
+        });
+      }
+
+      // Only append use_percentage if it's a boolean (true or false)
+      if (data.use_percentage !== undefined) {
+        formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
+      }
+
+      // Only append is_active if it's a boolean (true or false)
+      if (data.is_active !== undefined) {
+        formData.append('is_active', data.is_active === true ? 1 : 0);
+      }
+
+      // Only append discount_type_id if it exists or is a valid value
+      if (data.discount_type_id) {
+        formData.append('discount_type_id', data.discount_type_id);
+      }
+
+      // Only append starting_date if it exists
+      if (data.starting_date) {
+        formData.append('starting_date', moment(data.starting_date).format('YYYY-MM-DD'));
+      }
+
+      // Only append ending_date if it exists
+      if (data.ending_date) {
+        formData.append('ending_date', moment(data.ending_date).format('YYYY-MM-DD'));
+      }
+
+      // Only append discount_id if updateValue?.id exists
       if (updateValue?.id) {
-        formData.append('discount_id', updateValue?.id);
+        formData.append('discount_id', updateValue.id);
       }
 
       const response = await createUpdateCoupon(formData);
@@ -287,7 +345,10 @@ export default function CouponDialog({
       reload();
     }
   });
-
+  const handleDiscountTypeChange = (event) => {
+    const value = event.target.value;
+    setSelectedDiscountType(value);
+  };
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
@@ -312,14 +373,46 @@ export default function CouponDialog({
               <>
                 <RHFTextField name="coupon_code" label={t('Coupon Code')} />
                 <RHFTextField name="limitation_times" label={t('Limitation Times')} />
-                <RHFSelect name="discount_type_id" label={t('Discount type')} multiline>
-                  {discountTypeOptions?.map((option: any) => (
-                    <MenuItem key={option.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
+                <Controller
+                  name="discount_type_id"
+                  control={control}
+                  defaultValue={defaultValues.discount_type_id}
+                  render={({ field }) => (
+                    <RHFSelect
+                      {...field}
+                      label={t('Discount type')}
+                      multiline
+                      onChange={(event) => {
+                        field.onChange(event.target.value);
+                        handleDiscountTypeChange(event);
+                      }}
+                    >
+                      {discountTypeOptions?.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </RHFSelect>
+                  )}
+                />
 
+                {selectedDiscountType === '1' && (
+                  <RHFMultiSelectAuto
+                    name="Packages" // Changed from "Product" to "packages"
+                    label="Packages"
+                    options={productOptions}
+                    defaultValue={defaultValues.packages}
+                  />
+                )}
+                {selectedDiscountType === '2' && (
+                  <RHFMultiSelectAuto
+                    name="Category"
+                    label="Category"
+                    options={categoryOptions}
+                    // setSearchTerm={setSearchTermCategory}
+                    defaultValue={defaultValues.Category}
+                  />
+                )}
                 <RHFTextField name="value" label={t('Discount Value')} />
                 <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
                 <RHFTextField
@@ -329,13 +422,7 @@ export default function CouponDialog({
                   inputProps={{ min: today }}
                 />
                 <RHFTextField name="ending_date" label="End Date " type="date" />
-                <RHFMultiSelectAuto
-                  name="Category"
-                  label="Category"
-                  options={categoryOptions}
-                  // setSearchTerm={setSearchTermCategory}
-                  defaultValue={defaultValues.Category}
-                />
+
                 {/* <RHFMultiSelectAuto
                   name="Product"
                   label="Product"

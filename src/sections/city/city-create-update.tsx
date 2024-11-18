@@ -41,7 +41,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     () => ({
       name: currentCity?.city_translations[0]?.name || '',
       locale: currentCity?.city_translations[0]?.locale || 'en',
-      published: currentCity?.is_published === '1' ? true : false,
+      published: currentCity?.is_published === 1 ? true : false,
     }),
     [currentCity]
   );
