@@ -808,6 +808,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   />
                 ))}
 
+                {/* Map Component for Selecting Location */}
+
                 <Box sx={{ mt: 2 }}>
                   <Button variant="contained" type="submit" sx={{ mr: 1 }}>
                     Save
