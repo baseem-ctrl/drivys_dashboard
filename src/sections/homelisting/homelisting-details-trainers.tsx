@@ -108,12 +108,50 @@ export default function HomeListingTrainers({
 
   // Function to delete trainer
   const handleDeleteTrainer = async (id: string | number) => {
+    const body = new FormData();
+    console.log('Deleting trainer with id:', id);
+
+    // Append translation details
+    homelistingdetails?.translations?.forEach(
+      (
+        translation: { title: string | Blob; locale: string; description: string | Blob },
+        index: any
+      ) => {
+        body.append(`translation[${index}][title]`, translation.title);
+        body.append(`translation[${index}][locale]`, translation.locale);
+        body.append(`translation[${index}][description]`, translation.description);
+      }
+    );
+
+    // Append trainers, but omit the trainer with the matching id
+    if (homelistingdetails?.trainers?.length > 0) {
+      homelistingdetails.trainers.forEach((trainer: { trainer_id: string }, index: number) => {
+        // Only append trainers that don't match the id to be deleted
+        if (trainer.trainer_id !== id) {
+          body.append(`trainers[${index}][user_id]`, trainer.trainer_id);
+        }
+      });
+    }
+
+    // Append home_listing_id
+    body.append('home_listing_id', params?.id ?? '');
+
     try {
-      await deleteTrainer(id);
-      enqueueSnackbar('Trainer deleted successfully!', { variant: 'success' });
-      revalidateUsers();
+      // Call the API with the updated FormData
+      const response = await createHomeListing(body);
+      if (response) {
+        enqueueSnackbar('Trainer Deleted Successfully!');
+        revalidateDetails(); // Assuming this revalidates the details
+      }
     } catch (error) {
-      enqueueSnackbar('Failed to delete trainer.', { variant: 'error' });
+      // Error handling
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -173,7 +211,7 @@ export default function HomeListingTrainers({
   const handlePopoverOpen = (e, trainer: any, deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
-    setTrainerMappingId(deleteId);
+    setTrainerMappingId(trainer?.id);
   };
   // const handleRemove = async () => {
   //   try {
@@ -393,7 +431,7 @@ export default function HomeListingTrainers({
           onClick={() => {
             popover.onClose();
             confirm.onTrue();
-            // handleDeleteTrainer(trainerId)
+            // handleDeleteTrainer(trainerId);
           }}
           sx={{ color: 'error.main' }}
         >
