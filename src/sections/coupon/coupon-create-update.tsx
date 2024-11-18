@@ -150,6 +150,7 @@ export default function CouponDialog({
       };
     });
   };
+  console.log('updateValue?.discount_type_id', updateValue?.discount_type_id);
 
   const defaultValues = useMemo(
     () => ({
@@ -157,8 +158,8 @@ export default function CouponDialog({
       coupon_code: updateValue?.coupon_code || '',
       limitation_times: updateValue?.limitation_times || '',
       value: updateValue?.value || '',
-      use_percentage: updateValue?.use_percentage === '1' ? true : false,
-      is_active: updateValue?.is_active === '1' ? true : false,
+      use_percentage: updateValue?.use_percentage === 1 ? true : false,
+      is_active: updateValue?.is_active === 1 ? true : false,
       discount_type_id: updateValue?.discount_type_id || '',
       starting_date:
         moment(updateValue?.starting_date).format('YYYY-MM-DD') ||
@@ -375,7 +376,7 @@ export default function CouponDialog({
                 <Controller
                   name="discount_type_id"
                   control={control}
-                  defaultValue=""
+                  defaultValue={defaultValues.discount_type_id}
                   render={({ field }) => (
                     <RHFSelect
                       {...field}
