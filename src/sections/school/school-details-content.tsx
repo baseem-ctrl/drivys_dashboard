@@ -747,7 +747,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       reload();
     }
   });
-
   // Function to handle map click and update lat/lng values
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     if (!e.latLng) return;
@@ -776,6 +775,89 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         </Box>
 
         {/* Form for Adding or Editing an Address */}
+        {!newAddress && editingIndex === null && (
+          <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
+            {details?.vendor_addresses
+              ?.slice(0, showAllAddresses ? details.vendor_addresses.length : maxVisibleAddresses)
+              ?.map((details, index) => {
+                // Map center position for each address
+                const defaultCenter = {
+                  lat: parseFloat(details?.latitude) || 0,
+                  lng: parseFloat(details?.longitude) || 0,
+                };
+
+                return (
+                  <Box key={details.id} sx={{ width: '100%' }}>
+                    {/* Address Section Title */}
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                      Branch {index + 1}
+                    </Typography>
+
+                    {/* Address Details and Map */}
+                    <Box
+                      component={Card}
+                      sx={{
+                        p: 3,
+                        mb: 2,
+                        mt: 2,
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        border: '1px solid #ddd',
+
+                        display: 'grid',
+                        gridTemplateColumns: {
+                          sm: '1fr',
+                          md: '1fr 3fr',
+                        },
+                        gap: 2,
+                      }}
+                    >
+                      {/* Address Details */}
+                      <Box>
+                        {[
+                          { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                          { label: 'City', value: details?.city ?? 'N/A' },
+                          { label: 'State', value: details?.state ?? 'N/A' },
+                          { label: 'Country', value: details?.country ?? 'N/A' },
+                        ].map((item, idx) => (
+                          <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
+                            <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
+                            <Box>{item.value}</Box>
+                          </Box>
+                        ))}
+                      </Box>
+
+                      {/* Map on the right */}
+                      <Box>
+                        {isLoaded && load ? (
+                          <GoogleMap
+                            mapContainerStyle={mapContainerStyle}
+                            center={defaultCenter}
+                            zoom={12}
+                          >
+                            <Marker position={defaultCenter} />
+                          </GoogleMap>
+                        ) : (
+                          <div>Loading Map...</div>
+                        )}
+                      </Box>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setEditingIndex(index);
+                          reset(defaultValues); // Load address into form fields
+                        }}
+                        sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
+                      >
+                        Edit
+                      </Button>
+                    </Box>
+                  </Box>
+                );
+              })}
+          </Stack>
+        )}
+
         {(newAddress || editingIndex !== null) && (
           <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -795,14 +877,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     key={idx}
                     name={item.name}
                     control={control}
-                    // defaultValue={addresses[editingIndex]?.[item.name] ?? ''}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         label={item.label}
                         variant="outlined"
                         sx={{ my: 1, width: '100%' }}
-                        // onChange={(e) => field.onChange(e.target.value)}
                       />
                     )}
                   />
@@ -844,7 +924,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         <Marker
                           position={markerPosition}
                           icon={{
-                            url: marker, // Specify the URL of your custom marker image
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
@@ -852,11 +935,18 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {(defaultValues?.latitude || defaultValues?.longitude) && (
                         <Marker
                           position={{
-                            lat: defaultValues.latitude,
-                            lng: defaultValues.longitude,
+                            lat: Number.isNaN(Number(defaultValues?.latitude))
+                              ? 0
+                              : Number(defaultValues?.latitude), // Convert to number
+                            lng: Number.isNaN(Number(defaultValues?.longitude))
+                              ? 0
+                              : Number(defaultValues?.longitude), // Convert to number
                           }}
                           icon={{
-                            url: marker,
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                             scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
@@ -870,87 +960,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
             </Grid>
           </Box>
         )}
-
-        <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-          {details?.vendor_addresses
-            ?.slice(0, showAllAddresses ? details.vendor_addresses.length : maxVisibleAddresses)
-            ?.map((details, index) => {
-              // Map center position for each address
-              const defaultCenter = {
-                lat: parseFloat(details?.latitude) || 0,
-                lng: parseFloat(details?.longitude) || 0,
-              };
-
-              return (
-                <Box key={details.id} sx={{ width: '100%' }}>
-                  {/* Address Section Title */}
-                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    Branch {index + 1}
-                  </Typography>
-
-                  {/* Address Details and Map */}
-                  <Box
-                    component={Card}
-                    sx={{
-                      p: 3,
-                      mb: 2,
-                      mt: 2,
-                      boxShadow: 3,
-                      borderRadius: 2,
-                      border: '1px solid #ddd',
-
-                      display: 'grid',
-                      gridTemplateColumns: {
-                        sm: '1fr',
-                        md: '1fr 3fr',
-                      },
-                      gap: 2,
-                    }}
-                  >
-                    {/* Address Details */}
-                    <Box>
-                      {[
-                        { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                        { label: 'City', value: details?.city ?? 'N/A' },
-                        { label: 'State', value: details?.state ?? 'N/A' },
-                        { label: 'Country', value: details?.country ?? 'N/A' },
-                      ].map((item, idx) => (
-                        <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
-                          <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
-                          <Box>{item.value}</Box>
-                        </Box>
-                      ))}
-                    </Box>
-
-                    {/* Map on the right */}
-                    <Box>
-                      {isLoaded && load ? (
-                        <GoogleMap
-                          mapContainerStyle={mapContainerStyle}
-                          center={defaultCenter}
-                          zoom={12}
-                        >
-                          <Marker position={defaultCenter} />
-                        </GoogleMap>
-                      ) : (
-                        <div>Loading Map...</div>
-                      )}
-                    </Box>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setEditingIndex(index);
-                        reset(defaultValues); // Load address into form fields
-                      }}
-                      sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
-                    >
-                      Edit
-                    </Button>
-                  </Box>
-                </Box>
-              );
-            })}
-        </Stack>
 
         {details?.vendor_addresses?.length > maxVisibleAddresses && (
           <Box sx={{ mt: 3 }}>
