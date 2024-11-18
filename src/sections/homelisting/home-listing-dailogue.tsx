@@ -104,11 +104,13 @@ export default function HomeListingDialog({
     // type: Yup.string(),
     published: Yup.boolean(),
     sliders: Yup.array().nullable(),
-    trainers: Yup.array().of(
-      Yup.object().shape({
-        id: Yup.mixed().required('Trainer is required'),
-      })
-    ),
+    trainers: Yup.mixed().test('is-required', 'Trainer is required', function (value) {
+      // Check if `value` is an object and has a valid `id`
+      if (value && typeof value === 'object') {
+        return true; // Pass validation
+      }
+      return this.createError({ path: this.path, message: 'Trainer is required' });
+    }),
   });
   const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedCatalogue(event.target.value);
@@ -147,7 +149,6 @@ export default function HomeListingDialog({
     }),
     [updateValue, today, users]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
@@ -159,9 +160,9 @@ export default function HomeListingDialog({
     watch,
     setValue,
     control,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
-
+  const values = watch();
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
@@ -207,7 +208,6 @@ export default function HomeListingDialog({
       setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
   }, [updateValue]);
-  // Populate category and product options when data is available
   useEffect(() => {
     if (users) setUserOptions(mapOptionsUser(users));
 
@@ -218,7 +218,6 @@ export default function HomeListingDialog({
   const handleAddMore = () => {
     append({ id: '', display_order: '' });
     onReload();
-    // setTrainer([...trainers, { id: '', display_order: '' }]);
   };
 
   // Function to remove a pair
@@ -238,12 +237,20 @@ export default function HomeListingDialog({
       formData.append('display_type', selectedDisplayType || '');
       formData.append('catalogue_type', 'TRAINER' || '');
       formData.append('published', data.published ? '1' : '0');
+      // if (selectedImageIds.length > 0) {
+      //   selectedImageIds.forEach((id, index) =>
+      //     formData.append(
+      //       `picture_ids[${index}][locale]`,
+      //       selectedLanguage?.language_culture ?? selectedLanguage
+      //     )
+      //   );
+      // }
 
-      if (selectedImageIds && selectedImageIds.length > 0) {
-        selectedImageIds.forEach((id, index) =>
-          formData.append(`sliders[${index}]`, id.toString())
-        );
-      }
+      // if (selectedImageIds && selectedImageIds.length > 0) {
+      //   selectedImageIds.forEach((id, index) =>
+      //     formData.append(`sliders[${index}]`, id.toString())
+      //   );
+      // }
       //   if (selectedImageIds.length > 0) {
       //     selectedImageIds.forEach((id, index) =>
       //       formData.append(
@@ -288,7 +295,7 @@ export default function HomeListingDialog({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>{updateValue?.id ? title : 'Create Home Listing '}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid xs={12} md={8}>
