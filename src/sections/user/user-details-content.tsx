@@ -1260,7 +1260,7 @@ export default function UserDetailsContent({
               {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
-                <TrainerDetailsContent id={details?.id} />
+                <TrainerDetailsContent Trainerdetails={details} />
               )}
               {/* {studentTab === 'details' && details?.user_type === 'STUDENT' && renderContent}
               {studentTab === 'booking' && details?.user_type === 'STUDENT' && renderContent} */}
