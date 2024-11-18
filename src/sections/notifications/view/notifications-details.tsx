@@ -8,7 +8,7 @@ import ConfirmDialogSend from 'src/components/custom-dialog/confirm-dailog-send'
 // ----------------------------------------------------------------------
 
 export default function NotificationDetails({ selectedNotification, setViewMode }) {
-  const { user, title, description, data } = selectedNotification;
+  const { user, title, description, data, sent_at } = selectedNotification;
   const { email, user_type, phone, locale } = user;
   const { no_of_sessions, session_dates, pickup_location, trainer_details } =
     typeof data === 'string' ? JSON.parse(data) : data;
@@ -116,14 +116,27 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                   spacing={2}
                   sx={{ mt: 5, width: '100%' }}
                 >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setConfirmDialogOpen(true)}
-                    sx={{ width: '90%' }}
-                  >
-                    Send
-                  </Button>
+                  {/* Conditionally render based on the sent_at field */}
+                  {sent_at ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() => setConfirmDialogOpen(true)}
+                      sx={{ color: 'success.main', width: '90%' }}
+                    >
+                      Sent
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setConfirmDialogOpen(true)}
+                      sx={{ width: '90%' }}
+                    >
+                      Send
+                    </Button>
+                  )}
                 </Stack>
               </Box>
             </Card>

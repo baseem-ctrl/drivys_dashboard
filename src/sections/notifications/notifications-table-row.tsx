@@ -23,14 +23,14 @@ type Props = {
 };
 
 export default function NotificationTableRow({ row, selected, onSelectRow }: Props) {
-  const { user, title, description, data, user_id } = row;
+  const { user, title, description, data, user_id, sent_at } = row;
   const { email, user_type, phone, locale, gender } = user;
   const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
   const { no_of_sessions, session_dates, pickup_location, trainer_details } = parsedData;
   const { enqueueSnackbar } = useSnackbar();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  console.log('row', row);
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -40,6 +40,7 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
   };
 
   const shouldDisplayRow = user_id && title && description && user_type;
+
   const handleSendNotification = async () => {
     const notificationData = {
       user_ids: [user.id],
@@ -66,6 +67,7 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
       setLoading(false);
     }
   };
+
   return (
     <>
       {shouldDisplayRow && (
@@ -100,17 +102,21 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
           </TableCell>
 
           <TableCell align="right">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={(event) => {
-                event.stopPropagation();
-                setConfirmDialogOpen(true);
-              }}
-              sx={{ textTransform: 'none', padding: '6px 16px' }}
-            >
-              Send
-            </Button>
+            {sent_at ? (
+              <Label color="success">Sent</Label> // Display "Sent" if sent_at has a value
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setConfirmDialogOpen(true);
+                }}
+                sx={{ textTransform: 'none', padding: '6px 16px' }}
+              >
+                Send
+              </Button>
+            )}
           </TableCell>
         </TableRow>
       )}
