@@ -93,10 +93,6 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
             <Label color="info">{user_type || ''}</Label>
           </TableCell>
 
-          <TableCell sx={{ fontWeight: 500, padding: 2 }}>{no_of_sessions || 'N/A'}</TableCell>
-
-          <TableCell sx={{ fontWeight: 500, padding: 2 }}>{pickup_location || 'N/A'}</TableCell>
-
           <TableCell sx={{ fontWeight: 500, padding: 2 }}>
             {trainer_details?.name || 'N/A'}
           </TableCell>

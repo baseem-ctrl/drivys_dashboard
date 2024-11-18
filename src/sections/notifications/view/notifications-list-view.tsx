@@ -43,9 +43,6 @@ const TABLE_HEAD = [
 
   { id: 'user_type', label: 'User Type' },
 
-  { id: 'no_of_sessions', label: 'Sessions' },
-
-  { id: 'pickup_location', label: 'Pickup Location' },
   { id: 'trainer_name', label: 'Trainer Name' },
   { id: '', label: '' },
 ];
