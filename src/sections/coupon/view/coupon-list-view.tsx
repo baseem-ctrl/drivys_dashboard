@@ -143,7 +143,6 @@ export default function CouponListView() {
     discount_type_id: discount_type_id_value,
     is_active: filters.is_active,
   });
-  console.log('coupon', coupon);
   useEffect(() => {
     if (coupon?.length) {
       setTableData(coupon);
@@ -179,8 +178,6 @@ export default function CouponListView() {
     filters.starting_date && filters.ending_date
       ? filters.starting_date.getTime() > filters.ending_date.getTime()
       : false;
-
-  console.log(filters, 'filters');
 
   // const handleDeleteRow = useCallback(
   //   (id: string) => {
