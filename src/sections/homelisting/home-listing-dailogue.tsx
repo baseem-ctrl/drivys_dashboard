@@ -272,7 +272,16 @@ export default function HomeListingDialog({
       // Send form data to API
       const response = await createHomeListing(formData);
       if (response) {
-        enqueueSnackbar(response.message ?? 'Slider Updated successfully', { variant: 'success' });
+        if (updateValue?.id) {
+          enqueueSnackbar('Home Listing Updated successfully', {
+            variant: 'success',
+          });
+        } else {
+          enqueueSnackbar('Home Listing Created successfully', {
+            variant: 'success',
+          });
+        }
+
         onClose();
         onReload();
       }
