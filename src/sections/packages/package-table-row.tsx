@@ -64,6 +64,7 @@ export default function PackageTableRow({
     vendor_user,
     number_of_sessions,
     category_id,
+    vendor_id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -126,11 +127,11 @@ export default function PackageTableRow({
       phone_number: phone_number || '',
       status: status,
       is_published: is_published || 1,
-      vendor_id: vendor?.vendor_user?.vendor_id || '',
+      vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
     }),
-    [selectedLocaleObject, row]
+    [selectedLocaleObject, row, editingRowId]
   );
 
   const methods = useForm({
@@ -154,6 +155,11 @@ export default function PackageTableRow({
       setValue('name', '');
     }
   };
+  useEffect(() => {
+    if (editingRowId !== null) {
+      reset(defaultValues);
+    }
+  }, [editingRowId]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
