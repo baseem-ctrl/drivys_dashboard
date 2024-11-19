@@ -199,6 +199,7 @@ export function useNavData() {
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
         { title: t('City'), path: paths.dashboard.system.city },
+        { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('State'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },

@@ -28,7 +28,12 @@ type Props = {
   reload: any;
 };
 
-export default function ImageTableRow({ row, setSelectedImageIds, selectedImageIds, reload }: Props) {
+export default function ImageTableRow({
+  row,
+  setSelectedImageIds,
+  selectedImageIds,
+  reload,
+}: Props) {
   const { name, is_active, id, profile_image, user_phone, user_type } = row;
   const imageUpdate = useBoolean();
 
@@ -39,14 +44,11 @@ export default function ImageTableRow({ row, setSelectedImageIds, selectedImageI
     setIsChecked(selectedImageIds.includes(id));
   }, [selectedImageIds, id]);
 
-
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
     setIsChecked(checked);
-    setSelectedImageIds((prev) => (checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)));
+    setSelectedImageIds((prev) => (checked ? [id] : prev.filter((rowId) => rowId !== id)));
   };
-
-
 
   return (
     <>
@@ -70,19 +72,26 @@ export default function ImageTableRow({ row, setSelectedImageIds, selectedImageI
             />
           </Tooltip>
         </CardActions>
-        <CardContent >
+        <CardContent>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <img onClick={() => imageUpdate.onTrue()} alt={name} src={row?.virtual_path} style={{ width: '90%', height: '100%', objectFit: "contain", cursor: 'pointer' }} />
+              <img
+                onClick={() => imageUpdate.onTrue()}
+                alt={name}
+                src={row?.virtual_path}
+                style={{ width: '90%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
+              />
             </Grid>
-
           </Grid>
         </CardContent>
       </Box>
 
-
-
-      <NewImagesForm currentImage={row} open={imageUpdate.value} onClose={imageUpdate.onFalse} reload={reload} />
+      <NewImagesForm
+        currentImage={row}
+        open={imageUpdate.value}
+        onClose={imageUpdate.onFalse}
+        reload={reload}
+      />
     </>
   );
 }

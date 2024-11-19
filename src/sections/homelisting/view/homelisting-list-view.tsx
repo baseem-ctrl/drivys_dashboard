@@ -55,7 +55,6 @@ import HomeListingDialog from '../home-listing-dailogue';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'Id' },
   // { id: 'locale', label: 'Language' },
   { id: 'title', label: 'Title' },
   // { id: 'description', label: 'Description' },
@@ -63,7 +62,7 @@ const TABLE_HEAD = [
   // { id: 'picture', label: 'Picture' },
   { id: 'display_type', label: 'Display type' },
   { id: 'display_order', label: 'Display order' },
-  // { id: 'is_active', label: 'Active Status ' },
+  { id: 'is_active', label: 'Active Status ' },
   { id: 'action', label: 'Action' },
 
   // { id: '' },
@@ -250,25 +249,6 @@ export default function HomelistingListView() {
           {/* {canReset && renderResults} */}
         </Stack>
         <Card>
-          {/* <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
-          />
-
-          {canReset && (
-            <UserTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={tableData.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}

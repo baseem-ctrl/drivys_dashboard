@@ -32,18 +32,6 @@ export default function CityDetails({ onEdit, city }) {
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                              City ID
-                            </Box>
-                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                              :
-                            </Box>
-                            <Box component="span" sx={{ flex: 1 }}>
-                              {translation.city_id ?? 'N/A'}
-                            </Box>
-                          </Box>
-
-                          <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                               City Name
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -77,11 +65,11 @@ export default function CityDetails({ onEdit, city }) {
                               <Typography
                                 variant="body2"
                                 sx={{
-                                  color: city.is_published === '1' ? 'success.main' : 'error.main',
+                                  color: city.is_published === 1 ? 'success.main' : 'error.main',
                                   fontWeight: 'bold',
                                 }}
                               >
-                                {city.is_published === '1' ? 'Yes' : 'No'}
+                                {city.is_published === 1 ? 'Yes' : 'No'}
                               </Typography>
                             </Box>
                           </Box>

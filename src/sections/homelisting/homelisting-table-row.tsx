@@ -63,8 +63,6 @@ export default function HomeListingTableRow({
   onViewRow,
 }: Props) {
   const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
-  console.log('row', row);
-  console.log('title', title);
   const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(translations?.[0]?.locale ?? '');
@@ -80,32 +78,12 @@ export default function HomeListingTableRow({
     setEditingRowId(row.id);
   };
   const popover = usePopover();
-  // useEffect(() => {
-  //   if ((language && language?.length > 0) || translations?.length > 0) {
-  //     let initialLocaleOptions = [];
-  //     if (Array.isArray(language)) {
-  //       initialLocaleOptions = language?.map((item: any) => ({
-  //         label: item.language_culture,
-  //         value: item.language_culture,
-  //       }));
-  //     }
-  //     const newLocales = translations
-  //       ?.map((category: any) => category.locale)
-  //       .filter(
-  //         (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
-  //       )
-  //       .map((locale: any) => ({ label: locale, value: locale }));
-  //     setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-  //   }
-  // }, [language, translations, selectedLanguage]);
 
   const selectedLocaleObject = translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
   const NewSchema = Yup.object().shape({
     title: Yup.string(),
-    // locale: Yup.mixed(),
-    // description: Yup.string(),
     is_active: Yup.boolean(),
     catalogue_type: Yup.string(),
     display_order: Yup.string(),
@@ -114,8 +92,6 @@ export default function HomeListingTableRow({
   const defaultValues = useMemo(
     () => ({
       title: title || '',
-      // locale: selectedLocaleObject?.locale || '',
-      // description: selectedLocaleObject?.description || '',
       display_order: display_order || '',
       display_type: display_type || '',
       is_active: is_active || 1,
@@ -136,7 +112,6 @@ export default function HomeListingTableRow({
     const selectedLocaleObject = translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
-    console.log(selectedLocaleObject, 'selectedLocaleObject');
     // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
       setValue('title', selectedLocaleObject?.title); // Update name to match the locale
@@ -156,11 +131,6 @@ export default function HomeListingTableRow({
   const onSubmit = handleSubmit(async (data) => {
     try {
       const body = new FormData();
-      console.log('data', data);
-      console.log(
-        'selectedLocaleObject?.home_page_listing_id',
-        selectedLocaleObject?.home_page_listing_id
-      );
       // body.append('translation[0][locale]', selectedLanguage || translations?.locale);
       body.append('title', data?.title || title);
       // body.append('translation[0][description]', data?.description || translations?.description);
@@ -214,114 +184,32 @@ export default function HomeListingTableRow({
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
-        <TableCell>{id}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="title"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.title}
-                  helperText={errors.title ? errors.title.message : ''}
-                />
-              )}
-            />
-          ) : (
-            title || 'N/A'
-          )}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{title || 'N/A'}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="catalogue_type"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} value={selectedCatalogue || ''} onChange={handleChangeCatalogue}>
-                  {catalogueOptions?.map((option: any) => (
-                    <MenuItem key={option?.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          ) : (
-            row?.catalogue_type || 'N/A'
-          )}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.catalogue_type || 'N/A'}</TableCell>
+
         {/* <TableCell>
           <Avatar alt={row.name} src={row?.sliders?.virtual_path} sx={{ mr: 2 }} />
         </TableCell> */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="display_type"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={selectedDisplayType || ''}
-                  onChange={handleChangeDisplayType}
-                >
-                  {displayTypeOptions?.map((option: any) => (
-                    <MenuItem key={option?.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          ) : (
-            row?.display_type || 'N/A'
-          )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.display_type || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{display_order || 'N/A'}</TableCell>
+        <TableCell>
+          <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
+            {is_active === 1 ? 'Active' : 'Not Active'}
+          </Label>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
-          {editingRowId === row.id ? (
-            <Controller
-              name="display_order"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors?.display_order}
-                  helperText={errors?.display_order ? errors?.display_order?.message : ''}
-                  type="number"
-                />
-              )}
-            />
-          ) : (
-            display_order || 'N/A'
-          )}
-        </TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {editingRowId !== null ? (
-            <LoadingButton
-              sx={{ color: '#CF5A0D', borderColor: '#CF5A0D' }}
-              type="submit"
-              variant="outlined"
-              loading={isSubmitting}
-              onClick={onSubmit}
-            >
-              {'Save'}
-            </LoadingButton>
-          ) : (
-            <IconButton
-              color={popover.open ? 'inherit' : 'default'}
-              className="three-dot-icon"
-              onClick={(event) => {
-                event.stopPropagation();
-                popover.onOpen(event);
-              }}
-            >
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          )}
+          <IconButton
+            color={popover.open ? 'inherit' : 'default'}
+            className="three-dot-icon"
+            onClick={(event) => {
+              event.stopPropagation();
+              popover.onOpen(event);
+            }}
+          >
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
       <HomeListingDialog

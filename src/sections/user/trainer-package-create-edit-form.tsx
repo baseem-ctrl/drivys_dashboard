@@ -23,7 +23,7 @@ const TrainerPackageCreateEditForm = ({
   open,
   onClose,
   onSubmit,
-  trainer_id,
+  trainer_details,
   selectedPackage,
   editMode,
   setEditMode,
@@ -45,8 +45,8 @@ const TrainerPackageCreateEditForm = ({
         setLoading(true);
         setFormValues({
           trainer_price: selectedPackage?.price || '',
-          switch_status: selectedPackage.status === '1' ? true : false, // Convert to boolean
-          is_published: selectedPackage.is_published === '1' ? true : false, // Convert to boolean
+          switch_status: selectedPackage.status === 1 ? true : false, // Convert to boolean
+          is_published: selectedPackage.is_published === 1 ? true : false, // Convert to boolean
           package_id: selectedPackage.package_id || '',
         });
         setLoading(false);
@@ -76,10 +76,21 @@ const TrainerPackageCreateEditForm = ({
     }));
   };
 
-  const { packageList, packageLoading } = useGetPackage();
+  useEffect(() => {});
+  const { packageList, packageLoading } = useGetPackage({
+    vendor_id: trainer_details?.vendor?.id,
+    city_id: trainer_details?.user_preference?.city_id,
+    is_public: 1,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (!name || !value) {
+      console.error('Missing name or value in event:', e);
+      return;
+    }
+
     setFormValues((prev) => ({
       ...prev,
       [name]: value,
@@ -94,12 +105,13 @@ const TrainerPackageCreateEditForm = ({
   const validateFields = () => {
     const newErrors = {};
     if (!formValues.trainer_price) newErrors.trainer_price = 'Trainer Price is required.';
-    if (!formValues.package_id) newErrors.package_id = 'Package ID is required.';
+    if (!formValues.package_id && !selectedPackage) {
+      newErrors.package_id = 'Package ID is required.';
+    }
     return newErrors;
   };
 
-  const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_id);
-
+  const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_details?.id);
   const handleSubmit = () => {
     // setIsSubmitting(true);
     const newErrors = validateFields();
@@ -109,16 +121,15 @@ const TrainerPackageCreateEditForm = ({
       return;
     }
 
-    if (!trainer_id) {
+    if (!trainer_details?.id) {
       console.error('Trainer ID is required.');
       return;
     }
-    console.log('formValuesformValuesformValues', formValues);
     const convertedValues = {
       package_id: formValues.package_id,
       trainer_ids: [
         {
-          id: trainer_id,
+          id: trainer_details?.id,
           price: formValues.trainer_price,
           is_published: formValues.is_published ? 1 : 0,
           status: formValues.switch_status ? 1 : 0,
@@ -138,7 +149,7 @@ const TrainerPackageCreateEditForm = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>Create or Edit Package</DialogTitle>
+      <DialogTitle>Add Packages</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -158,40 +169,32 @@ const TrainerPackageCreateEditForm = ({
                 helperText={errors.trainer_price}
                 sx={{ marginRight: 3 }}
               />
-              <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
-                <InputLabel id="package-id-label">Package ID</InputLabel>
-                <Select
-                  labelId="package-id-label"
-                  name="package_id"
-                  value={formValues.package_id}
-                  onChange={handleChange}
-                  label="Package ID"
-                >
-                  {packageLoading ? (
-                    <MenuItem disabled>Loading...</MenuItem>
-                  ) : (
-                    packageList.map((pkg) => {
-                      const packageTranslation = pkg.package_translations.find(
-                        (translation) => translation.locale === 'en'
-                      );
-                      const packageName = packageTranslation
-                        ? packageTranslation.name
-                        : 'Unknown Package';
-
-                      return (
-                        <MenuItem key={pkg.id} value={pkg.id}>
-                          {packageName} (ID: {pkg.id})
-                        </MenuItem>
-                      );
-                    })
-                  )}
-                </Select>
-                {errors.package_id && (
-                  <Typography color="error" variant="caption">
-                    {errors.package_id}
-                  </Typography>
-                )}
-              </FormControl>
+              {!selectedPackage && (
+                <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
+                  <InputLabel id="package-id-label">Package ID</InputLabel>
+                  <Select
+                    labelId="package-id-label"
+                    name="package_id"
+                    value={formValues.package_id}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    label="Package ID"
+                  >
+                    {packageLoading ? (
+                      <MenuItem disabled>Loading...</MenuItem>
+                    ) : (
+                      packageList.map((pkg) =>
+                        pkg.package_translations.map((translation) => (
+                          <MenuItem key={translation.id} value={pkg.id}>
+                            {translation.name} ({translation.locale}) (ID: {pkg.id})
+                          </MenuItem>
+                        ))
+                      )
+                    )}
+                  </Select>
+                </FormControl>
+              )}
             </Box>
             <FormControlLabel
               control={

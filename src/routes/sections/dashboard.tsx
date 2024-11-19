@@ -24,6 +24,7 @@ import BookingSchoolAdminListView from 'src/sections/bookin-school-admin/view/bo
 import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin/view/booking-details-view';
 import NotificationsListingListPage from 'src/pages/dashboard/notifications/notifications';
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
+import CityDetailsView from 'src/sections/city/view/city-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -195,7 +196,9 @@ const allroutes = [
       { element: <LanguageListPage />, index: true },
       { path: 'language', element: <LanguageListPage /> },
       { path: 'city', element: <CityListPage /> },
+      { path: 'city/:id', element: <CityDetailsView /> },
       { path: 'state', element: <StateListPage /> },
+
       { path: 'dialect', element: <DialectListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },

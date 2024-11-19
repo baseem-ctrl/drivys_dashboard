@@ -64,14 +64,6 @@ export default function HomeSliderDialog({
 
   const { language } = useGetAllLanguage(0, 1000);
 
-  // Fetch categories and products data
-  const { category } = useGetAllCategory({ limit: 1000, page: 0 });
-  const { users } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'TRAINER',
-  });
-
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
 
   const today = moment().format('YYYY-MM-DD');
@@ -80,18 +72,9 @@ export default function HomeSliderDialog({
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required(t('name is required')),
     display_order: Yup.string(),
-    // type: Yup.string(),
     published: Yup.boolean(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
-    trainers: Yup.array().of(
-      Yup.object().shape({
-        id: Yup.mixed().required('Trainer is required'), // Validate court add-on
-        display_order: Yup.number()
-          // .typeError("Number of Add Ons must be a number")
-          .required('Display order is required'), // Validate the number of add-ons
-      })
-    ),
   });
 
   // Default values based on updateValue or initial form values
@@ -99,29 +82,11 @@ export default function HomeSliderDialog({
     () => ({
       name: updateValue?.name || '',
       display_order: updateValue?.display_order || '',
-      // type: updateValue?.type || '',
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === 1 ? true : false,
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
-      //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
-      //   display_order: trainer?.display_order || ''
-      // })) : [],
-      trainers: users
-        ? updateValue?.trainers?.map((trainer) => {
-            const user = users.find((option) => option.id === trainer?.trainer?.id);
-            return {
-              id: user ? { label: user?.name, value: user?.id } : '',
-              display_order: trainer.display_order || '',
-            };
-          })
-        : [],
-      //  updateValue?.trainers
-      // Category: updateValue?.categories || [],
-      // Product:
-      //   updateValue?.products?.map((product: any) => product?.product_translations[0]?.name) || [],
     }),
-    [updateValue, today, users]
+    [updateValue, today]
   );
 
   const methods = useForm({
@@ -159,10 +124,6 @@ export default function HomeSliderDialog({
     if (updateValue) {
       reset(defaultValues);
     }
-    console.log(
-      updateValue?.pictures?.map((item: { picture_id: any }) => item?.picture_id),
-      'updateValue?.pictures'
-    );
 
     const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage;
 
@@ -175,11 +136,7 @@ export default function HomeSliderDialog({
     setSelectedArrayIds(
       updateValue?.pictures?.filter((item) => item?.locale === selectedLocale) // Filter for locale "en"
     );
-
-    // selectedLanguage
     setSelectedArrayIds(updateValue?.pictures);
-
-    setTrainer(updateValue?.trainers);
   }, [updateValue, reset, defaultValues, selectedLanguage]);
 
   useEffect(() => {
@@ -189,12 +146,6 @@ export default function HomeSliderDialog({
   }, [updateValue]);
 
   // Populate category and product options when data is available
-  useEffect(() => {
-    if (category) setCategoryOptions(mapOptions(category, 'category_translations'));
-    if (users) setUserOptions(mapOptionsUser(users));
-
-    // if (products) setProductOptions(mapOptions(products, 'product_translations'));
-  }, [category, users]);
 
   // Function to add more pairs
   const handleAddMore = () => {
@@ -233,15 +184,6 @@ export default function HomeSliderDialog({
             selectedLanguage?.language_culture ?? selectedLanguage
           )
         );
-      }
-
-      if (data?.trainers?.length > 0) {
-        data?.trainers?.forEach((trainerItem, index) => {
-          formData.append(`trainers[${index}][id]`, trainerItem?.id?.value);
-
-          // Use nullish coalescing to handle cases where `value` might be 0
-          formData.append(`trainers[${index}][display_order]`, trainerItem?.display_order ?? '');
-        });
       }
 
       // Send form data to API
@@ -303,12 +245,6 @@ export default function HomeSliderDialog({
                   <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
                 )}
               </RHFSelect>
-              {/* <RHFMultiSelectAuto
-                name="Category"
-                label="Category"
-                options={categoryOptions}
-                defaultValue={defaultValues.Category}
-              /> */}
 
               <RHFTextField
                 name="show_until"
@@ -318,47 +254,6 @@ export default function HomeSliderDialog({
               />
               <RHFSwitch name="published" label={t('Published')} />
             </Box>
-
-            <h5>Trainers:</h5>
-            {fields?.map((trainerItem: any, index: number) => (
-              <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
-                <Grid item xs={12} md={5}>
-                  <RHFAutocomplete
-                    name={`trainers[${index}].id`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1}`}
-                    getOptionLabel={(option) => {
-                      return option ? `${option?.label}` : '';
-                    }}
-                    options={userOptions}
-                    renderOption={(props, option: any) => (
-                      <li {...props} key={option?.value}>
-                        {option?.label ?? 'Unknown'}
-                      </li>
-                    )}
-                  />
-                </Grid>
-
-                {/* Value Field */}
-                <Grid item xs={12} md={5}>
-                  <RHFTextField
-                    name={`trainers[${index}].display_order`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1} display order`}
-                  />
-                </Grid>
-
-                {/* Delete Button */}
-                <Grid item xs={12} md={2}>
-                  <IconButton onClick={() => handleRemove(index)}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Grid>
-              </Grid>
-            ))}
-            <Grid item xs={12} sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleAddMore}>
-                Add Trainer
-              </Button>
-            </Grid>
             <h5>Images:</h5>
             <Box>
               {/* Button to open the image selection dialog */}

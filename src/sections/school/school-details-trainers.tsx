@@ -46,7 +46,7 @@ type Props = {
 };
 
 export default function SchoolTrainers({ candidates, create, onCreate }: Props) {
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const table = useTable({ defaultRowsPerPage: 4, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -77,8 +77,8 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
     cash_clearance_date: Yup.string(),
-    cash_in_hand: Yup.string().required('Mention the Cash in hand '),
-    vendor_commission_in_percentage: Yup.string().required('Mention vendor commission '),
+    cash_in_hand: Yup.string().nullable(),
+    vendor_commission_in_percentage: Yup.string(),
     trainer_id: Yup.mixed().required(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
@@ -349,6 +349,15 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           <CircularProgress />
         </Box>
       )}
+      <TablePaginationCustom
+        count={totalPages}
+        page={table.page}
+        rowsPerPage={table.rowsPerPage}
+        onPageChange={table.onChangePage}
+        onRowsPerPageChange={table.onChangeRowsPerPage}
+        dense={table.dense}
+        onChangeDense={table.onChangeDense}
+      />
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
