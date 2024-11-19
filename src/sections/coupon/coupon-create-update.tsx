@@ -150,8 +150,6 @@ export default function CouponDialog({
       };
     });
   };
-  console.log('updateValue?.discount_type_id', updateValue?.discount_type_id);
-
   const defaultValues = useMemo(
     () => ({
       name: updateValue?.name || '',
@@ -169,15 +167,7 @@ export default function CouponDialog({
       Category: mapOptions(updateValue?.categories, categoryOptions),
       Product: mapOptions(updateValue?.products, productOptions),
     }),
-    [
-      updateValue?.name,
-      updateValue?.use_percentage,
-      updateValue?.is_active,
-      updateValue?.value,
-      updateValue?.discount_type_id,
-      updateValue,
-      categoryOptions,
-    ]
+    [updateValue, categoryOptions, productOptions] // Maximize the dependencies to ensure it recalculates when any of them change
   );
 
   const methods = useForm({
@@ -232,9 +222,12 @@ export default function CouponDialog({
   // useOptionsEffect(productOptions, setProductOptions);
   useEffect(() => {
     if (updateValue) {
-      // reset(defaultValues);
+      //
     }
   }, [updateValue?.name, defaultValues, reset, categoryOptions]);
+  useEffect(() => {
+    setSelectedDiscountType(defaultValues.discount_type_id || '');
+  }, [updateValue?.discount_type_id, defaultValues?.discount_type_id]);
 
   const { formState } = methods;
   const { enqueueSnackbar } = useSnackbar();
@@ -320,7 +313,7 @@ export default function CouponDialog({
 
       const response = await createUpdateCoupon(formData);
       if (response) {
-        reset();
+        // reset();
         enqueueSnackbar(response.message ?? 'coupon created successfully', {
           variant: 'success',
         });
@@ -382,6 +375,7 @@ export default function CouponDialog({
                       {...field}
                       label={t('Discount type')}
                       multiline
+                      value={field.value || defaultValues.discount_type_id}
                       onChange={(event) => {
                         field.onChange(event.target.value);
                         handleDiscountTypeChange(event);
