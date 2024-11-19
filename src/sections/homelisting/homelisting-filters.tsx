@@ -217,8 +217,8 @@ export default function ProductFilters({
 
         <Scrollbar sx={{ px: 2.5, py: 3 }}>
           <Stack spacing={3}>
-            {renderLocale}
-            {renderCatalogueType}
+            {/* {renderLocale} */}
+            {/* {renderCatalogueType} */}
             {renderDisplayOrder}
 
             {renderActive}
