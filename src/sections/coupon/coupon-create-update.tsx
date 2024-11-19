@@ -200,11 +200,7 @@ export default function CouponDialog({
   };
 
   useOptionsEffect(category, 'category_translations', setCategoryOptions);
-  useEffect(() => {
-    if (updateValue) {
-      //
-    }
-  }, [updateValue?.name, defaultValues, reset, categoryOptions]);
+
   useEffect(() => {
     setSelectedDiscountType(defaultValues?.discount_type_id || '');
   }, [updateValue]);
@@ -314,6 +310,11 @@ export default function CouponDialog({
     const value = event.target.value;
     setValue('discount_type_id', value);
   };
+  useEffect(() => {
+    if (updateValue?.id) {
+      reset(defaultValues);
+    }
+  }, [updateValue]);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
