@@ -125,10 +125,10 @@ export default function HomeListingDialog({
       display_order: updateValue?.display_order || '',
       // type: updateValue?.type || '',
       sliders: updateValue?.sliders[0] || [],
-      published: updateValue?.published === '1',
+      // published: updateValue?.is_active === 1,
 
       display_type: updateValue?.display_type || '',
-      is_active: updateValue?.is_active || 1,
+      is_active: updateValue?.is_active === 1,
       catalogue_type: updateValue?.catalogue_type || '',
       // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
       //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
@@ -138,7 +138,7 @@ export default function HomeListingDialog({
         ? updateValue?.trainers?.map((trainer) => {
             const user = users.find((option) => option.id === trainer?.trainer?.id);
             return {
-              id: user ? { label: user?.name, value: user?.id } : '',
+              user_id: user ? { label: user?.name, value: user?.id } : '',
             };
           })
         : [],
@@ -236,7 +236,7 @@ export default function HomeListingDialog({
       formData.append('display_order', data.display_order || '');
       formData.append('display_type', selectedDisplayType || '');
       formData.append('catalogue_type', 'TRAINER' || '');
-      formData.append('published', data.published ? '1' : '0');
+      formData.append('is_active', data.is_active ? 1 : 0);
       // if (selectedImageIds.length > 0) {
       //   selectedImageIds.forEach((id, index) =>
       //     formData.append(
@@ -342,7 +342,7 @@ export default function HomeListingDialog({
                 defaultValue={defaultValues.Category}
               /> */}
 
-              <RHFSwitch name="published" label={t('Published')} />
+              <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
             <h5>Trainers:</h5>
