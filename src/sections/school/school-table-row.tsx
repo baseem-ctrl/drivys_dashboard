@@ -191,6 +191,11 @@ export default function SchoolTableRow({
       setValue('name', '');
     }
   };
+  useEffect(() => {
+    if (editingRowId !== null) {
+      reset(defaultValues);
+    }
+  }, [editingRowId]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
