@@ -70,7 +70,7 @@ const defaultFilters: any = {
   min_price: 0,
   max_price: 0,
   number_of_sessions: 0,
-  vendor_id: '',
+  vendor_id: { label: '', value: '' },
   is_published: '',
   locale: '',
 };
@@ -94,10 +94,10 @@ export default function PackageListView() {
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
 
   const [schoolOptions, setSchoolOptions] = useState([]);
-
+  const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { schoolList, schoolLoading } = useGetSchool(1000, 1);
+  const { schoolList, schoolLoading } = useGetSchool({ limit: 1000, page: 1, search: searchValue });
 
   const {
     packageList,
@@ -115,7 +115,7 @@ export default function PackageListView() {
     min_price: filters?.min_price,
     max_price: filters?.max_price,
     is_published: filters?.is_published,
-    vendor_id: filters?.vendor_id,
+    vendor_id: filters?.vendor_id?.value,
   });
 
   useEffect(() => {
@@ -145,8 +145,6 @@ export default function PackageListView() {
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
       table.onResetPage();
-      console.log(name, value, 'name');
-
       setFilters((prevState) => ({
         ...prevState,
         [name]: value,
@@ -183,6 +181,7 @@ export default function PackageListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const renderFilters = (
     <Stack
       spacing={3}
@@ -203,7 +202,7 @@ export default function PackageListView() {
           onResetFilters={handleResetFilters}
           statusOptions={STATUS_OPTIONS}
           publishedOptions={PUBLISHED_OPTIONS}
-          schoolOptions={schoolOptions}
+          schoolOptions={schoolList}
         />
       </Stack>
     </Stack>

@@ -66,21 +66,17 @@ export default function CategoryFilters({
   publishOptions,
   setParentId,
 }: Props) {
-
-  const { category } =
-    useGetAllCategory(
-      {
-        limit: 1000,
-        page: 1,
-      }
-    );
+  const { category } = useGetAllCategory({
+    limit: 1000,
+    page: 1,
+  });
 
   let parentCategoryOptions = category?.map((item) => {
     const translations = item.category_translations;
 
     // Find the translation for both Arabic and English locales
-    const englishTranslation = translations.find(t => t.locale === "en");
-    const arabicTranslation = translations.find(t => t.locale === "ar");
+    const englishTranslation = translations.find((t) => t.locale === 'en');
+    const arabicTranslation = translations.find((t) => t.locale === 'ar');
 
     return {
       label: `${englishTranslation?.name || 'Unknown'} (${arabicTranslation?.name || 'Unknown'})`,
@@ -88,7 +84,6 @@ export default function CategoryFilters({
     };
   });
   // parentCategoryOptions = parentCategoryOptions?.map((option) => option.label)
-
 
   const handleFilterPublish = useCallback(
     (newValue: string) => {
@@ -99,7 +94,6 @@ export default function CategoryFilters({
 
   const handleFilterParent = useCallback(
     (newValue: string[]) => {
-
       onFilters('parent_id', newValue);
     },
     [onFilters]
@@ -147,8 +141,6 @@ export default function CategoryFilters({
     </Stack>
   );
 
-
-
   const renderPublish = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
@@ -173,7 +165,6 @@ export default function CategoryFilters({
       ))}
     </Stack>
   );
-
 
   const renderRoles = (
     <Stack>
@@ -205,8 +196,6 @@ export default function CategoryFilters({
       />
     </Stack>
   );
-
-
 
   return (
     <>
@@ -245,7 +234,6 @@ export default function CategoryFilters({
             {renderPublish}
 
             {renderRoles}
-
           </Stack>
         </Scrollbar>
       </Drawer>
