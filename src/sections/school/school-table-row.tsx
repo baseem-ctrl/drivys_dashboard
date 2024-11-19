@@ -164,7 +164,7 @@ export default function SchoolTableRow({
       email: email || '',
       phone_number: phone_number || '',
       status: status,
-      is_active: is_active || 1,
+      is_active: is_active == true ? '1' : '0' || '1',
       user_id: vendor_user?.user_id || '',
       commission_in_percentage: commission_in_percentage || 0,
     }),
@@ -209,7 +209,7 @@ export default function SchoolTableRow({
             : vendor_user?.user !== null
             ? vendor_user.user_id
             : '',
-        is_active: data?.is_active ? '1' : '0',
+        is_active: data?.is_active ? 1 : 0,
         commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
         create_new_user: 0,
         vendor_id: row?.id,
@@ -335,6 +335,7 @@ export default function SchoolTableRow({
                   error={!!errors?.phone_number}
                   helperText={errors?.phone_number ? errors?.phone_number?.message : ''}
                   type="number"
+                  prefix="0"
                 />
               )}
             />

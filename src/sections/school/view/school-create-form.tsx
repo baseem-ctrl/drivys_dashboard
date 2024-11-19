@@ -70,7 +70,15 @@ export default function SchoolCreateForm({
         return true; // Skip format check if value is empty
       }
     ),
-    contact_phone_number: Yup.number(),
+    contact_phone_number: Yup.number()
+      .nullable() // Allow null values
+      .test('valid-phone', 'Phone number must be  9 digits', function (value) {
+        // Apply regex validation only if phone_number has a value
+        if (value) {
+          return /^\d{1,9}$/.test(value);
+        }
+        return true; // No validation if the phone number is empty or null
+      }),
     commission_in_percentage: Yup.string().typeError('commission_in_percentage must be a number'),
     status: Yup.string(),
     name: Yup.string().required('Name is required'),
@@ -129,7 +137,7 @@ export default function SchoolCreateForm({
   const defaultValues = useMemo(
     () => ({
       contact_email: '',
-      contact_phone_number: 0,
+      contact_phone_number: '',
       commission_in_percentage: '',
       status: '',
       name: '',
@@ -299,8 +307,9 @@ export default function SchoolCreateForm({
               <RHFTextField
                 name="contact_phone_number"
                 label="Contact Number"
-                maxLength={10}
-                placeholder="0503445679"
+                placeholder="503445679"
+                type="number"
+                prefix="0"
               />
             </Grid>
 
