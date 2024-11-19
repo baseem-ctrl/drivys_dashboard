@@ -25,6 +25,7 @@ import { createUpdateCoupon } from 'src/api/coupon';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetProducts } from 'src/api/product';
 import { useGetPackage } from 'src/api/package';
+import { IconButton, InputAdornment } from '@mui/material';
 interface Props extends DialogProps {
   title?: string;
   folderName?: string;
@@ -117,27 +118,13 @@ export default function CouponDialog({
       is_active: Yup.boolean().nullable(),
       starting_date: Yup.date().required(t('starting_date is required')),
       ending_date: Yup.date().required(t('ending_date is required')),
-      discount_type_id: Yup.string().required(t('Discount type is required')),
+      discount_type_id: Yup.mixed().required(t('Discount type is required')),
       Category: Yup.mixed().nullable(),
-      Product: Yup.mixed().nullable(),
+      Packages: Yup.mixed().nullable(),
     });
   };
 
   const NewProductSchema = getValidationSchema();
-  // const mapCategories = (categories: any[], categoryOptions: any[]) => {
-  //   return (
-  //     categories?.map((category) => {
-  //       // Find the corresponding item in categoryOptions
-  //       const foundOption = categoryOptions?.find((item) => {
-  //         return item.value === category.id; // Ensure you're returning the comparison result
-  //       });
-  //       return {
-  //         label: foundOption?.label,
-  //         value: category.id
-  //       };
-  //     })
-  //   );
-  // };
 
   const mapOptions = (items: any[], options: any[]) => {
     return items?.map((item) => {
@@ -158,27 +145,23 @@ export default function CouponDialog({
       value: updateValue?.value || '',
       use_percentage: updateValue?.use_percentage === 1 ? true : false,
       is_active: updateValue?.is_active === 1 ? true : false,
-      discount_type_id: updateValue?.discount_type_id || '',
+      discount_type_id:
+        updateValue?.discount_type_id === 0 ? '0' : String(updateValue?.discount_type_id) || '',
       starting_date:
         moment(updateValue?.starting_date).format('YYYY-MM-DD') ||
         moment.utc().format('YYYY-MM-DD'),
       ending_date:
         moment(updateValue?.ending_date).format('YYYY-MM-DD') || moment.utc().format('YYYY-MM-DD'),
       Category: mapOptions(updateValue?.categories, categoryOptions),
-      Product: mapOptions(updateValue?.products, productOptions),
+      Packages: mapOptions(updateValue?.package, productOptions),
     }),
     [updateValue, categoryOptions, productOptions] // Maximize the dependencies to ensure it recalculates when any of them change
   );
-
   const methods = useForm({
     resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
   });
-  useEffect(() => {
-    // Reset selected discount type when dialog opens
 
-    setSelectedDiscountType(defaultValues.discount_type_id || '');
-  }, [updateValue?.discount_type_id, defaultValues?.discount_type_id]);
   const {
     reset,
     watch,
@@ -187,7 +170,10 @@ export default function CouponDialog({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  const values = watch();
+  const handleToggle = () => {
+    setValue('use_percentage', !values?.use_percentage);
+  };
   const useOptionsEffect = (source: any, translationKey: string, setter: any) => {
     useEffect(() => {
       if (source) {
@@ -213,21 +199,15 @@ export default function CouponDialog({
     }, [source, translationKey, setter]);
   };
 
-  // Using the combined effect for categories
   useOptionsEffect(category, 'category_translations', setCategoryOptions);
-
-  // Using the combined effect for products
-  // useOptionsEffect(products, 'product_translations', setProductOptions);
-
-  // useOptionsEffect(productOptions, setProductOptions);
   useEffect(() => {
     if (updateValue) {
       //
     }
   }, [updateValue?.name, defaultValues, reset, categoryOptions]);
   useEffect(() => {
-    setSelectedDiscountType(defaultValues.discount_type_id || '');
-  }, [updateValue?.discount_type_id, defaultValues?.discount_type_id]);
+    setSelectedDiscountType(defaultValues?.discount_type_id || '');
+  }, [updateValue]);
 
   const { formState } = methods;
   const { enqueueSnackbar } = useSnackbar();
@@ -272,7 +252,6 @@ export default function CouponDialog({
         });
       }
 
-      // Append package_ids only if data.Packages has values
       if (data.Packages && data.Packages.length > 0) {
         data.Packages.forEach((item, index) => {
           if (item.value) {
@@ -281,44 +260,37 @@ export default function CouponDialog({
         });
       }
 
-      // Only append use_percentage if it's a boolean (true or false)
       if (data.use_percentage !== undefined) {
         formData.append('use_percentage', data.use_percentage === true ? 1 : 0);
       }
 
-      // Only append is_active if it's a boolean (true or false)
       if (data.is_active !== undefined) {
         formData.append('is_active', data.is_active === true ? 1 : 0);
       }
 
-      // Only append discount_type_id if it exists or is a valid value
       if (data.discount_type_id) {
         formData.append('discount_type_id', data.discount_type_id);
       }
 
-      // Only append starting_date if it exists
       if (data.starting_date) {
         formData.append('starting_date', moment(data.starting_date).format('YYYY-MM-DD'));
       }
 
-      // Only append ending_date if it exists
       if (data.ending_date) {
         formData.append('ending_date', moment(data.ending_date).format('YYYY-MM-DD'));
       }
 
-      // Only append discount_id if updateValue?.id exists
       if (updateValue?.id) {
         formData.append('discount_id', updateValue.id);
       }
 
       const response = await createUpdateCoupon(formData);
       if (response) {
-        // reset();
         enqueueSnackbar(response.message ?? 'coupon created successfully', {
           variant: 'success',
         });
         onClose();
-        // router.push(paths.dashboard.product.root);
+        reset();
       }
     } catch (error) {
       if (error?.errors?.starting_date) {
@@ -340,13 +312,14 @@ export default function CouponDialog({
   });
   const handleDiscountTypeChange = (event) => {
     const value = event.target.value;
-    setSelectedDiscountType(value);
+    setValue('discount_type_id', value);
   };
+
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
         {' '}
-        {/* {!updateValue.name ? title : t('Update Coupon')}{' '} */}
+        {updateValue?.id ? title : t('Update Coupon')}{' '}
       </DialogTitle>
 
       <DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>
@@ -366,39 +339,29 @@ export default function CouponDialog({
               <>
                 <RHFTextField name="coupon_code" label={t('Coupon Code')} />
                 <RHFTextField name="limitation_times" label={t('Limitation Times')} />
-                <Controller
+                <RHFSelect
+                  label={t('Discount type')}
+                  onChange={(event) => {
+                    handleDiscountTypeChange(event);
+                  }}
                   name="discount_type_id"
-                  control={control}
-                  defaultValue={defaultValues.discount_type_id}
-                  render={({ field }) => (
-                    <RHFSelect
-                      {...field}
-                      label={t('Discount type')}
-                      multiline
-                      value={field.value || defaultValues.discount_type_id}
-                      onChange={(event) => {
-                        field.onChange(event.target.value);
-                        handleDiscountTypeChange(event);
-                      }}
-                    >
-                      {discountTypeOptions?.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </RHFSelect>
-                  )}
-                />
+                >
+                  {discountTypeOptions?.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
 
-                {selectedDiscountType === '1' && (
+                {values?.discount_type_id === '1' && (
                   <RHFMultiSelectAuto
                     name="Packages" // Changed from "Product" to "packages"
                     label="Packages"
                     options={productOptions}
-                    defaultValue={defaultValues.packages}
+                    defaultValue={defaultValues.Packages}
                   />
                 )}
-                {selectedDiscountType === '2' && (
+                {values?.discount_type_id === '2' && (
                   <RHFMultiSelectAuto
                     name="Category"
                     label="Category"
@@ -407,7 +370,27 @@ export default function CouponDialog({
                     defaultValue={defaultValues.Category}
                   />
                 )}
-                <RHFTextField name="value" label={t('Discount Value')} />
+                <Controller
+                  name="value"
+                  control={control}
+                  render={({ field }) => (
+                    <RHFTextField
+                      {...field}
+                      label="Discount Value"
+                      type={values?.use_percentage ? 'number' : 'text'}
+                      inputProps={{ maxLength: 10, onWheel: (e) => e.target.blur() }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={handleToggle}>
+                              {values?.use_percentage ? '%' : 'AED'}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
                 <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
                 <RHFTextField
                   name="starting_date"
