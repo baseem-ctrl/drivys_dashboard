@@ -319,7 +319,7 @@ export default function CouponDialog({
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
         {' '}
-        {updateValue?.id ? title : t('Update Coupon')}{' '}
+        {updateValue?.id ? title : t('Create Coupon')}{' '}
       </DialogTitle>
 
       <DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>
