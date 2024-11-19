@@ -85,6 +85,12 @@ const TrainerPackageCreateEditForm = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (!name || !value) {
+      console.error('Missing name or value in event:', e);
+      return;
+    }
+
     setFormValues((prev) => ({
       ...prev,
       [name]: value,
@@ -99,12 +105,13 @@ const TrainerPackageCreateEditForm = ({
   const validateFields = () => {
     const newErrors = {};
     if (!formValues.trainer_price) newErrors.trainer_price = 'Trainer Price is required.';
-    if (!formValues.package_id) newErrors.package_id = 'Package ID is required.';
+    if (!formValues.package_id && !selectedPackage) {
+      newErrors.package_id = 'Package ID is required.';
+    }
     return newErrors;
   };
 
   const { packageTrainer, packageTrainerLoading } = useGetPackageTrainerById(trainer_details?.id);
-
   const handleSubmit = () => {
     // setIsSubmitting(true);
     const newErrors = validateFields();
@@ -169,21 +176,21 @@ const TrainerPackageCreateEditForm = ({
                     labelId="package-id-label"
                     name="package_id"
                     value={formValues.package_id}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
                     label="Package ID"
                   >
                     {packageLoading ? (
                       <MenuItem disabled>Loading...</MenuItem>
                     ) : (
-                      packageList.map((pkg) => (
-                        <div key={pkg.id}>
-                          {pkg.package_translations.map((translation) => (
-                            <MenuItem key={translation.locale} value={pkg.id}>
-                              {translation.name} ({translation.locale}) (ID: {pkg.id})
-                            </MenuItem>
-                          ))}
-                        </div>
-                      ))
+                      packageList.map((pkg) =>
+                        pkg.package_translations.map((translation) => (
+                          <MenuItem key={translation.id} value={pkg.id}>
+                            {translation.name} ({translation.locale}) (ID: {pkg.id})
+                          </MenuItem>
+                        ))
+                      )
                     )}
                   </Select>
                 </FormControl>
