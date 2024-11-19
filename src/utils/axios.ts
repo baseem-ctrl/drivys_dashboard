@@ -261,4 +261,8 @@ export const endpoints = {
     sessionStatusEnum: 'public/enum/get-session-status-type-enum',
     sessionTypeEnum: 'public/enum/get-session-type-enum',
   },
+  notification: {
+    getList: 'admin/notification/get-list',
+    send: 'admin/notification/send-notification',
+  },
 };
