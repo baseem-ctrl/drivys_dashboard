@@ -530,34 +530,34 @@ export default function JobItem({
                   </Grid>
                 )} */}
 
-                {/* {pictures?.length === 0 && ( */}
-                <Grid item>
-                  <Box
-                    sx={{
-                      width: 68,
-                      height: 68,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 1,
-                      bgcolor: 'rgba(188, 36, 58, 0.1)',
-                      border: '2px dashed #CF5A0D',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.3s ease',
-                      '&:hover': {
-                        bgcolor: 'rgba(188, 36, 58, 0.2)',
-                      },
-                    }}
-                    onClick={() => allImages.onTrue()}
-                  >
-                    <Iconify
-                      icon="icon-park-outline:add-picture"
-                      color="#CF5A0D"
-                      sx={{ width: 28, height: 28 }}
-                    />
-                  </Box>
-                </Grid>
-                {/* // )} */}
+                {pictures?.length === 0 && (
+                  <Grid item>
+                    <Box
+                      sx={{
+                        width: 68,
+                        height: 68,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 1,
+                        bgcolor: 'rgba(188, 36, 58, 0.1)',
+                        border: '2px dashed #CF5A0D',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s ease',
+                        '&:hover': {
+                          bgcolor: 'rgba(188, 36, 58, 0.2)',
+                        },
+                      }}
+                      onClick={() => allImages.onTrue()}
+                    >
+                      <Iconify
+                        icon="icon-park-outline:add-picture"
+                        color="#CF5A0D"
+                        sx={{ width: 28, height: 28 }}
+                      />
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
             </Stack>
           </Stack>
