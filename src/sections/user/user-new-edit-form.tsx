@@ -136,7 +136,33 @@ export default function UserNewEditForm({
       .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
       .nullable(),
     country_code: Yup.string().required('Country Code is required'),
-    dob: Yup.string().required('Dob is required'),
+    dob: Yup.string()
+      .required('Date of birth is required')
+      .matches(/^\d{4}-\d{2}-\d{2}$/, 'The dob field must match the format Y-m-d.')
+      .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
+        const isValidDate = !isNaN(Date.parse(value));
+        return isValidDate;
+      })
+      .test('is-before-today', 'The dob field must be a date before today.', function (value) {
+        if (!value) return false; // Skip if value is missing
+        const today = new Date();
+        const dob = new Date(value);
+        return dob < today; // Check if dob is before today
+      })
+      .test('is-18-or-older', 'User must be 18 or older.', function (value) {
+        if (!value) return false; // Ensure value is provided
+        const today = new Date();
+        const birthDate = new Date(value);
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        return (
+          age > 18 ||
+          (age === 18 &&
+            (monthDifference > 0 ||
+              (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
+        );
+      }),
+
     locale: Yup.mixed().nullable(), // not required
     user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
