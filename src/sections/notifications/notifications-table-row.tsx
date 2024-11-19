@@ -12,6 +12,7 @@ import { Tooltip } from '@mui/material';
 import { sendNotification } from 'src/api/notification';
 import ConfirmDialogSend from 'src/components/custom-dialog/confirm-dailog-send';
 import { useState } from 'react';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -97,22 +98,10 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
             {trainer_details?.name || 'N/A'}
           </TableCell>
 
-          <TableCell align="right">
-            {sent_at ? (
-              <Label color="success">Sent</Label> // Display "Sent" if sent_at has a value
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setConfirmDialogOpen(true);
-                }}
-                sx={{ textTransform: 'none', padding: '6px 16px' }}
-              >
-                Send
-              </Button>
-            )}
+          <TableCell>
+            <Label color="success">
+              {moment(sent_at).format('YYYY-MM-DD HH:mm:ss')} {/* Format the sent_at value */}
+            </Label>
           </TableCell>
         </TableRow>
       )}
@@ -137,14 +126,6 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
           }}
         >
           View
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            quickEdit.onTrue();
-            popover.onClose();
-          }}
-        >
-          Send
         </MenuItem>
       </CustomPopover>
     </>

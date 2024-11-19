@@ -8,6 +8,8 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import AddIcon from '@mui/icons-material/Add';
+
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
@@ -29,10 +31,21 @@ import { IDeliveryItem } from 'src/types/product';
 import { useSnackbar } from 'src/components/snackbar';
 import NotificationTableRow from '../notifications-table-row';
 
-import { Skeleton, TableCell, TableRow } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Skeleton,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
-import { useGetNotificationList } from 'src/api/notification';
+import { sendNotification, useGetNotificationList } from 'src/api/notification';
 import NotificationDetails from './notifications-details';
+import SendNotificationForm from '../send-notification-form';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +57,7 @@ const TABLE_HEAD = [
   { id: 'user_type', label: 'User Type' },
 
   { id: 'trainer_name', label: 'Trainer Name' },
-  { id: '', label: '' },
+  { id: '', label: 'Sent At' },
 ];
 
 const defaultFilters: any = {
@@ -68,6 +81,7 @@ export default function NotificationlistingListView() {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [viewMode, setViewMode] = useState('table'); // State to manage view mode
   const [filters, setFilters] = useState(defaultFilters);
+  const [openPopup, setOpenPopup] = useState(false); // State to manage the popup visibility
 
   const {
     notifications,
@@ -128,36 +142,52 @@ export default function NotificationlistingListView() {
   //   },
   //   [router]
   // );
+
   const handleRowClick = (row) => {
     setSelectedNotification(row);
     setViewMode('detail');
   };
+  const handleOpenPopup = () => setOpenPopup(true);
+  const handleClosePopup = () => setOpenPopup(false);
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <CustomBreadcrumbs
-        heading="Notification List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Notification List',
-            href: paths.dashboard.notification.root,
-            onClick: (event) => {
-              setViewMode('table');
+    <>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+        <CustomBreadcrumbs
+          heading="Notification List"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            {
+              name: 'Notification List',
+              href: paths.dashboard.notification.root,
+              onClick: (event) => {
+                setViewMode('table');
+              },
             },
-          },
-          { name: 'List' },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
+            { name: 'List' },
+          ]}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        />
+        {viewMode === 'table' && (
+          <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenPopup}
+              endIcon={<AddIcon />}
+            >
+              Send Notification
+            </Button>
+          </Box>
+        )}
 
-      <Card
-        sx={{
-          marginTop: 10,
-        }}
-      >
-        {/* <UserTableToolbar
+        <Card
+          sx={{
+            marginTop: 10,
+          }}
+        >
+          {/* <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
@@ -176,95 +206,107 @@ export default function NotificationlistingListView() {
             />
           )} */}
 
-        {viewMode === 'table' && (
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={tableData?.length}
-              // onSelectAllRows={(checked) =>
-              //   table.onSelectAllRows(checked, tableData?.map((row) => row?.id))
-              // }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
+          {viewMode === 'table' && (
+            <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+              <TableSelectedAction
+                dense={table.dense}
+                numSelected={table.selected.length}
+                rowCount={tableData?.length}
+                // onSelectAllRows={(checked) =>
+                //   table.onSelectAllRows(checked, tableData?.map((row) => row?.id))
+                // }
+                action={
+                  <Tooltip title="Delete">
+                    <IconButton color="primary" onClick={confirm.onTrue}>
+                      <Iconify icon="solar:trash-bin-trash-bold" />
+                    </IconButton>
+                  </Tooltip>
+                }
+              />
 
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData?.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                  // }
-                />
+              <Scrollbar>
+                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+                  <TableHeadCustom
+                    order={table.order}
+                    headLabel={TABLE_HEAD}
+                    rowCount={tableData?.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    // onSelectAllRows={(checked) =>
+                    //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                    // }
+                  />
 
-                <TableBody>
-                  {notificationsLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData?.map((row) => (
-                        <NotificationTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          // onDeleteRow={() => handleDeleteRow(row.id)}
-                          // onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          // revalidateHomeListing={revalidateNotifications}
-                          // onViewRow={() => handleRowClick(row)}
-                        />
-                      ))}
+                  <TableBody>
+                    {notificationsLoading
+                      ? Array.from(new Array(5)).map((_, index) => (
+                          <TableRow key={index}>
+                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                              <Skeleton animation="wave" height={40} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : tableData?.map((row) => (
+                          <NotificationTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            // onDeleteRow={() => handleDeleteRow(row.id)}
+                            // onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            // revalidateHomeListing={revalidateNotifications}
+                            // onViewRow={() => handleRowClick(row)}
+                          />
+                        ))}
 
-                  {/* <TableEmptyRows
+                    {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
                   /> */}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </TableContainer>
-        )}
+                  </TableBody>
+                </Table>
+              </Scrollbar>
+            </TableContainer>
+          )}
 
-        {viewMode === 'table' && (
-          <TablePaginationCustom
-            count={totalpages}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
+          {viewMode === 'table' && (
+            <TablePaginationCustom
+              count={totalpages}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              //
+              dense={table.dense}
+              onChangeDense={table.onChangeDense}
+            />
+          )}
+        </Card>
+        {viewMode === 'detail' && selectedNotification && (
+          <NotificationDetails
+            selectedNotification={selectedNotification}
+            setViewMode={setViewMode}
+            // onEdit={handleEditClick}
+            // onBack={handleBackToList}
+            // reload={revalidateCities}
+            // cityId={rowId}
+            // index={index}
+            // setOpenEditPopup={setOpenEditPopup}
           />
         )}
-      </Card>
-      {viewMode === 'detail' && selectedNotification && (
-        <NotificationDetails
-          selectedNotification={selectedNotification}
-          setViewMode={setViewMode}
-          // onEdit={handleEditClick}
-          // onBack={handleBackToList}
-          // reload={revalidateCities}
-          // cityId={rowId}
-          // index={index}
-          // setOpenEditPopup={setOpenEditPopup}
-        />
-      )}
-    </Container>
+      </Container>
+      <Dialog open={openPopup} onClose={handleClosePopup} fullWidth>
+        <DialogTitle>Send Notification</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <SendNotificationForm
+            revalidateNotifications={revalidateNotifications}
+            selectedNotification={selectedNotification}
+            setViewMode={setViewMode}
+            handleClosePopup={handleClosePopup}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
