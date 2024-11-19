@@ -185,112 +185,31 @@ export default function HomeListingTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="title"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.title}
-                  helperText={errors.title ? errors.title.message : ''}
-                />
-              )}
-            />
-          ) : (
-            title || 'N/A'
-          )}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{title || 'N/A'}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="catalogue_type"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} value={selectedCatalogue || ''} onChange={handleChangeCatalogue}>
-                  {catalogueOptions?.map((option: any) => (
-                    <MenuItem key={option?.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          ) : (
-            row?.catalogue_type || 'N/A'
-          )}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.catalogue_type || 'N/A'}</TableCell>
+
         {/* <TableCell>
           <Avatar alt={row.name} src={row?.sliders?.virtual_path} sx={{ mr: 2 }} />
         </TableCell> */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="display_type"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={selectedDisplayType || ''}
-                  onChange={handleChangeDisplayType}
-                >
-                  {displayTypeOptions?.map((option: any) => (
-                    <MenuItem key={option?.value} value={option?.value}>
-                      {option?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
-            />
-          ) : (
-            row?.display_type || 'N/A'
-          )}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.display_type || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{display_order || 'N/A'}</TableCell>
+        <TableCell>
+          <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
+            {is_active === 1 ? 'Active' : 'Not Active'}
+          </Label>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
-          {editingRowId === row.id ? (
-            <Controller
-              name="display_order"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors?.display_order}
-                  helperText={errors?.display_order ? errors?.display_order?.message : ''}
-                  type="number"
-                />
-              )}
-            />
-          ) : (
-            display_order || 'N/A'
-          )}
-        </TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          {editingRowId !== null ? (
-            <LoadingButton
-              sx={{ color: '#CF5A0D', borderColor: '#CF5A0D' }}
-              type="submit"
-              variant="outlined"
-              loading={isSubmitting}
-              onClick={onSubmit}
-            >
-              {'Save'}
-            </LoadingButton>
-          ) : (
-            <IconButton
-              color={popover.open ? 'inherit' : 'default'}
-              className="three-dot-icon"
-              onClick={(event) => {
-                event.stopPropagation();
-                popover.onOpen(event);
-              }}
-            >
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          )}
+          <IconButton
+            color={popover.open ? 'inherit' : 'default'}
+            className="three-dot-icon"
+            onClick={(event) => {
+              event.stopPropagation();
+              popover.onOpen(event);
+            }}
+          >
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
         </TableCell>
       </TableRow>
       <HomeListingDialog

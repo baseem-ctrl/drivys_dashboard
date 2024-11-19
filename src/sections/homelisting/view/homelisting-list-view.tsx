@@ -62,7 +62,7 @@ const TABLE_HEAD = [
   // { id: 'picture', label: 'Picture' },
   { id: 'display_type', label: 'Display type' },
   { id: 'display_order', label: 'Display order' },
-  // { id: 'is_active', label: 'Active Status ' },
+  { id: 'is_active', label: 'Active Status ' },
   { id: 'action', label: 'Action' },
 
   // { id: '' },
