@@ -39,6 +39,10 @@ type Props = {
   onDeleteRow: VoidFunction;
   revalidateSchool: VoidFunction;
   onViewRow: VoidFunction;
+  setBulkEditIds?: any;
+  isBulkEdit?: any;
+  setIsBulkEdit?: any;
+  selectedRows?: any;
 };
 
 export default function SchoolTableRow({
@@ -49,6 +53,9 @@ export default function SchoolTableRow({
   onDeleteRow,
   revalidateSchool,
   onViewRow,
+  setBulkEditIds,
+  isBulkEdit,
+  selectedRows,
 }: Props) {
   const {
     vendor_translations,
@@ -107,8 +114,6 @@ export default function SchoolTableRow({
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const handleEditClick = () => {
-    // console.log(row, 'row');
-
     setEditingRowId(row.id);
     // setEditedData({ ...row });
   };
@@ -227,8 +232,7 @@ export default function SchoolTableRow({
         });
       }
     } catch (error) {
-      if (error?.errors) {
-        enqueueSnackbar(error?.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -241,6 +245,14 @@ export default function SchoolTableRow({
     }
   });
   const router = useRouter();
+  //Bulk Select Row
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    setIsChecked(checked);
+
+    setBulkEditIds((prev) => (checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)));
+  };
   return (
     <>
       <TableRow
@@ -252,7 +264,8 @@ export default function SchoolTableRow({
             editingRowId === row.id || // Prevent navigation if editing the current row
             event.target.closest('.three-dot-icon') ||
             event.target.closest('.save-button') ||
-            event.target.closest('.editor')
+            event.target.closest('.editor') ||
+            event.target.closest('.checkbox')
           ) {
             event.stopPropagation(); // Stop the event from bubbling up
             // popover.onOpen(event); // Open your popover here
@@ -261,9 +274,14 @@ export default function SchoolTableRow({
           }
         }}
       >
-        {/* <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell> */}
+        <TableCell padding="checkbox" className="checkbox">
+          <Checkbox
+            checked={selected}
+            onClick={onSelectRow}
+            onChange={(e) => handleCheckboxChange(e)}
+            inputProps={{ 'aria-label': 'select row' }}
+          />
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (

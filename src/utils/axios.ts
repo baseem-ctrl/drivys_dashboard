@@ -151,6 +151,9 @@ export const endpoints = {
     package: {
       getPackageBySchool: 'admin/package/get-school-packge-list',
     },
+    bulk: {
+      addCommision: 'admin/vendor/bulk/update-commision',
+    },
   },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',

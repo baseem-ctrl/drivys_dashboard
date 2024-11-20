@@ -15,6 +15,11 @@ import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
 // types
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { MenuItem } from '@mui/material';
+import { AddBulkSchoolCommision } from 'src/api/school';
+import BulkSchoolCommission from './commission-bulk';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +48,13 @@ type Props = {
     value: string;
     label: string;
   }[];
+  setBulkEditIds: any;
+  bulkEditIds: any;
+  setIsBulkEdit: any;
+  setSelectedRows: any;
+  selectedRows: any;
+  handleToggleSelect: any;
+  reload: any;
 };
 
 export default function ProductFilters({
@@ -58,6 +70,12 @@ export default function ProductFilters({
   //
   statusOptions,
   activeOptions,
+  setBulkEditIds,
+  bulkEditIds,
+  setIsBulkEdit,
+  setSelectedRows,
+  selectedRows,
+  reload,
 }: Props) {
   const handleFilterStocks = (newValue: string) => {
     onFilters('status', newValue);
@@ -182,6 +200,15 @@ export default function ProductFilters({
       ))}
     </Stack>
   );
+  const popover = usePopover();
+  const commission = useBoolean();
+
+  const handleCloseCommission = () => {
+    commission.onFalse();
+    setIsBulkEdit(true);
+    setBulkEditIds([]);
+    setSelectedRows([]);
+  };
 
   return (
     <>
@@ -197,7 +224,9 @@ export default function ProductFilters({
       >
         Filters
       </Button>
-
+      <IconButton onClick={popover.onOpen}>
+        <Iconify icon="eva:more-vertical-fill" />
+      </IconButton>
       <Drawer
         anchor="right"
         open={open}
@@ -224,6 +253,29 @@ export default function ProductFilters({
           </Stack>
         </Scrollbar>
       </Drawer>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 250 }}
+      >
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            commission.onTrue();
+          }}
+        >
+          <Iconify icon="lineicons:hand-taking-dollar" style={{ width: '2em', height: '2em' }} />
+          Add Bulk Commission
+        </MenuItem>
+      </CustomPopover>
+      <BulkSchoolCommission
+        bulkIds={bulkEditIds}
+        open={commission.value}
+        onClose={handleCloseCommission}
+        type="vendor"
+        reload={reload}
+      />
     </>
   );
 }
