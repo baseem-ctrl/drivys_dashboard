@@ -170,7 +170,7 @@ export default function SchoolTableRow({
       phone_number: phone_number || '',
       status: status,
       is_active: is_active == true ? '1' : '0' || '1',
-      user_id: vendor_user?.user_id || '',
+      user_id: vendor_user?.user?.id || '',
       commission_in_percentage: commission_in_percentage || 0,
     }),
     [selectedLocaleObject, row]
@@ -450,10 +450,10 @@ export default function SchoolTableRow({
             <Label
               variant="soft"
               color={
-                (is_active === '1' && 'success') || (is_active === '0' && 'error') || 'default'
+                (is_active === true && 'success') || (is_active === false && 'error') || 'default'
               }
             >
-              {is_active === '0' ? 'In Active' : 'Active'}
+              {!is_active ? 'In Active' : 'Active'}
             </Label>
           )}
         </TableCell>
