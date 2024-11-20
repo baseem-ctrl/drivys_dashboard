@@ -45,7 +45,6 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     }),
     [currentCity]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -61,7 +60,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   const selectedLocale = watch('locale');
 
   useEffect(() => {
-    reset(defaultValues);
+    if (currentCity?.id) {
+      reset(defaultValues);
+    }
   }, [currentCity, defaultValues, reset]);
   useEffect(() => {
     const translation = currentCity?.city_translations?.find(
@@ -70,7 +71,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', '');
     }
   }, [selectedLocale, currentCity, setValue]);
   const onSubmit = handleSubmit(async (data) => {

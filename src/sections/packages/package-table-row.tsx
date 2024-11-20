@@ -126,7 +126,7 @@ export default function PackageTableRow({
       email: email || '',
       phone_number: phone_number || '',
       status: status,
-      is_published: is_published || 1,
+      is_published: String(is_published) || 1,
       vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
@@ -327,7 +327,7 @@ export default function PackageTableRow({
                 (is_published === 1 && 'success') || (is_published === 0 && 'error') || 'default'
               }
             >
-              {is_published === '0' ? 'Un Published' : 'Published'}
+              {is_published === 0 ? 'Un Published' : 'Published'}
             </Label>
           )}
         </TableCell>
