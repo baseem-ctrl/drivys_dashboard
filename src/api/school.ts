@@ -374,3 +374,8 @@ export function useGetPackageBySchool(schoolId: string) {
 
   return { ...memoizedValue, revalidatePackageDetails };
 }
+export function AddBulkSchoolCommision(body: any) {
+  const URL = endpoints.school.bulk.addCommision;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
