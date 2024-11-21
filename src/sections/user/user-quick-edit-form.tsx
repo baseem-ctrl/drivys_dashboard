@@ -147,7 +147,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
         reload();
       }
     } catch (error) {
-      if (error?.errors?.length > 0) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
