@@ -52,6 +52,7 @@ import { useGetAllCity } from 'src/api/city';
 import { useGetAllDialect } from 'src/api/dialect';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetSchool } from 'src/api/school';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -130,27 +131,27 @@ export default function UserNewEditForm({
       // If `currentUser?.id` is not present, make the password required
       return currentUser?.id
         ? Yup.string() // No requirements if `currentUser.id` exists
-        : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
+        : Yup.string(); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
-      .nullable(),
-    country_code: Yup.string().required('Country Code is required'),
+      .required('Phone Number is Required')
+      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+    country_code: Yup.string().required('Country &'),
     dob: Yup.string()
-      .required('Date of birth is required')
-      .matches(/^\d{4}-\d{2}-\d{2}$/, 'The dob field must match the format Y-m-d.')
+      .nullable()
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
+        if (!value) return true;
         const isValidDate = !isNaN(Date.parse(value));
         return isValidDate;
       })
       .test('is-before-today', 'The dob field must be a date before today.', function (value) {
-        if (!value) return false; // Skip if value is missing
+        if (!value) return true; // Skip if value is missing
         const today = new Date();
         const dob = new Date(value);
         return dob < today; // Check if dob is before today
       })
       .test('is-18-or-older', 'User must be 18 or older.', function (value) {
-        if (!value) return false; // Ensure value is provided
+        if (!value) return true; // Ensure value is provided
         const today = new Date();
         const birthDate = new Date(value);
         const age = today.getFullYear() - birthDate.getFullYear();
@@ -324,7 +325,7 @@ export default function UserNewEditForm({
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
       body.append('country_code', data?.country_code);
-      if (data?.dob) body.append('dob', data?.dob);
+      if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
 
       if (data?.user_type === 'TRAINER') {
@@ -590,7 +591,12 @@ export default function UserNewEditForm({
                 }}
               />
               <Stack direction="row" spacing={1} alignItems="center">
-                <RHFTextField name="country_code" label="Country Code" sx={{ maxWidth: 100 }} />
+                <RHFTextField
+                  name="country_code"
+                  label="Country Code"
+                  sx={{ maxWidth: 100 }}
+                  prefix="+"
+                />
 
                 <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
               </Stack>{' '}
