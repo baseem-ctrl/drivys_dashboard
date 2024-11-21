@@ -377,7 +377,7 @@ export default function UserNewEditForm({
         router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
       }
     } catch (error) {
-      if (error?.errors?.length > 0) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
