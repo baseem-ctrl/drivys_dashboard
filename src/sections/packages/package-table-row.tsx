@@ -64,6 +64,8 @@ export default function PackageTableRow({
     vendor_user,
     number_of_sessions,
     category_id,
+    vendor_commision,
+    drivys_commision,
     vendor_id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
@@ -117,6 +119,8 @@ export default function PackageTableRow({
     vendor_id: Yup.string(),
     number_of_sessions: Yup.string(),
     category_id: Yup.string(),
+    vendor_commision: Yup.string(),
+    drivys_commision: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -130,9 +134,12 @@ export default function PackageTableRow({
       vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
+      vendor_commision: vendor_commision || vendor_commision === 0 ? vendor_commision : '',
+      drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
     }),
     [selectedLocaleObject, row, editingRowId]
   );
+  console.log('defaultValues', defaultValues);
 
   const methods = useForm({
     resolver: yupResolver(NewSchema) as any,
@@ -179,6 +186,9 @@ export default function PackageTableRow({
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,
+        drivys_commision: data?.drivys_commision || drivys_commision,
+        vendor_commission: data?.vendor_commision || vendor_commision,
+
         package_id: row?.id,
       };
       const response = await createUpdatePackage(payload);
@@ -361,6 +371,51 @@ export default function PackageTableRow({
                 color: 'text.disabled',
               }}
             />
+          )}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          {editingRowId === row.id ? (
+            <Controller
+              name="drivys_commision"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.email}
+                  value={field.value || field.value === 0 ? field.value : ''}
+                  helperText={errors.email ? errors.email.message : ''}
+                  type="number"
+                />
+              )}
+            />
+          ) : drivys_commision || drivys_commision === 0 ? (
+            drivys_commision
+          ) : (
+            'N/A'
+          )}
+        </TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {' '}
+          {editingRowId === row.id ? (
+            <Controller
+              name="vendor_commision"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  error={!!errors.email}
+                  value={field.value || field.value === 0 ? field.value : ''}
+                  helperText={errors.email ? errors.email.message : ''}
+                  type="number"
+                />
+              )}
+            />
+          ) : vendor_commision || vendor_commision === 0 ? (
+            vendor_commision
+          ) : (
+            'N/A'
           )}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

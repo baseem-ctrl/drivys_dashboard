@@ -50,6 +50,7 @@ export default function PackageCreateForm({
   const { enqueueSnackbar } = useSnackbar();
   const [searchValue, setSearchValue] = useState('');
   const { language } = useGetAllLanguage(0, 1000);
+  console.log('language', language);
   // const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
   const { category } = useGetAllCategory({
     limit: 1000,
@@ -74,6 +75,9 @@ export default function PackageCreateForm({
     number_of_sessions: Yup.number(),
     category_id: Yup.number(),
     vendor_id: Yup.mixed(),
+    drivys_commission: Yup.number(),
+
+    vendor_commission: Yup.number(),
   });
 
   const defaultValues = useMemo(
@@ -144,6 +148,7 @@ export default function PackageCreateForm({
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
+      console.log('translation', translation);
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
 
@@ -156,8 +161,9 @@ export default function PackageCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
-
+    console.log('data', data);
     const formData = new FormData();
+    console.log('selectedLocale', selectedLocale);
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? '1' : '0');
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
@@ -165,6 +171,8 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     formData.append(`category_id`, data?.category_id);
+    if (data?.drivys_commission) formData.append('drivys_commission', data?.drivys_commission);
+    if (data?.vendor_commission) formData.append('vendor_commission', data?.vendor_commission);
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -242,6 +250,23 @@ export default function PackageCreateForm({
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
                 loading={schoolLoading}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <RHFTextField
+                name="drivys_commission"
+                label="Drivy's Commission"
+                type="number"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFTextField
+                name="vendor_commission"
+                label="Vendor Commission"
+                type="number"
+                inputProps={{ min: 0 }}
               />
             </Grid>
 
