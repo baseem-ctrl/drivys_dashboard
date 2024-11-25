@@ -29,7 +29,7 @@ export default function DilectTableRow({
   onDeleteRow,
   reload,
 }: Props) {
-  const { language_name, dialect_name, is_published, order } = row;
+  const { language_name, dialect_name, is_published, order, description, keywords } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -40,12 +40,15 @@ export default function DilectTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell onClick={() => handleRowClick(row.id)}>{dialect_name || 'N/A'}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{language_name}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{order}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={is_published === '1' ? 'success' : 'error'}>
-            {is_published === '1' ? 'Published' : 'Unpublished'}
+        <TableCell>{dialect_name || 'N/A'}</TableCell>
+        <TableCell>{language_name}</TableCell>
+        <TableCell>{description}</TableCell>
+        <TableCell>{keywords}</TableCell>
+
+        <TableCell>{order}</TableCell>
+        <TableCell>
+          <Label variant="soft" color={is_published === 1 ? 'success' : 'error'}>
+            {is_published === 1 ? 'Published' : 'Unpublished'}
           </Label>
         </TableCell>
         <TableCell align="right">
@@ -53,7 +56,6 @@ export default function DilectTableRow({
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
-        <TableCell>{}</TableCell>
       </TableRow>
 
       <DilectCreateEditForm

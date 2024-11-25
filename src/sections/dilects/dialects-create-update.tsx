@@ -17,7 +17,7 @@ import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 // components
 import { useSnackbar } from 'src/components/snackbar';
-import { RHFTextField } from 'src/components/hook-form';
+import { RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import { createOrUpdateDialect } from 'src/api/dialect';
 
 type Props = {
@@ -39,14 +39,6 @@ export default function DialectCreateEditForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm({
-    defaultValues: {
-      language_name: currentDialect?.language_name || '',
-      dialect_name: currentDialect?.dialect_name || '',
-      keywords: currentDialect?.keywords || '',
-      description: currentDialect?.description || '',
-      order: currentDialect?.order || '',
-      is_published: currentDialect?.is_published === '1' || false,
-    },
     resolver: yupResolver(
       Yup.object().shape({
         language_name: Yup.string().required('Language Name is required'),
@@ -57,9 +49,17 @@ export default function DialectCreateEditForm({
         is_published: Yup.boolean(),
       })
     ),
+    defaultValues: {
+      language_name: currentDialect?.language_name || '',
+      dialect_name: currentDialect?.dialect_name || '',
+      keywords: currentDialect?.keywords || '',
+      description: currentDialect?.description || '',
+      order: currentDialect?.order || '',
+      is_published: currentDialect?.is_published === 1 ? true : false,
+    },
   });
 
-  const { handleSubmit, reset, } = methods;
+  const { handleSubmit, reset } = methods;
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -91,7 +91,11 @@ export default function DialectCreateEditForm({
       setIsSubmitting(false); // Reset loading state
     }
   };
-
+  useEffect(() => {
+    if (currentDialect?.id) {
+      reset();
+    }
+  }, [currentDialect]);
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider {...methods}>
@@ -115,22 +119,7 @@ export default function DialectCreateEditForm({
                 <RHFTextField name="order" label="Order" type="number" />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                  control={
-                    <Controller
-                      name="is_published"
-                      control={methods.control}
-                      render={({ field }) => (
-                        <Switch
-                          {...field}
-                          checked={field.value}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                      )}
-                    />
-                  }
-                  label="Published"
-                />
+                <RHFSwitch name="is_published" label="Published" />
               </Grid>
             </Grid>
           </Box>

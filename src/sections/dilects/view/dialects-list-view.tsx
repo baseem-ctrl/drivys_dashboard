@@ -39,11 +39,12 @@ import { deleteDialect, useGetAllDialect } from 'src/api/dialect';
 
 const TABLE_HEAD = [
   { id: 'dialect_name', label: 'Dialect Name' },
-  { id: 'language_name', label: 'Language Name', width: 220 },
-  { id: 'order_id', label: 'Order', width: 220 },
-  { id: 'is_published', label: 'Published', width: 180 },
-  { id: 'action1', label: '', width: 220 },
-  { id: 'action2', label: '', width: 88 },
+  { id: 'language_name', label: 'Language Name' },
+  { id: 'description', label: 'Description' },
+  { id: 'keywords', label: 'Keywords' },
+  { id: 'order_id', label: 'Order' },
+  { id: 'is_published', label: 'Published' },
+  { id: 'action2', label: '' },
 ];
 
 const defaultFilters: IDialectTableFilters = {
@@ -128,8 +129,9 @@ export default function DialectListView() {
     }
   };
   const handleRowClick = (row) => {
-    setSelectedDialect(row);
-    setViewMode('detail');
+    // setSelectedDialect(row);
+    // setViewMode('detail');
+    //No Needed row click nothing to show more than listing page
   };
 
   const handleEditClick = () => {
