@@ -65,7 +65,7 @@ export default function Upload({
           >
             browse
           </Box>
-          thorough your machine
+          through your machine
         </Typography>
       </Stack>
     </Stack>
@@ -95,7 +95,7 @@ export default function Upload({
     </IconButton>
   );
 
-  const renderMultiPreview = (hasFiles && !noPreview) && (
+  const renderMultiPreview = hasFiles && !noPreview && (
     <>
       <Box sx={{ my: 3 }}>
         <MultiFilePreview files={files} thumbnail={thumbnail} onRemove={onRemove} />
