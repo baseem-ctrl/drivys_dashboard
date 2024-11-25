@@ -361,7 +361,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               {
                 label: 'Is Active',
                 value:
-                  details?.is_active === 1 ? (
+                  details?.is_active === 1 || details?.is_active === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />
