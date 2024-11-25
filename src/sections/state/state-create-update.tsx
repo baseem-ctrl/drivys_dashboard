@@ -35,14 +35,14 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
-    order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for order
+    order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for orderj
   });
 
   const defaultValues = useMemo(
     () => ({
       name: currentState?.translations?.[0]?.name || '',
       locale: currentState?.translations?.[0]?.locale || 'en',
-      published: currentState?.is_published === '1',
+      published: currentState?.is_published === 1,
       order: currentState?.order || 0, // Set default order to 0 if not provided
     }),
     [currentState]
@@ -148,7 +148,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
               <MenuItem value="ar">Arabic</MenuItem>
             </RHFSelect>
             <RHFTextField name="name" label="Name" />
-            {!currentState && <RHFTextField name="order" label="Order" type="number" />}
+            <RHFTextField name="order" label="Order" type="number" />
             <RHFSwitch name="published" label="Published" />
           </Box>
         </DialogContent>
