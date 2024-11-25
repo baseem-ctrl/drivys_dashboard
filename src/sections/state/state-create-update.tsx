@@ -17,6 +17,7 @@ import { IStateItem } from 'src/types/state';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { createStateTranslation, updateStateTranslation } from 'src/api/state';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -37,7 +38,12 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     published: Yup.boolean(),
     order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for orderj
   });
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   const defaultValues = useMemo(
     () => ({
       name: currentState?.translations?.[0]?.name || '',
@@ -144,8 +150,14 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
             }}
           >
             <RHFSelect name="locale" label="Locale">
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="ar">Arabic</MenuItem>
+              <MenuItem value="" disabled>
+                Select Locale
+              </MenuItem>
+              {localeOptions?.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </RHFSelect>
             <RHFTextField name="name" label="Name" />
             <RHFTextField name="order" label="Order" type="number" />
