@@ -199,9 +199,10 @@ export default function UserNewEditForm({
         const { user_type, vendor_id } = this.parent; // Access other fields in the form
         if (
           user_type === 'TRAINER' &&
+          typeof values.vendor_id === 'object' &&
           (vendor_id?.value === undefined || vendor_id?.value === null)
         ) {
-          return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
+          return false; // `gear` must have a value if `user_type` is 'TRAINER'
         }
         return true; // Otherwise, `gear` is not required
       }),
@@ -256,11 +257,7 @@ export default function UserNewEditForm({
       doc_side: currentUser?.user_preference?.doc_side || '',
       min_price: currentUser?.user_preference?.min_price || '',
       max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
-      is_pickup_enabled: currentUser?.id
-        ? currentUser?.user_preference?.is_pickup_enabled
-          ? 1
-          : 0
-        : 1,
+      is_pickup_enabled: currentUser?.user_preference?.is_pickup_enabled ? 1 : 0,
       certificate_commission_in_percentage:
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
@@ -368,8 +365,8 @@ export default function UserNewEditForm({
       body.append('user_type', data?.user_type);
 
       if (data?.user_type === 'TRAINER') {
-        if (data?.is_pickup_enabled)
-          body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
+        // if (data?.is_pickup_enabled)
+        body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
         if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
         if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
         if (data?.min_price) body.append('min_price', data?.min_price);
@@ -571,15 +568,15 @@ export default function UserNewEditForm({
                 }}
               />
               {values.user_type === 'TRAINER' && (
-                <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
-              )}
-              {values.user_type === 'TRAINER' && (
                 <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
               )}
-              {values.user_type === 'TRAINER' && (
+              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+                <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
+              )}
+              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
                 <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
               )}
-              {values.user_type === 'TRAINER' && (
+              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
                 <RHFTextField name="min_price" label="Minimum Price" type="number" />
               )}
               {values.user_type === 'TRAINER' && (
@@ -604,6 +601,7 @@ export default function UserNewEditForm({
                 />
               )}
               {values.user_type === 'TRAINER' &&
+                typeof values.vendor_id === 'object' &&
                 (values.vendor_id?.value === undefined || values.vendor_id?.value === null) && (
                   <RHFTextField name="school_name" label="School Name" />
                 )}
