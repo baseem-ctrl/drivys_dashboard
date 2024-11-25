@@ -16,14 +16,20 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 // utils
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { updateCityTranslation } from 'src/api/city';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
 export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   const CitySchema = Yup.object().shape({
     name: Yup.string().required('City name is required'),
     locale: Yup.string().required('Locale is required'),
@@ -69,7 +75,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', '');
     }
   }, [selectedLocale, city, setValue]);
 
@@ -114,27 +120,16 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
           }}
         >
           <RHFTextField name="name" label="City Name" />
-
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Locale</InputLabel>
-            <Controller
-              name="locale"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  label="Locale"
-                  onChange={(e) => {
-                    const newLocale = e.target.value; // Get the selected value
-                    field.onChange(newLocale); // Update the form state with the new locale
-                  }}
-                >
-                  <MenuItem value="en">English</MenuItem>
-                  <MenuItem value="ar">Arabic</MenuItem>
-                </Select>
-              )}
-            />
-          </FormControl>
+          <RHFSelect name="locale" label="Locale">
+            <MenuItem value="" disabled>
+              Select Locale
+            </MenuItem>
+            {localeOptions?.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </RHFSelect>
 
           <FormControlLabel
             control={

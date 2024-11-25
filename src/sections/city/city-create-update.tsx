@@ -17,6 +17,7 @@ import { ICityItem } from 'src/types/city';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { createCityTranslation, updateCityTranslation } from 'src/api/city';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     setValue,
     formState: { isSubmitting },
   } = methods;
+  const { language } = useGetAllLanguage(0, 1000);
+
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   const selectedLocale = watch('locale');
 
   useEffect(() => {
@@ -129,9 +136,25 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               sm: 'repeat(2, 1fr)',
             }}
           >
+            {/* <Select value={filters?.locale || ''} onChange={handleFilterLocale} displayEmpty>
+          <MenuItem value="" disabled>
+            Select Locale
+          </MenuItem>
+          {localeOptions?.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select> */}
             <RHFSelect name="locale" label="Locale">
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="ar">Arabic</MenuItem>
+              <MenuItem value="" disabled>
+                Select Locale
+              </MenuItem>
+              {localeOptions?.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </RHFSelect>
             <RHFTextField name="name" label="Name" />
             <RHFSwitch name="published" label="Published" />
