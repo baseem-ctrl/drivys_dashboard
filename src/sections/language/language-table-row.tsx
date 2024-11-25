@@ -63,8 +63,8 @@ export default function LanguageTableRow({
           <Avatar alt={name} src={flag?.virtual_path} sx={{ mr: 2 }} />
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <Label variant="soft" color={published === '1' ? 'success' : 'error'}>
-            {published === '1' ? 'Published' : 'Un published'}
+          <Label variant="soft" color={published === 1 ? 'success' : 'error'}>
+            {published === 1 ? 'Published' : 'Un published'}
           </Label>
         </TableCell>
 

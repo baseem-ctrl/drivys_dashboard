@@ -22,7 +22,13 @@ import { countries } from 'src/assets/data';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete, RHFUpload, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFTextField,
+  RHFAutocomplete,
+  RHFUpload,
+  RHFSwitch,
+} from 'src/components/hook-form';
 import { createImageSingle } from 'src/api/all-image';
 import { createLanguage, updateLanguage } from 'src/api/language';
 
@@ -36,9 +42,15 @@ type Props = {
   reload: VoidFunction;
 };
 
-export default function LanguageCreateEditForm({ title, currentLanguage, open, onClose, reload }: Props) {
+export default function LanguageCreateEditForm({
+  title,
+  currentLanguage,
+  open,
+  onClose,
+  reload,
+}: Props) {
   const { enqueueSnackbar } = useSnackbar();
-  const [imageId, setImageId] = useState('')
+  const [imageId, setImageId] = useState('');
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -50,17 +62,17 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
 
   const defaultValues = useMemo(
     () => ({
-      name: currentLanguage?.name,
-      language_culture: currentLanguage?.language_culture,
-      flag_id: currentLanguage?.flag?.virtual_path,
-      published: currentLanguage?.published === '1' ? true : false,
-      display_order: currentLanguage?.display_order,
+      name: currentLanguage?.name || '',
+      language_culture: currentLanguage?.language_culture || '',
+      flag_id: currentLanguage?.flag?.virtual_path || '',
+      published: currentLanguage?.published === 1 ? true : false,
+      display_order: currentLanguage?.display_order || '',
     }),
     [currentLanguage]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
@@ -83,6 +95,8 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
   useEffect(() => {
     if (currentLanguage) {
       reset(defaultValues);
+    } else {
+      reset();
     }
   }, [currentLanguage, defaultValues, reset]);
 
@@ -90,12 +104,12 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
     try {
       const formData = new FormData();
       if (flag_id instanceof File) {
-        formData.append("picture", flag_id);
+        formData.append('picture', flag_id);
       }
       // Submit the form data
       const response = await createImageSingle(formData);
-      setImageId(response?.data?.id)
-      console.log(response?.data?.id, "response");
+      setImageId(response?.data?.id);
+      console.log(response?.data?.id, 'response');
       // revalidateAllImages()
       enqueueSnackbar(response.message);
     } catch (error) {
@@ -109,42 +123,33 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     }
-  }
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // const formData = new FormData()
-      // console.log(imageId, "imageId");
-
-      // formData.append("flag_id", imageId === "" ? currentLanguage?.flag_id : imageId)
-      // if (data.name) formData.append("name", data.name)
-      // if (data.language_culture) formData.append("language_culture", data.language_culture)
-      // formData.append("published", data.published ? true : false)
-      // if (data.display_order) formData.append("display_order", data.display_order)
-
       const payload = {
-        flag_id: imageId === "" ? currentLanguage?.flag_id : imageId,
+        flag_id: imageId === '' ? currentLanguage?.flag_id : imageId,
         language_culture: data.language_culture,
         name: data.name,
         display_order: data.display_order,
-        published: data.published ? true : false
-
-      }
+        published: data.published ? true : false,
+      };
       let response;
 
       if (currentLanguage?.id) {
-        response = await updateLanguage(payload, currentLanguage?.id)
+        response = await updateLanguage(payload, currentLanguage?.id);
+        reset();
       } else {
-        response = await createLanguage(payload)
+        response = await createLanguage(payload);
         reset();
       }
 
       if (response) {
         onClose();
         reload();
-        enqueueSnackbar(response?.message ?? "Success");
+        enqueueSnackbar(response?.message ?? 'Success');
+        reset();
       }
-
     } catch (error) {
       if (error.errors) {
         // Iterate over each error and enqueue them in the snackbar
@@ -156,8 +161,6 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
       }
     }
   });
-
-
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -173,6 +176,10 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
     },
     [setValue]
   );
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
   return (
     <Dialog
       fullWidth
@@ -186,16 +193,9 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <DialogTitle>{title}</DialogTitle>
         <Stack sx={{ ml: 10, mr: 10, mt: 5, mb: 5 }}>
-          <RHFUpload
-            name="flag_id"
-            maxSize={3145728}
-            onDrop={handleDrop}
-            sx={{ mb: 3 }}
-          />
+          <RHFUpload name="flag_id" maxSize={3145728} onDrop={handleDrop} sx={{ mb: 3 }} />
         </Stack>
         <DialogContent>
-
-
           <Box
             rowGap={3}
             columnGap={2}
@@ -206,22 +206,16 @@ export default function LanguageCreateEditForm({ title, currentLanguage, open, o
               sm: 'repeat(2, 1fr)',
             }}
           >
-
-
-
-
             <RHFTextField name="name" label="Name" />
             <RHFTextField name="language_culture" label="Language culture" />
             <RHFSwitch name="published" label={'Published'} />
 
-
             <RHFTextField name="display_order" label="Display order" />
-
           </Box>
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
 
