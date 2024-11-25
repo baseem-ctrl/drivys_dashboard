@@ -118,9 +118,10 @@ export default function StateListView() {
   };
 
   const handleRowClick = (row) => {
-    setRowId(row.id);
-    setSelectedState(row);
-    setViewMode('detail');
+    // setRowId(row.id);
+    // setSelectedState(row);
+    // // setViewMode('detail');
+    //No Need on click
   };
 
   const handleBackToList = () => {
@@ -212,7 +213,7 @@ export default function StateListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             {
-              name: 'State',
+              name: 'Area',
               href: paths.dashboard.system.state,
               onClick: (event) => {
                 setViewMode('table');
@@ -229,7 +230,7 @@ export default function StateListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New State
+                New Area
               </Button>
             )
           }
@@ -307,7 +308,7 @@ export default function StateListView() {
           )}
 
           <Dialog open={openEditPopup} onClose={handleClosePopup}>
-            <DialogTitle>Edit State</DialogTitle>
+            <DialogTitle>Edit Area</DialogTitle>
             <DialogContent>
               {selectedState && (
                 <StateNewEditForm
@@ -337,7 +338,7 @@ export default function StateListView() {
       </Container>
 
       <StateCreateEditForm
-        title="Create State"
+        title="Create Area"
         open={createState.value}
         onClose={createState.onFalse}
         reload={revalidateStates}

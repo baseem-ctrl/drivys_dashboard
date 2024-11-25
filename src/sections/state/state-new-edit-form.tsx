@@ -176,7 +176,7 @@ export default function StateNewEditForm({
               loading={isSubmitting}
               sx={{ width: '120px' }}
             >
-              Update State
+              Update Area
             </LoadingButton>
           </Stack>
         </Card>

@@ -109,7 +109,7 @@ export default function StateTableRow({
         }
       />
       <StateCreateEditForm
-        title="Edit State"
+        title="Edit Area"
         currentState={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}

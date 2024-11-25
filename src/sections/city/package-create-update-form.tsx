@@ -61,9 +61,7 @@ const PackageCreateEditForm = ({
     }
   }, [selectedPackage, editMode, open]);
 
-  const { packageList, packageLoading } = useGetPackage({
-    city_id: city_id,
-  });
+  const { packageList, packageLoading } = useGetPackage({ limit: 100 });
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -198,9 +198,9 @@ export function useNavData() {
       icon: ICONS.language,
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
-        { title: t('City'), path: paths.dashboard.system.city },
+        { title: t('Emirates'), path: paths.dashboard.system.city },
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
-        { title: t('State'), path: paths.dashboard.system.state },
+        { title: t('Areas'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },

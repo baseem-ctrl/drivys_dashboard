@@ -55,7 +55,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       reset({
         name: city?.city_translations?.[0]?.name || '',
         locale: city?.city_translations?.[0]?.locale || 'ar',
-        published: city?.is_published === '1',
+        published: city?.is_published === 1,
         id: city?.id || '',
       });
     }
@@ -102,65 +102,65 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid xs={12} md={8}>
-        <Card sx={{ p: 3 }}>
-          <Box
-            rowGap={3}
-            columnGap={2}
-            display="grid"
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-            }}
-          >
-            <RHFTextField name="name" label="City Name" />
+      <Grid xs={12} md={8} p={3}>
+        {/* <Card sx={{ p: 3 }}> */}
+        <Box
+          rowGap={3}
+          columnGap={2}
+          display="grid"
+          gridTemplateColumns={{
+            xs: 'repeat(1, 1fr)',
+            sm: 'repeat(2, 1fr)',
+          }}
+        >
+          <RHFTextField name="name" label="City Name" />
 
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Locale</InputLabel>
-              <Controller
-                name="locale"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    label="Locale"
-                    onChange={(e) => {
-                      const newLocale = e.target.value; // Get the selected value
-                      field.onChange(newLocale); // Update the form state with the new locale
-                    }}
-                  >
-                    <MenuItem value="en">English</MenuItem>
-                    <MenuItem value="ar">Arabic</MenuItem>
-                  </Select>
-                )}
-              />
-            </FormControl>
-
-            <FormControlLabel
-              control={
-                <Controller
-                  name="published"
-                  control={control}
-                  render={({ field }) => <Switch {...field} checked={field.value} />}
-                />
-              }
-              label="Published"
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Locale</InputLabel>
+            <Controller
+              name="locale"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label="Locale"
+                  onChange={(e) => {
+                    const newLocale = e.target.value; // Get the selected value
+                    field.onChange(newLocale); // Update the form state with the new locale
+                  }}
+                >
+                  <MenuItem value="en">English</MenuItem>
+                  <MenuItem value="ar">Arabic</MenuItem>
+                </Select>
+              )}
             />
-          </Box>
-          <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
-            <LoadingButton variant="contained" onClick={handleClosePopup} sx={{ width: '120px' }}>
-              Close
-            </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              type="submit"
-              loading={isSubmitting}
-              sx={{ width: '120px' }}
-            >
-              Update City
-            </LoadingButton>
-          </Stack>
-        </Card>
+          </FormControl>
+
+          <FormControlLabel
+            control={
+              <Controller
+                name="published"
+                control={control}
+                render={({ field }) => <Switch {...field} checked={field.value} />}
+              />
+            }
+            label="Published"
+          />
+        </Box>
+        <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
+          <LoadingButton variant="contained" onClick={handleClosePopup} sx={{ width: '120px' }}>
+            Close
+          </LoadingButton>
+          <LoadingButton
+            variant="contained"
+            type="submit"
+            loading={isSubmitting}
+            sx={{ width: '120px' }}
+          >
+            Update
+          </LoadingButton>
+        </Stack>
+        {/* </Card> */}
       </Grid>
     </FormProvider>
   );
