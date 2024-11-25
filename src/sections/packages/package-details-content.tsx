@@ -9,10 +9,12 @@ import {
   Button,
   CircularProgress,
   Grid,
+  InputAdornment,
   MenuItem,
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -32,6 +34,7 @@ import PackageDescription from './package-html-converter';
 import PackageDocumentCreateUpdate from './create-update-package-document-form';
 import PackageDocumentDetails from './view/package-document-details.tsx';
 import { useGetAllCategory } from 'src/api/category';
+import { InfoOutlined } from '@mui/icons-material';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -377,6 +380,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       label="Number of sessions"
                       {...field}
                       error={!!errors.number_of_sessions}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
+                              <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />

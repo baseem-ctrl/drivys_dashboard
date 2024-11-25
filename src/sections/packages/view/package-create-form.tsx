@@ -27,12 +27,13 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { TextField, Typography } from '@mui/material';
+import { InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
 import { useGetAllCategory } from 'src/api/category';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { InfoOutlined } from '@mui/icons-material';
 
 type Props = {
   open: boolean;
@@ -231,7 +232,19 @@ export default function PackageCreateForm({
 
           <Grid spacing={2} container>
             <Grid item xs={6}>
-              <RHFTextField name="number_of_sessions" label="Number of sessions" />
+              <RHFTextField
+                name="number_of_sessions"
+                label="Number of sessions"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
+                        <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+              />
             </Grid>
 
             <Grid item xs={6}>
