@@ -176,7 +176,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
       body.append('home_listing_id', details?.id);
       const response = await createHomeListing(body);
       if (response) {
-        enqueueSnackbar(response.message, {
+        enqueueSnackbar('Home Listing updated successfully."', {
           variant: 'success',
         });
         setEditMode(false);
