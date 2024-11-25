@@ -49,7 +49,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
   );
 
   const methods = useForm({
-    resolver: yupResolver(CitySchema),
+    resolver: yupResolver(CitySchema) as any,
     defaultValues,
   });
 
@@ -59,10 +59,8 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     setValue,
     watch,
     formState: { isSubmitting },
-
   } = methods;
   const selectedLocale = watch('locale');
-
 
   // Update name based on locale
   useEffect(() => {
@@ -72,7 +70,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', '');
     }
   }, [selectedLocale, setValue]);
 
@@ -88,7 +86,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', '');
     }
   }, [selectedLocale, currentState, setValue]);
   const onSubmit = handleSubmit(async (data) => {
