@@ -74,6 +74,9 @@ export default function PackageCreateForm({
     number_of_sessions: Yup.number(),
     category_id: Yup.number(),
     vendor_id: Yup.mixed(),
+    drivys_commission: Yup.number(),
+
+    vendor_commission: Yup.number(),
   });
 
   const defaultValues = useMemo(
@@ -165,6 +168,8 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     formData.append(`category_id`, data?.category_id);
+    if (data?.drivys_commission) formData.append('drivys_commission', data?.drivys_commission);
+    if (data?.vendor_commission) formData.append('vendor_commission', data?.vendor_commission);
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -242,6 +247,23 @@ export default function PackageCreateForm({
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
                 loading={schoolLoading}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <RHFTextField
+                name="drivys_commission"
+                label="Drivy's Commission"
+                type="number"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFTextField
+                name="vendor_commission"
+                label="Vendor Commission"
+                type="number"
+                inputProps={{ min: 0 }}
               />
             </Grid>
 
