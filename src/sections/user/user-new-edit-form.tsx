@@ -93,6 +93,7 @@ export default function UserNewEditForm({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,
+    published: '1',
   });
   const [searchValue, setSearchValue] = useState('');
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
@@ -103,11 +104,13 @@ export default function UserNewEditForm({
   const { city } = useGetAllCity({
     limit: 1000,
     page: 0,
+    is_published: '1',
   });
 
   const { dialect } = useGetAllDialect({
     limit: 1000,
     page: 0,
+    is_published: 'published',
   });
 
   useEffect(() => {

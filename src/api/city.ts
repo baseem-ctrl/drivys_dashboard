@@ -15,14 +15,14 @@ interface useGetCategoryParams {
   limit?: number;
   page?: number;
   search?: any;
-  published?: any;
+  is_published?: any;
   parent_id?: any;
 }
 export function useGetAllCity({
   limit,
   page,
   search,
-  published,
+  is_published,
   parent_id,
 }: useGetCategoryParams = {}) {
   const queryParams = useMemo(() => {
@@ -31,10 +31,10 @@ export function useGetAllCity({
     if (page) params.page = page;
     if (search) params.search = search;
     if (parent_id) params.parent_id = parent_id;
-    if (published || published === '0') params.published = published;
+    if (is_published || is_published === '0') params.is_published = is_published;
 
     return params;
-  }, [limit, page, search, parent_id, published]);
+  }, [limit, page, search, parent_id, is_published]);
   const getTheFullUrl = useMemo(
     () => `${endpoints.city.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
