@@ -183,7 +183,7 @@ export default function PackageTableRow({
       };
       const response = await createUpdatePackage(payload);
       if (response) {
-        enqueueSnackbar(response.message, {
+        enqueueSnackbar('Package translations updated successfully.', {
           variant: 'success',
         });
       }
