@@ -59,6 +59,8 @@ const TABLE_HEAD = [
   { id: 'number_of_sessions', label: 'Number of sessions' },
   { id: 'is_published', label: 'Is published' },
   { id: 'Vendor', label: 'School' },
+  { id: 'drivys_commision', label: 'Drivys Commision' },
+  { id: 'vendor_commision', label: 'Vendor Commision' },
   { id: 'category', label: 'Category' },
   { id: 'action', label: 'Action' },
 
