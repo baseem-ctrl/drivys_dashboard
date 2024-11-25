@@ -443,9 +443,11 @@ export default function UserDetailsContent({
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'N/A' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'N/A' },
                 ...(details?.languages?.length
-                  ? details.languages.map((lang, index) => ({
+                  ? details?.languages.map((lang, index) => ({
                       label: `Language ${index + 1}`,
-                      value: `${lang.dialect.language_name} (${lang.dialect.dialect_name}) - ${lang.fluency_level}`,
+                      value: lang?.dialect?.id
+                        ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
+                        : 'NA',
                     }))
                   : [{ label: 'Languages', value: 'N/A' }]),
                 {
