@@ -121,7 +121,8 @@ export default function UserNewEditForm({
       setFilteredValues(updatedValues);
     }
   }, [enumData]);
-
+  const [defaultOption, setDefaultOption] = useState<any>(null);
+  // const [schoolOptions, setSchoolOptions] = useState();
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string()
@@ -189,6 +190,18 @@ export default function UserNewEditForm({
           .required('Language fluency is required'), // Validate the number of add-ons
       })
     ),
+    school_name: Yup.string()
+      .nullable()
+      .test('school-name-required', 'School name is required for trainers', function (value) {
+        const { user_type, vendor_id } = this.parent; // Access other fields in the form
+        if (
+          user_type === 'TRAINER' &&
+          (vendor_id?.value === undefined || vendor_id?.value === null)
+        ) {
+          return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
+        }
+        return true; // Otherwise, `gear` is not required
+      }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -222,8 +235,10 @@ export default function UserNewEditForm({
             )?.value
           : '',
       vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
-      vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
-        ?.vendor_translations[0]?.name,
+      vendor_id: currentUser?.vendor?.id
+        ? schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
+            ?.name
+        : [{ label: 'Other', value: null }],
       gender:
         genderData?.length > 0
           ? genderData?.find(
@@ -247,8 +262,9 @@ export default function UserNewEditForm({
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
       license_file: currentUser?.user_preference?.license_file || '',
+      school_name: currentUser?.school_name || '',
     }),
-    [currentUser?.locale, dialect, language]
+    [currentUser?.locale, dialect, language, schoolList]
   );
 
   const methods = useForm({
@@ -273,9 +289,28 @@ export default function UserNewEditForm({
   useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
-      revalidateDetails();
+      const selectedOption = schoolList.find((school) => school.id === currentUser?.vendor?.id);
+      if (selectedOption) {
+        setDefaultOption({
+          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption.id,
+        });
+      }
+    } else {
+      if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
+        setDefaultOption({ label: 'OTHER', value: null });
+      } else {
+        // Otherwise, retain the selected value
+        const selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
+        if (selectedOption) {
+          setDefaultOption({
+            label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+            value: selectedOption.id,
+          });
+        }
+      }
     }
-  }, [currentUser?.id, currentUser?.languages, reset, defaultValues]);
+  }, [currentUser?.id, reset, defaultValues, values?.vendor_id, schoolList]);
 
   // Function to add more language entry
   const handleAddMore = () => {
@@ -289,11 +324,9 @@ export default function UserNewEditForm({
     revalidateDetails();
   };
 
-  // Navigate to the previous page
   const handleCancel = () => {
     router.back();
   };
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       console.log('data', data);
@@ -307,7 +340,6 @@ export default function UserNewEditForm({
 
       // Only append gear if it exists
       if (data?.gear) {
-        console.log('data?.gear', data?.gear);
         body.append('gear', data?.gear);
       }
 
@@ -316,11 +348,15 @@ export default function UserNewEditForm({
         const matchedVendor = schoolList.find(
           (school) => school.vendor_translations[0]?.name === data.vendor_id
         );
+
         if (matchedVendor?.id) {
           body.append('vendor_id', matchedVendor.id);
         } else if (data?.vendor_id?.value) {
           body.append('vendor_id', data.vendor_id.value);
         }
+      }
+      if (data?.vendor_id?.value === undefined || data?.vendor_id?.value === null) {
+        body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
@@ -388,11 +424,6 @@ export default function UserNewEditForm({
     }
   });
 
-  useEffect(() => {
-    if (currentUser) {
-      reset(defaultValues);
-    }
-  }, [currentUser, reset, defaultValues]);
   // Function to add more pairs
 
   const handleDrop = useCallback(
@@ -445,6 +476,7 @@ export default function UserNewEditForm({
       </Box>
     );
   }
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -552,15 +584,26 @@ export default function UserNewEditForm({
                   name="vendor_id"
                   label="Select School"
                   placeholder="Search School..."
-                  options={schoolList.map((item: any) => ({
-                    label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
-                    value: item.id,
-                  }))}
+                  options={[
+                    ...schoolList.map((item: any) => ({
+                      label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                      value: item.id,
+                    })),
+                    {
+                      label: 'OTHER', // Add the "Other" option
+                      value: null, // Value for the "Other" option
+                    },
+                  ]}
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                   disableClearable={true}
                   loading={schoolLoading}
+                  value={defaultOption}
                 />
               )}
+              {values.user_type === 'TRAINER' &&
+                (values.vendor_id?.value === undefined || values.vendor_id?.value === null) && (
+                  <RHFTextField name="school_name" label="School Name" />
+                )}
               {values.user_type === 'TRAINER' && (
                 <RHFTextField
                   name="school_commission_in_percentage"
