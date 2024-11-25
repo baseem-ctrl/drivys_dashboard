@@ -32,6 +32,7 @@ import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
 import { useGetAllCategory } from 'src/api/category';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
 type Props = {
   open: boolean;
@@ -47,15 +48,14 @@ export default function PackageCreateForm({
   revalidateDeliverey,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const [searchValue, setSearchValue] = useState('');
   const { language } = useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
+  // const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
   });
-  console.log('category', category);
-  const { schoolList, schoolLoading } = useGetSchool(1000, 1);
-  console.log(schoolList, 'schoolList');
+  const { schoolList, schoolLoading } = useGetSchool({ limit: 1000, page: 1, search: searchValue });
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
@@ -117,7 +117,6 @@ export default function PackageCreateForm({
   const currentDescription = watch('description');
   const values = watch();
   const previousLocaleRef = useRef(selectedLocale);
-  console.log(errors, 'errors');
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
@@ -190,7 +189,7 @@ export default function PackageCreateForm({
     }
   };
   const handleSearchChange = (e) => {
-    revalidateSearch(e?.target?.value);
+    setSearchValue(e?.target?.value);
   };
   const handleClose = () => {
     reset(defaultValues);
@@ -236,7 +235,7 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={6}>
-              <RHFAutocomplete
+              <RHFAutocompleteSearch
                 name="vendor_id"
                 label="Select School"
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
@@ -247,7 +246,7 @@ export default function PackageCreateForm({
                   value: item?.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
-                loading={schoolAdminLoading}
+                loading={schoolLoading}
               />
             </Grid>
             <Grid item xs={6}>

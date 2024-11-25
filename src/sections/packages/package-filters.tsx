@@ -15,7 +15,7 @@ import InputBase, { inputBaseClasses } from '@mui/material/InputBase';
 // types
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, Chip, TextField } from '@mui/material';
 import { useCallback } from 'react';
 
 // ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ type Props = {
   onClose?: VoidFunction;
   //
   filters: any;
-  onFilters?: (name: string, value: any) => void;
+  onFilters: (name: string, value: any) => void;
   //
   canReset?: boolean;
   onResetFilters?: VoidFunction;
@@ -69,12 +69,9 @@ export default function ProductFilters({
   const handleFilterPublished = (newValue: string) => {
     onFilters('is_published', newValue);
   };
-  console.log(schoolOptions, "NNNNNNNN");
 
   const handleFilterVendor = useCallback(
-    (newValue: Date | null) => {
-      console.log(newValue, "discount_type_id");
-
+    (newValue: string[]) => {
       onFilters('vendor_id', newValue);
     },
     [onFilters]
@@ -177,21 +174,32 @@ export default function ProductFilters({
       />
     </Stack>
   );
+  let schoolsOptions = schoolOptions?.map((item) => {
+    const translations = item.vendor_translations;
+
+    // Find the translation for both Arabic and English locales
+    const englishTranslation = translations.find((t) => t.locale === 'en');
+    const arabicTranslation = translations.find((t) => t.locale === 'ar');
+
+    return {
+      label: `${englishTranslation?.name || 'Unknown'} (${arabicTranslation?.name || 'Unknown'})`,
+      value: item.id,
+    };
+  });
   const renderVendorType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
         Vendor Type
       </Typography>
       <Autocomplete
-        disableCloseOnSelect
-        options={schoolOptions?.map((option) => option)}
-        getOptionLabel={(option) => option}
-        value={filters.discount_type_id}
+        options={schoolsOptions?.map((option) => option)}
+        getOptionLabel={(option) => option.label}
+        value={filters.vendor_id}
         onChange={(event, newValue) => handleFilterVendor(newValue)}
         renderInput={(params) => <TextField placeholder="Select School type" {...params} />}
         renderOption={(props, option) => (
-          <li {...props} key={option}>
-            {option}
+          <li {...props} key={option.value}>
+            {option.label}
           </li>
         )}
         renderTags={(selected, getTagProps) =>
@@ -243,7 +251,7 @@ export default function ProductFilters({
             {/* {renderStock} */}
             {renderPrice}
             {renderActive}
-            {/* {renderVendorType} */}
+            {renderVendorType}
             {/* {renderDiscountPrice}
             {renderCostPrice}
             {renderWeight} */}
@@ -314,8 +322,6 @@ function NoOfSession({ type, onFilters, filterName, value }: InputRangeProps) {
     onFilters('number_of_sessions', value); // Call the function with min value
   };
 
-
-
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: 1 }}>
       <Typography
@@ -349,4 +355,3 @@ function NoOfSession({ type, onFilters, filterName, value }: InputRangeProps) {
     </Stack>
   );
 }
-

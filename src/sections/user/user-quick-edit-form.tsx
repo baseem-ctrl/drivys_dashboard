@@ -31,6 +31,8 @@ import { updateUser, useGetUserTypeEnum } from 'src/api/users';
 import { useAuthContext } from 'src/auth/hooks';
 import { IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useGetSchool } from 'src/api/school';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
 // ----------------------------------------------------------------------
 
@@ -43,10 +45,14 @@ type Props = {
 
 export default function UserQuickEditForm({ currentUser, open, onClose, reload }: Props) {
   const { user } = useAuthContext();
+  const [searchValue, setSearchValue] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
   const { enumData, enumLoading } = useGetUserTypeEnum();
-
+  const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
+    limit: 1000,
+    search: searchValue ?? '',
+  });
   const [filteredValues, setFilteredValues] = useState(enumData);
   useEffect(() => {
     if (enumData?.length > 0) {
@@ -76,6 +82,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
     country_code: Yup.string().nullable(),
     is_active: Yup.boolean(),
     user_type: Yup.string(),
+    vendor_id: Yup.mixed().nullable(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -85,7 +92,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       phone: currentUser?.phone || '',
       user_type: currentUser?.user_type || '',
       country_code: currentUser?.country_code || '',
-      is_active: currentUser?.is_active || 1,
+      is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
+      vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
+        ?.vendor_translations[0]?.name,
     }),
     [currentUser]
   );
@@ -96,10 +105,12 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
+  const values = watch();
 
   useEffect(() => {
     if (currentUser) {
@@ -118,6 +129,16 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       body.append('user_type', data?.user_type);
       body.append('is_active', data?.is_active ? '1' : '0');
       body.append('user_id', currentUser?.id);
+      if (data?.vendor_id) {
+        const matchedVendor = schoolList.find(
+          (school) => school.vendor_translations[0]?.name === data.vendor_id
+        );
+        if (matchedVendor?.id) {
+          body.append('vendor_id', matchedVendor.id);
+        } else if (data?.vendor_id?.value) {
+          body.append('vendor_id', data.vendor_id.value);
+        }
+      }
       const response = await updateUser(body);
       if (response) {
         reset();
@@ -126,7 +147,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
         reload();
       }
     } catch (error) {
-      if (error?.errors) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -185,38 +206,22 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 ),
               }}
             />
-            {/* <RHFAutocomplete
-              name="country_code"
-              label="Country Code"
-              options={countries}
-              getOptionLabel={(option) => {
-                return option ? `${option.phone} ${option.label}` : '';
-              }}
-              isOptionEqualToValue={(option, value) => option.countryCode === value.countryCode}
-              filterOptions={(options, state) => {
-                return options.filter(
-                  (option) =>
-                    // Check if the input matches either countryCode or label
-                    option.phone.toLowerCase().includes(state.inputValue.toLowerCase()) ||
-                    option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                );
-              }}
-              renderOption={(props, option) => {
-                return (
-                  <li {...props} key={option.label}>
-                    <Iconify
-                      key={option.label}
-                      icon={`circle-flags:${option.code.toLowerCase()}`}
-                      width={28}
-                      sx={{ mr: 1 }}
-                    />
-                    {option.phone} {option.label}
-                  </li>
-                );
-              }}
-            /> */}
+            {values.user_type === 'TRAINER' && (
+              <RHFAutocompleteSearch
+                name="vendor_id"
+                label="Select School"
+                placeholder="Search School..."
+                options={schoolList.map((item: any) => ({
+                  label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                  value: item.id,
+                }))}
+                setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
+                disableClearable={true}
+                loading={schoolLoading}
+              />
+            )}
             <Stack direction="row" spacing={1} alignItems="center">
-              <RHFTextField name="country_code" label="Country" sx={{ maxWidth: 100 }} />
+              <RHFTextField name="country_code" label="Country" sx={{ maxWidth: 100 }} prefix="+" />
               <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
             </Stack>{' '}
             <RHFSwitch name="is_active" label="Is Active" />{' '}

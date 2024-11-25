@@ -66,6 +66,7 @@ export default function PackageTableRow({
     category_id,
     vendor_commision,
     drivys_commision,
+    vendor_id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -130,14 +131,14 @@ export default function PackageTableRow({
       email: email || '',
       phone_number: phone_number || '',
       status: status,
-      is_published: is_published || 1,
-      vendor_id: vendor?.vendor_user?.vendor_id || '',
+      is_published: String(is_published) || 1,
+      vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
       vendor_commision: vendor_commision || vendor_commision === 0 ? vendor_commision : '',
       drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
     }),
-    [selectedLocaleObject, row]
+    [selectedLocaleObject, row, editingRowId]
   );
   console.log('defaultValues', defaultValues);
 
@@ -162,6 +163,11 @@ export default function PackageTableRow({
       setValue('name', '');
     }
   };
+  useEffect(() => {
+    if (editingRowId !== null) {
+      reset(defaultValues);
+    }
+  }, [editingRowId]);
   const onSubmit = handleSubmit(async (data) => {
     try {
       let payload = {
@@ -332,7 +338,7 @@ export default function PackageTableRow({
                 (is_published === 1 && 'success') || (is_published === 0 && 'error') || 'default'
               }
             >
-              {is_published === '0' ? 'Un Published' : 'Published'}
+              {is_published === 0 ? 'Un Published' : 'Published'}
             </Label>
           )}
         </TableCell>

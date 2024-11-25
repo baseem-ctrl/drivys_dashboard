@@ -239,5 +239,9 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
+    notification: {
+      root: `${ROOTS.DASHBOARD}/notifications`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/notifications/${id}`,
+    },
   },
 };

@@ -120,6 +120,7 @@ export function useNavData() {
       path: paths.dashboard.category.root,
       icon: ICONS.job,
     },
+
     // DELIVERY
     {
       title: t('schools'),
@@ -139,6 +140,11 @@ export function useNavData() {
       //   { title: t('list'), path: paths.dashboard.school.root }
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
+    },
+    {
+      title: t('notifications'),
+      path: paths.dashboard.notification.root,
+      icon: ICONS.mail,
     },
     // PACKAGE
     {
@@ -193,7 +199,7 @@ export function useNavData() {
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
         { title: t('City'), path: paths.dashboard.system.city },
-        { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
+        // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('State'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
         // { title: t('details'), path: paths.dashboard.tour.demo.details },

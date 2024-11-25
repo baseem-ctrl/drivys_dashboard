@@ -48,10 +48,13 @@ import { CircularProgress, Skeleton, Stack, TableCell, TableRow } from '@mui/mat
 import JobSearch from 'src/sections/job/job-search';
 import SchoolSearch from '../school-search';
 import { STATUS_OPTIONS } from 'src/_mock/_school';
+import JobFiltersResult from 'src/sections/category/job-filters-result';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  // { id: '', label: '' },
+
   { id: 'locale', label: 'Language' },
   { id: 'name', label: 'Name' },
   { id: 'email', label: 'Email' },
@@ -94,6 +97,8 @@ export default function SchoolListView() {
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
 
   const [filters, setFilters] = useState(defaultFilters);
+  const [bulkEditIds, setBulkEditIds] = useState<string[]>([]);
+  const [isBulkEdit, setIsBulkEdit] = useState(false);
 
   const {
     schoolList,
@@ -166,6 +171,24 @@ export default function SchoolListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const handleSelectAllRows = (checked: boolean, allIds: number[]) => {
+    if (bulkEditIds?.length > 0) {
+      setSelectedRows([]);
+      setBulkEditIds([]);
+      table.onSelectAllRows(false, []);
+    } else {
+      table.onSelectAllRows(checked, tableData?.map((row) => row.id));
+      setSelectedRows(allIds);
+      setBulkEditIds(allIds); // Deselect all rows
+    }
+  };
+  useEffect(() => {
+    if (bulkEditIds?.length === 0) {
+      table.onSelectAllRows(false, []);
+    }
+  }, [bulkEditIds]);
   const renderFilters = (
     <Stack
       spacing={3}
@@ -186,21 +209,16 @@ export default function SchoolListView() {
           onResetFilters={handleResetFilters}
           statusOptions={STATUS_OPTIONS}
           activeOptions={ACTIVE_OPTIONS}
+          bulkEditIds={bulkEditIds}
+          setBulkEditIds={setBulkEditIds}
+          setIsBulkEdit={setIsBulkEdit}
+          setSelectedRows={setSelectedRows}
+          selectedRows={selectedRows}
+          reload={revalidateSchool}
         />
       </Stack>
     </Stack>
   );
-  // const renderResults = (
-  //   <JobFiltersResult
-  //     filters={filters}
-  //     onResetFilters={handleResetFilters}
-  //     //
-  //     canReset={canReset}
-  //     onFilters={handleFilters}
-  //     //
-  //     results={dataFiltered.length}
-  //   />
-  // );
   const handleViewRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.school.details(id));
@@ -241,27 +259,8 @@ export default function SchoolListView() {
           {/* {canReset && renderResults} */}
         </Stack>
         <Card>
-          {/* <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
-          />
-
-          {canReset && (
-            <UserTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={tableData.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
+            {/* <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
               rowCount={tableData?.length}
@@ -275,7 +274,7 @@ export default function SchoolListView() {
                   </IconButton>
                 </Tooltip>
               }
-            />
+            /> */}
 
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
@@ -286,9 +285,9 @@ export default function SchoolListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                  // }
+                  onSelectAllRows={(checked) => {
+                    handleSelectAllRows(checked, tableData?.map((row) => row.id));
+                  }}
                 />
 
                 <TableBody>
@@ -310,6 +309,10 @@ export default function SchoolListView() {
                           onEditRow={(e: any) => handleEditRow(e, row.id)}
                           revalidateSchool={revalidateSchool}
                           onViewRow={() => handleViewRow(row?.id)}
+                          setBulkEditIds={setBulkEditIds}
+                          selectedRows={selectedRows}
+                          setIsBulkEdit={setIsBulkEdit}
+                          isBulkEdit={isBulkEdit}
                         />
                       ))}
 

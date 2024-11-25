@@ -151,6 +151,9 @@ export const endpoints = {
     package: {
       getPackageBySchool: 'admin/package/get-school-packge-list',
     },
+    bulk: {
+      addCommision: 'admin/vendor/bulk/update-commision',
+    },
   },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',
@@ -260,5 +263,9 @@ export const endpoints = {
     paymentStatusEnum: 'public/enum/get-payment-status-type-enum',
     sessionStatusEnum: 'public/enum/get-session-status-type-enum',
     sessionTypeEnum: 'public/enum/get-session-type-enum',
+  },
+  notification: {
+    getList: 'admin/notification/get-list',
+    send: 'admin/notification/send-notification',
   },
 };

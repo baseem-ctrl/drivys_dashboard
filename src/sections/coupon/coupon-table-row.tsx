@@ -50,7 +50,6 @@ export default function LanguageTableRow({
     ending_date,
     limitation_times,
     is_active,
-    products,
     categories,
     id,
   } = row;
@@ -76,16 +75,24 @@ export default function LanguageTableRow({
           {/* <Label sx={{ mb: 1, mt: 1 }} variant="soft" color="primary">
             linked to  {products?.length} products
           </Label> */}
-          <Label variant="soft" color="info">
-            linked to {categories?.length} categories
-          </Label>
+          {discount_type_id === 1 ? (
+            <Label variant="soft" color="info">
+              linked to {row?.package?.length} packages
+            </Label>
+          ) : discount_type_id === 2 ? (
+            <Label variant="soft" color="info">
+              linked to {categories?.length} categories
+            </Label>
+          ) : (
+            ''
+          )}
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{coupon_code}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{discount_type_text}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {value}
-          {use_percentage === '1' ? ' %' : ' AED'}
+          {use_percentage === 1 ? ' %' : ' AED'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>
@@ -104,7 +111,7 @@ export default function LanguageTableRow({
       </TableRow>
 
       <LanguageCreateEditForm
-        title="Edit Language"
+        title="Edit Coupon"
         updateValue={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
