@@ -92,7 +92,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       phone: currentUser?.phone || '',
       user_type: currentUser?.user_type || '',
       country_code: currentUser?.country_code || '',
-      is_active: currentUser?.is_active || 1,
+      is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
       vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
         ?.vendor_translations[0]?.name,
     }),
