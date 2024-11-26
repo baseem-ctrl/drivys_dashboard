@@ -339,7 +339,10 @@ export default function UserNewEditForm({
       body.append('phone', data?.phone);
 
       // Only append gear if it exists
-      if (data?.gear !== null) {
+      if (
+        (data?.user_type === 'TRAINER' || data?.user_type === 'STUDENT') &&
+        (data?.gear !== null || data?.gear !== undefined)
+      ) {
         body.append('gear', data?.gear);
       }
 
