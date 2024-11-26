@@ -202,7 +202,7 @@ export default function UserNewEditForm({
           typeof values.vendor_id === 'object' &&
           (vendor_id?.value === undefined || vendor_id?.value === null)
         ) {
-          return false; // `gear` must have a value if `user_type` is 'TRAINER'
+          return value != null; // `gear` must have a value if `user_type` is 'TRAINER'
         }
         return true; // Otherwise, `gear` is not required
       }),
@@ -287,6 +287,20 @@ export default function UserNewEditForm({
   });
   const values = watch();
   useEffect(() => {
+    if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
+      setDefaultOption({ label: 'OTHER', value: null });
+    } else {
+      // Otherwise, retain the selected value
+      const selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
+      if (selectedOption) {
+        setDefaultOption({
+          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption.id,
+        });
+      }
+    }
+  }, [values.vendor_id, schoolList]);
+  useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
       const selectedOption = schoolList.find((school) => school.id === currentUser?.vendor?.id);
@@ -296,22 +310,8 @@ export default function UserNewEditForm({
           value: selectedOption.id,
         });
       }
-    } else {
-      if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
-        setDefaultOption({ label: 'OTHER', value: null });
-      } else {
-        // Otherwise, retain the selected value
-        const selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
-        if (selectedOption) {
-          setDefaultOption({
-            label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-            value: selectedOption.id,
-          });
-        }
-      }
     }
-  }, [currentUser?.id, reset, defaultValues, values?.vendor_id, schoolList]);
-
+  }, [currentUser?.id, reset, defaultValues]);
   // Function to add more language entry
   const handleAddMore = () => {
     append({ id: '', fluency_level: '' });
@@ -339,7 +339,7 @@ export default function UserNewEditForm({
       body.append('phone', data?.phone);
 
       // Only append gear if it exists
-      if (data?.gear) {
+      if (data?.gear !== null) {
         body.append('gear', data?.gear);
       }
 
