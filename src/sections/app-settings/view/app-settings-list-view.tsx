@@ -40,22 +40,22 @@ import {
 // types
 import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 //
-import LanguageTableRow from '../language-table-row';
+import AppSettingTableRow from '../app-settings-table-row';
+
 import { deleteLanguage, useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import LanguageCreateEditForm from '../language-create-update';
+import LanguageCreateEditForm from '../app-settings-update';
+import { useGetAllAppSettings } from 'src/api/app-settings';
+import { width } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'language_culture', label: 'Language culture', width: 180 },
-  { id: 'flag_id', label: 'Flag', width: 220 },
-  { id: 'published', label: 'Published', width: 180 },
-  { id: 'display_order', label: 'Display order', width: 180 },
-  { id: '', width: 88 },
+  { id: 'key', label: 'Key' },
+  { id: 'value', label: 'Value', width: 400 },
+  { id: '' },
 ];
 
 const defaultFilters: IUserTableFilters = {
@@ -66,7 +66,7 @@ const defaultFilters: IUserTableFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function LanguageListView() {
+export default function AppSettingsListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
@@ -87,16 +87,16 @@ export default function LanguageListView() {
     filters,
   });
 
-  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-    useGetAllLanguage(table.page, table.rowsPerPage);
+  const { appSettings, appSettingsLoading, totalpages, revalidateLanguage, appSettingsError } =
+    useGetAllAppSettings(table.page, table.rowsPerPage);
 
   useEffect(() => {
-    if (language?.length) {
-      setTableData(language);
+    if (appSettings?.length) {
+      setTableData(appSettings);
     } else {
       setTableData([]);
     }
-  }, [language]);
+  }, [appSettings]);
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
@@ -108,67 +108,6 @@ export default function LanguageListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleFilters = useCallback(
-    (name: string, value: IUserTableFilterValue) => {
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table]
-  );
-
-  // const handleDeleteRow = useCallback(
-  //   (id: string) => {
-  //     const deleteRow = tableData.filter((row) => row.id !== id);
-  //     setTableData(deleteRow);
-
-  //     table.onUpdatePageDeleteRow(dataInPage.length);
-  //   },
-  //   [dataInPage.length, table, tableData]
-  // );
-
-  const handleDeleteRow = async (id: string) => {
-    try {
-      // Call your delete API
-      const response = await deleteLanguage(id);
-      revalidateLanguage();
-      // Update the UI or state after successful deletion
-      enqueueSnackbar(response?.message);
-    } catch (error) {
-      enqueueSnackbar('error deleting language', { variant: 'error' });
-    }
-  };
-  // const handleDeleteRows = useCallback(() => {
-  //   const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-  //   setTableData(deleteRows);
-
-  //   table.onUpdatePageDeleteRows({
-  //     totalRows: tableData.length,
-  //     totalRowsInPage: dataInPage.length,
-  //     totalRowsFiltered: dataFiltered.length,
-  //   });
-  // }, [dataFiltered.length, dataInPage.length, table, tableData]);
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.user.edit(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -176,46 +115,15 @@ export default function LanguageListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Language', href: paths.dashboard.system.language },
+            { name: 'App Settings', href: paths.dashboard.system.appsettings },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              // component={RouterLink}
-              onClick={() => {
-                createLanguage.onTrue();
-              }}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Language
-            </Button>
-          }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
 
         <Card>
-          {/* <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
-          /> */}
-
-          {/* {canReset && (
-            <UserTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -260,15 +168,7 @@ export default function LanguageListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <LanguageTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        reload={revalidateLanguage}
-                      />
+                      <AppSettingTableRow key={row.id} row={row} reload={revalidateLanguage} />
                     ))}
 
                   <TableEmptyRows

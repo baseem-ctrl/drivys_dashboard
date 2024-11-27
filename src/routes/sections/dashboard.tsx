@@ -82,6 +82,7 @@ const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 // SYSTEM
 // LANGUAGE
 const LanguageListPage = lazy(() => import('src/pages/dashboard/language/list'));
+const AppSettingsListPage = lazy(() => import('src/pages/dashboard/app-settings/list'));
 
 // COUPON
 const CouponListPage = lazy(() => import('src/pages/dashboard/coupon/list'));
@@ -198,7 +199,7 @@ const allroutes = [
       { path: 'city', element: <CityListPage /> },
       { path: 'city/:id', element: <CityDetailsView /> },
       { path: 'state', element: <StateListPage /> },
-
+      { path: 'appsettings', element: <AppSettingsListPage /> },
       { path: 'dialect', element: <DialectListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },

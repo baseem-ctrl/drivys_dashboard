@@ -228,6 +228,7 @@ export const paths = {
       cityList: `${ROOTS.DASHBOARD}/system/city/list`,
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
+      appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
     },
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
