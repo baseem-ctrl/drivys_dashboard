@@ -83,7 +83,7 @@ export default function HomeSliderDialog({
       name: updateValue?.name || '',
       display_order: updateValue?.display_order || '',
       picture_ids: updateValue?.picture_ids || [],
-      published: updateValue?.published === 1 ? true : false,
+      published: !!updateValue?.published,
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
     }),
     [updateValue, today]
