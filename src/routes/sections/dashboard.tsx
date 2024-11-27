@@ -224,6 +224,7 @@ const allroutes = [
     path: 'booking',
     children: [
       { element: <BookingListView />, index: true },
+      { path: 'Refund', element: <SchoolAdminDetailsPage /> },
       { path: ':id', element: <BookingDetailsComponent /> },
       // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
