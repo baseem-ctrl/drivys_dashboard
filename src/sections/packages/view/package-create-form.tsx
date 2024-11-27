@@ -6,6 +6,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
 import { createSchool, useGetSchool, useGetSchoolAdmin } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
+import { useGetAllCity } from 'src/api/city';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
@@ -57,11 +58,11 @@ export default function PackageCreateForm({
     page: 1,
   });
   const { schoolList, schoolLoading } = useGetSchool({ limit: 1000, page: 1, search: searchValue });
-
+  const { city, cityLoading } = useGetAllCity();
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
-
+  console.log('cities', city);
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
     value: item.language_culture,
@@ -78,6 +79,10 @@ export default function PackageCreateForm({
     drivys_commission: Yup.number(),
 
     vendor_commission: Yup.number(),
+    min_price: Yup.number(),
+    max_price: Yup.number(),
+    commision: Yup.number(),
+    commision_type: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -148,6 +153,7 @@ export default function PackageCreateForm({
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
+      console.log('translation', translation);
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
 
@@ -155,15 +161,15 @@ export default function PackageCreateForm({
       previousLocaleRef.current = selectedLocale;
     }
   }, [selectedLocale, setValue, translations]);
-
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
-
+    console.log('data', data);
     const formData = new FormData();
+    console.log('selectedLocale', selectedLocale);
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
-    formData.append('is_published', data.is_published ? '1' : '0');
+    formData.append('is_published', data.is_published ? 1 : 0);
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     formData.append(`package_translation[0][name]`, data?.name);
     formData.append(`package_translation[0][locale]`, data?.locale);
@@ -171,6 +177,15 @@ export default function PackageCreateForm({
     formData.append(`category_id`, data?.category_id);
     if (data?.drivys_commission) formData.append('drivys_commission', data?.drivys_commission);
     if (data?.vendor_commission) formData.append('vendor_commission', data?.vendor_commission);
+    if (data?.cities_ids && Array.isArray(data.cities_ids)) {
+      data.cities_ids.forEach((city: any, index: number) => {
+        formData.append(`cities_ids[${index}][id]`, city?.id);
+        formData.append(`cities_ids[${index}][min_price]`, city?.min_price);
+        formData.append(`cities_ids[${index}][max_price]`, city?.max_price);
+        formData.append(`cities_ids[${index}][commision]`, city?.commision);
+        formData.append(`cities_ids[${index}][commision_type]`, city?.commision_type);
+      });
+    }
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -301,6 +316,52 @@ export default function PackageCreateForm({
                 })}
               </RHFSelect>
             </Grid>
+            <Grid item xs={6}>
+              <RHFSelect name="cities_ids[0][id]" label="Select City">
+                {city?.map((city: any) =>
+                  city.city_translations.map((translation: any) => (
+                    <MenuItem key={`${city.id}-${translation.locale}`} value={city.id}>
+                      {translation.name} ({translation.locale.toUpperCase()})
+                    </MenuItem>
+                  ))
+                )}
+              </RHFSelect>
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFTextField
+                name="cities_ids[0][min_price]"
+                label="City Min Price"
+                type="number"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFTextField
+                name="cities_ids[0][max_price]"
+                label="City Max Price"
+                type="number"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFTextField
+                name="cities_ids[0][commision]"
+                label="City Commission"
+                type="number"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <RHFSelect name="cities_ids[0][commision_type]" label="City Commission Type">
+                <MenuItem value="flat_amount">Flat Amount</MenuItem>
+                <MenuItem value="percentage">Percentage</MenuItem>
+              </RHFSelect>
+            </Grid>
+
             <Grid item xs={6}>
               <RHFCheckbox name="is_published" label="Publish" />
             </Grid>

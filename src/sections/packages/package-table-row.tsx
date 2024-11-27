@@ -74,7 +74,6 @@ export default function PackageTableRow({
     limit: 1000,
     page: 1,
   });
-  console.log('drivys_commision', drivys_commision);
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
