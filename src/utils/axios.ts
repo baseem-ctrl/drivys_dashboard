@@ -252,6 +252,10 @@ export const endpoints = {
     getBookingStatus: 'public/enum/get-booking-status-enum',
     getBookingById: 'admin/booking/get-bookings-by-student-id',
     getPaymentStatus: 'public/enum/get-payment-status-type-enum',
+    refund: {
+      list: 'admin/booking/refund/get-request-list',
+      update: 'admin/booking/refund/update-status-by-booking-id',
+    },
   },
   packageTrainer: {
     list: 'admin/package-trainer/get-trainer-packages',

@@ -97,7 +97,7 @@ export function useNavData() {
 
       children: [
         { title: t('booking'), path: paths.dashboard.booking.root },
-        { title: t('Refund'), path: paths.dashboard.booking.root },
+        { title: t('Refund'), path: paths.dashboard.booking.refund },
       ],
     },
 
