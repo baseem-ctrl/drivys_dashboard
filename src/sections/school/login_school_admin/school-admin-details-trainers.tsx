@@ -20,7 +20,12 @@ import {
   MenuItem,
   TextField,
   Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
+
 import { usePopover } from 'src/components/custom-popover';
 import CustomPopover from 'src/components/custom-popover/custom-popover';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -54,7 +59,11 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
   const [trainerMappingId, setTrainerMappingId] = useState('');
-
+  const [openEdit, setOpenEdit] = useState(false);
+  const [editData, setEditData] = useState<any>(null);
+  const [editDetails, setIsEditDetails] = useState(false);
+  const [editableData, setEditableData] = useState(null);
+  const [index, setIndex] = useState(null);
   const {
     schoolTrainersList,
     schoolTrainersLoading,
@@ -78,27 +87,37 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     cash_clearance_date: Yup.string(),
     cash_in_hand: Yup.string().required('Mention the Cash in hand '),
     vendor_commission_in_percentage: Yup.string().nullable(),
-    trainer_id: Yup.mixed().required(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
-
+  console.log('candidates', candidates);
+  console.log('schoolTrainersList', editDetails?.cash_clearance_date);
   const defaultValues = useMemo(
     () => ({
-      cash_clearance_date: candidates?.cash_clearance_date || '',
-      cash_in_hand: candidates?.cash_in_hand || '',
-      vendor_commission_in_percentage: candidates?.vendor_commission_in_percentage || '',
+      cash_clearance_date: editDetails?.cash_clearance_date || '',
+      cash_in_hand: editDetails?.cash_in_hand || '',
+      vendor_commission_in_percentage: editDetails?.vendor_commission_in_percentage || '',
       password: '',
-      phone: candidates?.phone || '',
-      trainer_id: trainers?.find((option) => option?.id === candidates?.trainer_id) || '',
-      max_cash_in_hand_allowed: candidates?.max_cash_in_hand_allowed || '',
+
+      max_cash_in_hand_allowed: editDetails?.max_cash_in_hand_allowed || '',
     }),
     [candidates]
   );
-
+  console.log('defualt values', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
+
+  const handleEditOpen = (trainer: any) => {
+    popover.onClose();
+    setEditData(trainer); // Set the current trainer's data
+    setOpenEdit(true); // Open the dialog
+  };
+  console.log('edit data', index);
+  // Function to close the edit pop-up
+  const handleEditClose = () => {
+    setOpenEdit(false);
+  };
 
   const {
     reset,
@@ -108,23 +127,52 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
-
+  useEffect(() => {
+    if (editDetails) {
+      reset({
+        cash_clearance_date: new Date(editDetails.cash_clearance_date).toISOString().split('T')[0],
+        cash_in_hand: editDetails.cash_in_hand,
+        vendor_commission_in_percentage: editDetails.vendor_commission_in_percentage,
+        max_cash_in_hand_allowed: editDetails.max_cash_in_hand_allowed,
+      });
+    }
+  }, [editDetails, reset]);
   const values = watch();
   useEffect(() => {
     if (candidates?.id) {
       reset(defaultValues);
     }
   }, [candidates, reset]);
+  console.log('edit dataaaaa', editDetails?.user?.id);
+
   const onSubmit = async (data: any) => {
-    console.log(data, 'data');
-    const body = {
-      trainer_id: data?.trainer_id?.id,
-      vendor_id: candidates?.id,
+    console.log('data?.trainer_id?.id', data?.trainer_id?.id);
+    console.log('editDetails?.user?.id', editDetails?.user?.id);
+
+    const body: any = {
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
       cash_in_hand: data?.cash_in_hand,
       max_cash_in_hand_allowed: data?.max_cash_in_hand_allowed,
       cash_clearance_date: data?.cash_clearance_date,
     };
+
+    // Add trainer_id based on conditions
+    if (!editData) {
+      body.vendor_id = candidates[0]?.vendor_id;
+      body.trainer_id = editDetails?.user?.id ?? null;
+    } else {
+      body.vendor_id = editDetails?.vendor_id;
+      body.trainer_id = editDetails?.user_id ?? null;
+    }
+
+    console.log('Final body before validation:', body);
+
+    // Validate trainer_id
+    if (!body.trainer_id) {
+      enqueueSnackbar('Trainer ID is required.', { variant: 'error' });
+      return;
+    }
+
     try {
       const response = await addTrainer(body);
       if (response) {
@@ -140,13 +188,19 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
+    } finally {
+      handleEditClose();
     }
   };
-  const handlePopoverOpen = (e, trainer: any) => {
+
+  const handlePopoverOpen = (e, trainer: any, index) => {
     popover.onOpen(e);
+    setIsEditDetails(trainer);
     setTrainerId(trainer?.id);
     setTrainerMappingId(trainer?.id);
+    setIndex(index);
   };
+  console.log('Edit details', editDetails);
   const handleRemove = async () => {
     try {
       if (trainerMappingId) {
@@ -167,6 +221,8 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     }
   };
+  console.log('Validation errors:', errors);
+
   return (
     <Box
       gap={3}
@@ -251,12 +307,12 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       )}
       {!schoolTrainersLoading ? (
         schoolTrainersList?.length > 0 ? (
-          schoolTrainersList?.map((trainer: any) => (
+          schoolTrainersList?.map((trainer: any, index) => (
             <Stack component={Card} direction="column" spacing={2} key={trainer?.id} sx={{ p: 3 }}>
               <Stack direction="row" spacing={2} key={trainer?.id}>
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8 }}
-                  onClick={(e) => handlePopoverOpen(e, trainer)}
+                  onClick={(e) => handlePopoverOpen(e, trainer, index)}
                 >
                   <Iconify icon="eva:more-vertical-fill" />
                 </IconButton>
@@ -444,7 +500,50 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
           <Iconify icon="solar:trash-bin-trash-bold" />
           Remove
         </MenuItem>
+        <MenuItem onClick={() => handleEditOpen(trainerMappingId)}>
+          <Iconify icon="eva:edit-fill" />
+          Edit
+        </MenuItem>
       </CustomPopover>
+      <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="sm">
+        <DialogTitle>Edit Trainer Details</DialogTitle>
+        <DialogContent
+          sx={{
+            paddingTop: '11px !important',
+          }}
+        >
+          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+            <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
+              <RHFTextField
+                name="cash_clearance_date"
+                label="Cash Clearance Date "
+                type="date"
+                // value={editDetails?.cash_clearance_date}
+                InputLabelProps={{ shrink: true }}
+              />
+              <RHFTextField
+                name="cash_in_hand"
+                label="Cash in Hand"
+                // value={editDetails?.cash_in_hand}
+              />
+              <RHFTextField name="vendor_commission_in_percentage" label="Vendor Commission (%)" />
+              <RHFTextField name="max_cash_in_hand_allowed" label="Max Cash Allowded" />
+            </Box>
+          </FormProvider>
+        </DialogContent>
+        <DialogActions>
+          <LoadingButton
+            onClick={handleSubmit(onSubmit)}
+            variant="contained"
+            loading={isSubmitting}
+          >
+            Save Changes
+          </LoadingButton>
+          <Button onClick={handleEditClose} variant="outlined">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
