@@ -335,25 +335,30 @@ export default function SchoolCreateForm({
                 )}
               />
             </Grid>
+            <Grid item xs={6} mt={2}>
+              <RHFTextField
+                name="commission_in_percentage"
+                label="Commission in (%)"
+                type="number"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Tooltip title="Commission is for certificate" placement="top">
+                        <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
 
-            <RHFTextField
-              name="commission_in_percentage"
-              label="Commission in (%)"
-              type="number"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Tooltip title="Commission is for certificate" placement="top">
-                      <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
-                    </Tooltip>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Grid item xs={6} mt={2} mb={2}>
+              <RHFCheckbox name="is_active" label="Active" />
+            </Grid>
 
-            <RHFCheckbox name="is_active" label="Active" />
-
-            <RHFCheckbox name="create_new_user" label="Create New User" />
+            <Grid item xs={6} mt={2} mb={2}>
+              <RHFCheckbox name="create_new_user" label="Create New User" />
+            </Grid>
           </Box>
           {!values?.create_new_user ? (
             <RHFAutocomplete
