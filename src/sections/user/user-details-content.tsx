@@ -1280,6 +1280,9 @@ export default function UserDetailsContent({
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && studentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (
                 <UserDocumentDetails
                   id={details?.id}
@@ -1313,13 +1316,6 @@ export default function UserDetailsContent({
                 studentTab === 'details' &&
                 details?.user_preference?.id &&
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
-                renderUserPreferences}
-            </Grid>
-            <Grid xs={12}>
-              {currentTab === 'details' &&
-                studentTab === 'details' &&
-                details?.user_preference?.id &&
-                details?.user_type === 'TRAINER' &&
                 renderUserPreferences}
             </Grid>
 

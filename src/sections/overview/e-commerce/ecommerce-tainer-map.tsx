@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useGetUsers } from 'src/api/users';
+import axios from 'axios';
+import marker from 'react-map-gl/dist/esm/components/marker';
+
+import { HOST_API } from 'src/config-global';
 
 interface Trainer {
   id: string;
@@ -8,6 +12,7 @@ interface Trainer {
   photoUrl: string;
   location: { lat: number; lng: number };
 }
+
 const containerStyle = {
   width: '100%',
   height: '500px',
@@ -30,43 +35,95 @@ const TrainerMap: React.FC = () => {
     user_types: 'TRAINER',
   });
 
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
+  const fetchNearestTrainers = async (latitude: number, longitude: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_HOST_API}admin/trainers/get-nearest-trainers-list`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            latitude,
+            longitude,
+            radius: 10,
+          },
+        }
+      );
+
+      if (response?.data?.trainersList) {
+        setTrainers(
+          response.data.trainersList.map((trainer) => ({
+            ...trainer,
+            location: { lat: trainer.lat, lng: trainer.lng },
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching nearest trainers:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (usersLoading || !users) return;
+
+    const trainersWithLocation: Trainer[] = users.map((user) => {
+      const city = user.user_preference?.city;
+      const cityName = city?.city_translations?.[0]?.name || '';
+      return {
+        id: user.id,
+        name: user.name,
+        photoUrl: user.photo_url,
+        location: cityName === 'Dubai' ? { lat: 25.276987, lng: 55.296249 } : { lat: 20, lng: 20 },
+      };
+    });
+
+    setTrainers(trainersWithLocation);
+  }, [users, usersLoading]);
+
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    const lat = e.latLng?.lat() ?? 0;
+    const lng = e.latLng?.lng() ?? 0;
+    setSelectedLocation({ lat, lng });
+  };
+
+  useEffect(() => {
+    if (!selectedLocation) return;
+    const { lat, lng } = selectedLocation;
+
+    fetchNearestTrainers(lat, lng);
+  }, [selectedLocation]);
+
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
-  // If users are still loading or no trainers found
-  if (usersLoading || !users) {
+  if (usersLoading || !trainers.length) {
     return <div>Loading trainers...</div>;
   }
 
-  // Map the API response into a trainers array
-  const trainers: Trainer[] = users.map((user: any) => {
-    // Safely access the city information
-    const city = user.user_preference?.city;
-    const cityName = city?.city_translations?.[0]?.name || ''; // Safely access the city name
-    console.log('users', user);
-    return {
-      id: user.id,
-      name: user.name,
-      photoUrl: user.photo_url,
-      location: {
-        lat: cityName === 'Dubai' ? 25.276987 : 0,
-        lng: 55.296249,
-      },
-    };
-  });
-  console.log('trainers', trainers);
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={15}>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={15}
+      onClick={handleMapClick} // Handle map click
+    >
       {trainers.map((trainer) => (
         <Marker
           key={trainer.id}
           position={trainer.location}
           icon={{
-            url: trainer.photoUrl,
-            scaledSize: new window.google.maps.Size(40, 40),
-            // origin: new window.google.maps.Point(0, 0),
-            // anchor: new window.google.maps.Point(20, 40),
+            url:
+              marker && typeof marker === 'string'
+                ? marker
+                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
           }}
         />
       ))}
