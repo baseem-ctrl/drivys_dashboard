@@ -130,6 +130,10 @@ export const endpoints = {
     create: 'admin/user/languages',
     update: 'admin/user/languages/',
   },
+  appSettings: {
+    list: 'admin/appSetting/get-list',
+    update: 'admin/appSetting/create-update',
+  },
   coupon: {
     list: 'admin/discount/get-discount-list',
     delete: 'admin/discount/delete-discount/',

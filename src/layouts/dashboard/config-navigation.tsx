@@ -202,6 +202,8 @@ export function useNavData() {
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('Areas'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
+        { title: t('App Settings'), path: paths.dashboard.system.appsettings },
+
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
         // { title: t('edit'), path: paths.dashboard.tour.demo.edit },
