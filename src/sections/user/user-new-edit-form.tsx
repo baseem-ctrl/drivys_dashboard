@@ -87,13 +87,14 @@ export default function UserNewEditForm({
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
-
+  const [searchCategory, setSearchCategory] = useState('');
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
-  const { category } = useGetAllCategory({
+  const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    search: searchCategory,
   });
   const [searchValue, setSearchValue] = useState('');
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
@@ -238,7 +239,11 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
             )?.value
           : '',
-      vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
+      vehicle_type_id:
+        category
+          .find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
+          ?.category_translations.map((translation: any) => translation.name) // Extract all names
+          .join(' - ') || '',
       vendor_id: currentUser?.vendor?.id
         ? schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
             ?.name
@@ -346,7 +351,17 @@ export default function UserNewEditForm({
         body.append('gear', data?.gear);
       }
 
-      if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
+      if (currentUser?.id) {
+        body.append(
+          'vehicle_type_id',
+          data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
+        );
+      } else {
+        body.append(
+          'vehicle_type_id',
+          data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
+        );
+      }
       if (data?.vendor_id) {
         const matchedVendor = schoolList.find(
           (school) => school.vendor_translations[0]?.name === data.vendor_id
@@ -671,14 +686,20 @@ export default function UserNewEditForm({
                     sm: 'repeat(2, 1fr)',
                   }}
                 >
-                  <RHFSelect name="vehicle_type_id" label="Category">
-                    {category?.length > 0 &&
-                      category?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.category_translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  <RHFAutocompleteSearch
+                    name="vehicle_type_id"
+                    label="Select Category"
+                    placeholder="Search Category..."
+                    options={category.map((item: any) => ({
+                      label: item.category_translations
+                        .map((translation: any) => translation.name) // Extract all names
+                        .join(' - '), // Display full name
+                      value: item.id,
+                    }))}
+                    setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
+                    disableClearable={true}
+                    loading={categoryLoading}
+                  />
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
