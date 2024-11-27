@@ -26,6 +26,7 @@ import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
+import TrainerMap from '../ecommerce-tainer-map';
 
 // ----------------------------------------------------------------------
 
@@ -89,6 +90,9 @@ export default function OverviewEcommerceView() {
               series: [40, 70, 75, 70, 50, 28, 7, 64, 38, 27],
             }}
           />
+        </Grid>
+        <Grid xs={12} md={12} lg={12}>
+          <TrainerMap />
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>

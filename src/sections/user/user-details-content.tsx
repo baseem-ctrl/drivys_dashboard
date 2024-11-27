@@ -1315,6 +1315,13 @@ export default function UserDetailsContent({
                 (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
                 renderUserPreferences}
             </Grid>
+            <Grid xs={12}>
+              {currentTab === 'details' &&
+                studentTab === 'details' &&
+                details?.user_preference?.id &&
+                details?.user_type === 'TRAINER' &&
+                renderUserPreferences}
+            </Grid>
 
             <Grid xs={12}>
               {details?.user_type === 'SCHOOL_ADMIN' && details?.school && renderSchool}
