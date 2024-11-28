@@ -16,6 +16,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  InputAdornment,
 } from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
@@ -75,6 +76,7 @@ import BookingTrainerTable from './booking-details/trainer-booking-details';
 import BookingStudentTable from './booking-details/student-booking-details';
 import { Link } from '@mui/material';
 import moment from 'moment';
+import { useGetAllCity } from 'src/api/city';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -92,7 +94,7 @@ export default function UserDetailsContent({
   loading,
   reload,
 }: Props) {
-  const { reset } = useForm();
+  const { reset, control } = useForm();
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -106,7 +108,9 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
   const {
     userDocuments,
     userDocumentLoading,
@@ -643,8 +647,8 @@ export default function UserDetailsContent({
       // Update the body to include latitude and longitude from markerPosition
       const updatedAddress = {
         ...body,
-        latitude: markerPosition.lat,
-        longitude: markerPosition.lng,
+        latitude: markerPosition.lat || addressForm.latitude,
+        longitude: markerPosition.lng || addressForm.longitude,
       };
 
       // Call the update API with the updated address data
@@ -696,6 +700,7 @@ export default function UserDetailsContent({
   const handleChangeStoreAddress = (e) => {
     const { name, value } = e.target;
     setAddressForm((prev) => ({ ...prev, [name]: value }));
+
     if (name === 'latitude' || name === 'longitude') {
       setMarkerPosition({
         lat: addressForm.latitude || 0,
@@ -867,13 +872,62 @@ export default function UserDetailsContent({
                 onChange={handleChangeStoreAddress}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
-              <TextField
-                label="City"
-                variant="outlined"
+              <Controller
                 name="city"
-                value={addressForm.city}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="City"
+                    variant="outlined"
+                    value={field.value || addressForm.city || ''}
+                    onChange={(e) => {
+                      const selectedCityId = e.target.value;
+
+                      const selectedCity = city.find((cityItem) => cityItem.id === selectedCityId);
+                      const selectedCityName = selectedCity
+                        ? selectedCity.city_translations
+                            .map((translation) => translation.name)
+                            .join(', ')
+                        : '';
+
+                      field.onChange(e);
+
+                      handleChangeStoreAddress({
+                        ...e,
+                        target: { name: 'city', value: selectedCityName },
+                      });
+                    }}
+                    sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                    select
+                    fullWidth
+                    InputProps={{
+                      startAdornment: cityLoading ? (
+                        <InputAdornment position="start">
+                          <CircularProgress size={20} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
+                  >
+                    {cityLoading ? (
+                      <MenuItem disabled>Loading cities...</MenuItem>
+                    ) : city?.length === 0 ? (
+                      <MenuItem disabled>No cities found</MenuItem>
+                    ) : (
+                      city.map((cityItem) => {
+                        const cityNames = cityItem.city_translations.map(
+                          (translation) => translation.name
+                        );
+
+                        return (
+                          <MenuItem key={cityItem.id} value={cityItem.id}>
+                            {cityNames.join(', ') || 'Unknown City'}
+                          </MenuItem>
+                        );
+                      })
+                    )}
+                  </TextField>
+                )}
               />
             </Box>
 
@@ -1126,14 +1180,64 @@ export default function UserDetailsContent({
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      fullWidth
+                    <Controller
                       name="city"
-                      value={addressForm.city}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="City"
+                          variant="outlined"
+                          value={field.value || addressForm.city || ''}
+                          onChange={(e) => {
+                            const selectedCityId = e.target.value;
+
+                            const selectedCity = city.find(
+                              (cityItem) => cityItem.id === selectedCityId
+                            );
+                            const selectedCityName = selectedCity
+                              ? selectedCity.city_translations
+                                  .map((translation) => translation.name)
+                                  .join(', ')
+                              : '';
+
+                            field.onChange(e);
+
+                            handleChangeStoreAddress({
+                              ...e,
+                              target: { name: 'city', value: selectedCityName },
+                            });
+                          }}
+                          sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                          select
+                          fullWidth
+                          InputProps={{
+                            startAdornment: cityLoading ? (
+                              <InputAdornment position="start">
+                                <CircularProgress size={20} />
+                              </InputAdornment>
+                            ) : null,
+                          }}
+                        >
+                          {cityLoading ? (
+                            <MenuItem disabled>Loading cities...</MenuItem>
+                          ) : city?.length === 0 ? (
+                            <MenuItem disabled>No cities found</MenuItem>
+                          ) : (
+                            city.map((cityItem) => {
+                              const cityNames = cityItem.city_translations.map(
+                                (translation) => translation.name
+                              );
+
+                              return (
+                                <MenuItem key={cityItem.id} value={cityItem.id}>
+                                  {cityNames.join(', ') || 'Unknown City'}
+                                </MenuItem>
+                              );
+                            })
+                          )}
+                        </TextField>
+                      )}
                     />
                     <TextField
                       label="Country Code"
