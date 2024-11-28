@@ -10,6 +10,7 @@ type Props = TextFieldProps & {
   borderRadius?: string;
   maxLength?: number;
   prefix?: string;
+  suffix?: string;
 };
 
 export default function RHFTextField({
@@ -19,6 +20,7 @@ export default function RHFTextField({
   helperText,
   type,
   prefix,
+  suffix,
   ...other
 }: Props) {
   const { control } = useFormContext();
@@ -35,6 +37,11 @@ export default function RHFTextField({
             ...(prefix
               ? {
                   startAdornment: <InputAdornment position="start">{prefix}</InputAdornment>,
+                }
+              : {}),
+            ...(suffix
+              ? {
+                  endAdornment: <InputAdornment position="start">{suffix}</InputAdornment>,
                 }
               : {}),
             ...(!borderRadius
