@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -80,7 +80,9 @@ export default function UserDocumentCreateUpdate({
     { value: 'Passport', label: 'Passport' },
     { value: 'License', label: 'License' },
   ];
-
+  useEffect(() => {
+    reset();
+  }, [reset]);
   return (
     <FormProvider methods={methods}>
       <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
