@@ -145,6 +145,7 @@ export default function CategoryListView() {
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
+    window.location.reload();
   }, []);
 
   const handleAddNewCategory = () => {

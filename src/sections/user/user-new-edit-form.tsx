@@ -241,7 +241,7 @@ export default function UserNewEditForm({
           : '',
       vehicle_type_id:
         category
-          .find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
+          ?.find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
           ?.category_translations.map((translation: any) => translation.name) // Extract all names
           .join(' - ') || '',
       vendor_id: currentUser?.vendor?.id
