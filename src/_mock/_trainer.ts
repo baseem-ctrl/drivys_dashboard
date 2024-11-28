@@ -6,3 +6,11 @@ export const TRAINER_DETAILS_TABS = [
   { value: 'user-document', label: 'User Document' },
   { value: 'booking', label: 'Booking' },
 ];
+export const STATUS_OPTIONS = [
+  { value: '1', label: 'Active' },
+  { value: '0', label: 'In Active' },
+];
+export const VERIFICATION_OPTIONS = [
+  { value: '1', label: 'Verified' },
+  { value: '0', label: 'Un Verified' },
+];
