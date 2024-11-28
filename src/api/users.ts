@@ -22,6 +22,7 @@ export function useGetUsers({
   type,
   store_id,
   search,
+  is_verified,
 }: any) {
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
@@ -45,7 +46,7 @@ export function useGetUsers({
     if (end_date) queryParams.end_date = end_date;
     if (type) queryParams.type = type;
     if (store_id) queryParams.store_id = store_id;
-
+    if (is_verified) queryParams.is_verified = is_verified;
     return `${endpoints.users.list}?${new URLSearchParams(queryParams)}`;
   };
 
