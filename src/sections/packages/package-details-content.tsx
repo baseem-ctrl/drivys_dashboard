@@ -16,8 +16,11 @@ import {
   MenuItem,
   Select,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Tooltip,
+  TabPanel,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -63,7 +66,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
   const [searchCategory, setSearchCategory] = useState('');
-
+  const [selectedTab, setSelectedTab] = useState(0);
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
@@ -168,7 +171,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+  console.log('Selected tab', selectedTab);
   const onSubmit = schoolSubmit(async (data) => {
+    console.log('data', data);
     try {
       let payload = {
         package_translations: [
@@ -184,8 +192,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
       };
-      let formData = new FormData();
 
+      let formData = new FormData();
+      console.log('payload', payload);
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
       formData.append('number_of_sessions', payload.number_of_sessions);
@@ -205,6 +214,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           'package_translation[0][session_inclusions]',
           payload.package_translations[0].session_inclusions || ''
         );
+      }
+      if (details?.package_city && details.package_city.length > 0) {
+        details.package_city.forEach((cityItem, index) => {
+          formData.append(`cities_ids[${index}][id]`, cityItem?.id ?? '');
+          formData.append(`cities_ids[${index}][min_price]`, cityItem?.min_price ?? '');
+          formData.append(`cities_ids[${index}][max_price]`, cityItem?.max_price ?? '');
+          formData.append(`cities_ids[${index}][commision]`, cityItem?.commision ?? '');
+          formData.append(`cities_ids[${index}][commision_type]`, cityItem?.commision_type ?? '');
+        });
       }
 
       const response = await createUpdatePackage(formData);
@@ -231,6 +249,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -429,9 +448,171 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       </Scrollbar>
     </Stack>
   );
+  const handleCardClick = (cityId) => {
+    console.log('cityId', cityId);
+    router.push(paths.dashboard.system.viewDetails(cityId));
+  };
+  const renderCityContent = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      {!editMode && (
+        <Stack
+          alignItems="end"
+          onClick={() => setEditMode(true)}
+          sx={{
+            width: '-webkit-fill-available',
+            cursor: 'pointer',
+            position: 'absolute',
+            right: '1rem',
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+        </Stack>
+      )}
+      <Scrollbar>
+        {!editMode ? (
+          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
+            {details?.package_city?.map((cityItem: any, index: number) => (
+              <Box key={index} sx={{ width: '100%', mt: 2, mb: 2 }} component={Card}>
+                {/* City Name */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    cursor: 'pointer',
+                    mb: 1,
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                  onClick={() => handleCardClick(details?.package_city[0]?.city_id)}
+                >
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    City
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.city ?? 'N/A'}
+                  </Box>
+                </Box>
 
+                {/* Min Price */}
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Min Price
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.min_price ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                {/* Max Price */}
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Max Price
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.max_price ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                {/* Commission */}
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Commission
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.commision ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                {/* Commission Type */}
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Commission Type
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.commision_type ?? 'N/A'}
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <Box rowGap={2} columnGap={2} display="grid" pb={1}>
+            <FormProvider methods={Schoolmethods} onSubmit={onSubmit}>
+              <Box
+                mt={2}
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns="repeat(1, 1fr)"
+              >
+                {details?.package_city?.map((cityItem: any, index: number) => (
+                  <Box key={index}>
+                    <RHFTextField
+                      name={`cities_ids[${index}][min_price]`}
+                      label="Min Price"
+                      defaultValue={cityItem?.min_price ?? ''}
+                      sx={{ mt: 1, mb: 3 }}
+                    />
+                    <RHFTextField
+                      name={`cities_ids[${index}][max_price]`}
+                      label="Max Price"
+                      defaultValue={cityItem?.max_price ?? ''}
+                      sx={{ mt: 1, mb: 3 }}
+                    />
+                    <RHFTextField
+                      name={`cities_ids[${index}][commision]`}
+                      label="Commission"
+                      defaultValue={cityItem?.commision ?? ''}
+                      sx={{ mt: 1, mb: 3 }}
+                    />
+                    <RHFSelect
+                      name={`cities_ids[${index}][commision_type]`}
+                      label="Commission Type"
+                      defaultValue={cityItem?.commision_type ?? ''}
+                      sx={{ mt: 1, mb: 3 }}
+                    >
+                      <MenuItem value="percentage">Percentage</MenuItem>
+                      <MenuItem value="flat_amount">Flat Amount</MenuItem>
+                    </RHFSelect>
+                  </Box>
+                ))}
+              </Box>
+
+              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+                <Button variant="outlined" color="error" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  Update
+                </LoadingButton>
+              </Stack>
+            </FormProvider>
+          </Box>
+        )}
+      </Scrollbar>
+    </Stack>
+  );
   return (
     <>
+      <Tabs value={selectedTab} onChange={handleTabChange} aria-label="package details tabs">
+        <Tab label="Details" />
+        <Tab label="City" />
+      </Tabs>
       {loading ? (
         <Box
           sx={{
@@ -446,20 +627,31 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       ) : (
         <>
           {' '}
-          <Grid container spacing={1} rowGap={1}>
-            <Grid xs={12} md={8}>
-              {renderContent}
+          {selectedTab === 0 && (
+            <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
+              <Grid xs={12} md={8}>
+                {renderContent}
+              </Grid>
             </Grid>
-          </Grid>{' '}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            sx={{ mt: 7, mb: 5 }}
-            onClick={handleOpenDialog}
-          >
-            Add package document
-          </Button>
+          )}{' '}
+          {selectedTab === 0 && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              sx={{ mt: 7, mb: 5 }}
+              onClick={handleOpenDialog}
+            >
+              Add package document
+            </Button>
+          )}
+          {selectedTab === 1 && (
+            <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
+              <Grid xs={12} md={8}>
+                {renderCityContent}
+              </Grid>
+            </Grid>
+          )}
           <PackageDocumentCreateUpdate
             open={openDialog}
             onClose={handleCloseDialog}
