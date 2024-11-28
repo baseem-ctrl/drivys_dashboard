@@ -350,17 +350,18 @@ export default function UserNewEditForm({
       ) {
         body.append('gear', data?.gear);
       }
-
-      if (currentUser?.id) {
-        body.append(
-          'vehicle_type_id',
-          data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
-        );
-      } else {
-        body.append(
-          'vehicle_type_id',
-          data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
-        );
+      if (values?.user_type === 'TRAINER' || values?.user_type === 'STUDENT') {
+        if (currentUser?.id) {
+          body.append(
+            'vehicle_type_id',
+            data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
+          );
+        } else {
+          body.append(
+            'vehicle_type_id',
+            data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
+          );
+        }
       }
       if (data?.vendor_id) {
         const matchedVendor = schoolList.find(
