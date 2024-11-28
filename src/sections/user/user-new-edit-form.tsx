@@ -690,7 +690,7 @@ export default function UserNewEditForm({
                     name="vehicle_type_id"
                     label="Select Category"
                     placeholder="Search Category..."
-                    options={category.map((item: any) => ({
+                    options={category?.map((item: any) => ({
                       label: item.category_translations
                         .map((translation: any) => translation.name) // Extract all names
                         .join(' - '), // Display full name
