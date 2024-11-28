@@ -504,17 +504,16 @@ export default function UserDetailsContent({
                       },
                       {
                         label: 'Verified At',
-                        value:
-                          details?.verified_at === null ? (
-                            <Box>
-                              <Button variant="soft" onClick={handleVerify}>
-                                {' '}
-                                Verify
-                              </Button>
-                            </Box>
-                          ) : (
-                            moment.utc(details?.verified_at).format('ll')
-                          ),
+                        value: !details?.verified_at ? (
+                          <Box>
+                            <Button variant="soft" onClick={handleVerify}>
+                              {' '}
+                              Verify
+                            </Button>
+                          </Box>
+                        ) : (
+                          moment.utc(details?.verified_at).format('ll')
+                        ),
                       },
                     ]
                   : []),
