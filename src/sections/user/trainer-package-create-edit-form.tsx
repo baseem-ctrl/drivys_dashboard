@@ -86,14 +86,16 @@ const TrainerPackageCreateEditForm = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (!name || !value) {
+    if (!name || value === undefined) {
       console.error('Missing name or value in event:', e);
       return;
     }
 
+    const updatedValue = name === 'trainer_price' && value !== '' ? parseFloat(value) : value;
+
     setFormValues((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: updatedValue,
     }));
 
     setErrors((prev) => ({
@@ -163,7 +165,7 @@ const TrainerPackageCreateEditForm = ({
                 label="Trainer Price"
                 type="number"
                 value={formValues.trainer_price}
-                onChange={handleChange}
+                onInput={handleChange}
                 fullWidth
                 error={Boolean(errors.trainer_price)}
                 helperText={errors.trainer_price}
