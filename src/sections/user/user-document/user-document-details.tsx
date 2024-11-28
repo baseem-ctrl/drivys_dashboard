@@ -171,7 +171,17 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         enqueueSnackbar('Failed to update document!', { variant: 'error' });
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       setSelectedImage(null);
       setEditMode(null);
@@ -190,10 +200,17 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         enqueueSnackbar('Failed to delete document!', { variant: 'error' });
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || 'An error occurred while deleting.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       reload();
       setSelectedImage(null);
+      reset();
     }
   };
   const handleOpenFile = (fileUrl) => {
@@ -297,7 +314,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
-                          //   padding: 2,
+                          padding: 2,
                           width: '100%',
                           //   height: '590px',
                         }}
@@ -305,12 +322,8 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                         <Typography
                           sx={{
                             fontWeight: 'bold',
-                            marginRight: 2,
                             fontSize: '16px',
                             alignSelf: 'flex-start',
-                            marginBottom: 3,
-                            marginTop: 2,
-                            marginLeft: 3,
                           }}
                         >
                           Document Details:
@@ -318,7 +331,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                         <Stack
                           spacing={2}
                           alignItems="flex-start"
-                          sx={{ typography: 'body2', padding: 2, width: '100%' }}
+                          sx={{ typography: 'body2', width: '100%' }}
                         >
                           <Box
                             sx={{
@@ -326,7 +339,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -354,7 +366,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -383,7 +394,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -413,7 +423,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -446,7 +455,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -473,7 +481,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -500,7 +507,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -537,12 +543,13 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                           marginTop: '20px',
                           // height: '570px',
                           width: '100%',
+                          padding: '2',
                         }}
                       >
                         <Stack
                           spacing={4}
                           alignItems="flex-start"
-                          sx={{ typography: 'body2', padding: 2, width: '100%' }}
+                          sx={{ typography: 'body2', width: '100%' }}
                         >
                           <Controller
                             name="doc_type"
@@ -602,6 +609,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                 type="date"
                                 variant="outlined"
                                 sx={{ width: '100%' }}
+                                InputLabelProps={{ shrink: true }}
                               />
                             )}
                           />

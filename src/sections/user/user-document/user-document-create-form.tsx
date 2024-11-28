@@ -38,9 +38,18 @@ export default function UserDocumentCreateUpdate({
     doc_side: Yup.string(),
     expiry: Yup.date(),
   });
-
+  const defaultValues = useMemo(
+    () => ({
+      user_id: '',
+      doc_type: '',
+      doc_side: '',
+      expiry: '',
+    }),
+    []
+  );
   const methods = useForm({
     resolver: yupResolver(DocumentSchema),
+    defaultValues,
   });
 
   const { reset, setValue, watch } = methods;
@@ -53,19 +62,25 @@ export default function UserDocumentCreateUpdate({
         doc_file: watch('doc_file'),
         expiry: watch('expiry'),
       };
-
-      console.log('Data on create:', data);
-
-      await createUserDocument(data);
-
-      enqueueSnackbar('Document created successfully!', { variant: 'success' });
-
-      reload();
-      reset();
-      onClose();
+      const response = await createUserDocument(data);
+      if (response) {
+        enqueueSnackbar('Document created successfully!', { variant: 'success' });
+        reload();
+        onClose();
+      }
     } catch (error) {
-      console.error('Error creating document:', error);
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
       reset();
     }
   };
