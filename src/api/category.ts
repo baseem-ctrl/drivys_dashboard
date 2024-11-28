@@ -17,6 +17,7 @@ interface useGetCategoryParams {
   search?: any;
   published?: any;
   parent_id?: any;
+  has_child?: any;
 }
 export function useGetAllCategory({
   limit,
@@ -24,6 +25,7 @@ export function useGetAllCategory({
   search,
   published,
   parent_id,
+  has_child,
 }: useGetCategoryParams = {}) {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -32,6 +34,7 @@ export function useGetAllCategory({
     if (search) params.search = search;
     if (parent_id) params.parent_id = parent_id;
     if (published || published === '0') params.published = published;
+    if (has_child || has_child === '0') params.has_child = has_child;
 
     return params;
   }, [limit, page, search, parent_id, published]);
