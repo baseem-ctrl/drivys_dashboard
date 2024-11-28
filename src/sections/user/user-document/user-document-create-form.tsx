@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -44,24 +44,30 @@ export default function UserDocumentCreateUpdate({
   });
 
   const { reset, setValue, watch } = methods;
-
   const handleCreateClick = async () => {
-    const data = {
-      user_id: user_id,
-      doc_type: watch('doc_type'),
-      doc_side: watch('doc_side'),
-      doc_file: watch('doc_file'),
-      expiry: watch('expiry'),
-    };
+    try {
+      const data = {
+        user_id: user_id,
+        doc_type: watch('doc_type'),
+        doc_side: watch('doc_side'),
+        doc_file: watch('doc_file'),
+        expiry: watch('expiry'),
+      };
 
-    console.log('Data on create:', data);
+      console.log('Data on create:', data);
 
-    // You can also send data to your API here if needed
-    await createUserDocument(data);
-    enqueueSnackbar('Document created successfully!', { variant: 'success' });
-    reload();
-    reset(); // reset the form if necessary
-    onClose(); // close the dialog if necessary
+      await createUserDocument(data);
+
+      enqueueSnackbar('Document created successfully!', { variant: 'success' });
+
+      reload();
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Error creating document:', error);
+      enqueueSnackbar(error.message, { variant: 'error' });
+      reset();
+    }
   };
 
   const handleClose = () => {
@@ -80,7 +86,9 @@ export default function UserDocumentCreateUpdate({
     { value: 'Passport', label: 'Passport' },
     { value: 'License', label: 'License' },
   ];
-
+  useEffect(() => {
+    reset();
+  }, [reset]);
   return (
     <FormProvider methods={methods}>
       <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
