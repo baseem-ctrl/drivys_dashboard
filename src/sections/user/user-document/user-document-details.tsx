@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Iconify from 'src/components/iconify';
-import { Box, Button, TextField, Menu, MenuItem } from '@mui/material';
+import { Box, Button, TextField, Menu, MenuItem, FormControlLabel } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Select, FormControl, InputLabel } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -605,10 +605,15 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               />
                             )}
                           />
-                          <Switch
-                            checked={isApproved}
-                            color="primary"
-                            onChange={handleSwitchChange}
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={isApproved}
+                                color="primary"
+                                onChange={handleSwitchChange}
+                              />
+                            }
+                            label="Approved"
                           />
                         </Stack>
                         <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
