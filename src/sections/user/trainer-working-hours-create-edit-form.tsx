@@ -76,6 +76,7 @@ export default function WorkingHoursCreateEditForm({
     reset,
     watch,
     handleSubmit,
+    setError,
     control,
     formState: { isSubmitting, errors },
   } = methods;
@@ -131,6 +132,17 @@ export default function WorkingHoursCreateEditForm({
       onClose();
       reload();
     } catch (error) {
+      if (error.errors) {
+        if (error.errors.end_time) {
+          const errorMessage = error.errors.end_time.join(' ');
+
+          setError('end_time', {
+            type: 'manual',
+            message: errorMessage,
+          });
+        }
+      }
+
       enqueueSnackbar(error.message, { variant: 'error' });
     }
   });
@@ -211,7 +223,7 @@ export default function WorkingHoursCreateEditForm({
               />
               {errors.end_time && (
                 <Box color="error.main" fontSize="small" mt={0.5}>
-                  {errors.end_time.message}
+                  {errors.end_time.message} {/* This will show the error message */}
                 </Box>
               )}
             </Box>
