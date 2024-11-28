@@ -252,7 +252,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLanguage
+            selectedLanguage || 'NA'
           )}
         </TableCell>
 
@@ -270,7 +270,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLocaleObject?.name
+            selectedLocaleObject?.name || 'NA'
           )}
         </TableCell>
 

@@ -267,7 +267,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Box
                     component="span"
                     onClick={() => {
-                      router.push(paths.dashboard.school.details(details?.vendor_id)); // Navigate to the school details page
+                      details?.vendor?.id
+                        ? router.push(paths.dashboard.school.details(details?.vendor_id))
+                        : ''; // Navigate to the school details page
                     }}
                     sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }} // Add some styles to indicate it's clickable
                   >
