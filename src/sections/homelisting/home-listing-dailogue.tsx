@@ -91,8 +91,8 @@ export default function HomeListingDialog({
     page: 0,
     limit: 1000,
     user_types: 'TRAINER',
+    is_verified: 1,
   });
-
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
 
   const today = moment().format('YYYY-MM-DD');
@@ -167,7 +167,6 @@ export default function HomeListingDialog({
     control,
     name: 'trainers', // Field array name for addons
   });
-
   const mapOptions = (items: any[], translationKey: string) =>
     items?.map((item) => ({
       label: item[translationKey]?.[0]?.name || 'No Name',
@@ -208,12 +207,12 @@ export default function HomeListingDialog({
       setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
   }, [updateValue]);
+
   useEffect(() => {
     if (users) setUserOptions(mapOptionsUser(users));
 
     // if (products) setProductOptions(mapOptions(products, 'product_translations'));
   }, [users]);
-
   // Function to add more pairs
   const handleAddMore = () => {
     append({ id: '', display_order: '' });
