@@ -66,6 +66,7 @@ const TABLE_HEAD = {
     { id: 'phoneNumber', label: 'Phone Number' },
     { id: 'dob', label: 'DOB' },
     { id: 'status', label: 'Status' },
+    { id: 'vendor', label: 'School' },
     { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },
     { id: 'cash_in_hand', label: 'Cash in Hand' },
     { id: 'verified_at', label: 'Verified At' },

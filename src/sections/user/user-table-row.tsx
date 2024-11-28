@@ -144,6 +144,9 @@ export default function UserTableRow({
         {currentUserType === 'TRAINER' && (
           <>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
+              {row?.vendor?.vendor_translations[0]?.name ?? 'NA'}
+            </TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
               {row?.max_cash_in_hand_allowed ?? 'NA'}
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>

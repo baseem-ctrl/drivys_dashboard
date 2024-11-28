@@ -603,16 +603,18 @@ export default function UserNewEditForm({
                   name="vendor_id"
                   label="Select School"
                   placeholder="Search School..."
-                  options={[
-                    ...schoolList.map((item: any) => ({
-                      label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
-                      value: item.id,
-                    })),
-                    {
-                      label: 'OTHER', // Add the "Other" option
-                      value: null, // Value for the "Other" option
-                    },
-                  ]}
+                  options={
+                    [
+                      ...schoolList?.map((item: any) => ({
+                        label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                        value: item.id,
+                      })),
+                      {
+                        label: 'OTHER', // Add the "Other" option
+                        value: null, // Value for the "Other" option
+                      },
+                    ] ?? []
+                  }
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                   disableClearable={true}
                   loading={schoolLoading}
@@ -691,12 +693,14 @@ export default function UserNewEditForm({
                     name="vehicle_type_id"
                     label="Select Category"
                     placeholder="Search Category..."
-                    options={category?.map((item: any) => ({
-                      label: item.category_translations
-                        .map((translation: any) => translation.name) // Extract all names
-                        .join(' - '), // Display full name
-                      value: item.id,
-                    }))}
+                    options={
+                      category?.map((item: any) => ({
+                        label: item.category_translations
+                          .map((translation: any) => translation.name) // Extract all names
+                          .join(' - '), // Display full name
+                        value: item.id,
+                      })) ?? []
+                    }
                     setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
                     disableClearable={true}
                     loading={categoryLoading}
@@ -740,7 +744,7 @@ export default function UserNewEditForm({
                         name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
                         getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
-                        options={dialect}
+                        options={dialect ?? []}
                         renderOption={(props, option: any) => (
                           <li {...props} key={option?.id}>
                             {option?.dialect_name ?? 'Unknown'}
