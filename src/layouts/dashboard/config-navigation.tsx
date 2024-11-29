@@ -212,14 +212,14 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
-      title: t('booking'),
-      path: paths.dashboard.booking.root,
-      icon: ICONS.booking,
-    },
-    {
       title: t('My School'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
+    },
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
     },
   ];
 

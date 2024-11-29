@@ -22,17 +22,6 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-const OPTIONS = [
-  {
-    label: 'Home',
-    linkTo: '/',
-  },
-  {
-    label: 'Settings',
-    linkTo: paths.dashboard.user.account,
-  },
-];
-
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
@@ -40,11 +29,22 @@ export default function AccountPopover() {
 
   // const { user } = useMockedUser();
   const { user, logout } = useAuthContext();
-
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
-
+  const OPTIONS = [
+    {
+      label: 'Home',
+      linkTo: '/',
+    },
+    {
+      label: 'Settings',
+      linkTo:
+        user?.user?.user_type === 'SCHOOL_ADMIN'
+          ? paths.dashboard.school.account
+          : paths.dashboard.user.account,
+    },
+  ];
   const handleLogout = async () => {
     try {
       await logout();

@@ -31,7 +31,7 @@ import CustomPopover from 'src/components/custom-popover/custom-popover';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useGetUsers } from 'src/api/users';
+import { updateUser, useGetUsers } from 'src/api/users';
 import { useEffect, useMemo, useState } from 'react';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -42,6 +42,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useGetTrainerNoSchool } from 'src/api/trainer';
+import { updateUserVerification } from 'src/api/school-admin';
 
 // ----------------------------------------------------------------------
 
@@ -61,7 +62,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const [trainerMappingId, setTrainerMappingId] = useState('');
   const [openEdit, setOpenEdit] = useState(false);
   const [editData, setEditData] = useState<any>(null);
-  const [editDetails, setIsEditDetails] = useState(false);
+  const [editDetails, setIsEditDetails] = useState();
   const [editableData, setEditableData] = useState(null);
   const [index, setIndex] = useState(null);
   const {
@@ -89,8 +90,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     vendor_commission_in_percentage: Yup.string().nullable(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
-  console.log('candidates', candidates);
-  console.log('schoolTrainersList', editDetails?.cash_clearance_date);
   const defaultValues = useMemo(
     () => ({
       cash_clearance_date: editDetails?.cash_clearance_date || '',
@@ -102,7 +101,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     }),
     [candidates]
   );
-  console.log('defualt values', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -181,8 +179,8 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         revalidateTrainers();
       }
     } catch (error) {
-      if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
@@ -196,7 +194,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const handlePopoverOpen = (e, trainer: any, index) => {
     popover.onOpen(e);
     setIsEditDetails(trainer);
-    setTrainerId(trainer?.id);
+    setTrainerId(trainer?.user_id);
     setTrainerMappingId(trainer?.id);
     setIndex(index);
   };
@@ -212,8 +210,8 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         }
       }
     } catch (error) {
-      if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
@@ -221,8 +219,27 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     }
   };
-  console.log('Validation errors:', errors);
-
+  const handleVerify = async (trainerId: any) => {
+    try {
+      const body = {
+        trainer_id: trainerId,
+        verify: !editDetails?.school_verified_at ? 1 : 0,
+      };
+      const response = await updateUserVerification(body);
+      if (response) {
+        enqueueSnackbar(response?.message);
+        revalidateTrainers();
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   return (
     <Box
       gap={3}
@@ -325,7 +342,14 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
 
                 <Stack spacing={1}>
                   <ListItemText
-                    primary={trainer?.user?.name}
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {trainer?.user?.name ?? 'NA'}
+                        {(trainer?.school_verified_at || trainer?.verified_at) && (
+                          <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
+                        )}
+                      </Box>
+                    }
                     secondary={trainer?.user?.email}
                     secondaryTypographyProps={{
                       mt: 0.5,
@@ -334,66 +358,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       color: 'text.disabled',
                     }}
                   />
-
-                  {/* <Stack direction="column"> */}
-                  {/* <IconButton
-                  size="small"
-                  color="error"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="solar:phone-bold" />
-                </IconButton>
-
-                <IconButton
-                  size="small"
-                  color="info"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="solar:chat-round-dots-bold" />
-                </IconButton>
-
-                <IconButton
-                  size="small"
-                  color="primary"
-                  sx={{
-                    borderRadius: 1,
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-                    },
-                  }}
-                >
-                  <Iconify width={18} icon="fluent:mail-24-filled" />
-                </IconButton>
-
-                <Tooltip title="Download CV">
-                  <IconButton
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      borderRadius: 1,
-                      bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
-                      '&:hover': {
-                        bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.16),
-                      },
-                    }}
-                  >
-                    <Iconify width={18} icon="eva:cloud-download-fill" />
-                  </IconButton>
-                </Tooltip> */}
-                  {/* </Stack> */}
                 </Stack>
                 {/* <TablePaginationCustom
               count={totalPages}
@@ -480,7 +444,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         arrow="bottom-center"
         sx={{ width: 140 }}
       >
-        <MenuItem
+        {/* <MenuItem
           onClick={(e) => {
             popover.onClose();
             router.push(paths.dashboard.school.detailsadmin(trainerId));
@@ -488,7 +452,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         >
           <Iconify icon="solar:eye-bold" />
           View
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem
           onClick={() => {
@@ -503,6 +467,15 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         <MenuItem onClick={() => handleEditOpen(trainerMappingId)}>
           <Iconify icon="eva:edit-fill" />
           Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            handleVerify(trainerId);
+          }}
+        >
+          <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
+          {!editDetails?.school_verified_at && !editDetails?.verified_at ? 'Verify' : 'Unverify'}
         </MenuItem>
       </CustomPopover>
       <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="sm">

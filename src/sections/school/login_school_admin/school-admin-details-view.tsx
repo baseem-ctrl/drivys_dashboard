@@ -75,7 +75,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
     }
   };
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
         heading="Schools Details"
         links={[{}]}
