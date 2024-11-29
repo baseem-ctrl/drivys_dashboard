@@ -77,7 +77,6 @@ export default function PackageCreateForm({
     category_id: Yup.number(),
     vendor_id: Yup.mixed(),
     drivys_commision: Yup.number(),
-    vendor_commision: Yup.number(),
     min_price: Yup.number(),
     max_price: Yup.number(),
     commision: Yup.number(),
@@ -175,7 +174,6 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     formData.append(`category_id`, data?.category_id);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
-    if (data?.vendor_commision) formData.append('vendor_commision', data?.vendor_commision);
 
     if (data?.cities_ids && Array.isArray(data.cities_ids)) {
       data.cities_ids.forEach((city: any, index: number) => {
@@ -286,14 +284,7 @@ export default function PackageCreateForm({
                 suffix="AED"
               />
             </Grid>
-            <Grid item xs={6}>
-              <RHFTextField
-                name="vendor_commision"
-                label="Vendor Commission"
-                type="number"
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
+
             <Grid item xs={6}>
               {' '}
               <RHFSelect

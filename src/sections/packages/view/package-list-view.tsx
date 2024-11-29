@@ -60,7 +60,6 @@ const TABLE_HEAD = [
   { id: 'is_published', label: 'Is published' },
   { id: 'Vendor', label: 'School' },
   { id: 'drivys_commision', label: 'Drivys Commision' },
-  { id: 'vendor_commision', label: 'Vendor Commision' },
   { id: 'category', label: 'Category' },
   { id: 'action', label: 'Action' },
 
