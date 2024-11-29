@@ -159,6 +159,9 @@ export const endpoints = {
       addCommision: 'admin/vendor/bulk/update-commision',
     },
   },
+  schoolAdmin: {
+    verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
+  },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',
     createUpdate: 'admin/home-listing/create-home-listing',
