@@ -124,6 +124,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           ? category.find((category) => category?.id === details?.category_id)
               ?.category_translations[0]?.name
           : '',
+      vendor_commision: details?.vendor_commision || '',
+      drivys_commision: details?.drivys_commision || '',
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
@@ -141,6 +143,22 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   } = Schoolmethods;
   const { isSubmitting, errors } = schoolFormState;
   const values = schoolWatch();
+  useEffect(() => {
+    if (details) {
+      const defaultVendorValues = {
+        locale: selectedLocaleObject?.locale || '',
+        name: selectedLocaleObject?.name || '',
+        number_of_sessions: details?.number_of_sessions || '',
+        session_inclusions: selectedLocaleObject?.session_inclusions || '',
+        is_published: details?.is_published === 0 ? false : true,
+        vendor_id: details?.vendor_id,
+        category_id: details?.category_id || '',
+        vendor_commision: details?.vendor_commision,
+        drivys_commision: details?.drivys_commision,
+      };
+      schoolReset(defaultVendorValues);
+    }
+  }, [details, schoolReset, selectedLocaleObject]);
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
     const selectedLocaleObject = details?.package_translations.find(
@@ -183,6 +201,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         is_published: data?.is_published ? '1' : '0',
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
+        drivys_commision: data?.drivys_commision || details?.drivys_commision,
+        vendor_commision: data?.vendor_commision || details?.vendor_commision,
       };
       let formData = new FormData();
 
@@ -193,6 +213,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
       formData.append('category_id', payload.category_id || '');
+
+      formData.append('vendor_commision', payload.vendor_commision || '');
+      formData.append('drivys_commision', payload.drivys_commision || '');
 
       // Handle `package_translations` (assumes only one translation)
       if (payload.package_translations && payload.package_translations.length > 0) {
@@ -282,6 +305,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               ]) || []),
 
               { label: 'Number of sessions', value: details?.number_of_sessions ?? 'NA' },
+              { label: 'Drivy Commission', value: details?.drivys_commision ?? 'NA' },
+              { label: 'Vendor Commission', value: details?.vendor_commision ?? 'NA' },
               {
                 label: 'Category',
                 value: (() => {
@@ -380,7 +405,17 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       ),
                     }}
                   />
+                  <Controller
+                    name="vendor_commision"
+                    control={schoolControl}
+                    render={({ field }) => <TextField label="Vendor Commission" {...field} />}
+                  />
 
+                  <Controller
+                    name="drivys_commision"
+                    control={schoolControl}
+                    render={({ field }) => <TextField label="Drivy's Commission" {...field} />}
+                  />
                   <RHFAutocompleteSearch
                     name="vendor_id"
                     label="Select School"

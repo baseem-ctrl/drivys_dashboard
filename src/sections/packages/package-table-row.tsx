@@ -187,7 +187,7 @@ export default function PackageTableRow({
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,
         drivys_commision: data?.drivys_commision || drivys_commision,
-        vendor_commission: data?.vendor_commision || vendor_commision,
+        vendor_commision: data?.vendor_commision || vendor_commision,
 
         package_id: row?.id,
       };
