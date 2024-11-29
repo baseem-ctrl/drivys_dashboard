@@ -64,7 +64,6 @@ export default function PackageTableRow({
     vendor_user,
     number_of_sessions,
     category_id,
-    vendor_commision,
     drivys_commision,
     vendor_id,
   } = row;
@@ -119,7 +118,6 @@ export default function PackageTableRow({
     vendor_id: Yup.string(),
     number_of_sessions: Yup.string(),
     category_id: Yup.string(),
-    vendor_commision: Yup.string(),
     drivys_commision: Yup.string(),
   });
   const defaultValues = useMemo(
@@ -134,7 +132,6 @@ export default function PackageTableRow({
       vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
-      vendor_commision: vendor_commision || vendor_commision === 0 ? vendor_commision : '',
       drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
     }),
     [selectedLocaleObject, row, editingRowId]
@@ -187,7 +184,6 @@ export default function PackageTableRow({
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,
         drivys_commision: data?.drivys_commision || drivys_commision,
-        vendor_commission: data?.vendor_commision || vendor_commision,
 
         package_id: row?.id,
       };
@@ -396,28 +392,6 @@ export default function PackageTableRow({
           )}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
-          {editingRowId === row.id ? (
-            <Controller
-              name="vendor_commision"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.email}
-                  value={field.value || field.value === 0 ? field.value : ''}
-                  helperText={errors.email ? errors.email.message : ''}
-                  type="number"
-                />
-              )}
-            />
-          ) : vendor_commision || vendor_commision === 0 ? (
-            vendor_commision
-          ) : (
-            'N/A'
-          )}
-        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller

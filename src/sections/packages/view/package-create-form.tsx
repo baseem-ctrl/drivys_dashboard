@@ -76,8 +76,7 @@ export default function PackageCreateForm({
     number_of_sessions: Yup.number(),
     category_id: Yup.number(),
     vendor_id: Yup.mixed(),
-    drivys_commission: Yup.number(),
-
+    drivys_commision: Yup.number(),
     min_price: Yup.number(),
     max_price: Yup.number(),
     commision: Yup.number(),
@@ -174,7 +173,8 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     formData.append(`category_id`, data?.category_id);
-    if (data?.drivys_commission) formData.append('drivys_commission', data?.drivys_commission);
+    if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
+
     if (data?.cities_ids && Array.isArray(data.cities_ids)) {
       data.cities_ids.forEach((city: any, index: number) => {
         formData.append(`cities_ids[${index}][id]`, city?.id);
@@ -277,13 +277,14 @@ export default function PackageCreateForm({
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
-                name="drivys_commission"
+                name="drivys_commision"
                 label="Drivy's Commission"
                 type="number"
                 inputProps={{ min: 0 }}
                 suffix="AED"
               />
             </Grid>
+
             <Grid item xs={6}>
               {' '}
               <RHFSelect
