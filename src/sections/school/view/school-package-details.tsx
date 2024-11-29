@@ -46,13 +46,11 @@ export default function SchoolPackageDetails({ id }) {
                     sx={{ paddingRight: '14px', fontSize: '14px', fontWeight: 'bold' }}
                   >
                     {packageItem.package_translations.length > 0
-                      ? packageItem.package_translations.map((trans) =>
-                          trans.locale === 'en' || trans.locale === 'ar' ? (
-                            <Typography key={trans.locale}>
-                              {trans.name.toUpperCase() || 'UNNAMED PACKAGE'}
-                            </Typography>
-                          ) : null
-                        )
+                      ? packageItem.package_translations.map((trans) => (
+                          <Typography key={trans.locale}>
+                            {trans.name.toUpperCase() || 'UNNAMED PACKAGE'}
+                          </Typography>
+                        ))
                       : 'UNNAMED PACKAGE'}
                   </Typography>
                 </Stack>
