@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
-import { endpoints, drivysFetcher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ export function useGetPendingVerificationRequest({
       is_verified,
     };
 
-    return `${endpoints.trainerPendingRequest}?${new URLSearchParams(queryParams)}`;
+    return `${endpoints.pendingRequest.trainerPendingRequest}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
@@ -47,4 +47,14 @@ export function useGetPendingVerificationRequest({
   };
 
   return { ...memoizedValue, revalidatePendingRequests };
+}
+export function rejectAcceptPendingRequest(mappingId: number, verify: number) {
+  const body = {
+    mapping_id: mappingId,
+    verify: verify,
+  };
+
+  const URL = endpoints.pendingRequest.rejectAcceptPendingRequest;
+  const response = drivysCreator([URL, body]);
+  return response;
 }

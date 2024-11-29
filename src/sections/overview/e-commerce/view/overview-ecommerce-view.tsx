@@ -161,11 +161,9 @@ export default function OverviewEcommerceView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
-          <EcommerceCurrentBalance
-            title="Current Balance"
-            currentBalance={187650}
-            sentAmount={25500}
-          />
+          <Grid xs={12} md={6} lg={8}>
+            <PendingRequests />
+          </Grid>
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
@@ -184,9 +182,6 @@ export default function OverviewEcommerceView() {
 
         <Grid xs={12} md={6} lg={4}>
           <EcommerceLatestProducts title="Latest Products" list={_ecommerceLatestProducts} />
-        </Grid>
-        <Grid xs={12} md={6} lg={8}>
-          <PendingRequests />
         </Grid>
       </Grid>
     </Container>
