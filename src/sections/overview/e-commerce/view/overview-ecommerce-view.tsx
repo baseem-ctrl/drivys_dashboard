@@ -26,6 +26,7 @@ import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
+import PendingRequests from '../ecommerce-pending-trainer-request';
 
 // ----------------------------------------------------------------------
 
@@ -183,6 +184,9 @@ export default function OverviewEcommerceView() {
 
         <Grid xs={12} md={6} lg={4}>
           <EcommerceLatestProducts title="Latest Products" list={_ecommerceLatestProducts} />
+        </Grid>
+        <Grid xs={12} md={6} lg={8}>
+          <PendingRequests />
         </Grid>
       </Grid>
     </Container>
