@@ -698,15 +698,24 @@ export default function UserDetailsContent({
 
   const handleChangeStoreAddress = (e) => {
     const { name, value } = e.target;
+
+    // Update address form directly for other fields
     setAddressForm((prev) => ({ ...prev, [name]: value }));
 
-    if (name === 'latitude' || name === 'longitude') {
-      setMarkerPosition({
-        lat: addressForm.latitude || 0,
-        lng: addressForm.longitude || 0,
-      });
+    // Directly update markerPosition for latitude and longitude
+    if (name === 'latitude') {
+      setMarkerPosition((prev) => ({
+        ...prev,
+        lat: parseFloat(value) || 0,
+      }));
+    } else if (name === 'longitude') {
+      setMarkerPosition((prev) => ({
+        ...prev,
+        lng: parseFloat(value) || 0,
+      }));
     }
   };
+
   // State to manage the visibility of the map for each address
   const [showMapIndex, setShowMapIndex] = useState(null);
   // Function to handle user deletion
@@ -995,6 +1004,7 @@ export default function UserDetailsContent({
               <TextField
                 label="Longitude"
                 variant="outlined"
+                type="number"
                 name="longitude"
                 value={markerPosition.lng}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
@@ -1003,6 +1013,7 @@ export default function UserDetailsContent({
               <TextField
                 label="Latitude"
                 variant="outlined"
+                type="number"
                 name="latitude"
                 value={markerPosition.lat}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
@@ -1291,6 +1302,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="longitude"
+                      type="number"
                       value={markerPosition.lng}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
@@ -1300,6 +1312,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="latitude"
+                      type="number"
                       value={markerPosition.lat}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
