@@ -275,5 +275,8 @@ export const endpoints = {
     getList: 'admin/notification/get-list',
     send: 'admin/notification/send-notification',
   },
-  trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
+  pendingRequest: {
+    trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
+    rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
+  },
 };
