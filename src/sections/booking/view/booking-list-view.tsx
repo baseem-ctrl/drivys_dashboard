@@ -233,10 +233,10 @@ export default function BookingListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Booking Orders List"
+        heading="Bookings"
         links={[
           { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Order', href: paths.dashboard.booking.root },
+          { name: 'Booking', href: paths.dashboard.booking.root },
           { name: 'List' },
         ]}
         sx={{ mb: 3 }}
