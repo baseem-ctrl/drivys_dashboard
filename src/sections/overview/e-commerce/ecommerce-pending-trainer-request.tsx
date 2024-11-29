@@ -123,9 +123,9 @@ export default function PendingRequests() {
   }
   console.log('pendingRequests', pendingRequests);
   return (
-    <Card sx={{ mt: 1, padding: 2, boxShadow: 3 }}>
+    <Card sx={{ mt: 1, boxShadow: 3 }}>
       {' '}
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: 1 }}>
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           Pending Verification Requests
         </Typography>
@@ -134,8 +134,8 @@ export default function PendingRequests() {
             <Card
               key={request.id}
               sx={{
-                mb: 2,
-                p: 2,
+                mb: 1,
+                p: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -178,7 +178,11 @@ export default function PendingRequests() {
                         },
                       }}
                       onClick={() =>
-                        handleClickSchoolDetails(request?.vendor?.vendor_translations[0]?.vendor_id)
+                        request?.vendor?.vendor_translations[0]?.vendor_id
+                          ? handleClickSchoolDetails(
+                              request?.vendor?.vendor_translations[0]?.vendor_id
+                            )
+                          : ''
                       }
                     >
                       {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
@@ -223,6 +227,7 @@ export default function PendingRequests() {
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
           dense={table.dense}
+          rowsPerPageOptions={[]}
         />
       </Container>
     </Card>
