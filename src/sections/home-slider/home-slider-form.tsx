@@ -40,6 +40,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]); // state for image IDs
   const [imageDialogOpen, setImageDialogOpen] = useState(false); // state for image dialog visibility
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedPosition, setSelectedPosition] = useState('top');
 
   const { language } = useGetAllLanguage(0, 1000);
 
@@ -54,6 +55,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
     published: Yup.boolean(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
+    position: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -64,6 +66,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
+      position: updateValue?.position || 'top',
     }),
     [updateValue, today]
   );
@@ -106,6 +109,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
       formData.append('published', data.published ? '1' : '0');
+      formData.append('is_hero', data.position === 'top' ? 1 : 0);
       formData.append(
         'show_until',
         data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''
@@ -188,6 +192,15 @@ export default function HomeSliderForm({ updateValue }: Props) {
             inputProps={{ min: today }}
           />
           <RHFSwitch name="published" label={t('Published')} />
+          <RHFSelect
+            name="position"
+            label="Position"
+            value={selectedPosition}
+            onChange={(e) => setSelectedPosition(e.target.value)} // Update position state
+          >
+            <MenuItem value="top">Top</MenuItem>
+            <MenuItem value="bottom">Bottom</MenuItem>
+          </RHFSelect>
         </Box>
 
         <Box pt={3}>
