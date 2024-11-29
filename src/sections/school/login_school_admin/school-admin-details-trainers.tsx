@@ -102,7 +102,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     }),
     [candidates]
   );
-  console.log('defualt values', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,

@@ -17,6 +17,7 @@ import AccountBilling from '../account-billing';
 import AccountSocialLinks from '../account-social-links';
 import AccountNotifications from '../account-notifications';
 import AccountChangePassword from '../account-change-password';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +55,7 @@ export default function AccountView() {
   const settings = useSettingsContext();
 
   const [currentTab, setCurrentTab] = useState('general');
+  const { user } = useAuthContext();
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -63,11 +65,15 @@ export default function AccountView() {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Account"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.list },
-          { name: 'Account' },
-        ]}
+        links={
+          user?.user?.user_type === 'SCHOOL_ADMIN'
+            ? [{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Account' }]
+            : [
+                { name: 'Dashboard', href: paths.dashboard.root },
+                { name: 'User', href: paths.dashboard.user.list },
+                { name: 'Account' },
+              ]
+        }
         sx={{
           mb: { xs: 3, md: 5 },
         }}

@@ -26,6 +26,7 @@ import { fData } from 'src/utils/format-number';
 import { countries } from 'src/assets/data';
 import { UpdateProfile, DeleteUserProfile } from 'src/api/auth';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetAllLanguage } from 'src/api/language';
 
 // ----------------------------------------------------------------------
 
@@ -33,8 +34,26 @@ export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
   const { user, logout } = useAuthContext();
   const router = useRouter();
-
+  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
+    useGetAllLanguage(0, 1000);
   // Setting up default values
+
+  // Setup Yup schema validation
+  const UpdateUserSchema = Yup.object().shape({
+    displayName: Yup.string().required('Name is required'),
+    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    photoURL: Yup.mixed<any>().nullable(),
+    phoneNumber: Yup.string()
+      .required('Phone number is required')
+      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+    countryCode: Yup.string().required('Country Code is required'),
+    DOB: Yup.string(), // Optional field
+    isPublic: Yup.boolean(),
+    isActive: Yup.boolean(), // New field for validation
+    walletBalance: Yup.number().required('Wallet balance is required'),
+    walletPoints: Yup.number().required('Wallet points are required'),
+    locale: Yup.mixed().nullable(),
+  });
   const defaultValues = {
     countryCode: user?.user?.country_code || '',
     DOB: user?.user?.dob || '',
@@ -46,27 +65,13 @@ export default function AccountGeneral() {
     isActive: user?.user?.is_active || false,
     walletBalance: user?.user?.wallet_balance || 0,
     walletPoints: user?.user?.wallet_points || 0,
-    locale: user?.user?.locale || '',
+    locale: language
+      ? language?.find((option) => option?.language_culture === user?.user?.locale)
+      : '',
   };
-
-  // Setup Yup schema validation
-  const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    countryCode: Yup.string().required('Country Code is required'),
-    DOB: Yup.string(), // Optional field
-    isPublic: Yup.boolean(),
-    isActive: Yup.boolean(), // New field for validation
-    walletBalance: Yup.number().required('Wallet balance is required'),
-    walletPoints: Yup.number().required('Wallet points are required'),
-    locale: Yup.string().required('Locale is required'),
-  });
-
   // Initializing useForm hook with yupResolver and defaultValues
   const methods = useForm({
-    resolver: yupResolver(UpdateUserSchema),
+    resolver: yupResolver(UpdateUserSchema) as any,
     defaultValues,
   });
 
@@ -101,8 +106,8 @@ export default function AccountGeneral() {
         name: data.displayName,
         email: data.email,
         phone: data.phoneNumber,
-        country_code: data.countryCode,
-        locale: data.locale,
+        country_code: '971',
+        locale: data.locale?.language_culture,
         password: data.password || '',
         photo_url: data.photoURL?.preview || data.photoURL,
         is_active: data.isActive,
@@ -112,8 +117,13 @@ export default function AccountGeneral() {
       await UpdateProfile(updatedData);
       enqueueSnackbar('Update success!');
     } catch (error) {
-      console.error(error);
-      enqueueSnackbar('Update failed! Please try again.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   });
 
@@ -158,21 +168,25 @@ export default function AccountGeneral() {
               }
             />
 
-            <RHFSwitch
-              name="isPublic"
+            {/* <RHFSwitch
+              name="isActive"
               labelPlacement="start"
-              label="Public Profile"
+              label="Is Active"
               sx={{ mt: 5 }}
-            />
+              disabled
+            /> */}
 
-            <Button
-              variant="soft"
-              color="error"
-              sx={{ mt: 3 }}
-              onClick={() => handleDeleteUser(user?.user?.id)}
-            >
-              Delete User
-            </Button>
+            {user?.user?.userType === 'ADMIN' ||
+              (user?.user?.userType === 'SUPER_ADMIN' && (
+                <Button
+                  variant="soft"
+                  color="error"
+                  sx={{ mt: 3 }}
+                  onClick={() => handleDeleteUser(user?.user?.id)}
+                >
+                  Delete User
+                </Button>
+              ))}
           </Card>
         </Grid>
 
@@ -189,17 +203,26 @@ export default function AccountGeneral() {
             >
               <RHFTextField name="displayName" label="Name" />
               <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="countryCode" label="Country Code" />
+              <RHFTextField name="phoneNumber" label="Phone Number" prefix="+971" />
+              {/* <RHFTextField name="countryCode" label="Country Code" /> */}
               <RHFTextField name="password" label="Password" type="password" />
-              <RHFTextField name="locale" label="Locale" />
+              <RHFAutocomplete
+                name="locale"
+                label="Locale"
+                options={language ?? []}
+                getOptionLabel={(option) => {
+                  return option ? `${option?.name}` : '';
+                }}
+                renderOption={(props, option: any) => {
+                  return (
+                    <li {...props} key={option?.id}>
+                      {option?.name}
+                    </li>
+                  );
+                }}
+              />
             </Box>
-            <RHFSwitch
-              name="isActive"
-              labelPlacement="start"
-              label="Public Profile"
-              sx={{ mt: 2 }}
-            />
+            <RHFSwitch name="isActive" labelPlacement="start" label="Is Active" sx={{ mt: 2 }} />
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes

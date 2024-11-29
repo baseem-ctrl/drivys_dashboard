@@ -239,6 +239,7 @@ const schooladminRoutes = [
     children: [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+      { path: 'account', element: <UserAccountPage /> },
     ],
   },
   {
