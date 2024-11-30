@@ -85,7 +85,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
         action={
           currentTab === 'trainers' && (
             <Button onClick={quickCreate.onTrue} variant="contained">
-              Add Trainer
+              Create Trainer
             </Button>
           )
         }
