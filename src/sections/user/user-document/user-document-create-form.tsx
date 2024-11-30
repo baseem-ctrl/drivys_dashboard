@@ -77,6 +77,7 @@ export default function UserDocumentCreateUpdate({
             enqueueSnackbar(errorMessage, { variant: 'error' });
           }
         });
+        reset();
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
@@ -90,17 +91,6 @@ export default function UserDocumentCreateUpdate({
     onClose();
   };
 
-  const docSideOptions = [
-    { value: 'Front', label: 'Front' },
-    { value: 'Back', label: 'Back' },
-  ];
-
-  const docTypeOptions = [
-    { value: 'Card', label: 'Card' },
-    { value: 'ID', label: 'ID' },
-    { value: 'Passport', label: 'Passport' },
-    { value: 'License', label: 'License' },
-  ];
   useEffect(() => {
     reset();
   }, [reset]);
@@ -113,22 +103,22 @@ export default function UserDocumentCreateUpdate({
           <Box mt={2}>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <RHFSelect name="doc_type" label="Document Type" fullWidth>
-                  {docTypeOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
+                <RHFTextField
+                  name="doc_type"
+                  label="Doc Type"
+                  type="text"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
               </Grid>
               <Grid item xs={6}>
-                <RHFSelect name="doc_side" label="Document Side" fullWidth>
-                  {docSideOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
+                <RHFTextField
+                  name="doc_side"
+                  label="Doc Side"
+                  type="text"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
               </Grid>
               <Grid item xs={6}>
                 <RHFTextField

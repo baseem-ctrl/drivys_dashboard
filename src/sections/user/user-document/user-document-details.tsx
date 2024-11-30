@@ -14,20 +14,19 @@ import * as Yup from 'yup';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import moment from 'moment';
 import { createOrUpdatePackageDocument, deletePackageDocumentById } from 'src/api/packageDocument';
 import Switch from '@mui/material/Switch';
 import { createUserDocument, deleteUserDocumentById } from 'src/api/user-document';
 import UserDocumentCreateUpdate from './user-document-create-form';
 
 type Document = {
-  id: number;
-  package_id: string;
-  title: string;
-  description?: string;
-  file: File | null;
-  type: string;
-  status: string;
-  session_no: string;
+  doc_type: string;
+  doc_side: string;
+  doc_file: string;
+  expiry: string;
+  is_approved: string;
+  doc_id: string;
 };
 
 type Props = {
@@ -46,7 +45,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
 
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  //   console.log('documents', documents[0]);
 
   // Function to handle image file selection
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,21 +55,25 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       setSelectedImage(URL.createObjectURL(file));
     }
   };
-  console.log('documentsdocumentsdocuments', documents);
   const [confirm, setConfirm] = useState({
     value: false,
     onFalse: () => setConfirm({ ...confirm, value: false }),
   });
   const DocumentSchema = Yup.object().shape({
-    title: Yup.string(),
-    description: Yup.string(),
-    file: Yup.mixed(),
+    doc_type: Yup.string(),
+    doc_side: Yup.string(),
+    doc_file: Yup.mixed(),
+    expiry: Yup.date(),
+    is_approved: Yup.string(),
+    doc_id: Yup.string(),
   });
-
   const defaultDocumentValues = (details: Document) => ({
-    title: details.title || '',
-    description: details.description || '',
-    file: null,
+    doc_type: details.doc_type || '',
+    doc_side: details.doc_side || '',
+    doc_file: details.doc_file || '',
+    expiry: details.expiry || '',
+    is_approved: details.is_approved || '',
+    doc_id: details.doc_id || '',
   });
 
   const {
@@ -100,19 +102,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const handleFileClick = (file) => {
     window.open(file, '_blank'); // Open file in a new tab
   };
-  useEffect(() => {
-    if (editMode !== null && documents[editMode]) {
-      const document = documents[editMode];
-      setValue('doc', document.title || '');
-      setValue('status', document.status || '');
-      setValue('type', document.type || '');
-      setValue('file', document.file || '');
-      setValue('session', document.session_no || '');
-      setValue('file', document.file || '');
-      setIsApproved(document.is_approved === 0 ? false : true);
-      // setFilePreviewURL(document.file || '');
-    }
-  }, [documents, editMode]);
+
   const handleCancel = () => {
     reset();
     setEditMode(null);
@@ -121,27 +111,13 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     setEditMode(editIndex);
     setAnchorEl(null);
   };
-  function convertToCustomFormat(dateString) {
-    const date = new Date(dateString);
 
-    // Get day, month, year, hours, and minutes
-    const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
-    const hours = String(date.getHours()).padStart(2, '0'); // Ensure two digits
-    const minutes = String(date.getMinutes()).padStart(2, '0'); // Ensure two digits
-
-    // Return formatted string
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  }
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
       const updatedDocument = new FormData();
       // if (filePreviewURL) {
       //   updatedDocument.append('file', filePreviewURL);
       // }
-      console.log('document.doc_id', document.doc_id);
-      console.log('formData', formData);
       // updatedDocument.append('user_id', id);
       if (formData.doc_type) {
         updatedDocument.append('doc_type', formData.doc_type);
@@ -153,8 +129,11 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         updatedDocument.append('doc_file', formData.doc_file);
       }
       if (formData.expiry) {
-        updatedDocument.append('expiry', formData.expiry);
+        const expiryDate = new Date(formData.expiry);
+        const formattedExpiry = expiryDate.toISOString().split('T')[0];
+        updatedDocument.append('expiry', formattedExpiry);
       }
+
       const is_approved = isApproved ? 1 : 0;
 
       updatedDocument.append('is_approved', is_approved);
@@ -167,10 +146,13 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       if (response) {
         reload();
         enqueueSnackbar('Document updated successfully!', { variant: 'success' });
+        setEditMode(null);
       } else {
+        reset();
         enqueueSnackbar('Failed to update document!', { variant: 'error' });
       }
     } catch (error: any) {
+      reset();
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
           if (typeof errorMessage === 'object') {
@@ -184,7 +166,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       }
     } finally {
       setSelectedImage(null);
-      setEditMode(null);
+
       reload();
     }
   };
@@ -241,17 +223,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     setAnchorEl(null);
     setEditMode(null);
   };
-  const docTypeOptions = [
-    { value: 'Card', label: 'Card' },
-    { value: 'ID', label: 'ID' },
-    { value: 'Passport', label: 'Passport' },
-    { value: 'License', label: 'License' },
-  ];
-
-  const docSideOptions = [
-    { value: 'Front', label: 'Front' },
-    { value: 'Back', label: 'Back' },
-  ];
 
   return (
     <>
@@ -260,6 +231,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
           display: 'flex',
           justifyContent: 'flex-end',
           mt: 7,
+          mb: 8,
         }}
       >
         <Button
@@ -412,7 +384,9 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
                               >
-                                {doc?.created_at ? convertToCustomFormat(doc.created_at) : 'N/A'}
+                                {doc?.created_at
+                                  ? moment(doc.created_at).format('YYYY-MM-DD HH:mm:ss')
+                                  : 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -556,33 +530,26 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             control={control}
                             defaultValue={doc.doc_type}
                             render={({ field }) => (
-                              <FormControl variant="outlined" sx={{ width: '100%' }}>
-                                <InputLabel>Document Type</InputLabel>
-                                <Select {...field} label="Document Type">
-                                  {docTypeOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
+                              <TextField
+                                {...field}
+                                label="Document Type"
+                                variant="outlined"
+                                sx={{ width: '100%' }}
+                              />
                             )}
                           />
+
                           <Controller
                             name="doc_side"
                             control={control}
                             defaultValue={doc.doc_side}
                             render={({ field }) => (
-                              <FormControl variant="outlined" sx={{ width: '100%' }}>
-                                <InputLabel>Document Side</InputLabel>
-                                <Select {...field} label="Document Side">
-                                  {docSideOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
+                              <TextField
+                                {...field}
+                                label="Document Side"
+                                variant="outlined"
+                                sx={{ width: '100%' }}
+                              />
                             )}
                           />
                           <Controller
