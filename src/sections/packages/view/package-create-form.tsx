@@ -73,14 +73,23 @@ export default function PackageCreateForm({
     locale: Yup.string().required('Locale is required'),
     session_inclusions: Yup.string().required('Session inclusions is required'),
     is_published: Yup.boolean(),
-    number_of_sessions: Yup.number(),
+    number_of_sessions: Yup.number().test(
+      'is-even',
+      'Number of sessions must be an even number',
+      function (value) {
+        // If the value is defined, check if it's even
+        if (value !== undefined && value !== null) {
+          return value % 2 === 0;
+        }
+        // If value is undefined or null, the validation passes
+        return true;
+      }
+    ),
     category_id: Yup.number(),
     vendor_id: Yup.mixed(),
     drivys_commision: Yup.number(),
     min_price: Yup.number(),
     max_price: Yup.number(),
-    commision: Yup.number(),
-    commision_type: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -172,7 +181,7 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][name]`, data?.name);
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
-    formData.append(`category_id`, data?.category_id);
+    if (data?.category_id) formData.append(`category_id`, data?.category_id);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
 
     if (data?.cities_ids && Array.isArray(data.cities_ids)) {
@@ -180,8 +189,6 @@ export default function PackageCreateForm({
         formData.append(`cities_ids[${index}][id]`, city?.id);
         formData.append(`cities_ids[${index}][min_price]`, city?.min_price);
         formData.append(`cities_ids[${index}][max_price]`, city?.max_price);
-        formData.append(`cities_ids[${index}][commision]`, city?.commision);
-        formData.append(`cities_ids[${index}][commision_type]`, city?.commision_type);
       });
     }
     try {
@@ -335,23 +342,6 @@ export default function PackageCreateForm({
                 inputProps={{ min: 0 }}
               />
             </Grid>
-
-            <Grid item xs={6}>
-              <RHFTextField
-                name="cities_ids[0][commision]"
-                label="City Commission"
-                type="number"
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
-
-            <Grid item xs={6}>
-              <RHFSelect name="cities_ids[0][commision_type]" label="City Commission Type">
-                <MenuItem value="flat_amount">Flat Amount</MenuItem>
-                <MenuItem value="percentage">Percentage</MenuItem>
-              </RHFSelect>
-            </Grid>
-
             <Grid item xs={6}>
               <RHFCheckbox name="is_published" label="Publish" />
             </Grid>
