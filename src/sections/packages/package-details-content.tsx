@@ -75,8 +75,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
     published: 1,
   });
-  console.log('category', category);
-  console.log('haiuaiuisauisauis');
+
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.package_translations?.length > 0) {
