@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ export function createUpdatePackage(body: any) {
 
 export function deletePackage(id: any) {
   const URL = endpoints.package.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetPackageById(packageId: string) {

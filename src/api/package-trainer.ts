@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -76,6 +76,6 @@ export function useGetPackageTrainerById(packageTrainerId: number | string) {
 // Function to delete a package trainer by ID
 export function deletePackageTrainerById(id: any) {
   const URL = `${endpoints.packageTrainer.delete}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 import { IOrderItem } from 'src/types/order';
 
 // ----------------------------------------------------------------------
@@ -30,7 +30,7 @@ export function useGetPackagesDetailsByTrainer(trainerId: string | number) {
 
 export function deleteTrainer(id: any) {
   const URL = `${endpoints.trainer.delete}${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetTrainerNoSchool({ page, limit, search }: any) {

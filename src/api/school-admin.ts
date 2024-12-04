@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 import { IOrderItem } from 'src/types/order';
 
 export function updateUserVerification(body: any) {

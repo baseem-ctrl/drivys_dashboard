@@ -1,23 +1,16 @@
-
-
 import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 import { IOrderItem } from 'src/types/order';
 
 // ----------------------------------------------------------------------
-export function useGetStudents({
-  page,
-  limit,
-  trainer_id,
-}: any) {
+export function useGetStudents({ page, limit, trainer_id }: any) {
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
       page: page + 1,
       limit,
     };
-
 
     if (trainer_id) queryParams.trainer_id = trainer_id;
     return `${endpoints.trainer.getStudents}?${new URLSearchParams(queryParams)}`;

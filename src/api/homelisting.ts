@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -11,10 +11,10 @@ interface useGetDelivereyParams {
   locale?: string;
   search?: string;
   status?: number;
-  is_active?: number |string;
-  display_order?: number |string;
-  catalogue_type?: number |string;
-  trainer_id?: number ;
+  is_active?: number | string;
+  display_order?: number | string;
+  catalogue_type?: number | string;
+  trainer_id?: number;
 }
 
 export function useGetHomeListing({
@@ -42,17 +42,7 @@ export function useGetHomeListing({
     if (trainer_id) params.trainer_id = trainer_id;
 
     return params;
-  }, [
-    limit,
-    page,
-    locale,
-    search,
-    status,
-    is_active,
-    display_order,
-    catalogue_type,
-    trainer_id,
-  ]);
+  }, [limit, page, locale, search, status, is_active, display_order, catalogue_type, trainer_id]);
 
   const fullUrl = useMemo(
     () => `${endpoints.homeListing.list}?${new URLSearchParams(queryParams)}`,
@@ -105,7 +95,7 @@ export function updateDelivery(body: any) {
 
 export function deleteHomeListing(id: any) {
   const URL = endpoints.homeListing.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetHomeListingById(HomeListingId: string) {
@@ -192,9 +182,6 @@ export function addTrainer(body: any) {
   return response;
 }
 
-
-
-
 //LOGIN AS HomeListing ADMIN APIS
 export function useGetHomeListingByIdAdmin(HomeListingId: string) {
   const URL = endpoints.homeListing.detailsadmin;
@@ -220,6 +207,6 @@ export function useGetHomeListingByIdAdmin(HomeListingId: string) {
 }
 export function RemoveTrainerFromHomeListing(id: any) {
   const URL = endpoints.homeListing.removeTrainer + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

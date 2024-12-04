@@ -644,7 +644,7 @@ export default function UserNewEditForm({
                     ] ?? []
                   }
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
-                  disableClearable={true}
+                  disableClearable={false}
                   loading={schoolLoading}
                   value={defaultOption}
                 />

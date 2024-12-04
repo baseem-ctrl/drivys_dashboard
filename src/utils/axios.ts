@@ -28,7 +28,7 @@ export default axiosInstance;
 
 // ----------------------------------------------------------------------
 
-export const barrySmasher = async (args: string | [string, AxiosRequestConfig]) => {
+export const drivysSmasher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.delete(url, { ...config });
@@ -193,6 +193,7 @@ export const endpoints = {
       getById: 'admin/user-docs/get-doc',
       deleteById: 'admin/user-docs/delete-user-doc',
       deleteAllByUserId: 'admin/user-docs/delete-user-docs',
+      approve: 'admin/user-docs/update-approve-doc',
     },
   },
   trainer: {
