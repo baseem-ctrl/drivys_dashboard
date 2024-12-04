@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -14,6 +14,7 @@ import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { createUserDocument } from 'src/api/user-document';
+import moment from 'moment';
 
 type Props = {
   open: boolean;
@@ -33,40 +34,58 @@ export default function UserDocumentCreateUpdate({
   const { enqueueSnackbar } = useSnackbar();
 
   const DocumentSchema = Yup.object().shape({
-    user_id: Yup.number(),
     doc_type: Yup.string(),
     doc_side: Yup.string(),
     expiry: Yup.date(),
+    file_type: Yup.string(),
+    doc_file: Yup.mixed(),
   });
   const defaultValues = useMemo(
     () => ({
-      user_id: '',
       doc_type: '',
       doc_side: '',
       expiry: '',
+      file_type: '',
+      doc_file: [],
     }),
     []
   );
   const methods = useForm({
-    resolver: yupResolver(DocumentSchema),
+    resolver: yupResolver(DocumentSchema) as any,
     defaultValues,
   });
 
-  const { reset, setValue, watch } = methods;
-  const handleCreateClick = async () => {
+  const {
+    reset,
+    setValue,
+    watch,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = methods;
+  const values = watch();
+  console.log(errors, 'errors');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const onSubmit = handleSubmit(async (data) => {
+    console.log(data, 'data');
+
     try {
-      const data = {
-        user_id: user_id,
-        doc_type: watch('doc_type'),
-        doc_side: watch('doc_side'),
-        doc_file: watch('doc_file'),
-        expiry: watch('expiry'),
-      };
-      const response = await createUserDocument(data);
+      const body = new FormData();
+      const fileInput = fileInputRef.current;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        body.append('doc_file', fileInput.files[0]); // Get the file
+      }
+      // body.append('doc_file', data?.doc_file);
+      body.append('doc_type', data?.doc_type);
+      body.append('doc_side', data?.doc_side);
+      body.append('expiry', moment(data?.expiry).format('YYYY-MM-DD'));
+      body.append('user_id', user_id);
+
+      const response = await createUserDocument(body);
       if (response) {
         enqueueSnackbar('Document created successfully!', { variant: 'success' });
         reload();
         onClose();
+        reset();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -80,33 +99,40 @@ export default function UserDocumentCreateUpdate({
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
-    } finally {
-      reset();
     }
-  };
+  });
 
   const handleClose = () => {
     reset();
     onClose();
   };
-
   const docSideOptions = [
     { value: 'Front', label: 'Front' },
     { value: 'Back', label: 'Back' },
   ];
-
+  const fileOptions = [
+    { value: 'file', label: 'File' },
+    { value: 'url', label: 'URL' },
+  ];
   const docTypeOptions = [
-    { value: 'Card', label: 'Card' },
     { value: 'ID', label: 'ID' },
-    { value: 'Passport', label: 'Passport' },
-    { value: 'License', label: 'License' },
+    { value: 'PASSPORT', label: 'PASSPORT' },
+    { value: 'CARD', label: 'CARD' },
+    { value: 'LICENCE', label: 'LICENCE' },
+    { value: 'IBAN', label: 'IBAN' },
+    { value: 'OTHER', label: 'OTHER' },
   ];
   useEffect(() => {
     reset();
   }, [reset]);
+  useEffect(() => {
+    if (values?.doc_type === 'OTHER' || values?.doc_type === 'IBAN') {
+      setValue('file_type', 'text');
+    }
+  });
   return (
-    <FormProvider methods={methods}>
-      <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
         <DialogTitle>{currentDocument ? 'Update Document' : 'Create Document'}</DialogTitle>
 
         <DialogContent>
@@ -139,12 +165,26 @@ export default function UserDocumentCreateUpdate({
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
+              {!(values?.doc_type === 'OTHER' || values?.doc_type === 'IBAN') && (
+                <Grid item xs={6}>
+                  <RHFSelect name="file_type" label="Select File Type" fullWidth>
+                    {fileOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                </Grid>
+              )}
+
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFTextField
                   name="doc_file"
-                  label="File URL"
+                  label="File"
                   fullWidth
-                  placeholder="Enter the URL of the file"
+                  type={values?.file_type}
+                  InputLabelProps={{ shrink: true }}
+                  inputRef={fileInputRef}
                 />
               </Grid>
             </Grid>
@@ -155,11 +195,11 @@ export default function UserDocumentCreateUpdate({
           <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
-          <LoadingButton variant="contained" onClick={handleCreateClick}>
+          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             {currentDocument ? 'Update' : 'Create'}
           </LoadingButton>
         </DialogActions>
-      </Dialog>
-    </FormProvider>
+      </FormProvider>
+    </Dialog>
   );
 }
