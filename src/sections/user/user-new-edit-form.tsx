@@ -762,15 +762,16 @@ export default function UserNewEditForm({
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
-                  <RHFSelect name="gender" label="Gender">
-                    {genderData?.length > 0 &&
-                      genderData?.map((option: any) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  {values.user_type === 'TRAINER' && (
+                    <RHFSelect name="gender" label="Gender">
+                      {genderData?.length > 0 &&
+                        genderData?.map((option: any) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
+                    </RHFSelect>
+                  )}
                   <RHFSelect name="gear" label="Gear">
                     {gearData?.length > 0 &&
                       gearData?.map((option: any) => (
