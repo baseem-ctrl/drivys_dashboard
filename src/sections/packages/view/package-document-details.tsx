@@ -142,7 +142,17 @@ export default function PackageDocumentDetails({
         enqueueSnackbar('Failed to update document!', { variant: 'error' });
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       setSelectedImage(null);
       setEditMode(null);

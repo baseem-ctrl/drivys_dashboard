@@ -662,7 +662,17 @@ export default function UserDetailsContent({
       }
     } catch (error) {
       console.log('Error updating user address:', error);
-      enqueueSnackbar('Failed to update user address. Please try again.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -677,7 +687,17 @@ export default function UserDetailsContent({
         enqueueSnackbar('User address created successfully!', { variant: 'success' });
       }
     } catch (error) {
-      console.log('error', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   const [addressForm, setAddressForm] = useState({
@@ -728,7 +748,17 @@ export default function UserDetailsContent({
         if (reloadData) reloadData();
       }
     } catch (error) {
-      enqueueSnackbar('Failed to delete user address!', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   // Add a method to handle the selected location from the map

@@ -289,18 +289,16 @@ export default function CouponDialog({
         reset();
       }
     } catch (error) {
-      if (error?.errors?.starting_date) {
-        enqueueSnackbar(error.message + ' ' + error?.errors?.starting_date, { variant: 'error' });
-      } else if (error?.errors?.ending_date) {
-        enqueueSnackbar(error.message + ' ' + error?.errors?.ending_date, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
       } else {
-        if (error && error.errors) {
-          Object.keys(error.errors).forEach((key) => {
-            error.errors[key].forEach((message: string) => {
-              enqueueSnackbar(message, { variant: 'error' });
-            });
-          });
-        }
+        enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
       reload();
