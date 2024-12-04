@@ -173,6 +173,7 @@ export const endpoints = {
     details: 'admin/package/get-packge/',
     delete: 'admin/package/delete-packge/',
     createUpdate: 'admin/package/create-packge-translation',
+    publicList: 'public/package/get-packge-list-with-global-package',
   },
   users: {
     enum: 'public/enum/get-user-type-enum',

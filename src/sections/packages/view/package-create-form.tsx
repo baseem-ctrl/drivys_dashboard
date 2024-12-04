@@ -51,14 +51,29 @@ export default function PackageCreateForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const [searchValue, setSearchValue] = useState('');
+  const [searchValueCat, setSearchValueCat] = useState('');
+  const [searchValueCity, setSearchValueCity] = useState('');
+
   const { language } = useGetAllLanguage(0, 1000);
   // const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    search: searchValueCat,
+    published: 1,
   });
-  const { schoolList, schoolLoading } = useGetSchool({ limit: 1000, page: 1, search: searchValue });
-  const { city, cityLoading } = useGetAllCity();
+  const { schoolList, schoolLoading } = useGetSchool({
+    limit: 1000,
+    page: 1,
+    search: searchValue,
+    is_active: 1,
+  });
+  const { city, cityLoading } = useGetAllCity({
+    limit: 100,
+    page: 1,
+    search: searchValueCity,
+    is_published: 1,
+  });
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
@@ -85,7 +100,7 @@ export default function PackageCreateForm({
         return true;
       }
     ),
-    category_id: Yup.number(),
+    category_id: Yup.mixed(),
     vendor_id: Yup.mixed(),
     drivys_commision: Yup.number(),
     min_price: Yup.number(),
@@ -172,7 +187,6 @@ export default function PackageCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
-    console.log('data', data);
     const formData = new FormData();
     console.log('selectedLocale', selectedLocale);
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
@@ -181,7 +195,7 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][name]`, data?.name);
     formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
-    if (data?.category_id) formData.append(`category_id`, data?.category_id);
+    if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
 
     if (data?.cities_ids && Array.isArray(data.cities_ids)) {
@@ -293,25 +307,19 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={6}>
-              {' '}
-              <RHFSelect
+              <RHFAutocompleteSearch
                 name="category_id"
-                label="Select Category" // Label for the select box
-              >
-                {category?.map((item) => {
-                  // Check if category_translations exists and has at least one item
-                  const translation = item.category_translations.find(
-                    (trans) => trans.locale === 'en'
-                  );
-                  return (
-                    translation && (
-                      <MenuItem key={item.id} value={item.id}>
-                        {translation.name} {/* Use the name from the selected locale */}
-                      </MenuItem>
-                    )
-                  );
-                })}
-              </RHFSelect>
+                label="Select Category"
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={category?.map((item) => ({
+                  label:
+                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                      ?.name || 'Unknown',
+                  value: item?.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={schoolLoading}
+              />
             </Grid>
             <Grid item xs={6}>
               <RHFSelect name="cities_ids[0][id]" label="Select City">
@@ -331,6 +339,7 @@ export default function PackageCreateForm({
                 label="City Min Price"
                 type="number"
                 inputProps={{ min: 0 }}
+                suffix="AED"
               />
             </Grid>
 
@@ -340,6 +349,7 @@ export default function PackageCreateForm({
                 label="City Max Price"
                 type="number"
                 inputProps={{ min: 0 }}
+                suffix="AED"
               />
             </Grid>
             <Grid item xs={6}>
