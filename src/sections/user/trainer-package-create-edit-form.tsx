@@ -17,7 +17,7 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useGetPackageTrainerById } from 'src/api/package-trainer';
-import { useGetPackage } from 'src/api/package';
+import { useGetPackage, useGetPublicPackage } from 'src/api/package';
 
 const TrainerPackageCreateEditForm = ({
   open,
@@ -77,10 +77,11 @@ const TrainerPackageCreateEditForm = ({
   };
 
   useEffect(() => {});
-  const { packageList, packageLoading } = useGetPackage({
+  const { packageList, packageLoading } = useGetPublicPackage({
     vendor_id: trainer_details?.vendor?.id,
     city_id: trainer_details?.user_preference?.city_id,
     is_public: 1,
+    is_published: 1,
   });
 
   const handleChange = (e) => {
