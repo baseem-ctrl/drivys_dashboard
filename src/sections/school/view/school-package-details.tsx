@@ -1,13 +1,20 @@
 import { Card, Typography, Box, Grid, Stack } from '@mui/material';
 import Iconify from 'src/components/Iconify';
 import { useGetPackage } from 'src/api/package';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
 export default function SchoolPackageDetails({ id }) {
+  const router = useRouter();
+
   const { packageList } = useGetPackage({
     vendor_id: id,
   });
+  const handlePackageClick = (packageItem) => {
+    router.push(paths.dashboard.package.details(id));
+  };
 
   return (
     <Box>
@@ -32,7 +39,14 @@ export default function SchoolPackageDetails({ id }) {
                   marginBottom: '16px',
                   height: '260px',
                   position: 'relative',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: '0 6px 15px rgba(0, 0, 0, 0.2)',
+                  },
                 }}
+                onClick={() => handlePackageClick(packageItem)}
               >
                 <Stack
                   direction="row"
