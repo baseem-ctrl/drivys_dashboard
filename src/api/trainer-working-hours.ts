@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -14,7 +14,7 @@ export function createOrUpdateWorkingHours(body: any) {
 // Function to delete working hours by ID
 export function deleteWorkingHoursById(id: number | string) {
   const URL = `admin/trainer-working-hours/delete-by-id?id=${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 

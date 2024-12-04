@@ -3,7 +3,7 @@ import {
   endpoints,
   drivysCreator,
   drivysFetcher,
-  barrySmasher,
+  drivysSmasher,
   drivysCreatorPut,
 } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
@@ -47,7 +47,7 @@ export function useGetAllLanguage(page: number, limit: number) {
 
 export function deleteLanguage(id: any) {
   const URL = endpoints.language.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 

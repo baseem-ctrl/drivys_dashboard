@@ -1,4 +1,4 @@
-import { fetcher, endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -72,12 +72,12 @@ export function deleteCategory(category_translation_id: any, pictures_ids: any) 
     '&' +
     'pictures_ids[]=' +
     pictures_ids;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
 export function deleteCategoryById(id: any) {
   const URL = endpoints.category.deleteId + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -101,7 +101,7 @@ export function useGetPackageDocumentById(docId: number | string) {
 // Function to delete package document by id
 export function deletePackageDocumentById(id: any) {
   const URL = `${endpoints.packageDocument.deleteById}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -109,6 +109,6 @@ export function deletePackageDocumentById(id: any) {
 // Function to delete all package documents by package id
 export function deleteAllDocumentsByPackageId(packageId: number | string) {
   const URL = `${endpoints.packageDocument.deleteAllByPackageId}/${packageId}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

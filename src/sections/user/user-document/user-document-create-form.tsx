@@ -63,11 +63,8 @@ export default function UserDocumentCreateUpdate({
     formState: { errors, isSubmitting },
   } = methods;
   const values = watch();
-  console.log(errors, 'errors');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data, 'data');
-
     try {
       const body = new FormData();
       const fileInput = fileInputRef.current;
@@ -140,22 +137,22 @@ export default function UserDocumentCreateUpdate({
           <Box mt={2}>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <RHFTextField
-                  name="doc_type"
-                  label="Doc Type"
-                  type="text"
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
+                <RHFSelect name="doc_type" label="Select Documnet Type" fullWidth>
+                  {docTypeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
               </Grid>
               <Grid item xs={6}>
-                <RHFTextField
-                  name="doc_side"
-                  label="Doc Side"
-                  type="text"
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
+                <RHFSelect name="doc_side" label="Select Doc Side" fullWidth>
+                  {docSideOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
               </Grid>
               <Grid item xs={6}>
                 <RHFTextField

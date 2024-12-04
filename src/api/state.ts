@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -108,7 +108,7 @@ export function useGetStateById(stateId: number | string) {
 // Function to delete state by ID
 export function deleteStateById(id: any) {
   const URL = `${endpoints.state.deleteById}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -118,6 +118,6 @@ export function deleteStateTranslation(translation_ids: number[]) {
   const URL = `${endpoints.state.deleteStateProvince}?translation_ids[]=${translation_ids.join(
     ','
   )}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

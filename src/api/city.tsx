@@ -3,7 +3,7 @@ import {
   endpoints,
   drivysCreator,
   drivysFetcher,
-  barrySmasher,
+  drivysSmasher,
   drivysCreatorPut,
 } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
@@ -69,7 +69,7 @@ export function useGetCityById(cityId: number | string) {
 // Delete a city by ID :to do
 export function deleteCity(id: any) {
   const URL = endpoints.city.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 

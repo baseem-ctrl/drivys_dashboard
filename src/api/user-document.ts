@@ -1,6 +1,6 @@
 // src/api/createUserDocument.ts
 
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -92,6 +92,11 @@ export function useGetUserDocumentById(userId: number | string) {
 // Function to delete user document by ID
 export function deleteUserDocumentById(id: any) {
   const URL = `${endpoints.users.userDocument.deleteById}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
+  return response;
+}
+export function approveUserDoc(body: any) {
+  const URL = endpoints.users.userDocument.approve;
+  const response = drivysCreator([URL, body]);
   return response;
 }

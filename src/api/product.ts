@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
-import { fetcher, endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 // types
 import { IProductItem } from 'src/types/product';
 
@@ -162,12 +162,12 @@ export function updateProduct(body: any) {
 
 export function deleteProductById(id: any) {
   const URL = endpoints.product.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
 export function deleteProduct(pictures_ids: any) {
   const URL = `${endpoints.product.delete_pic}?product_picture_ids[]=${pictures_ids}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

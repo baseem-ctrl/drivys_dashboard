@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ISliderItem } from 'src/types/slider';
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 export function useGetHomeSlider(
@@ -99,13 +99,13 @@ export function useGetFrequencyEnum() {
 
 export function deleteHomeSlider(id: any) {
   const URL = endpoints.slider.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
 export function deleteHomeSliderImage(id: any) {
   const URL = endpoints.slider.delete_slider_pictures + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 

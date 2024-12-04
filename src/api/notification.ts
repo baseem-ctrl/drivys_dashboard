@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import React, { useMemo } from 'react';
 // utils
-import { endpoints, drivysFetcher, barrySmasher, drivysCreator } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysSmasher, drivysCreator } from 'src/utils/axios';
 import { INotification } from 'src/types/notification';
 
 // ----------------------------------------------------------------------
