@@ -413,7 +413,7 @@ export default function UserNewEditForm({
           data?.license_file[0] &&
           data?.license_file[0]['0'] instanceof File
         ) {
-          body.append('license', data?.license_file[0]['0']);
+          body.append('license_file[0]', data?.license_file[0]['0']);
         }
       }
 
