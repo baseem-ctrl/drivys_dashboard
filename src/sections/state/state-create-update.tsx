@@ -118,10 +118,17 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       onClose();
       reload();
     } catch (error) {
-      const errorMessage = error.errors ? Object.values(error.errors).flat() : [error.message];
-      errorMessage.forEach((message) => {
-        enqueueSnackbar(message, { variant: 'error' });
-      });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   });
 

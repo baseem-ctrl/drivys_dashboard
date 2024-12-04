@@ -236,7 +236,17 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
     } catch (error) {
       setEditMode('');
       setIsSubmitting(false);
-      console.error('Error creating package:', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -272,6 +282,17 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
       quickEdit.onFalse();
       confirm.onFalse();
     } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
       setIsSubmitting(false);
       console.error('Error deleting package:', error);
     }
