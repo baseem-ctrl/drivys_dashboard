@@ -72,6 +72,7 @@ export default function PackageTableRow({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    published: 1,
   });
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');

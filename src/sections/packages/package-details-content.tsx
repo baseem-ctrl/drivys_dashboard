@@ -72,7 +72,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     limit: 1000,
     page: 1,
     search: searchCategory,
+
+    published: 1,
   });
+  console.log('category', category);
+  console.log('haiuaiuisauisauis');
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.package_translations?.length > 0) {
@@ -307,7 +311,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 value: (() => {
                   const selectedCategory = category?.find((cat) => cat.id === details?.category_id);
                   return selectedCategory
-                    ? selectedCategory.category_translations[0]?.name || 'N/A' // Adjust if you need a specific locale
+                    ? selectedCategory.category_translations[0]?.name || 'N/A'
                     : 'N/A';
                 })(),
               },

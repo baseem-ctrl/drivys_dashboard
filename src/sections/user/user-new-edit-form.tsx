@@ -42,7 +42,16 @@ import {
   useGetUserDetails,
   useGetUserTypeEnum,
 } from 'src/api/users';
-import { CircularProgress, IconButton, InputAdornment, MenuItem, TextField } from '@mui/material';
+import {
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  InputAdornment,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -208,6 +217,7 @@ export default function UserNewEditForm({
         return true; // Otherwise, `gear` is not required
       }),
   });
+  console.log('currentUser', currentUser);
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -268,6 +278,7 @@ export default function UserNewEditForm({
       bio: currentUser?.user_preference?.bio || '',
       license_file: currentUser?.user_preference?.license_file || '',
       school_name: currentUser?.school_name || '',
+      license_file: currentUser?.user_preference?.license_file || null,
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
@@ -397,6 +408,13 @@ export default function UserNewEditForm({
             data?.certificate_commission_in_percentage
           );
         if (data?.bio) body.append('bio', data?.bio);
+        if (
+          data?.license_file &&
+          data?.license_file[0] &&
+          data?.license_file[0]['0'] instanceof File
+        ) {
+          body.append('license_file[0]', data?.license_file[0]['0']);
+        }
       }
 
       body.append('locale', data?.locale?.language_culture);
@@ -468,7 +486,17 @@ export default function UserNewEditForm({
         router.push(paths.dashboard.user.list);
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
       confirm.onFalse();
     }
   };
@@ -676,6 +704,7 @@ export default function UserNewEditForm({
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />
               )}
             </Box>
+
             {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
               <>
                 <Typography sx={{ fontWeight: '700', m: 2 }}> User Preferences:</Typography>
@@ -705,6 +734,26 @@ export default function UserNewEditForm({
                     disableClearable={true}
                     loading={categoryLoading}
                   />
+                  {values.user_type === 'TRAINER' && (
+                    <Controller
+                      name="license_file[0]"
+                      control={control}
+                      render={({ field }) => (
+                        <FormControl fullWidth>
+                          <FormLabel htmlFor="license-file">Upload License</FormLabel>
+
+                          <input
+                            type="file"
+                            onChange={(e) => {
+                              const files = e.target.files;
+                              setValue('license_file[0]', files);
+                            }}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  )}
+
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
