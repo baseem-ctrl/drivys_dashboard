@@ -28,7 +28,8 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
+import { InputAdornment, TextField, Tooltip, Typography, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
@@ -77,6 +78,30 @@ export default function PackageCreateForm({
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
+  const [cityFields, setCityFields] = useState([
+    { id: null, min_price: '', max_price: '', commision: '' },
+  ]);
+
+  const handleAddCity = () => {
+    setCityFields((prevFields) => [
+      ...prevFields,
+      { id: null, min_price: '', max_price: '', commision: '' },
+    ]);
+  };
+
+  const handleCityFieldChange = (index: number, field: string, value: any) => {
+    const updatedCities = [...cityFields];
+    updatedCities[index] = {
+      ...updatedCities[index],
+      [field]: value,
+    };
+    setCityFields(updatedCities);
+  };
+  const handleRemoveCity = (index) => {
+    const updatedCityFields = cityFields.filter((_, i) => i !== index);
+    setCityFields(updatedCityFields);
+  };
+
   console.log('cities', city);
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
@@ -140,7 +165,7 @@ export default function PackageCreateForm({
     watch,
     formState: { isSubmitting, errors },
   } = methods;
-
+  console.log('errors', errors);
   const currentName = watch('name');
   const currentDescription = watch('description');
   const values = watch();
@@ -185,6 +210,7 @@ export default function PackageCreateForm({
   }, [selectedLocale, setValue, translations]);
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
+    console.log('data', data);
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
     const formData = new FormData();
@@ -198,13 +224,36 @@ export default function PackageCreateForm({
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
 
-    if (data?.cities_ids && Array.isArray(data.cities_ids)) {
-      data.cities_ids.forEach((city: any, index: number) => {
-        formData.append(`cities_ids[${index}][id]`, city?.id);
-        formData.append(`cities_ids[${index}][min_price]`, city?.min_price);
-        formData.append(`cities_ids[${index}][max_price]`, city?.max_price);
+    if (Array.isArray(cityFields)) {
+      cityFields.forEach((city, index) => {
+        console.log(`Processing city at index ${index}:`, city);
+
+        if (city?.id !== undefined) {
+          console.log(`Appending city id: ${city.id}`);
+          formData.append(`cities_ids[${index}][id]`, String(city.id));
+        }
+
+        if (city?.min_price !== undefined) {
+          console.log(`Appending city min_price: ${city.min_price}`);
+          formData.append(`cities_ids[${index}][min_price]`, String(city.min_price));
+        }
+
+        if (city?.max_price !== undefined) {
+          console.log(`Appending city max_price: ${city.max_price}`);
+          formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
+        }
+        if (city?.commision !== undefined) {
+          console.log(`Appending city commision: ${city.commision}`);
+          formData.append(`cities_ids[${index}][commision]`, String(city.commision));
+        }
+        if (!city?.id && !city?.min_price && !city?.max_price) {
+          console.log(`No valid data for city at index ${index}`);
+        }
       });
+    } else {
+      console.log('cities_ids is not an array or is undefined');
     }
+
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -321,37 +370,75 @@ export default function PackageCreateForm({
                 loading={schoolLoading}
               />
             </Grid>
-            <Grid item xs={6}>
-              <RHFSelect name="cities_ids[0][id]" label="Select City">
-                {city?.map((city: any) =>
-                  city.city_translations.map((translation: any) => (
-                    <MenuItem key={`${city.id}-${translation.locale}`} value={city.id}>
-                      {translation.name} ({translation.locale.toUpperCase()})
-                    </MenuItem>
-                  ))
-                )}
-              </RHFSelect>
-            </Grid>
+            <Box sx={{ mt: 2 }}>
+              {cityFields.map((cityField, index) => (
+                <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
+                  <Grid item xs={12}>
+                    <RHFAutocompleteSearch
+                      name={`cities_ids[${index}][id]`}
+                      label={`Select City ${index + 1}`}
+                      multiple={false}
+                      options={city
+                        ?.map((city) =>
+                          city.city_translations.map((translation) => ({
+                            label: `${translation.name} (${translation.locale.toUpperCase()})`,
+                            value: city.id,
+                          }))
+                        )
+                        .flat()}
+                      onChange={(event, value) => {
+                        handleCityFieldChange(index, 'id', value?.value || null);
+                      }}
+                      loading={cityLoading}
+                    />
+                  </Grid>
 
-            <Grid item xs={6}>
-              <RHFTextField
-                name="cities_ids[0][min_price]"
-                label="City Min Price"
-                type="number"
-                inputProps={{ min: 0 }}
-                suffix="AED"
-              />
-            </Grid>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      name={`cities_ids[${index}][min_price]`}
+                      label="City Min Price"
+                      type="number"
+                      inputProps={{ min: 0 }}
+                      value={cityField.min_price}
+                      onChange={(event) =>
+                        handleCityFieldChange(index, 'min_price', event.target.value)
+                      }
+                      suffix="AED"
+                    />
+                  </Grid>
 
-            <Grid item xs={6}>
-              <RHFTextField
-                name="cities_ids[0][max_price]"
-                label="City Max Price"
-                type="number"
-                inputProps={{ min: 0 }}
-                suffix="AED"
-              />
-            </Grid>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      name={`cities_ids[${index}][max_price]`}
+                      label="City Max Price"
+                      type="number"
+                      inputProps={{ min: 0 }}
+                      value={cityField.max_price}
+                      onChange={(event) =>
+                        handleCityFieldChange(index, 'max_price', event.target.value)
+                      }
+                      suffix="AED"
+                    />
+                  </Grid>
+
+                  {index > 0 && (
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                      <IconButton
+                        onClick={() => handleRemoveCity(index)}
+                        color="error"
+                        sx={{ color: 'black' }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                  )}
+                </Grid>
+              ))}
+
+              <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
+                Add City
+              </Button>
+            </Box>
             <Grid item xs={6}>
               <RHFCheckbox name="is_published" label="Publish" />
             </Grid>
