@@ -10,6 +10,7 @@ import {
   Chip,
   Grid,
   Typography,
+  Box,
 } from '@mui/material';
 import { useGetBookingByStudentId } from 'src/api/school';
 
@@ -48,8 +49,7 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
           </TableRow>
         </TableHead>
         <TableBody>
-          {bookingDetails &&
-            bookingDetails.length > 0 &&
+          {bookingDetails && bookingDetails.length > 0 ? (
             bookingDetails.map((booking) => (
               <TableRow
                 key={booking.id}
@@ -95,7 +95,18 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                   />
                 </TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                <Box sx={{ py: 2 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    No bookings available under this student
+                  </Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>
