@@ -661,7 +661,17 @@ const BookingDetailsComponent = () => {
                     {bookingDetails?.booking_method || 'N/A'}
                   </Box>
                 </Box>
-
+                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
+                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                    Total Amount
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {`$${bookingDetails?.sub_total || 'N/A'}`}
+                  </Box>
+                </Box>
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
                     Amount Due
