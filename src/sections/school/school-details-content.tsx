@@ -27,6 +27,8 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
+import { useGetAllCities, useGetAllCity } from 'src/api/city';
+import { useGetStateList } from 'src/api/state';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -64,10 +66,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;
+  const [selectedState, setSelectedState] = useState('');
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1);
+
   const currentVendorName = details?.user?.name;
 
   const schoolAdmins = {
@@ -170,6 +174,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,
   });
+  const [selectedCity, setSelectedCity] = useState(''); // Initial state from defaultValues
+
   const {
     reset: schoolReset,
     watch: schoolWatch,
@@ -179,6 +185,30 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     formState: schoolFormState,
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
+  const { city, isLoading: cityLoading } = useGetAllCity({
+    limit: 1000,
+    page: 0,
+  });
+
+  const { states, isLoading: stateLoading } = useGetStateList({
+    city_id: selectedCity,
+    limit: 1000,
+    page: 0,
+  });
+  const cityOptions =
+    city?.map((cityItem) => ({
+      value: cityItem.id,
+      label: cityItem.city_translations?.[0]?.name || 'Unnamed City',
+    })) || [];
+  console.log('cityOptions', cityOptions);
+  console.log('states', states);
+  const stateOptions =
+    states?.map((stateItem) => ({
+      value: stateItem.id,
+      label: stateItem.translations?.[0]?.name || 'Unknown State',
+      cityName: stateItem.city?.city_translations?.[0]?.name || 'Unknown City',
+    })) || [];
+
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
   useEffect(() => {
     if (details?.license_file) {
@@ -198,6 +228,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       schoolSetValue('name', '');
     }
   };
+
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -216,6 +247,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
+
   const onSubmitBasicInfo = schoolSubmit(async (data) => {
     try {
       let payload = {
@@ -678,7 +710,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     () => ({
       street_address:
         editingIndex !== null ? details?.vendor_addresses[editingIndex]?.street_address : '',
-      city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city : '',
+      city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city || '' : '', // ensure city is set correctly
       country: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.country : '',
       state: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.state : '',
       latitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.latitude : '',
@@ -692,7 +724,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     defaultValues,
   });
   // const { control, handleSubmit, setValue, reset } = useForm();
-
+  useEffect(() => {
+    if (defaultValues.city) {
+      setSelectedCity(defaultValues.city);
+    }
+  }, [defaultValues]);
   const {
     reset,
     watch,
@@ -712,13 +748,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     reset(defaultValues);
     setLoad(true);
   }, [defaultValues, reset]);
+
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data', data);
     try {
       let payload = {
         street_address: data?.street_address,
-        city: data?.city,
-        state: data?.state,
+        city: selectedCity,
+        state: selectedState,
         country: data?.country,
         latitude: data?.latitude,
         longitude: data?.longitude,
@@ -728,12 +766,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       if (editingIndex !== null) {
         payload.id = details?.vendor_addresses[editingIndex]?.id; // Add id if editingIndex is not null
       }
-      const response = await createUpdateSchoolAddress(payload);
-      if (response) {
-        enqueueSnackbar(response.message, {
-          variant: 'success',
-        });
-      }
+      // const response = await createUpdateSchoolAddress(payload);
+      // if (response) {
+      //   enqueueSnackbar(response.message, {
+      //     variant: 'success',
+      //   });
+      // }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
@@ -747,10 +785,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
-      setEditingIndex(null);
-      setNewAddress(null);
-      reset();
-      reload();
+      // setEditingIndex(null);
+      // setNewAddress(null);
+      // reset();
+      // reload();
     }
   });
   // Function to handle map click and update lat/lng values
@@ -873,8 +911,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               <Grid item xs={12} md={6}>
                 {[
                   { label: 'Street Address', name: 'street_address' },
-                  { label: 'City', name: 'city' },
-                  { label: 'State', name: 'state' },
+                  { label: 'City', name: 'city', isDropdown: true, options: cityOptions },
+                  { label: 'State', name: 'state', isDropdown: true, options: stateOptions },
                   { label: 'Country', name: 'country' },
                   { label: 'Latitude', name: 'latitude' },
                   { label: 'Longitude', name: 'longitude' },
@@ -883,19 +921,55 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     key={idx}
                     name={item.name}
                     control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label={item.label}
-                        variant="outlined"
-                        sx={{ my: 1, width: '100%' }}
-                      />
-                    )}
+                    render={({ field }) =>
+                      item.isDropdown ? (
+                        <TextField
+                          {...field}
+                          select
+                          label={item.label}
+                          variant="outlined"
+                          sx={{ my: 1, width: '100%' }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (item.name === 'city') {
+                              setSelectedCity(e.target.value);
+                            } else if (item.name === 'state') {
+                              setSelectedState(e.target.value);
+                            }
+                          }}
+                          value={item.name === 'city' ? selectedCity : selectedState}
+                        >
+                          {item.name === 'city' && cityLoading ? (
+                            <MenuItem value="">
+                              <CircularProgress size={24} />
+                              Loading Cities...
+                            </MenuItem>
+                          ) : item.name === 'state' && stateLoading ? (
+                            <MenuItem value="">
+                              <CircularProgress size={24} />
+                              Loading States...
+                            </MenuItem>
+                          ) : (
+                            (item.name === 'city' ? cityOptions : stateOptions).map(
+                              (option, idx) => (
+                                <MenuItem key={idx} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              )
+                            )
+                          )}
+                        </TextField>
+                      ) : (
+                        <TextField
+                          {...field}
+                          label={item.label}
+                          variant="outlined"
+                          sx={{ my: 1, width: '100%' }}
+                        />
+                      )
+                    }
                   />
                 ))}
-
-                {/* Map Component for Selecting Location */}
-
                 <Box sx={{ mt: 2 }}>
                   <Button variant="contained" type="submit" sx={{ mr: 1 }}>
                     Save
@@ -903,16 +977,19 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      setEditingIndex(null);
-                      setNewAddress(null);
                       reset(defaultValues);
+                      setSelectedCity('');
                     }}
                   >
                     Cancel
                   </Button>
                 </Box>
               </Grid>
-
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Selected City: {selectedCity}
+                </Typography>
+              </Grid>
               {/* Map Section */}
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -934,7 +1011,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                               marker && typeof marker === 'string'
                                 ? marker
                                 : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                            scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
                       )}
@@ -943,10 +1020,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           position={{
                             lat: Number.isNaN(Number(defaultValues?.latitude))
                               ? 0
-                              : Number(defaultValues?.latitude), // Convert to number
+                              : Number(defaultValues?.latitude),
                             lng: Number.isNaN(Number(defaultValues?.longitude))
                               ? 0
-                              : Number(defaultValues?.longitude), // Convert to number
+                              : Number(defaultValues?.longitude),
                           }}
                           icon={{
                             url:
