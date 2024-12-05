@@ -30,7 +30,7 @@ export default function StateTableRow({
   onDeleteRow,
   reload,
 }: Props) {
-  const { id, is_published, order, translations } = row;
+  const { id, is_published, order, translations, city } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -48,6 +48,9 @@ export default function StateTableRow({
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
           {translations[zerothIndex].locale}
+        </TableCell>
+        <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
+          {city?.city_translations[0]?.name}
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
