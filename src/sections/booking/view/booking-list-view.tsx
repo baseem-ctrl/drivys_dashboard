@@ -116,10 +116,12 @@ export default function BookingListView() {
     payment_status: paymentStatusCode,
     driver_id: filters.vendor,
   });
+  const [searchValue, setSearchValue] = useState('');
   const { users, usersLoading } = useGetUsers({
     page: 0,
-    limit: 1000,
+    limit: 10,
     user_types: 'TRAINER',
+    search: searchValue,
   });
   const [bookingCounts, setBookingCounts] = useState({
     all: 0,
@@ -316,7 +318,9 @@ export default function BookingListView() {
         <BookingTableToolbar
           filters={filters}
           onFilters={handleFilters}
-          vendorOptions={vendorOptions}
+          vendorOptions={users}
+          setSearch={setSearchValue}
+          loading={usersLoading}
         />
         <Box display="flex" flexDirection="row" gap={1} marginBottom={4} marginLeft={2}>
           {filters.paymentStatus && (
