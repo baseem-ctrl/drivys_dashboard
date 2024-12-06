@@ -767,6 +767,20 @@ export default function UserNewEditForm({
                           {option?.city_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
+                    {city?.length > 0 ? (
+                      city?.map((option: any) => {
+                        const cityNames = option?.city_translations?.map(
+                          (translation: any) => `${translation.locale}: ${translation.name}`
+                        );
+                        return (
+                          <MenuItem key={option?.id} value={option?.id}>
+                            {cityNames?.join(', ') || 'Unknown City'}
+                          </MenuItem>
+                        );
+                      })
+                    ) : (
+                      <MenuItem disabled>No cities found</MenuItem>
+                    )}
                   </RHFSelect>
 
                   <RHFSelect name="area_id" label="Select Area">

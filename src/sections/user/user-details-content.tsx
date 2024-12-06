@@ -539,7 +539,6 @@ export default function UserDetailsContent({
   const handleBookingClick = (booking) => {
     router.push(paths.dashboard.booking.details(booking));
   };
-  console.log('details', details);
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
@@ -562,7 +561,7 @@ export default function UserDetailsContent({
                 },
                 {
                   label: 'Area',
-                  value: details?.user_preference?.area?.area_translations[0]?.name ?? 'N/A',
+                  value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
                 },
                 { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
