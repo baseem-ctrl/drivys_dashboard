@@ -102,7 +102,6 @@ export default function PackageCreateForm({
     setCityFields(updatedCityFields);
   };
 
-  console.log('cities', city);
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
     value: item.language_culture,
@@ -111,13 +110,16 @@ export default function PackageCreateForm({
   const DeliverySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
-    session_inclusions: Yup.string().required('Session inclusions is required'),
+    session_inclusions: Yup.string(),
     is_published: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
       'Number of sessions must be an even number',
       function (value) {
         // If the value is defined, check if it's even
+        if (value === -1) {
+          return true;
+        }
         if (value !== undefined && value !== null) {
           return value % 2 === 0;
         }
@@ -126,10 +128,11 @@ export default function PackageCreateForm({
       }
     ),
     category_id: Yup.mixed(),
-    vendor_id: Yup.mixed(),
+    vendor_id: Yup.mixed().nullable(),
     drivys_commision: Yup.number(),
     min_price: Yup.number(),
     max_price: Yup.number(),
+    is_percentage: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
@@ -165,10 +168,12 @@ export default function PackageCreateForm({
     watch,
     formState: { isSubmitting, errors },
   } = methods;
-  console.log('errors', errors);
   const currentName = watch('name');
-  const currentDescription = watch('description');
+  const currentSessionInclusions = watch('session_inclusions');
   const values = watch();
+  const handleToggle = () => {
+    setValue('is_percentage', !values?.is_percentage);
+  };
   const previousLocaleRef = useRef(selectedLocale);
 
   // ** 1. Saving current locale's translation before switching **
@@ -178,7 +183,7 @@ export default function PackageCreateForm({
         ...prev,
         [selectedLocale]: {
           name: currentName || '',
-          description: currentDescription || '',
+          session_inclusions: currentSessionInclusions || '',
         },
       }));
     }
@@ -200,9 +205,9 @@ export default function PackageCreateForm({
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
-      console.log('translation', translation);
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
+      setValue('session_inclusions', translation?.session_inclusions);
 
       // Update the previous locale
       previousLocaleRef.current = selectedLocale;
@@ -210,11 +215,9 @@ export default function PackageCreateForm({
   }, [selectedLocale, setValue, translations]);
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
-    console.log('data', data);
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
     const formData = new FormData();
-    console.log('selectedLocale', selectedLocale);
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? 1 : 0);
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
@@ -223,31 +226,26 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
-
+    if (data.is_percentage !== undefined) {
+      formData.append('is_percentage', data.is_percentage === true ? 1 : 0);
+    }
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
-        console.log(`Processing city at index ${index}:`, city);
-
         if (city?.id !== undefined) {
-          console.log(`Appending city id: ${city.id}`);
           formData.append(`cities_ids[${index}][id]`, String(city.id));
         }
 
         if (city?.min_price !== undefined) {
-          console.log(`Appending city min_price: ${city.min_price}`);
           formData.append(`cities_ids[${index}][min_price]`, String(city.min_price));
         }
 
         if (city?.max_price !== undefined) {
-          console.log(`Appending city max_price: ${city.max_price}`);
           formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
         }
         if (city?.commision !== undefined) {
-          console.log(`Appending city commision: ${city.commision}`);
           formData.append(`cities_ids[${index}][commision]`, String(city.commision));
         }
         if (!city?.id && !city?.min_price && !city?.max_price) {
-          console.log(`No valid data for city at index ${index}`);
         }
       });
     } else {
@@ -349,11 +347,20 @@ export default function PackageCreateForm({
               <RHFTextField
                 name="drivys_commision"
                 label="Drivy's Commission"
-                type="number"
+                type={values?.is_percentage ? 'number' : 'text'}
                 inputProps={{ min: 0 }}
-                suffix="AED"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
+                        {values?.is_percentage ? '%' : 'AED'}
+                      </div>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
+            {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
               <RHFAutocompleteSearch
