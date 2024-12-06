@@ -272,3 +272,8 @@ export function useGetAddressList({
     revalidateAddresses,
   };
 }
+export function createTrainer(body: any) {
+  const URL = endpoints.trainer.createTrainer;
+  const response = drivysCreator([URL, body]);
+  return response;
+}

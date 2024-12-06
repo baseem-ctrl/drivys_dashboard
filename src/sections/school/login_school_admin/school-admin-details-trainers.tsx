@@ -1,48 +1,28 @@
 // @mui
-import { alpha } from '@mui/material/styles';
+import moment from 'moment';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import { RHFSwitch, RHFUploadAvatar } from 'src/components/hook-form';
-// types
-import { IJobCandidate } from 'src/types/job';
+import { IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 // components
 import Iconify from 'src/components/iconify';
-import { addTrainer, RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
-import { TablePaginationCustom, useTable } from 'src/components/table';
-import {
-  Autocomplete,
-  Button,
-  CircularProgress,
-  MenuItem,
-  TextField,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Switch,
-  FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  FormHelperText,
-  Grid,
-} from '@mui/material';
+import { RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
+import { useTable } from 'src/components/table';
+import { Button, CircularProgress, MenuItem, Typography, Grid } from '@mui/material';
 
 import { usePopover } from 'src/components/custom-popover';
 import CustomPopover from 'src/components/custom-popover/custom-popover';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useGetUsers, createUser, useGetGenderEnum, useGetGearEnum } from 'src/api/users';
+import { useGetGenderEnum, useGetGearEnum, createTrainer } from 'src/api/users';
 import { useEffect, useMemo, useState } from 'react';
 import * as Yup from 'yup';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { RHFAutocomplete, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -63,8 +43,6 @@ type Props = {
 
 export default function SchoolAdminTrainers({ candidates, create, onCreate, vendor_id }: Props) {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-  const { genderData, genderLoading, genderError } = useGetGenderEnum();
-  const { gearData, gearLoading, gearError } = useGetGearEnum();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -73,8 +51,13 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const [openEdit, setOpenEdit] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [editDetails, setIsEditDetails] = useState();
-  const [editableData, setEditableData] = useState(null);
   const [index, setIndex] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   const {
     schoolTrainersList,
     schoolTrainersLoading,
@@ -86,12 +69,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     limit: table?.rowsPerPage,
     vendor_id: vendor_id,
   });
-  const { trainers, trainersLoading, trainersError, trainersEmpty, trainersLength } =
-    useGetTrainerNoSchool({
-      page: table?.page,
-      limit: table?.rowsPerPage,
-      search: search,
-    });
+
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
@@ -102,31 +80,32 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   });
   const defaultValues = useMemo(
     () => ({
+      name: editDetails?.user?.name || '',
+      email: editDetails?.user?.email || '',
+      password: '',
+
       cash_clearance_date: editDetails?.cash_clearance_date || '',
       cash_in_hand: editDetails?.cash_in_hand || '',
       vendor_commission_in_percentage: editDetails?.vendor_commission_in_percentage || '',
-      password: '',
+      last_booking_was: editDetails?.last_booking_was || '',
 
       max_cash_in_hand_allowed: editDetails?.max_cash_in_hand_allowed || '',
     }),
-    [candidates]
+    [candidates, editDetails]
   );
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
-  const handleEditOpen = (trainer: any) => {
-    popover.onClose();
-    setEditData(trainer); // Set the current trainer's data
-    setOpenEdit(true); // Open the dialog
-  };
-  console.log('edit data', index);
   // Function to close the edit pop-up
   const handleEditClose = () => {
     setOpenEdit(false);
   };
-
+  const handleCancelClick = () => {
+    onCreate();
+  };
   const {
     reset,
     watch,
@@ -135,58 +114,48 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
-  useEffect(() => {
-    if (editDetails) {
-      reset({
-        cash_clearance_date: new Date(editDetails.cash_clearance_date).toISOString().split('T')[0],
-        cash_in_hand: editDetails.cash_in_hand,
-        vendor_commission_in_percentage: editDetails.vendor_commission_in_percentage,
-        max_cash_in_hand_allowed: editDetails.max_cash_in_hand_allowed,
-      });
-    }
-  }, [editDetails, reset]);
+  // useEffect(() => {
+  //   if (editDetails) {
+  //     reset({
+  //       cash_clearance_date: new Date(editDetails.cash_clearance_date).toISOString().split('T')[0],
+  //       name: editDetails?.user?.name,
+  //       email: editDetails?.user?.email,
+  //       last_booking_was: new Date(editDetails.last_booking_was).toISOString().split('T')[0],
+  //       cash_in_hand: editDetails.cash_in_hand,
+  //       vendor_commission_in_percentage: editDetails.vendor_commission_in_percentage,
+  //       max_cash_in_hand_allowed: editDetails.max_cash_in_hand_allowed,
+  //     });
+  //   }
+  // }, [editDetails, reset]);
   const values = watch();
   useEffect(() => {
     if (candidates?.id) {
       reset(defaultValues);
     }
   }, [candidates, reset]);
-  console.log('edit dataaaaa', editDetails?.user?.id);
 
   const onSubmit = async (data: any) => {
-    console.log('Submitting data:', data);
-
     const body: any = {
-      // Fields from the form
       name: data?.name,
       email: data?.email,
-      school_commission_in_percentage: data?.school_commission_in_percentage,
-      country_code: data?.country_code,
-      phone: data?.phone,
-      dob: data?.dob,
+      password: data?.password,
+      last_booking_was: data?.last_booking_was,
+      cash_clearance_date: data?.cash_clearance_date,
+      cash_in_hand: data?.cash_in_hand,
+      vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
     };
 
-    // Add trainer_id based on conditions
+    // Add vendor_id for new trainer, or update if edit
     if (!editData) {
       body.vendor_id = candidates[0]?.vendor_id;
-      // body.trainer_id = editDetails?.user?.id ?? null;
     } else {
-      body.vendor_id = editDetails?.vendor_id;
-      // body.trainer_id = editDetails?.user_id ?? null;
+      body.id = editDetails?.id;
     }
 
-    console.log('Final body before validation:', body);
-
-    // Validate trainer_id
-    // if (!body.trainer_id) {
-    //   enqueueSnackbar('Trainer ID is required.', { variant: 'error' });
-    //   return;
-    // }
-
     try {
-      const response = await createUser(body);
+      const response = await createTrainer(body);
       if (response) {
-        enqueueSnackbar(response?.message ?? 'Trainer Added Successfully');
+        enqueueSnackbar('Trainer created successfully', { variant: 'success' });
         onCreate();
         revalidateTrainers();
       }
@@ -200,9 +169,10 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     } finally {
       handleEditClose();
+      reset();
+      setIsEditDetails(null);
     }
   };
-
   const handlePopoverOpen = (e, trainer: any, index) => {
     popover.onOpen(e);
     setIsEditDetails(trainer);
@@ -210,7 +180,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     setTrainerMappingId(trainer?.id);
     setIndex(index);
   };
-  console.log('Edit details', editDetails);
   const handleRemove = async () => {
     try {
       if (trainerMappingId) {
@@ -231,42 +200,16 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     }
   };
-  const handleVerify = async (trainerId: any) => {
-    try {
-      const body = {
-        trainer_id: trainerId,
-        verify: !editDetails?.school_verified_at ? 1 : 0,
-      };
-      const response = await updateUserVerification(body);
-      if (response) {
-        enqueueSnackbar(response?.message);
-        revalidateTrainers();
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
+
   return (
     <>
       {create && (
-        <Stack component={Card} direction="column" spacing={2} sx={{ p: 3 }}>
+        <Stack direction="column" spacing={2} sx={{ p: 3, width: '50%' }}>
           <Typography variant="h6" gutterBottom>
             Create New Trainer
           </Typography>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            <Box
-              rowGap={3}
-              display="grid"
-              gridTemplateColumns="1fr"
-              columnGap={2}
-              sx={{ width: '100%' }}
-            >
+            <Box rowGap={3} display="grid" gridTemplateColumns="1fr" columnGap={2}>
               <Grid xs={12} md={12}>
                 {' '}
                 {/* Make it span full width on all screen sizes */}
@@ -283,26 +226,50 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     <RHFTextField name="name" label="Full Name" fullWidth />
                     <RHFTextField name="email" label="Email Address" fullWidth />
                     <RHFTextField
-                      name="school_commission_in_percentage"
-                      label="School Commission (%)"
+                      name="password"
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      fullWidth
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={handleClickShowPassword} edge="end">
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    <RHFTextField
+                      name="last_booking_was"
+                      label="Last Booking Was"
+                      type="date"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+
+                    <RHFTextField
+                      name="cash_clearance_date"
+                      label="Cash Clearance Date"
+                      type="date"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+
+                    <RHFTextField
+                      name="cash_in_hand"
+                      label="Cash in Hand"
                       type="number"
                       fullWidth
                     />
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-                      <RHFTextField
-                        name="country_code"
-                        label="Country Code"
-                        sx={{ maxWidth: 100 }}
-                        prefix="+"
-                        fullWidth
-                      />
-                      <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} fullWidth />
-                    </Stack>
+
                     <RHFTextField
-                      name="dob"
-                      label="Date of Birth"
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
+                      name="vendor_commission_in_percentage"
+                      label="Vendor Commision"
                       fullWidth
                     />
                   </Box>
@@ -314,7 +281,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     spacing={2}
                     sx={{ mt: 3 }}
                   >
-                    <Button variant="outlined" sx={{ width: 'auto' }}>
+                    <Button variant="outlined" sx={{ width: 'auto' }} onClick={handleCancelClick}>
                       Cancel
                     </Button>
                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
@@ -325,7 +292,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
               </Grid>
             </Box>
 
-            <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
+            {/* <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
               <LoadingButton
                 sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}
                 type="submit"
@@ -344,7 +311,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
               >
                 Cancel
               </LoadingButton>
-            </Box>
+            </Box> */}
           </FormProvider>
         </Stack>
       )}
@@ -357,7 +324,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         }}
       >
         {!schoolTrainersLoading ? (
-          schoolTrainersList?.length > 0 ? (
+          schoolTrainersList?.length > 0 && !create ? (
             schoolTrainersList?.map((trainer: any, index) => (
               <Stack
                 component={Card}
@@ -479,12 +446,20 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
 
                     { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? 'NA' },
                     {
+                      label: 'Vendor Commission',
+                      value: trainer?.vendor_commission_in_percentage ?? 'NA',
+                    },
+                    {
                       label: 'Cash Clearance Date',
-                      value: trainer?.cash_clearance_date ?? 'NA',
+                      value: trainer?.cash_clearance_date
+                        ? moment(trainer.cash_clearance_date).format('YYYY-MM-DD') // Format the date using moment
+                        : 'NA', // Default value if date is not available
                     },
                     {
                       label: 'Last Booking',
-                      value: trainer?.last_booking_was ?? 'NA',
+                      value: trainer?.last_booking_was
+                        ? moment(trainer.last_booking_was).format('YYYY-MM-DD') // Format the date using moment
+                        : 'NA', // Default value if date is not available
                     },
                   ].map((item, index) => (
                     <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -562,53 +537,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
             <Iconify icon="solar:trash-bin-trash-bold" />
             Remove
           </MenuItem>
-          <MenuItem onClick={() => handleEditOpen(trainerMappingId)}>
-            <Iconify icon="eva:edit-fill" />
-            Edit
-          </MenuItem>
         </CustomPopover>
-        <Dialog open={openEdit} onClose={handleEditClose} fullWidth maxWidth="sm">
-          <DialogTitle>Edit Trainer Details</DialogTitle>
-          <DialogContent
-            sx={{
-              paddingTop: '11px !important',
-            }}
-          >
-            <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-              <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
-                <RHFTextField
-                  name="cash_clearance_date"
-                  label="Cash Clearance Date "
-                  type="date"
-                  // value={editDetails?.cash_clearance_date}
-                  InputLabelProps={{ shrink: true }}
-                />
-                <RHFTextField
-                  name="cash_in_hand"
-                  label="Cash in Hand"
-                  // value={editDetails?.cash_in_hand}
-                />
-                <RHFTextField
-                  name="vendor_commission_in_percentage"
-                  label="Vendor Commission (%)"
-                />
-                <RHFTextField name="max_cash_in_hand_allowed" label="Max Cash Allowded" />
-              </Box>
-            </FormProvider>
-          </DialogContent>
-          <DialogActions>
-            <LoadingButton
-              onClick={handleSubmit(onSubmit)}
-              variant="contained"
-              loading={isSubmitting}
-            >
-              Save Changes
-            </LoadingButton>
-            <Button onClick={handleEditClose} variant="outlined">
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Box>
     </>
   );
