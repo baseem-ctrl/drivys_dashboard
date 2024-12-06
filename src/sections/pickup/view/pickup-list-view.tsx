@@ -28,7 +28,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // types
-import { ICityTableFilters } from 'src/types/city';
+import { IPickupTableFilters } from 'src/types/city';
 //
 import PickupTableRow from '../pickup-table-row';
 import { enqueueSnackbar } from 'src/components/snackbar';
@@ -50,9 +50,14 @@ const TABLE_HEAD = [
   { id: 'action2', label: '', width: 88 },
 ];
 
-const defaultFilters: ICityTableFilters = {
+const defaultFilters: IPickupTableFilters = {
   name: '',
   locale: '',
+  status: '',
+  start_date: '',
+  end_date: '',
+  start_time: '',
+  end_time: '',
 };
 
 // ----------------------------------------------------------------------
@@ -67,8 +72,6 @@ export default function PickupListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [localeFilter, setLocaleFilter] = useState('');
   const [originalTableData, setOriginalTableData] = useState<any>([]);
 
   const {
@@ -81,7 +84,8 @@ export default function PickupListView() {
   } = useGetCityPickupExclusionList({
     limit: table.rowsPerPage,
     page: table.page,
-    searchTerm: searchQuery,
+
+    filters,
   });
 
   useEffect(() => {
@@ -128,39 +132,20 @@ export default function PickupListView() {
   };
 
   const canReset = !isEqual(defaultFilters, filters);
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleResetFilters = useCallback(() => {
-    setLocaleFilter('');
     setFilters(defaultFilters);
     setTableData(originalTableData);
   }, [originalTableData]);
 
-  const handleFilters = useCallback(
-    (name: string, value: ICityTableFilters) => {
-      setSearchQuery(value);
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table]
-  );
-
-  const handleLocaleFilterChange = (locale: string) => {
-    setLocaleFilter(locale);
-  };
   const renderFilters = (
     <Stack
       spacing={3}
-      justifyContent="space-between"
+      justifyContent="flex-end"
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ marginBottom: 3 }}
     >
-      <PickupSearch query={searchQuery} onSearch={handleFilters} />
-
       <Stack direction="row" spacing={1} flexShrink={0}>
         <PickupFilters
           open={openFilters.value}
@@ -170,7 +155,6 @@ export default function PickupListView() {
           onFilters={handleFiltersChange}
           canReset={canReset}
           onResetFilters={handleResetFilters}
-          onLocaleChange={handleLocaleFilterChange}
         />
       </Stack>
     </Stack>
@@ -213,7 +197,7 @@ export default function PickupListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-        {/* {viewMode === 'table' && renderFilters} */}
+        {viewMode === 'table' && renderFilters}
         <Card>
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -298,7 +282,7 @@ function applyFilter({
 }: {
   inputData: any[];
   comparator: (a: any, b: any) => number;
-  filters: ICityTableFilters;
+  filters: IPickupTableFilters;
 }) {
   const { name, locale } = filters;
 

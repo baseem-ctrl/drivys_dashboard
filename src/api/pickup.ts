@@ -1,6 +1,7 @@
 import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
+import { IPickupTableFilters } from 'src/types/city';
 
 // ----------------------------------------------------------------------
 // Function for creating or updating city pickup exclusions
@@ -23,18 +24,27 @@ type useGetCityPickupExclusionListParams = {
 export function useGetCityPickupExclusionList({
   limit = 10,
   page = 1,
-
   searchTerm = '',
-}: useGetCityPickupExclusionListParams = {}) {
+  filters = {},
+}: {
+  limit?: number;
+  page?: number;
+  searchTerm?: string;
+  filters?: IPickupTableFilters;
+} = {}) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {
-      limit: limit || 100,
+      limit,
       page: page ? page + 1 : 1,
+      search: searchTerm,
+      ...filters,
     };
 
-    if (searchTerm) queryParams.search = searchTerm;
+    const filteredQueryParams = Object.fromEntries(
+      Object.entries(queryParams).filter(([_, value]) => value !== undefined && value !== '')
+    );
 
-    return `${endpoints.pickup.list}?${new URLSearchParams(queryParams)}`;
+    return `${endpoints.pickup.list}?${new URLSearchParams(filteredQueryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
