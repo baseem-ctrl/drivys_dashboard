@@ -18,6 +18,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { createStateTranslation, updateStateTranslation } from 'src/api/state';
 import { useGetAllLanguage } from 'src/api/language';
+import { useGetAllCity } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,10 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for orderj
   });
   const { language } = useGetAllLanguage(0, 1000);
-
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
+  console.log('currentState', currentState);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -48,12 +52,13 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     () => ({
       name: currentState?.translations?.[0]?.name || '',
       locale: currentState?.translations?.[0]?.locale || 'en',
+      city_id: currentState?.city?.city_translations[0]?.city_id || '',
       published: currentState?.is_published === 1,
       order: currentState?.order || 0, // Set default order to 0 if not provided
     }),
     [currentState]
   );
-
+  console.log('defaultValues', defaultValues);
   const methods = useForm({
     resolver: yupResolver(CitySchema) as any,
     defaultValues,
@@ -100,13 +105,15 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       const formData = new FormData();
 
       // Add the state ID while updating
-      formData.append('state_id', currentState?.id || '');
+
+      formData.append('city_id', currentState?.city_id || data.city_id);
       formData.append('is_published', data.published ? '1' : '0');
       formData.append('translations[0][locale]', data.locale);
       formData.append('translations[0][name]', data.name);
       formData.append('order', data.order.toString()); // Append the order value
 
       if (currentState?.id) {
+        formData.append('state_id', currentState?.id || '');
         await updateStateTranslation(formData);
         enqueueSnackbar('State translation updated successfully.');
       } else {
@@ -165,6 +172,15 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
                   {option.label}
                 </MenuItem>
               ))}
+            </RHFSelect>
+            <RHFSelect name="city_id" label="Select City">
+              {city?.map((city: any) =>
+                city.city_translations.map((translation: any) => (
+                  <MenuItem key={`${city.id}-${translation.locale}`} value={city.id}>
+                    {translation.name} ({translation.locale.toUpperCase()})
+                  </MenuItem>
+                ))
+              )}
             </RHFSelect>
             <RHFTextField name="name" label="Name" />
             <RHFTextField name="order" label="Order" type="number" />

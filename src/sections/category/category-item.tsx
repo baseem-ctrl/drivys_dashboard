@@ -94,9 +94,7 @@ export default function JobItem({
   //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.category_translations || [];
-    return translations.find((trans) => trans.locale.toLowerCase() === 'en')
-      ? 'en'
-      : translations[0]?.locale || '';
+    return translations.find((trans) => trans.locale.toLowerCase() === 'en')?.locale;
   });
 
   const [isSubmittingImage, setIsSubmitting] = useState(false);

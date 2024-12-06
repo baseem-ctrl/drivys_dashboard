@@ -102,16 +102,30 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const selectedLocaleObject = details?.package_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
-
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
     name: Yup.string().required('Name is required'),
     session_inclusions: Yup.string(),
-    number_of_sessions: Yup.string(),
+    number_of_sessions: Yup.number().test(
+      'is-even',
+      'Number of sessions must be an even number',
+      function (value) {
+        // If the value is defined, check if it's even
+        if (value === -1) {
+          return true;
+        }
+        if (value !== undefined && value !== null) {
+          return value % 2 === 0;
+        }
+        // If value is undefined or null, the validation passes
+        return true;
+      }
+    ),
     status: Yup.string(),
     is_published: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
+    is_percentage: Yup.boolean(),
   });
   const defaultVendorValues = useMemo(
     () => ({
@@ -128,6 +142,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               ?.category_translations[0]?.name
           : '',
       drivys_commision: details?.drivys_commision || '',
+      is_percentage: !!details?.is_percentage,
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
@@ -145,6 +160,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   } = Schoolmethods;
   const { isSubmitting, errors } = schoolFormState;
   const values = schoolWatch();
+  const handleToggle = () => {
+    schoolSetValue('is_percentage', !values?.is_percentage);
+  };
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -203,6 +221,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
         drivys_commision: data?.drivys_commision || details?.drivys_commision,
+        is_percentage: data.is_percentage === true ? 1 : 0,
       };
       let formData = new FormData();
 
@@ -407,7 +426,23 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Controller
                     name="drivys_commision"
                     control={schoolControl}
-                    render={({ field }) => <TextField label="Drivy's Commission" {...field} />}
+                    render={({ field }) => (
+                      <TextField
+                        label="Drivy's Commission"
+                        {...field}
+                        type={values?.is_percentage ? 'number' : 'text'}
+                        inputProps={{ min: 0 }}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
+                                {values?.is_percentage ? '%' : 'AED'}
+                              </div>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
                   />
                   <RHFAutocompleteSearch
                     name="vendor_id"

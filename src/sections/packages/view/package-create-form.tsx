@@ -28,7 +28,8 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
+import { InputAdornment, TextField, Tooltip, Typography, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { createUpdatePackage } from 'src/api/package';
@@ -77,7 +78,30 @@ export default function PackageCreateForm({
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
-  console.log('cities', city);
+  const [cityFields, setCityFields] = useState([
+    { id: null, min_price: '', max_price: '', commision: '' },
+  ]);
+
+  const handleAddCity = () => {
+    setCityFields((prevFields) => [
+      ...prevFields,
+      { id: null, min_price: '', max_price: '', commision: '' },
+    ]);
+  };
+
+  const handleCityFieldChange = (index: number, field: string, value: any) => {
+    const updatedCities = [...cityFields];
+    updatedCities[index] = {
+      ...updatedCities[index],
+      [field]: value,
+    };
+    setCityFields(updatedCities);
+  };
+  const handleRemoveCity = (index) => {
+    const updatedCityFields = cityFields.filter((_, i) => i !== index);
+    setCityFields(updatedCityFields);
+  };
+
   const localeOptions = language?.map((item: any) => ({
     label: item.language_culture,
     value: item.language_culture,
@@ -86,13 +110,16 @@ export default function PackageCreateForm({
   const DeliverySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
-    session_inclusions: Yup.string().required('Session inclusions is required'),
+    session_inclusions: Yup.string(),
     is_published: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
       'Number of sessions must be an even number',
       function (value) {
         // If the value is defined, check if it's even
+        if (value === -1) {
+          return true;
+        }
         if (value !== undefined && value !== null) {
           return value % 2 === 0;
         }
@@ -101,10 +128,11 @@ export default function PackageCreateForm({
       }
     ),
     category_id: Yup.mixed(),
-    vendor_id: Yup.mixed(),
+    vendor_id: Yup.mixed().nullable(),
     drivys_commision: Yup.number(),
     min_price: Yup.number(),
     max_price: Yup.number(),
+    is_percentage: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
@@ -140,10 +168,12 @@ export default function PackageCreateForm({
     watch,
     formState: { isSubmitting, errors },
   } = methods;
-
   const currentName = watch('name');
-  const currentDescription = watch('description');
+  const currentSessionInclusions = watch('session_inclusions');
   const values = watch();
+  const handleToggle = () => {
+    setValue('is_percentage', !values?.is_percentage);
+  };
   const previousLocaleRef = useRef(selectedLocale);
 
   // ** 1. Saving current locale's translation before switching **
@@ -153,7 +183,7 @@ export default function PackageCreateForm({
         ...prev,
         [selectedLocale]: {
           name: currentName || '',
-          description: currentDescription || '',
+          session_inclusions: currentSessionInclusions || '',
         },
       }));
     }
@@ -175,9 +205,9 @@ export default function PackageCreateForm({
     if (selectedLocale) {
       // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
-      console.log('translation', translation);
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
+      setValue('session_inclusions', translation?.session_inclusions);
 
       // Update the previous locale
       previousLocaleRef.current = selectedLocale;
@@ -188,7 +218,6 @@ export default function PackageCreateForm({
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
     const formData = new FormData();
-    console.log('selectedLocale', selectedLocale);
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? 1 : 0);
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
@@ -197,14 +226,32 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
-
-    if (data?.cities_ids && Array.isArray(data.cities_ids)) {
-      data.cities_ids.forEach((city: any, index: number) => {
-        formData.append(`cities_ids[${index}][id]`, city?.id);
-        formData.append(`cities_ids[${index}][min_price]`, city?.min_price);
-        formData.append(`cities_ids[${index}][max_price]`, city?.max_price);
-      });
+    if (data.is_percentage !== undefined) {
+      formData.append('is_percentage', data.is_percentage === true ? 1 : 0);
     }
+    if (Array.isArray(cityFields)) {
+      cityFields.forEach((city, index) => {
+        if (city?.id !== undefined) {
+          formData.append(`cities_ids[${index}][id]`, String(city.id));
+        }
+
+        if (city?.min_price !== undefined) {
+          formData.append(`cities_ids[${index}][min_price]`, String(city.min_price));
+        }
+
+        if (city?.max_price !== undefined) {
+          formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
+        }
+        if (city?.commision !== undefined) {
+          formData.append(`cities_ids[${index}][commision]`, String(city.commision));
+        }
+        if (!city?.id && !city?.min_price && !city?.max_price) {
+        }
+      });
+    } else {
+      console.log('cities_ids is not an array or is undefined');
+    }
+
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
@@ -300,11 +347,20 @@ export default function PackageCreateForm({
               <RHFTextField
                 name="drivys_commision"
                 label="Drivy's Commission"
-                type="number"
+                type={values?.is_percentage ? 'number' : 'text'}
                 inputProps={{ min: 0 }}
-                suffix="AED"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
+                        {values?.is_percentage ? '%' : 'AED'}
+                      </div>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
+            {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
               <RHFAutocompleteSearch
@@ -321,37 +377,75 @@ export default function PackageCreateForm({
                 loading={schoolLoading}
               />
             </Grid>
-            <Grid item xs={6}>
-              <RHFSelect name="cities_ids[0][id]" label="Select City">
-                {city?.map((city: any) =>
-                  city.city_translations.map((translation: any) => (
-                    <MenuItem key={`${city.id}-${translation.locale}`} value={city.id}>
-                      {translation.name} ({translation.locale.toUpperCase()})
-                    </MenuItem>
-                  ))
-                )}
-              </RHFSelect>
-            </Grid>
+            <Box sx={{ mt: 2 }}>
+              {cityFields.map((cityField, index) => (
+                <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
+                  <Grid item xs={12}>
+                    <RHFAutocompleteSearch
+                      name={`cities_ids[${index}][id]`}
+                      label={`Select City ${index + 1}`}
+                      multiple={false}
+                      options={city
+                        ?.map((city) =>
+                          city.city_translations.map((translation) => ({
+                            label: `${translation.name} (${translation.locale.toUpperCase()})`,
+                            value: city.id,
+                          }))
+                        )
+                        .flat()}
+                      onChange={(event, value) => {
+                        handleCityFieldChange(index, 'id', value?.value || null);
+                      }}
+                      loading={cityLoading}
+                    />
+                  </Grid>
 
-            <Grid item xs={6}>
-              <RHFTextField
-                name="cities_ids[0][min_price]"
-                label="City Min Price"
-                type="number"
-                inputProps={{ min: 0 }}
-                suffix="AED"
-              />
-            </Grid>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      name={`cities_ids[${index}][min_price]`}
+                      label="City Min Price"
+                      type="number"
+                      inputProps={{ min: 0 }}
+                      value={cityField.min_price}
+                      onChange={(event) =>
+                        handleCityFieldChange(index, 'min_price', event.target.value)
+                      }
+                      suffix="AED"
+                    />
+                  </Grid>
 
-            <Grid item xs={6}>
-              <RHFTextField
-                name="cities_ids[0][max_price]"
-                label="City Max Price"
-                type="number"
-                inputProps={{ min: 0 }}
-                suffix="AED"
-              />
-            </Grid>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      name={`cities_ids[${index}][max_price]`}
+                      label="City Max Price"
+                      type="number"
+                      inputProps={{ min: 0 }}
+                      value={cityField.max_price}
+                      onChange={(event) =>
+                        handleCityFieldChange(index, 'max_price', event.target.value)
+                      }
+                      suffix="AED"
+                    />
+                  </Grid>
+
+                  {index > 0 && (
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                      <IconButton
+                        onClick={() => handleRemoveCity(index)}
+                        color="error"
+                        sx={{ color: 'black' }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                  )}
+                </Grid>
+              ))}
+
+              <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
+                Add City
+              </Button>
+            </Box>
             <Grid item xs={6}>
               <RHFCheckbox name="is_published" label="Publish" />
             </Grid>

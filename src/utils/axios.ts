@@ -201,6 +201,7 @@ export const endpoints = {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
     getStudents: 'admin/student/get-student-list',
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
+    createTrainer: 'admin/trainers/school/create-trainer',
     workingHours: {
       createUpdate: 'admin/trainer-working-hours/create-update',
       deleteById: 'admin/trainer-working-hours/delete-by-id',
