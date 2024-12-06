@@ -73,10 +73,10 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
-    // cash_clearance_date: Yup.string(),
-    // cash_in_hand: Yup.string().required('Mention the Cash in hand '),
-    // vendor_commission_in_percentage: Yup.string().nullable(),
-    // max_cash_in_hand_allowed: Yup.string().nullable(), // not required
+    cash_clearance_date: Yup.string(),
+    vendor_commission_in_percentage: Yup.string().required(),
+    vehicle_number: Yup.string().nullable(), // not required
+    phone: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -89,7 +89,8 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       vendor_commission_in_percentage: editDetails?.vendor_commission_in_percentage || '',
       last_booking_was: editDetails?.last_booking_was || '',
 
-      max_cash_in_hand_allowed: editDetails?.max_cash_in_hand_allowed || '',
+      vehicle_number: editDetails?.vehicle_number || '',
+      phone: '',
     }),
     [candidates, editDetails]
   );
@@ -139,10 +140,11 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       name: data?.name,
       email: data?.email,
       password: data?.password,
-      last_booking_was: data?.last_booking_was,
       cash_clearance_date: data?.cash_clearance_date,
-      cash_in_hand: data?.cash_in_hand,
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
+      vehicle_number: data?.vehicle_number,
+      phone: data?.phone,
+      country_code: '971',
     };
 
     // Add vendor_id for new trainer, or update if edit
@@ -158,6 +160,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         enqueueSnackbar('Trainer created successfully', { variant: 'success' });
         onCreate();
         revalidateTrainers();
+        reset();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -169,7 +172,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       }
     } finally {
       handleEditClose();
-      reset();
       setIsEditDetails(null);
     }
   };
@@ -240,15 +242,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                         ),
                       }}
                     />
-                    <RHFTextField
-                      name="last_booking_was"
-                      label="Last Booking Was"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
+                    <RHFTextField name="phone" label="Phone Number" type="number" prefix="+971" />
 
                     <RHFTextField
                       name="cash_clearance_date"
@@ -260,17 +254,13 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       }}
                     />
 
-                    <RHFTextField
-                      name="cash_in_hand"
-                      label="Cash in Hand"
-                      type="number"
-                      fullWidth
-                    />
+                    <RHFTextField name="vehicle_number" label="Vehicle Number" fullWidth />
 
                     <RHFTextField
                       name="vendor_commission_in_percentage"
                       label="Vendor Commision"
                       fullWidth
+                      suffix="%"
                     />
                   </Box>
 
