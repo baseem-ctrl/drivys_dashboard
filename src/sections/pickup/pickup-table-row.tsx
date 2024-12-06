@@ -11,6 +11,8 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import PickupCreateEditForm from './pickup-new-edit-form';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -35,16 +37,30 @@ export default function PickupTableRow({
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
+  const router = useRouter();
 
   const formattedStartDate = moment(start_date).format('YYYY-MM-DD');
   const formattedStartTime = moment.utc(start_time).format('HH:mm A');
   const formattedEndDate = moment(end_date).format('YYYY-MM-DD');
   const formattedEndTime = moment.utc(end_time).format('HH:mm A');
 
+  const handleClick = () => {
+    router.push(paths.dashboard.system.viewDetails(city_id));
+  };
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell>{city_id}</TableCell>
+        <TableCell
+          onClick={handleClick}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          {city_id}
+        </TableCell>
         <TableCell>{formattedStartDate}</TableCell>
         <TableCell>{formattedStartTime}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>

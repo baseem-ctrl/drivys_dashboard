@@ -1,7 +1,9 @@
 import * as Yup from 'yup';
 import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Autocomplete, TextField } from '@mui/material';
+
 import moment from 'moment';
 
 // @mui
@@ -104,7 +106,7 @@ export default function PickupCreateEditForm({
       formData.append('end_date', endDate);
       formData.append('start_time', startTime);
       formData.append('end_time', endTime);
-      formData.append('status', data.status === true ? 1 : 0 || '');
+      formData.append('status', data.status === true ? 1 : 0 || 0);
 
       if (currentPickup?.id) {
         await createUpdateCityPickupExclusion(formData);
@@ -127,7 +129,6 @@ export default function PickupCreateEditForm({
       }
     }
   });
-
   return (
     <Dialog
       fullWidth
@@ -153,13 +154,22 @@ export default function PickupCreateEditForm({
             }}
           >
             <RHFSelect name="city_id" label="City">
-              {city?.length > 0 &&
-                city?.map((option: any) => (
-                  <MenuItem key={option?.id} value={option?.id}>
-                    {option?.city_translations[0]?.name ?? 'Unknown'}
-                  </MenuItem>
-                ))}
+              {city?.length > 0 ? (
+                city?.map((option: any) => {
+                  const cityNames = option?.city_translations?.map(
+                    (translation: any) => `${translation.locale}: ${translation.name}`
+                  );
+                  return (
+                    <MenuItem key={option?.id} value={option?.id}>
+                      {cityNames?.join(', ') || 'Unknown City'}
+                    </MenuItem>
+                  );
+                })
+              ) : (
+                <MenuItem disabled>No cities found</MenuItem>
+              )}
             </RHFSelect>
+
             <DatePicker
               name="start_date"
               label="Start Date"
