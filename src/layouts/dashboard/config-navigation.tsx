@@ -202,6 +202,7 @@ export function useNavData() {
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('Areas'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
+        { title: t('Pickup'), path: paths.dashboard.system.pickup },
         { title: t('App Settings'), path: paths.dashboard.system.appsettings },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },

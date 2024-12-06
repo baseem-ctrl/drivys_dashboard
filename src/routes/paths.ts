@@ -226,6 +226,7 @@ export const paths = {
       state: `${ROOTS.DASHBOARD}/system/state`,
       dialect: `${ROOTS.DASHBOARD}/system/dialect`,
       cityList: `${ROOTS.DASHBOARD}/system/city/list`,
+      pickup: `${ROOTS.DASHBOARD}/system/pickup`,
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
