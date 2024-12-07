@@ -22,7 +22,7 @@ type Props = {
   reload: VoidFunction;
 };
 
-export default function BookingTableRow({
+export default function RefundTableRow({
   row,
   selected,
   onEditRow,

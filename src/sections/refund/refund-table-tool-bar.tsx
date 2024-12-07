@@ -1,7 +1,7 @@
 import { Box, TextField, MenuItem } from '@mui/material';
 import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 
-export default function BookingTableToolbar({ filters, onFilters, vendorOptions }) {
+export default function RefundTableToolbar({ filters, onFilters, vendorOptions }) {
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
 

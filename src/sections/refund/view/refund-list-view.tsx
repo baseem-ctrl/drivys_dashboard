@@ -40,6 +40,7 @@ import BookingTableRow from '../refund-table-row';
 import BookingTableToolbar from '../refund-table-tool-bar';
 import { useGetUsers } from 'src/api/users';
 import { useGetRefundRequestList } from 'src/api/refund';
+import RefundTableToolbar from '../refund-table-tool-bar';
 
 const TABLE_HEAD = {
   all: [
@@ -95,13 +96,13 @@ const defaultFilters = {
 export default function RefundListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
-  const { refunds, refundsLoading, revalidateRefunds } = useGetRefundRequestList({
+  const { refundRequests, refundsLoading, revalidateRefunds } = useGetRefundRequestList({
     page: table.page,
     limit: table.rowsPerPage,
     // refund_status: filters.refundType,
     // customer_name: filters.customerName,
   });
-  console.log('refunds', refunds);
+  console.log('refunds', refundRequests);
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [tableData, setTableData] = useState([]);
@@ -239,87 +240,17 @@ export default function RefundListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Booking Orders List"
+        heading="Refund List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Order', href: paths.dashboard.booking.root },
+          { name: 'Refund', href: paths.dashboard.booking.root },
           { name: 'List' },
         ]}
         sx={{ mb: 3 }}
       />
 
       <Card>
-        <Tabs
-          value={filters.bookingType}
-          onChange={handleTabChange}
-          sx={{
-            borderBottom: 1,
-            borderColor: 'divider',
-          }}
-        >
-          <Tab
-            value="all"
-            label={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span>All</span>
-                <Typography
-                  sx={{
-                    backgroundColor: '#f0f0f0',
-                    display: 'inline-block',
-                    padding: '4px 9px',
-                    borderRadius: '4px',
-                    marginLeft: '8px',
-                    color: '#000',
-                  }}
-                >
-                  {bookingCounts.all || 0}
-                </Typography>
-              </div>
-            }
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '8px',
-              borderRadius: '4px',
-            }}
-          />
-          {bookingStatusEnum.map((tab) => {
-            const count = bookingCounts[tab.name] || 0;
-            const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
-            const textColor = tabTextColors[tab.value] || '#000';
-
-            return (
-              <Tab
-                key={tab.value}
-                value={tab.value}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px',
-                  borderRadius: '4px',
-                }}
-                label={
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{tab.name}</span>
-                    <Typography
-                      sx={{
-                        backgroundColor: backgroundColor,
-                        display: 'inline-block',
-                        padding: '4px 9px',
-                        borderRadius: '4px',
-                        marginLeft: '8px',
-                        color: textColor,
-                      }}
-                    >
-                      {count}
-                    </Typography>
-                  </div>
-                }
-              />
-            );
-          })}
-        </Tabs>
-        <BookingTableToolbar
+        <RefundTableToolbar
           filters={filters}
           onFilters={handleFilters}
           vendorOptions={vendorOptions}

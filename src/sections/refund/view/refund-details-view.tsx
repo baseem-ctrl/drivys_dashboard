@@ -47,7 +47,7 @@ import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-const BookingDetailsComponent = () => {
+const RefundDetailsComponent = () => {
   const settings = useSettingsContext();
 
   const { id } = useParams();

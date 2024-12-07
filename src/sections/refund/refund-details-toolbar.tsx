@@ -29,7 +29,7 @@ type Props = {
   statusId: any;
 };
 
-export default function BookingDetailsToolbar({
+export default function RefundDetailsToolbar({
   status,
   statusId,
   backLink,
