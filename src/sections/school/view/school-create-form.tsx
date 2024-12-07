@@ -124,10 +124,10 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('Maximum 15 digit', 'Maximum 15 digit', function (value) {
+    phone: Yup.string().test('Maximum 9 digit', 'Maximum 9 digit', function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
-        return value && value.length <= 15; // Ensures password is filled if create_new_user is true
+        return value && value.length <= 9; // Ensures password is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
@@ -225,13 +225,15 @@ export default function SchoolCreateForm({
     formData.append('status', data?.status);
     formData.append('is_active', data.is_active ? '1' : '0');
     formData.append('create_new_user', data.create_new_user ? '1' : '0');
-    formData.append('user_id', data?.user_id?.value);
+    if (!data?.create_new_user) {
+      formData.append('user_id', data?.user_id?.value);
+    }
     if (data?.create_new_user) {
       formData.append('name', data?.user_name);
       formData.append('user_email', data?.user_email);
       formData.append('password', data?.password);
       formData.append('phone', data?.phone);
-      formData.append('country_code', data?.country_code?.phone);
+      formData.append('country_code', '971');
     }
     formData.append(`vendor_translations[0][name]`, data?.name);
     formData.append(`vendor_translations[0][locale]`, data?.locale);

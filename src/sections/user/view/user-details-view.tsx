@@ -84,7 +84,7 @@ export default function UserDetailsView({ id }: Props) {
   // );
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
         heading="User Details"
         links={[

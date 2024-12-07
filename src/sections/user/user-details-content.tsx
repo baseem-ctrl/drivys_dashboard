@@ -16,6 +16,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  InputAdornment,
 } from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
@@ -75,6 +76,7 @@ import BookingTrainerTable from './booking-details/trainer-booking-details';
 import BookingStudentTable from './booking-details/student-booking-details';
 import { Link } from '@mui/material';
 import moment from 'moment';
+import { useGetAllCity } from 'src/api/city';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -92,7 +94,7 @@ export default function UserDetailsContent({
   loading,
   reload,
 }: Props) {
-  const { reset } = useForm();
+  const { reset, control } = useForm();
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -106,7 +108,9 @@ export default function UserDetailsContent({
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
   const {
     userDocuments,
     userDocumentLoading,
@@ -500,17 +504,16 @@ export default function UserDetailsContent({
                       },
                       {
                         label: 'Verified At',
-                        value:
-                          details?.verified_at === null ? (
-                            <Box>
-                              <Button variant="soft" onClick={handleVerify}>
-                                {' '}
-                                Verify
-                              </Button>
-                            </Box>
-                          ) : (
-                            moment.utc(details?.verified_at).format('ll')
-                          ),
+                        value: !details?.verified_at ? (
+                          <Box>
+                            <Button variant="soft" onClick={handleVerify}>
+                              {' '}
+                              Verify
+                            </Button>
+                          </Box>
+                        ) : (
+                          moment.utc(details?.verified_at).format('ll')
+                        ),
                       },
                     ]
                   : []),
@@ -643,8 +646,8 @@ export default function UserDetailsContent({
       // Update the body to include latitude and longitude from markerPosition
       const updatedAddress = {
         ...body,
-        latitude: markerPosition.lat,
-        longitude: markerPosition.lng,
+        latitude: markerPosition.lat || addressForm.latitude,
+        longitude: markerPosition.lng || addressForm.longitude,
       };
 
       // Call the update API with the updated address data
@@ -659,7 +662,17 @@ export default function UserDetailsContent({
       }
     } catch (error) {
       console.log('Error updating user address:', error);
-      enqueueSnackbar('Failed to update user address. Please try again.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -674,7 +687,17 @@ export default function UserDetailsContent({
         enqueueSnackbar('User address created successfully!', { variant: 'success' });
       }
     } catch (error) {
-      console.log('error', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   const [addressForm, setAddressForm] = useState({
@@ -695,14 +718,24 @@ export default function UserDetailsContent({
 
   const handleChangeStoreAddress = (e) => {
     const { name, value } = e.target;
+
+    // Update address form directly for other fields
     setAddressForm((prev) => ({ ...prev, [name]: value }));
-    if (name === 'latitude' || name === 'longitude') {
-      setMarkerPosition({
-        lat: addressForm.latitude || 0,
-        lng: addressForm.longitude || 0,
-      });
+
+    // Directly update markerPosition for latitude and longitude
+    if (name === 'latitude') {
+      setMarkerPosition((prev) => ({
+        ...prev,
+        lat: parseFloat(value) || 0,
+      }));
+    } else if (name === 'longitude') {
+      setMarkerPosition((prev) => ({
+        ...prev,
+        lng: parseFloat(value) || 0,
+      }));
     }
   };
+
   // State to manage the visibility of the map for each address
   const [showMapIndex, setShowMapIndex] = useState(null);
   // Function to handle user deletion
@@ -715,7 +748,17 @@ export default function UserDetailsContent({
         if (reloadData) reloadData();
       }
     } catch (error) {
-      enqueueSnackbar('Failed to delete user address!', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   // Add a method to handle the selected location from the map
@@ -867,13 +910,62 @@ export default function UserDetailsContent({
                 onChange={handleChangeStoreAddress}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
-              <TextField
-                label="City"
-                variant="outlined"
+              <Controller
                 name="city"
-                value={addressForm.city}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="City"
+                    variant="outlined"
+                    value={field.value || addressForm.city || ''}
+                    onChange={(e) => {
+                      const selectedCityId = e.target.value;
+
+                      const selectedCity = city.find((cityItem) => cityItem.id === selectedCityId);
+                      const selectedCityName = selectedCity
+                        ? selectedCity.city_translations
+                            .map((translation) => translation.name)
+                            .join(', ')
+                        : '';
+
+                      field.onChange(e);
+
+                      handleChangeStoreAddress({
+                        ...e,
+                        target: { name: 'city', value: selectedCityName },
+                      });
+                    }}
+                    sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                    select
+                    fullWidth
+                    InputProps={{
+                      startAdornment: cityLoading ? (
+                        <InputAdornment position="start">
+                          <CircularProgress size={20} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
+                  >
+                    {cityLoading ? (
+                      <MenuItem disabled>Loading cities...</MenuItem>
+                    ) : city?.length === 0 ? (
+                      <MenuItem disabled>No cities found</MenuItem>
+                    ) : (
+                      city.map((cityItem) => {
+                        const cityNames = cityItem.city_translations.map(
+                          (translation) => translation.name
+                        );
+
+                        return (
+                          <MenuItem key={cityItem.id} value={cityItem.id}>
+                            {cityNames.join(', ') || 'Unknown City'}
+                          </MenuItem>
+                        );
+                      })
+                    )}
+                  </TextField>
+                )}
               />
             </Box>
 
@@ -942,6 +1034,7 @@ export default function UserDetailsContent({
               <TextField
                 label="Longitude"
                 variant="outlined"
+                type="number"
                 name="longitude"
                 value={markerPosition.lng}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
@@ -950,6 +1043,7 @@ export default function UserDetailsContent({
               <TextField
                 label="Latitude"
                 variant="outlined"
+                type="number"
                 name="latitude"
                 value={markerPosition.lat}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
@@ -1126,14 +1220,64 @@ export default function UserDetailsContent({
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
-                    <TextField
-                      label="City"
-                      variant="outlined"
-                      fullWidth
+                    <Controller
                       name="city"
-                      value={addressForm.city}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="City"
+                          variant="outlined"
+                          value={field.value || addressForm.city || ''}
+                          onChange={(e) => {
+                            const selectedCityId = e.target.value;
+
+                            const selectedCity = city.find(
+                              (cityItem) => cityItem.id === selectedCityId
+                            );
+                            const selectedCityName = selectedCity
+                              ? selectedCity.city_translations
+                                  .map((translation) => translation.name)
+                                  .join(', ')
+                              : '';
+
+                            field.onChange(e);
+
+                            handleChangeStoreAddress({
+                              ...e,
+                              target: { name: 'city', value: selectedCityName },
+                            });
+                          }}
+                          sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                          select
+                          fullWidth
+                          InputProps={{
+                            startAdornment: cityLoading ? (
+                              <InputAdornment position="start">
+                                <CircularProgress size={20} />
+                              </InputAdornment>
+                            ) : null,
+                          }}
+                        >
+                          {cityLoading ? (
+                            <MenuItem disabled>Loading cities...</MenuItem>
+                          ) : city?.length === 0 ? (
+                            <MenuItem disabled>No cities found</MenuItem>
+                          ) : (
+                            city.map((cityItem) => {
+                              const cityNames = cityItem.city_translations.map(
+                                (translation) => translation.name
+                              );
+
+                              return (
+                                <MenuItem key={cityItem.id} value={cityItem.id}>
+                                  {cityNames.join(', ') || 'Unknown City'}
+                                </MenuItem>
+                              );
+                            })
+                          )}
+                        </TextField>
+                      )}
                     />
                     <TextField
                       label="Country Code"
@@ -1188,6 +1332,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="longitude"
+                      type="number"
                       value={markerPosition.lng}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
@@ -1197,6 +1342,7 @@ export default function UserDetailsContent({
                       variant="outlined"
                       fullWidth
                       name="latitude"
+                      type="number"
                       value={markerPosition.lat}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}

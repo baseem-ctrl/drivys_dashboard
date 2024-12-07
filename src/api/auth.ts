@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysSmasher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 export function Login(body: any) {
@@ -42,8 +42,8 @@ export async function DeleteUserProfile(userId: string) {
   }
 
   try {
-    // Use barrySmasher to make a DELETE request with userId
-    const response = await barrySmasher([URL, { data: { userId } }]);
+    // Use drivysSmasher to make a DELETE request with userId
+    const response = await drivysSmasher([URL, { data: { userId } }]);
     return response;
   } catch (error) {
     console.error('Error deleting profile:', error);

@@ -1,12 +1,19 @@
-import { Box, TextField, MenuItem } from '@mui/material';
+import { Box, TextField, MenuItem, Autocomplete, Chip } from '@mui/material';
 import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
-export default function BookingTableToolbar({ filters, onFilters, vendorOptions }) {
+export default function BookingTableToolbar({
+  filters,
+  onFilters,
+  vendorOptions,
+  setSearch,
+  loading,
+}: any) {
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
 
-  const handleChange = (name) => (event) => {
-    onFilters(name, event.target.value);
+  const handleChange = (name) => (value) => {
+    onFilters(name, value);
   };
 
   const handleClear = (name) => () => {
@@ -21,41 +28,32 @@ export default function BookingTableToolbar({ filters, onFilters, vendorOptions 
       gap={2}
       padding={2}
     >
-      {/* <TextField
-        select
-        variant="outlined"
-        label="Payment Status"
-        value={filters.paymentStatus || ''}
-        onChange={handleChange('paymentStatus')}
-        sx={{ flex: 1 }}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {paymentStatusOptions.map((status) => (
-          <MenuItem key={status} value={status}>
-            {status}
-          </MenuItem>
-        ))}
-      </TextField> */}
-
-      <TextField
-        select
-        variant="outlined"
-        label="Trainer"
-        value={filters.vendor || ''}
-        onChange={handleChange('vendor')}
-        sx={{ flex: 1 }}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {vendorOptions.map((vendor) => (
-          <MenuItem key={vendor.value} value={vendor.value}>
-            {vendor.label}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Autocomplete
+        fullWidth
+        options={
+          vendorOptions?.map((item: any) => ({
+            label: item?.name, // Display full name
+            value: item.id,
+          })) ?? []
+        }
+        // getOptionLabel={(option) => option[0].label}
+        value={vendorOptions.find((item) => item.id === filters.vendor)?.name || null}
+        onChange={
+          (event, newValue) => handleChange('vendor')(newValue?.value || '') // Pass the value to handleChange
+        }
+        renderInput={(params) => (
+          <TextField
+            placeholder="Select School"
+            {...params}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        )}
+        renderOption={(props, option) => (
+          <li {...props} key={option.value}>
+            {option.label}
+          </li>
+        )}
+      />
     </Box>
   );
 }

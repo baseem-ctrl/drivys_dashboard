@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './package-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { ListItemText, Select, TextField } from '@mui/material';
+import { InputAdornment, ListItemText, Select, TextField } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -64,7 +64,6 @@ export default function PackageTableRow({
     vendor_user,
     number_of_sessions,
     category_id,
-    vendor_commision,
     drivys_commision,
     vendor_id,
   } = row;
@@ -73,6 +72,7 @@ export default function PackageTableRow({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    published: 1,
   });
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
@@ -81,8 +81,6 @@ export default function PackageTableRow({
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const handleEditClick = () => {
-    // console.log(row, 'row');
-
     setEditingRowId(row.id);
     // setEditedData({ ...row });
   };
@@ -117,10 +115,24 @@ export default function PackageTableRow({
     status: Yup.mixed(),
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),
-    number_of_sessions: Yup.string(),
+    number_of_sessions: Yup.number().test(
+      'is-even',
+      'Number of sessions must be an even number',
+      function (value) {
+        // If the value is defined, check if it's even
+        if (value === -1) {
+          return true;
+        }
+        if (value !== undefined && value !== null) {
+          return value % 2 === 0;
+        }
+        // If value is undefined or null, the validation passes
+        return true;
+      }
+    ),
     category_id: Yup.string(),
-    vendor_commision: Yup.string(),
     drivys_commision: Yup.string(),
+    is_percentage: Yup.boolean(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -134,13 +146,11 @@ export default function PackageTableRow({
       vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
-      vendor_commision: vendor_commision || vendor_commision === 0 ? vendor_commision : '',
       drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
+      is_percentage: row?.is_percentage || 1,
     }),
     [selectedLocaleObject, row, editingRowId]
   );
-  console.log('defaultValues', defaultValues);
-
   const methods = useForm({
     resolver: yupResolver(NewSchema) as any,
     defaultValues,
@@ -148,6 +158,9 @@ export default function PackageTableRow({
   const { watch, reset, handleSubmit, formState, setValue, control } = methods;
   const values = watch();
   const { isSubmitting, errors } = formState;
+  const handleToggle = () => {
+    setValue('is_percentage', !values?.is_percentage);
+  };
   const { enqueueSnackbar } = useSnackbar();
   const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedLanguage(event.target.value);
@@ -187,8 +200,7 @@ export default function PackageTableRow({
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,
         drivys_commision: data?.drivys_commision || drivys_commision,
-        vendor_commission: data?.vendor_commision || vendor_commision,
-
+        is_percentage: data.is_percentage === true ? 1 : 0,
         package_id: row?.id,
       };
       const response = await createUpdatePackage(payload);
@@ -252,7 +264,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLanguage
+            selectedLanguage || 'NA'
           )}
         </TableCell>
 
@@ -270,7 +282,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLocaleObject?.name
+            selectedLocaleObject?.name || 'NA'
           )}
         </TableCell>
 
@@ -301,8 +313,8 @@ export default function PackageTableRow({
               render={({ field }) => (
                 <TextField
                   {...field}
-                  error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ''}
+                  error={!!errors.number_of_sessions}
+                  helperText={errors.number_of_sessions ? errors.number_of_sessions.message : ''}
                   type="number"
                 />
               )}
@@ -383,9 +395,19 @@ export default function PackageTableRow({
                 <TextField
                   {...field}
                   error={!!errors.email}
+                  type={values?.is_percentage ? 'number' : 'text'}
+                  inputProps={{ min: 0 }}
                   value={field.value || field.value === 0 ? field.value : ''}
                   helperText={errors.email ? errors.email.message : ''}
-                  type="number"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
+                          {values?.is_percentage ? '%' : 'AED'}
+                        </div>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               )}
             />
@@ -396,28 +418,6 @@ export default function PackageTableRow({
           )}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
-          {editingRowId === row.id ? (
-            <Controller
-              name="vendor_commision"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.email}
-                  value={field.value || field.value === 0 ? field.value : ''}
-                  helperText={errors.email ? errors.email.message : ''}
-                  type="number"
-                />
-              )}
-            />
-          ) : vendor_commision || vendor_commision === 0 ? (
-            vendor_commision
-          ) : (
-            'N/A'
-          )}
-        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller

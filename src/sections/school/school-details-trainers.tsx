@@ -46,7 +46,7 @@ type Props = {
 };
 
 export default function SchoolTrainers({ candidates, create, onCreate }: Props) {
-  const table = useTable({ defaultRowsPerPage: 4, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -67,8 +67,8 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
     vendor_id: candidates?.id,
   });
   const { users, usersLoading, usersError, usersEmpty, usersLength } = useGetUsers({
-    page: table?.page,
-    limit: table?.rowsPerPage,
+    page: 1,
+    limit: 15,
     user_types: 'TRAINER',
     search: search,
     is_active: '1',
@@ -349,15 +349,16 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           <CircularProgress />
         </Box>
       )}
-      <TablePaginationCustom
-        count={totalPages}
-        page={table.page}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-        dense={table.dense}
-        onChangeDense={table.onChangeDense}
-      />
+      {totalPages > 5 && (
+        <TablePaginationCustom
+          count={totalPages}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          // dense={table.dense}
+        />
+      )}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

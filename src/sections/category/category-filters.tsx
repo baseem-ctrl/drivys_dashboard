@@ -69,6 +69,7 @@ export default function CategoryFilters({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    has_child: 1,
   });
 
   let parentCategoryOptions = category?.map((item) => {

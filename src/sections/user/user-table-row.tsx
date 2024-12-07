@@ -105,7 +105,7 @@ export default function UserTableRow({
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {name ?? 'NA'}
-                  {user_type === 'TRAINER' && row?.verified_at !== null && (
+                  {user_type === 'TRAINER' && row?.verified_at && (
                     <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
                   )}
                 </Box>
@@ -144,6 +144,9 @@ export default function UserTableRow({
         {currentUserType === 'TRAINER' && (
           <>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
+              {row?.vendor?.vendor_translations[0]?.name ?? 'NA'}
+            </TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
               {row?.max_cash_in_hand_allowed ?? 'NA'}
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>
@@ -151,7 +154,7 @@ export default function UserTableRow({
         )}
         {currentUserType === 'TRAINER' && (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {row?.verified_at !== null ? moment.utc(row?.verified_at).format('lll') : 'NA' ?? 'NA'}
+            {row?.verified_at ? moment.utc(row?.verified_at).format('lll') : 'NA' ?? 'NA'}
           </TableCell>
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
@@ -229,7 +232,7 @@ export default function UserTableRow({
             }}
           >
             <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
-            {row?.verified_at === null ? 'Verify' : 'Unverify'}
+            {!row?.verified_at ? 'Verify' : 'Unverify'}
           </MenuItem>
         )}
       </CustomPopover>

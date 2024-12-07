@@ -4,30 +4,40 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Iconify from 'src/components/iconify';
-import { Box, Button, TextField, Menu, MenuItem } from '@mui/material';
+import {
+  Box,
+  Button,
+  TextField,
+  Menu,
+  MenuItem,
+  FormControlLabel,
+  InputAdornment,
+} from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import { Select, FormControl, InputLabel } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import moment from 'moment';
 import { createOrUpdatePackageDocument, deletePackageDocumentById } from 'src/api/packageDocument';
 import Switch from '@mui/material/Switch';
-import { createUserDocument, deleteUserDocumentById } from 'src/api/user-document';
+import { approveUserDoc, createUserDocument, deleteUserDocumentById } from 'src/api/user-document';
 import UserDocumentCreateUpdate from './user-document-create-form';
+import FormProvider from 'src/components/hook-form/form-provider';
+import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { LoadingButton } from '@mui/lab';
 
 type Document = {
-  id: number;
-  package_id: string;
-  title: string;
-  description?: string;
-  file: File | null;
-  type: string;
-  status: string;
-  session_no: string;
+  doc_type: string;
+  doc_side: string;
+  doc_file: string;
+  expiry: string;
+  is_approved: string;
+  doc_id: string;
 };
 
 type Props = {
@@ -35,7 +45,18 @@ type Props = {
   loading?: boolean;
   reload: VoidFunction;
 };
-
+const docTypeOptions = [
+  { value: 'ID', label: 'ID' },
+  { value: 'PASSPORT', label: 'PASSPORT' },
+  { value: 'CARD', label: 'CARD' },
+  { value: 'LICENCE', label: 'LICENCE' },
+  { value: 'IBAN', label: 'IBAN' },
+  { value: 'OTHER', label: 'OTHER' },
+];
+const docSideOptions = [
+  { value: 'FRONT', label: 'FRONT' },
+  { value: 'BACK', label: 'BACK' },
+];
 export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const [editMode, setEditMode] = useState<number | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -46,7 +67,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
 
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  //   console.log('documents', documents[0]);
 
   // Function to handle image file selection
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,34 +77,48 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       setSelectedImage(URL.createObjectURL(file));
     }
   };
-  console.log('documentsdocumentsdocuments', documents);
   const [confirm, setConfirm] = useState({
     value: false,
     onFalse: () => setConfirm({ ...confirm, value: false }),
   });
   const DocumentSchema = Yup.object().shape({
-    title: Yup.string(),
-    description: Yup.string(),
-    file: Yup.mixed(),
+    doc_type: Yup.string(),
+    doc_side: Yup.string(),
+    doc_file: Yup.mixed(),
+    expiry: Yup.date(),
+    is_approved: Yup.string(),
+    doc_id: Yup.string(),
+    file_type: Yup.string(),
   });
-
-  const defaultDocumentValues = (details: Document) => ({
-    title: details.title || '',
-    description: details.description || '',
-    file: null,
+  const defaultDocumentValues = (details: any | null) => ({
+    doc_type: details?.doc_type ? details.doc_type.toUpperCase() : '' || '',
+    doc_side: details?.doc_side || '',
+    doc_file: details?.doc_file || '' || [],
+    expiry: details?.expiry || '',
+    is_approved: details?.is_approved || '',
+    doc_id: details?.id || '',
+    file_type: 'url' || '',
   });
-
+  const methods = useForm({
+    resolver: yupResolver(DocumentSchema) as any,
+    defaultValues: editMode !== null ? defaultDocumentValues(documents[editMode]) : null,
+  });
   const {
     reset,
-    control,
     setValue,
-    handleSubmit,
     watch,
-    formState: { isSubmitting, errors },
-  } = useForm({
-    resolver: yupResolver(DocumentSchema) as any,
-    defaultValues: editMode !== null ? defaultDocumentValues(documents[editMode]) : {},
-  });
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = methods;
+  const values = watch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (editMode !== null) {
+      reset(defaultDocumentValues(documents[editMode]));
+    } else {
+      reset(defaultDocumentValues(null));
+    }
+  }, [editMode, reset]);
   // Watch the type field
   const fileType = watch('type');
   let acceptedFileTypes = '';
@@ -100,19 +134,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const handleFileClick = (file) => {
     window.open(file, '_blank'); // Open file in a new tab
   };
-  useEffect(() => {
-    if (editMode !== null && documents[editMode]) {
-      const document = documents[editMode];
-      setValue('doc', document.title || '');
-      setValue('status', document.status || '');
-      setValue('type', document.type || '');
-      setValue('file', document.file || '');
-      setValue('session', document.session_no || '');
-      setValue('file', document.file || '');
-      setIsApproved(document.is_approved === 0 ? false : true);
-      // setFilePreviewURL(document.file || '');
-    }
-  }, [documents, editMode]);
+
   const handleCancel = () => {
     reset();
     setEditMode(null);
@@ -121,45 +143,36 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     setEditMode(editIndex);
     setAnchorEl(null);
   };
-  function convertToCustomFormat(dateString) {
-    const date = new Date(dateString);
 
-    // Get day, month, year, hours, and minutes
-    const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
-    const hours = String(date.getHours()).padStart(2, '0'); // Ensure two digits
-    const minutes = String(date.getMinutes()).padStart(2, '0'); // Ensure two digits
-
-    // Return formatted string
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  }
-  const handleClickEditPackageDocument = async (formData: any, document: any) => {
+  const onSubmit = handleSubmit(async (formData: any) => {
     try {
       const updatedDocument = new FormData();
-      // if (filePreviewURL) {
-      //   updatedDocument.append('file', filePreviewURL);
-      // }
-      console.log('document.doc_id', document.doc_id);
-      console.log('formData', formData);
-      // updatedDocument.append('user_id', id);
+      const fileInput = fileInputRef.current;
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        updatedDocument.append('doc_file', fileInput.files[0]); // Get the file
+      } else {
+        if (formData.doc_file) {
+          updatedDocument.append('doc_file', formData.doc_file);
+        }
+      }
       if (formData.doc_type) {
         updatedDocument.append('doc_type', formData.doc_type);
       }
       if (formData.doc_side) {
         updatedDocument.append('doc_side', formData.doc_side);
       }
-      if (formData.doc_file) {
-        updatedDocument.append('doc_file', formData.doc_file);
-      }
+
       if (formData.expiry) {
-        updatedDocument.append('expiry', formData.expiry);
+        const expiryDate = new Date(formData.expiry);
+        const formattedExpiry = expiryDate.toISOString().split('T')[0];
+        updatedDocument.append('expiry', formattedExpiry);
       }
+
       const is_approved = isApproved ? 1 : 0;
 
       updatedDocument.append('is_approved', is_approved);
 
-      updatedDocument.append('doc_id', document.id);
+      updatedDocument.append('doc_id', formData.doc_id);
 
       // Now pass this `updatedDocument` to the API
       const response = await createUserDocument(updatedDocument);
@@ -167,17 +180,30 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       if (response) {
         reload();
         enqueueSnackbar('Document updated successfully!', { variant: 'success' });
+        setEditMode(null);
       } else {
+        reset();
         enqueueSnackbar('Failed to update document!', { variant: 'error' });
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || 'An error occurred while updating.', { variant: 'error' });
+      reset();
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       setSelectedImage(null);
-      setEditMode(null);
+
       reload();
     }
-  };
+  });
   // Handle delete document
   const handleDelete = async (id: number) => {
     setAnchorEl(null);
@@ -190,10 +216,17 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         enqueueSnackbar('Failed to delete document!', { variant: 'error' });
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || 'An error occurred while deleting.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       reload();
       setSelectedImage(null);
+      reset();
     }
   };
   const handleOpenFile = (fileUrl) => {
@@ -224,18 +257,31 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     setAnchorEl(null);
     setEditMode(null);
   };
-  const docTypeOptions = [
-    { value: 'Card', label: 'Card' },
-    { value: 'ID', label: 'ID' },
-    { value: 'Passport', label: 'Passport' },
-    { value: 'License', label: 'License' },
-  ];
-
-  const docSideOptions = [
-    { value: 'Front', label: 'Front' },
-    { value: 'Back', label: 'Back' },
-  ];
-
+  const handleApprovalToggle = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    docId: string
+  ) => {
+    const isChecked = event.target.checked;
+    const body = {
+      doc_id: docId,
+      is_approved: isChecked ? 1 : 0,
+    };
+    try {
+      const response = await approveUserDoc(body);
+      if (response) {
+        enqueueSnackbar(response?.message);
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   return (
     <>
       <Box
@@ -243,6 +289,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
           display: 'flex',
           justifyContent: 'flex-end',
           mt: 7,
+          mb: 8,
         }}
       >
         <Button
@@ -297,7 +344,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
-                          //   padding: 2,
+                          padding: 2,
                           width: '100%',
                           //   height: '590px',
                         }}
@@ -305,12 +352,8 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                         <Typography
                           sx={{
                             fontWeight: 'bold',
-                            marginRight: 2,
                             fontSize: '16px',
                             alignSelf: 'flex-start',
-                            marginBottom: 3,
-                            marginTop: 2,
-                            marginLeft: 3,
                           }}
                         >
                           Document Details:
@@ -318,7 +361,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                         <Stack
                           spacing={2}
                           alignItems="flex-start"
-                          sx={{ typography: 'body2', padding: 2, width: '100%' }}
+                          sx={{ typography: 'body2', width: '100%' }}
                         >
                           <Box
                             sx={{
@@ -326,7 +369,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -354,7 +396,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -383,7 +424,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -402,7 +442,9 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
                               >
-                                {doc?.created_at ? convertToCustomFormat(doc.created_at) : 'N/A'}
+                                {doc?.created_at
+                                  ? moment(doc.created_at).format('YYYY-MM-DD HH:mm:ss')
+                                  : 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -413,7 +455,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -446,7 +487,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -473,7 +513,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -500,7 +539,6 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               alignItems: 'center',
                               width: '100%',
                               borderRadius: 1,
-                              padding: 1,
                               backgroundColor: 'background.default',
                             }}
                           >
@@ -520,6 +558,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                 checked={doc.is_approved === 1}
                                 color="primary"
                                 name="is_approved"
+                                onChange={(event) => handleApprovalToggle(event, doc.id)}
                               />
                             </Stack>
                           </Box>
@@ -527,9 +566,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                       </Stack>
                     ) : (
                       <Stack
-                        component="form"
                         spacing={3}
-                        onSubmit={handleSubmit((data) => handleClickEditPackageDocument(data, doc))}
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
@@ -537,88 +574,95 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                           marginTop: '20px',
                           // height: '570px',
                           width: '100%',
+                          padding: '2',
                         }}
                       >
-                        <Stack
-                          spacing={4}
-                          alignItems="flex-start"
-                          sx={{ typography: 'body2', padding: 2, width: '100%' }}
-                        >
-                          <Controller
-                            name="doc_type"
-                            control={control}
-                            defaultValue={doc.doc_type}
-                            render={({ field }) => (
-                              <FormControl variant="outlined" sx={{ width: '100%' }}>
-                                <InputLabel>Document Type</InputLabel>
-                                <Select {...field} label="Document Type">
+                        <FormProvider methods={methods} onSubmit={onSubmit}>
+                          <Stack
+                            spacing={4}
+                            alignItems="flex-start"
+                            sx={{ typography: 'body2', width: '100%' }}
+                          >
+                            <Grid container spacing={4}>
+                              <Grid item xs={6}>
+                                <RHFSelect
+                                  name="doc_type"
+                                  label="Select Documnet Type"
+                                  fullWidth
+                                  disabled
+                                >
                                   {docTypeOptions.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                       {option.label}
                                     </MenuItem>
                                   ))}
-                                </Select>
-                              </FormControl>
-                            )}
-                          />
-                          <Controller
-                            name="doc_side"
-                            control={control}
-                            defaultValue={doc.doc_side}
-                            render={({ field }) => (
-                              <FormControl variant="outlined" sx={{ width: '100%' }}>
-                                <InputLabel>Document Side</InputLabel>
-                                <Select {...field} label="Document Side">
+                                </RHFSelect>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <RHFSelect name="doc_side" label="Select Doc Side" fullWidth>
                                   {docSideOptions.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                       {option.label}
                                     </MenuItem>
                                   ))}
-                                </Select>
-                              </FormControl>
-                            )}
-                          />
-                          <Controller
-                            name="doc_file"
-                            control={control}
-                            defaultValue={doc.doc_file}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Document File"
-                                variant="outlined"
-                                sx={{ width: '100%' }}
-                              />
-                            )}
-                          />
-                          <Controller
-                            name="expiry"
-                            control={control}
-                            defaultValue={doc.expiry}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                label="Expiry"
-                                type="date"
-                                variant="outlined"
-                                sx={{ width: '100%' }}
-                              />
-                            )}
-                          />
-                          <Switch
-                            checked={isApproved}
-                            color="primary"
-                            onChange={handleSwitchChange}
-                          />
-                        </Stack>
-                        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-                          <Button variant="contained" type="submit">
-                            Save
-                          </Button>
-                          <Button variant="outlined" onClick={handleCancel}>
-                            Cancel
-                          </Button>
-                        </Stack>
+                                </RHFSelect>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <RHFTextField
+                                  name="expiry"
+                                  label="Expiry Date"
+                                  type="date"
+                                  fullWidth
+                                  InputLabelProps={{ shrink: true }}
+                                />
+                              </Grid>
+                              <Grid item xs={6} sx={{ mb: 1 }}>
+                                <RHFTextField
+                                  name="doc_file"
+                                  label="File"
+                                  fullWidth
+                                  type={values.file_type === 'file' ? 'file' : 'url'}
+                                  InputLabelProps={{ shrink: true }}
+                                  inputRef={fileInputRef}
+                                  InputProps={{
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        <Switch
+                                          size="small"
+                                          checked={values.file_type === 'file'}
+                                          onChange={(event) => {
+                                            setValue('doc_file', '');
+                                            setValue(
+                                              'file_type',
+                                              event.target.checked ? 'file' : 'url'
+                                            );
+                                          }}
+                                          color="primary"
+                                        />
+                                        <Typography sx={{ ml: 1 }}>
+                                          {values.file_type === 'file' ? 'File' : 'URL'}
+                                        </Typography>
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                />
+                              </Grid>
+                            </Grid>
+                          </Stack>
+                          <Stack
+                            direction="row"
+                            spacing={2}
+                            justifyContent="flex-end"
+                            sx={{ mt: 2 }}
+                          >
+                            <Button variant="outlined" onClick={handleClose}>
+                              Cancel
+                            </Button>
+                            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                              {'Update'}
+                            </LoadingButton>
+                          </Stack>
+                        </FormProvider>
                       </Stack>
                     )}
                   </Stack>

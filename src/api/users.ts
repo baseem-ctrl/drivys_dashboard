@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 import { IOrderItem } from 'src/types/order';
 
 // ----------------------------------------------------------------------
@@ -22,6 +22,7 @@ export function useGetUsers({
   type,
   store_id,
   search,
+  is_verified,
 }: any) {
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
@@ -45,7 +46,7 @@ export function useGetUsers({
     if (end_date) queryParams.end_date = end_date;
     if (type) queryParams.type = type;
     if (store_id) queryParams.store_id = store_id;
-
+    if (is_verified) queryParams.is_verified = is_verified;
     return `${endpoints.users.list}?${new URLSearchParams(queryParams)}`;
   };
 
@@ -192,14 +193,14 @@ export function useGetUserDetails(userId: string) {
 }
 export function deleteUser(id: any) {
   const URL = `${endpoints.users.delete}?user_id=${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
 // Function to delete a user adress
 export function deleteUserAddress(addressId: any) {
   const URL = `${endpoints.users.deleteAddressFromList}/${addressId}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -270,4 +271,9 @@ export function useGetAddressList({
     ...memoizedValue,
     revalidateAddresses,
   };
+}
+export function createTrainer(body: any) {
+  const URL = endpoints.trainer.createTrainer;
+  const response = drivysCreator([URL, body]);
+  return response;
 }

@@ -198,6 +198,7 @@ export const paths = {
       detailsadmin: (id: string) => `${ROOTS.DASHBOARD}/school/admin/${id}`,
       admin: (id: string) => `${ROOTS.DASHBOARD}/school/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
+      account: `${ROOTS.DASHBOARD}/school/account`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,

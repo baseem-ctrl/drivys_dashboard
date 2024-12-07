@@ -17,7 +17,7 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useGetPackageTrainerById } from 'src/api/package-trainer';
-import { useGetPackage } from 'src/api/package';
+import { useGetPackage, useGetPublicPackage } from 'src/api/package';
 
 const TrainerPackageCreateEditForm = ({
   open,
@@ -77,23 +77,26 @@ const TrainerPackageCreateEditForm = ({
   };
 
   useEffect(() => {});
-  const { packageList, packageLoading } = useGetPackage({
+  const { packageList, packageLoading } = useGetPublicPackage({
     vendor_id: trainer_details?.vendor?.id,
     city_id: trainer_details?.user_preference?.city_id,
     is_public: 1,
+    is_published: 1,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (!name || !value) {
+    if (!name || value === undefined) {
       console.error('Missing name or value in event:', e);
       return;
     }
 
+    const updatedValue = name === 'trainer_price' && value !== '' ? parseFloat(value) : value;
+
     setFormValues((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: updatedValue,
     }));
 
     setErrors((prev) => ({
@@ -163,7 +166,7 @@ const TrainerPackageCreateEditForm = ({
                 label="Trainer Price"
                 type="number"
                 value={formValues.trainer_price}
-                onChange={handleChange}
+                onInput={handleChange}
                 fullWidth
                 error={Boolean(errors.trainer_price)}
                 helperText={errors.trainer_price}

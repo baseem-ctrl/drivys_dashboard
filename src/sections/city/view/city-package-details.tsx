@@ -137,8 +137,9 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     color="#CF5A0D"
                     sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
                   >
-                    {packageItem.package.package_translations[0]?.name.toUpperCase() ||
-                      'UNNAMED PACKAGE'}
+                    {packageItem?.package?.package_translations
+                      ? packageItem?.package?.package_translations[0]?.name.toUpperCase()
+                      : 'NA' || 'UNNAMED PACKAGE'}
                   </Typography>
 
                   <IconButton onClick={(e) => handleClick(e, packageItem)}>
@@ -148,7 +149,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
 
                 <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
                   <Typography variant="body2">
-                    {packageItem.package.number_of_sessions} Sessions
+                    {packageItem?.package?.number_of_sessions ?? 'NA'} Sessions
                   </Typography>
                   <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
                     What's included
@@ -158,9 +159,9 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     <Typography
                       component="span"
                       dangerouslySetInnerHTML={{
-                        __html:
-                          packageItem.package.package_translations[0].session_inclusions ||
-                          'No inclusions available',
+                        __html: packageItem?.package?.package_translations
+                          ? packageItem?.package?.package_translations[0].session_inclusions
+                          : 'NA' || 'No inclusions available',
                       }}
                     />
                   </Stack>

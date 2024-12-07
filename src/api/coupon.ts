@@ -3,7 +3,7 @@ import {
   endpoints,
   drivysCreator,
   drivysFetcher,
-  barrySmasher,
+  drivysSmasher,
   drivysCreatorPut,
 } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
@@ -69,7 +69,7 @@ export function useGetAllCoupon({
 
 export function deleteCoupon(id: any) {
   const URL = endpoints.coupon.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 

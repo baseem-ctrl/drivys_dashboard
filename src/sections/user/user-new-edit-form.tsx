@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -42,7 +42,16 @@ import {
   useGetUserDetails,
   useGetUserTypeEnum,
 } from 'src/api/users';
-import { CircularProgress, IconButton, InputAdornment, MenuItem, TextField } from '@mui/material';
+import {
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  InputAdornment,
+  MenuItem,
+  TextField,
+} from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -53,6 +62,7 @@ import { useGetAllDialect } from 'src/api/dialect';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetSchool } from 'src/api/school';
 import moment from 'moment';
+import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 
 // ----------------------------------------------------------------------
 
@@ -69,7 +79,10 @@ const fluencyOptions = [
   { name: 'ADVANCED', value: 'ADVANCED' },
   { name: 'NATIVE', value: 'NATIVE' },
 ];
-
+const docSideOptions = [
+  { name: 'FRONT', value: 'FRONT' },
+  { name: 'BACK', value: 'BACK' },
+];
 export default function UserNewEditForm({
   currentUser,
   detailsLoading,
@@ -87,13 +100,14 @@ export default function UserNewEditForm({
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
-
+  const [searchCategory, setSearchCategory] = useState('');
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
-  const { category } = useGetAllCategory({
+  const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    search: searchCategory,
   });
   const [searchValue, setSearchValue] = useState('');
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
@@ -140,7 +154,6 @@ export default function UserNewEditForm({
     phone: Yup.string()
       .required('Phone Number is Required')
       .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
-    country_code: Yup.string().required('Country &'),
     dob: Yup.string()
       .nullable()
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
@@ -206,6 +219,13 @@ export default function UserNewEditForm({
         }
         return true; // Otherwise, `gear` is not required
       }),
+    vehicle_number: Yup.string(),
+    license: Yup.array().of(
+      Yup.object().shape({
+        license_file: Yup.mixed(), // Validate court add-on
+        doc_side: Yup.mixed(), // Validate the number of add-ons
+      })
+    ),
   });
   const defaultValues = useMemo(
     () => ({
@@ -215,7 +235,6 @@ export default function UserNewEditForm({
       password: '',
       phone: currentUser?.phone || '',
 
-      country_code: currentUser?.country_code,
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
         ? language?.find((option) => option?.language_culture === currentUser?.locale)
@@ -238,7 +257,11 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gear?.toLowerCase()
             )?.value
           : '',
-      vehicle_type_id: currentUser?.user_preference?.vehicle_type_id || '',
+      vehicle_type_id:
+        category
+          ?.find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
+          ?.category_translations.map((translation: any) => translation.name) // Extract all names
+          .join(' - ') || '',
       vendor_id: currentUser?.vendor?.id
         ? schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
             ?.name
@@ -261,8 +284,13 @@ export default function UserNewEditForm({
       certificate_commission_in_percentage:
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
+      vehicle_number: currentUser?.vehicle_number || '',
       license_file: currentUser?.user_preference?.license_file || '',
       school_name: currentUser?.school_name || '',
+      license: currentUser?.user_docs?.map((doc) => ({
+        license_file: doc?.doc_file ?? [],
+        doc_side: doc?.doc_side || '',
+      })),
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
@@ -285,6 +313,14 @@ export default function UserNewEditForm({
     control,
     name: 'languages',
   });
+  const {
+    fields: licenseFields,
+    remove: removeLicense,
+    append: appendLicense,
+  } = useFieldArray({
+    control,
+    name: 'license',
+  });
   const values = watch();
   useEffect(() => {
     if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
@@ -300,6 +336,7 @@ export default function UserNewEditForm({
       }
     }
   }, [values.vendor_id, schoolList]);
+
   useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
@@ -323,14 +360,22 @@ export default function UserNewEditForm({
     remove(index);
     revalidateDetails();
   };
-
+  const fileInputRefs = useRef([]);
+  const handleAddMoreFile = () => {
+    appendLicense({ license_file: [], doc_side: '' });
+    revalidateDetails();
+  };
+  const handleRemoveFile = (index: number) => {
+    removeLicense(index);
+    revalidateDetails();
+    fileInputRefs.current.splice(index, 1);
+  };
   const handleCancel = () => {
     router.back();
   };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('data', data);
-
       let response;
       const body = new FormData();
       body.append('name', data?.name);
@@ -345,8 +390,18 @@ export default function UserNewEditForm({
       ) {
         body.append('gear', data?.gear);
       }
-
-      if (data.vehicle_type_id) body.append('vehicle_type_id', data?.vehicle_type_id);
+      if (data?.vehicle_type_id) {
+        if (values?.user_type === 'TRAINER' || values?.user_type === 'STUDENT') {
+          if (currentUser?.id) {
+            body.append(
+              'vehicle_type_id',
+              data?.vehicle_type_id?.value ?? currentUser?.user_preference?.vehicle_type_id
+            );
+          } else {
+            body.append('vehicle_type_id', data?.vehicle_type_id?.value ?? '');
+          }
+        }
+      }
       if (data?.vendor_id) {
         const matchedVendor = schoolList.find(
           (school) => school.vendor_translations[0]?.name === data.vendor_id
@@ -363,7 +418,7 @@ export default function UserNewEditForm({
       }
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
-      body.append('country_code', data?.country_code);
+      body.append('country_code', '971');
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
 
@@ -389,7 +444,8 @@ export default function UserNewEditForm({
       }
 
       if (data?.min_price) body.append('min_price', data?.min_price);
-      if (data?.bio) body.append('bio', data?.bio);
+      if (data?.vehicle_number) body.append('vehicle_number', data?.vehicle_number);
+
       if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
       if (data?.school_commission_in_percentage)
         body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
@@ -399,7 +455,12 @@ export default function UserNewEditForm({
           body.append(`languages[${index}][fluency_level]`, languageItem?.fluency_level ?? '');
         });
       }
-
+      if (data?.license?.length > 0) {
+        data?.license.forEach((docItem, index) => {
+          body.append(`license_file[${index}]`, docItem?.license_file);
+          body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
+        });
+      }
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
         body.append('user_id', currentUser?.id);
@@ -452,7 +513,17 @@ export default function UserNewEditForm({
         router.push(paths.dashboard.user.list);
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
       confirm.onFalse();
     }
   };
@@ -587,18 +658,20 @@ export default function UserNewEditForm({
                   name="vendor_id"
                   label="Select School"
                   placeholder="Search School..."
-                  options={[
-                    ...schoolList.map((item: any) => ({
-                      label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
-                      value: item.id,
-                    })),
-                    {
-                      label: 'OTHER', // Add the "Other" option
-                      value: null, // Value for the "Other" option
-                    },
-                  ]}
+                  options={
+                    [
+                      ...schoolList?.map((item: any) => ({
+                        label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                        value: item.id,
+                      })),
+                      {
+                        label: 'OTHER', // Add the "Other" option
+                        value: null, // Value for the "Other" option
+                      },
+                    ] ?? []
+                  }
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
-                  disableClearable={true}
+                  disableClearable={false}
                   loading={schoolLoading}
                   value={defaultOption}
                 />
@@ -638,14 +711,7 @@ export default function UserNewEditForm({
                 }}
               />
               <Stack direction="row" spacing={1} alignItems="center">
-                <RHFTextField
-                  name="country_code"
-                  label="Country Code"
-                  sx={{ maxWidth: 100 }}
-                  prefix="+"
-                />
-
-                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
+                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} prefix="+971" />
               </Stack>{' '}
               <RHFTextField
                 name="dob"
@@ -657,7 +723,11 @@ export default function UserNewEditForm({
               {values.user_type === 'TRAINER' && (
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />
               )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+              )}
             </Box>
+
             {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
               <>
                 <Typography sx={{ fontWeight: '700', m: 2 }}> User Preferences:</Typography>
@@ -671,14 +741,23 @@ export default function UserNewEditForm({
                     sm: 'repeat(2, 1fr)',
                   }}
                 >
-                  <RHFSelect name="vehicle_type_id" label="Category">
-                    {category?.length > 0 &&
-                      category?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.category_translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  <RHFAutocompleteSearch
+                    name="vehicle_type_id"
+                    label="Select Category"
+                    placeholder="Search Category..."
+                    options={
+                      category?.map((item: any) => ({
+                        label: item.category_translations
+                          .map((translation: any) => translation.name) // Extract all names
+                          .join(' - '), // Display full name
+                        value: item.id,
+                      })) ?? []
+                    }
+                    setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
+                    disableClearable={true}
+                    loading={categoryLoading}
+                  />
+
                   <RHFSelect name="city_id" label="City">
                     {city?.length > 0 &&
                       city?.map((option: any) => (
@@ -687,15 +766,16 @@ export default function UserNewEditForm({
                         </MenuItem>
                       ))}
                   </RHFSelect>
-
-                  <RHFSelect name="gender" label="Gender">
-                    {genderData?.length > 0 &&
-                      genderData?.map((option: any) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  {values.user_type === 'TRAINER' && (
+                    <RHFSelect name="gender" label="Gender">
+                      {genderData?.length > 0 &&
+                        genderData?.map((option: any) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
+                    </RHFSelect>
+                  )}
                   <RHFSelect name="gear" label="Gear">
                     {gearData?.length > 0 &&
                       gearData?.map((option: any) => (
@@ -718,7 +798,7 @@ export default function UserNewEditForm({
                         name={`languages[${index}].id`} // Dynamic name for react-hook-form
                         label={`Language ${index + 1}`}
                         getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
-                        options={dialect}
+                        options={dialect ?? []}
                         renderOption={(props, option: any) => (
                           <li {...props} key={option?.id}>
                             {option?.dialect_name ?? 'Unknown'}
@@ -757,6 +837,50 @@ export default function UserNewEditForm({
                     Add Language
                   </Button>
                 </Grid>
+                {values.user_type === 'TRAINER' && !currentUser?.id && (
+                  <>
+                    {licenseFields.map((docItem, index) => (
+                      <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
+                        <Grid item xs={12} md={5}>
+                          <RHFFileUpload
+                            label="License File"
+                            name={`license[${index}].license_file`}
+                            helperText="Please upload a file (PDF, DOCX, etc.)"
+                          />
+                        </Grid>
+
+                        {/* Value Field */}
+                        <Grid item xs={12} md={5}>
+                          <RHFSelect
+                            name={`license[${index}].doc_side`} // Dynamic name for react-hook-form
+                            label="Document Side"
+                            defaultValue={docItem.doc_side}
+                          >
+                            {docSideOptions.map((option: any) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.name}
+                              </MenuItem>
+                            ))}
+                          </RHFSelect>
+                        </Grid>
+
+                        {/* Delete Button */}
+                        <Grid item xs={12} md={2}>
+                          <IconButton onClick={() => handleRemoveFile(index)}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                    ))}
+                    {licenseFields?.length < 2 && (
+                      <Grid item xs={12} sx={{ mt: 2 }}>
+                        <Button variant="contained" onClick={handleAddMoreFile}>
+                          Add Documnet
+                        </Button>
+                      </Grid>
+                    )}
+                  </>
+                )}
               </>
             )}
 

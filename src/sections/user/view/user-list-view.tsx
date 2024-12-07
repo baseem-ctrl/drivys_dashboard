@@ -44,10 +44,13 @@ import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
 import UserTableFiltersResult from '../user-table-filters-result';
 import { deleteUser, useGetUsers, useGetUserTypeEnum } from 'src/api/users';
-import { CircularProgress, Skeleton, TableCell, TableRow } from '@mui/material';
+import { CircularProgress, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 // import { Box } from '@mui/system';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
+import TrainerSearch from '../trainer-search';
+import TrainerFilters from '../trainer-filters';
+import { STATUS_OPTIONS, VERIFICATION_OPTIONS } from 'src/_mock/_trainer';
 
 // ----------------------------------------------------------------------
 
@@ -66,6 +69,7 @@ const TABLE_HEAD = {
     { id: 'phoneNumber', label: 'Phone Number' },
     { id: 'dob', label: 'DOB' },
     { id: 'status', label: 'Status' },
+    { id: 'vendor', label: 'School' },
     { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },
     { id: 'cash_in_hand', label: 'Cash in Hand' },
     { id: 'verified_at', label: 'Verified At' },
@@ -79,9 +83,10 @@ const defaultFilters: any = {
   status: '',
   userTypes: 'all',
   city_id: '',
-  vehicle_type_id: '',
+  vehicle_type_id: { label: '', value: '' },
   gear: '',
-  vendor_id: '',
+  vendor_id: { label: '', value: '' },
+  is_verified: '',
 };
 
 interface StatusOption {
@@ -129,9 +134,10 @@ export default function UserListView() {
       search: filters.name,
       is_active: filters.status,
       city_id: filters.city_id,
-      vehicle_type_id: filters.vehicle_type_id,
+      vehicle_type_id: filters.vehicle_type_id?.value,
       gear: filters.gear ? gearTypeMapping[filters.gear] : undefined,
-      vendor_id: filters.vendor_id,
+      vendor_id: filters.vendor_id?.value,
+      is_verified: filters?.is_verified,
     }
   );
 
@@ -182,7 +188,17 @@ export default function UserListView() {
         revalidateUsers();
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -216,6 +232,37 @@ export default function UserListView() {
     // table.onResetPage(); // Reset pagination when filters are reset
   }, []);
   const currentTableHeaders = filters.userTypes === 'TRAINER' ? TABLE_HEAD.trainer : TABLE_HEAD.all;
+  const openFilters = useBoolean();
+
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      margin={3}
+    >
+      <TrainerSearch query={filters.name} results={filters} onSearch={handleFilters} />
+
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <TrainerFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          //
+          filters={filters}
+          onFilters={handleFilters}
+          //
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          verificationOptions={['all', ...VERIFICATION_OPTIONS.map((option) => option.label)]}
+          statusOptions={['all', ...STATUS_OPTIONS.map((option) => option.label)]}
+        />
+
+        {/* <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} /> */}
+      </Stack>
+    </Stack>
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -255,12 +302,16 @@ export default function UserListView() {
             ))}
           </Tabs>
 
-          <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            user_type={filters?.userTypes}
-            roleOptions={_roles}
-          />
+          {filters.userTypes === 'TRAINER' ? (
+            renderFilters
+          ) : (
+            <UserTableToolbar
+              filters={filters}
+              onFilters={handleFilters}
+              user_type={filters?.userTypes}
+              roleOptions={_roles}
+            />
+          )}
 
           {canReset && (
             <UserTableFiltersResult

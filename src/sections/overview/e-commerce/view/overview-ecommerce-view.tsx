@@ -26,6 +26,7 @@ import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
+import PendingRequests from '../ecommerce-pending-trainer-request';
 
 // ----------------------------------------------------------------------
 
@@ -160,11 +161,9 @@ export default function OverviewEcommerceView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
-          <EcommerceCurrentBalance
-            title="Current Balance"
-            currentBalance={187650}
-            sentAmount={25500}
-          />
+          <Grid xs={12} md={6} lg={8}>
+            <PendingRequests />
+          </Grid>
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>

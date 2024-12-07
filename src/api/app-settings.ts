@@ -3,7 +3,7 @@ import {
   endpoints,
   drivysCreator,
   drivysFetcher,
-  barrySmasher,
+  drivysSmasher,
   drivysCreatorPut,
 } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
