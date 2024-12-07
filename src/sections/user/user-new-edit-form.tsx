@@ -273,7 +273,12 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
             )?.value
           : '',
-      city_id: currentUser?.user_preference?.city_id || '',
+      city_id: currentUser?.user_preference?.city_id
+        ? {
+            value: currentUser?.user_preference?.city_id,
+            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || 'Unknown',
+          }
+        : '',
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage || '',
       price_per_km: currentUser?.user_preference?.price_per_km || '',
@@ -294,7 +299,8 @@ export default function UserNewEditForm({
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
-
+  console.log('currentUser', currentUser?.user_preference);
+  console.log('default value', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -417,7 +423,7 @@ export default function UserNewEditForm({
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.city_id) body.append('city_id', data?.city_id);
+      if (data?.city_id) body.append('city_id', data?.city_id.value);
       body.append('country_code', '971');
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
@@ -758,14 +764,21 @@ export default function UserNewEditForm({
                     loading={categoryLoading}
                   />
 
-                  <RHFSelect name="city_id" label="City">
-                    {city?.length > 0 &&
-                      city?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  <RHFAutocompleteSearch
+                    name="city_id"
+                    label="City"
+                    options={city?.map((option: any) => ({
+                      value: option?.id,
+                      label: option?.city_translations[0]?.name ?? 'Unknown',
+                    }))}
+                    getOptionLabel={(option) => option?.label ?? ''}
+                    renderOption={(props, option: any) => (
+                      <li {...props} key={option?.value}>
+                        {option?.label ?? 'Unknown'}
+                      </li>
+                    )}
+                  />
+
                   {values.user_type === 'TRAINER' && (
                     <RHFSelect name="gender" label="Gender">
                       {genderData?.length > 0 &&
