@@ -609,21 +609,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                           defaultValue={cityItem?.max_price ?? ''}
                           sx={{ mt: 1, mb: 3 }}
                         />
-                        <RHFTextField
-                          name={`cities_ids[${index}][commision]`}
-                          label="Commission"
-                          defaultValue={cityItem?.commision ?? ''}
-                          sx={{ mt: 1, mb: 3 }}
-                        />
-                        <RHFSelect
-                          name={`cities_ids[${index}][commision_type]`}
-                          label="Commission Type"
-                          defaultValue={cityItem?.commision_type ?? ''}
-                          sx={{ mt: 1, mb: 3 }}
-                        >
-                          <MenuItem value="percentage">Percentage</MenuItem>
-                          <MenuItem value="flat_amount">Flat Amount</MenuItem>
-                        </RHFSelect>
                       </>
                     )}
                   </Box>

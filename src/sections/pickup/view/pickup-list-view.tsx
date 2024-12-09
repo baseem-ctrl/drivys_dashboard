@@ -264,7 +264,7 @@ export default function PickupListView() {
       </Container>
 
       <PickupCreateEditForm
-        title="Create Emirate"
+        title="Create Pickup"
         open={createCity.value}
         onClose={createCity.onFalse}
         reload={revalidateExclusions}
