@@ -152,9 +152,7 @@ export default function UserNewEditForm({
         ? Yup.string() // No requirements if `currentUser.id` exists
         : Yup.string(); // Required if `currentUser.id` is not present
     }),
-    phone: Yup.string()
-      .required('Phone Number is Required')
-      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+    phone: Yup.string().matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
     dob: Yup.string()
       .nullable()
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
@@ -431,7 +429,7 @@ export default function UserNewEditForm({
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id.value);
       if (data?.area_id) body.append('area_id', data?.area_id);
-      body.append('country_code', data?.country_code);
+      if (data?.phone) body.append('country_code', data?.country_code ?? '971');
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
 
