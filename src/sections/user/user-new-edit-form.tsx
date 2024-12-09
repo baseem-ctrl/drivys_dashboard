@@ -155,19 +155,24 @@ export default function UserNewEditForm({
     phone: Yup.string().matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
     dob: Yup.string()
       .nullable()
+      .when('user_type', {
+        is: (value) => ['STUDENT', 'TRAINER'].includes(value?.toUpperCase()),
+        then: (schema) => schema.required('Date of birth is required for students and trainers.'),
+        otherwise: (schema) => schema,
+      })
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
         if (!value) return true;
         const isValidDate = !isNaN(Date.parse(value));
         return isValidDate;
       })
       .test('is-before-today', 'The dob field must be a date before today.', function (value) {
-        if (!value) return true; // Skip if value is missing
+        if (!value) return true;
         const today = new Date();
         const dob = new Date(value);
-        return dob < today; // Check if dob is before today
+        return dob < today;
       })
       .test('is-18-or-older', 'User must be 18 or older.', function (value) {
-        if (!value) return true; // Ensure value is provided
+        if (!value) return true;
         const today = new Date();
         const birthDate = new Date(value);
         const age = today.getFullYear() - birthDate.getFullYear();
@@ -179,7 +184,6 @@ export default function UserNewEditForm({
               (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
         );
       }),
-
     locale: Yup.mixed().nullable(), // not required
     user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
