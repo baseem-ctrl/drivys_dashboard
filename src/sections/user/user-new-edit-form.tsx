@@ -274,7 +274,12 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
             )?.value
           : '',
-      city_id: currentUser?.user_preference?.city_id || '',
+      city_id: currentUser?.user_preference?.city_id
+        ? {
+            value: currentUser?.user_preference?.city_id,
+            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || 'Unknown',
+          }
+        : '',
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage || '',
       price_per_km: currentUser?.user_preference?.price_per_km || '',
@@ -295,7 +300,8 @@ export default function UserNewEditForm({
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
-
+  console.log('currentUser', currentUser?.user_preference);
+  console.log('default value', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -311,7 +317,7 @@ export default function UserNewEditForm({
   } = methods;
   const selectedCity = watch('city_id');
   const { states, isLoading: stateLoading } = useGetStateList({
-    city_id: selectedCity,
+    city_id: selectedCity.value,
     limit: 1000,
     page: 0,
   });
@@ -423,7 +429,7 @@ export default function UserNewEditForm({
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.city_id) body.append('city_id', data?.city_id);
+      if (data?.city_id) body.append('city_id', data?.city_id.value);
       if (data?.area_id) body.append('area_id', data?.area_id);
       body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
@@ -765,28 +771,20 @@ export default function UserNewEditForm({
                     loading={categoryLoading}
                   />
 
-                  <RHFSelect name="city_id" label="City">
-                    {city?.length > 0 &&
-                      city?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      ))}
-                    {city?.length > 0 ? (
-                      city?.map((option: any) => {
-                        const cityNames = option?.city_translations?.map(
-                          (translation: any) => `${translation.locale}: ${translation.name}`
-                        );
-                        return (
-                          <MenuItem key={option?.id} value={option?.id}>
-                            {cityNames?.join(', ') || 'Unknown City'}
-                          </MenuItem>
-                        );
-                      })
-                    ) : (
-                      <MenuItem disabled>No cities found</MenuItem>
+                  <RHFAutocompleteSearch
+                    name="city_id"
+                    label="City"
+                    options={city?.map((option: any) => ({
+                      value: option?.id,
+                      label: option?.city_translations[0]?.name ?? 'Unknown',
+                    }))}
+                    getOptionLabel={(option) => option?.label ?? ''}
+                    renderOption={(props, option: any) => (
+                      <li {...props} key={option?.value}>
+                        {option?.label ?? 'Unknown'}
+                      </li>
                     )}
-                  </RHFSelect>
+                  />
 
                   <RHFSelect name="area_id" label="Select Area">
                     {stateLoading ? (

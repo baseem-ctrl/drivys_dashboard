@@ -304,6 +304,7 @@ export default function PackageCreateForm({
                   </MenuItem>
                 ))}
               </RHFSelect>
+
               <RHFTextField name="name" label="Name" />
             </Box>
             {/* <RHFTextField name="description" label="Description" /> */}
@@ -385,14 +386,10 @@ export default function PackageCreateForm({
                       name={`cities_ids[${index}][id]`}
                       label={`Select City ${index + 1}`}
                       multiple={false}
-                      options={city
-                        ?.map((city) =>
-                          city.city_translations.map((translation) => ({
-                            label: `${translation.name} (${translation.locale.toUpperCase()})`,
-                            value: city.id,
-                          }))
-                        )
-                        .flat()}
+                      options={city?.map((option: any) => ({
+                        value: option?.id,
+                        label: option?.city_translations[0]?.name ?? 'Unknown',
+                      }))}
                       onChange={(event, value) => {
                         handleCityFieldChange(index, 'id', value?.value || null);
                       }}
