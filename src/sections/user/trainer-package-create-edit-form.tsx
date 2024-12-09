@@ -30,7 +30,6 @@ const TrainerPackageCreateEditForm = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [errors, setErrors] = useState({});
   const [formValues, setFormValues] = useState({
     trainer_price: '',
@@ -38,7 +37,6 @@ const TrainerPackageCreateEditForm = ({
     is_published: false,
     package_id: '',
   });
-
   useEffect(() => {
     if (open) {
       if (editMode === 'Edit' && selectedPackage) {
@@ -84,7 +82,6 @@ const TrainerPackageCreateEditForm = ({
     is_published: 1,
     category_id: trainer_details?.user_preference?.vehicle_type_id ?? '',
   });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -108,10 +105,26 @@ const TrainerPackageCreateEditForm = ({
 
   const validateFields = () => {
     const newErrors = {};
-    if (!formValues.trainer_price) newErrors.trainer_price = 'Trainer Price is required.';
+
+    if (!formValues.trainer_price) {
+      newErrors.trainer_price = 'Trainer Price is required.';
+    } else {
+      const selectedPkg = packageList.find((pkg) => pkg.id === formValues.package_id);
+      const min_price = selectedPkg?.package_city[0]?.min_price;
+      const max_price = selectedPkg?.package_city[0]?.max_price;
+      if (selectedPkg) {
+        if (formValues.trainer_price < min_price || formValues.trainer_price > max_price) {
+          newErrors.trainer_price = `Trainer price must be between ${min_price} and ${max_price}.`;
+        }
+      } else {
+        newErrors.package_id = 'Selected package is invalid.';
+      }
+    }
+
     if (!formValues.package_id && !selectedPackage) {
       newErrors.package_id = 'Package ID is required.';
     }
+
     return newErrors;
   };
 
@@ -150,7 +163,7 @@ const TrainerPackageCreateEditForm = ({
         setIsSubmitting(false);
       });
   };
-
+  console.log('package', pkg);
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
       <DialogTitle>Add Packages</DialogTitle>
@@ -162,17 +175,6 @@ const TrainerPackageCreateEditForm = ({
         ) : (
           <>
             <Box display="flex" justifyContent="space-between" mb={5} mt={2}>
-              <TextField
-                name="trainer_price"
-                label="Trainer Price"
-                type="number"
-                value={formValues.trainer_price}
-                onInput={handleChange}
-                fullWidth
-                error={Boolean(errors.trainer_price)}
-                helperText={errors.trainer_price}
-                sx={{ marginRight: 3 }}
-              />
               {!selectedPackage && (
                 <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
                   <InputLabel id="package-id-label">Package ID</InputLabel>
@@ -199,6 +201,17 @@ const TrainerPackageCreateEditForm = ({
                   </Select>
                 </FormControl>
               )}
+              <TextField
+                name="trainer_price"
+                label="Trainer Price"
+                type="number"
+                value={formValues.trainer_price}
+                onInput={handleChange}
+                fullWidth
+                error={Boolean(errors.trainer_price)}
+                helperText={errors.trainer_price}
+                sx={{ marginRight: 3 }}
+              />
             </Box>
             <FormControlLabel
               control={
