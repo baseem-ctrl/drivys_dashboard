@@ -104,6 +104,10 @@ export default function UserDetailsContent({
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // state to track the editing index of student address
   const [currentTab, setCurrentTab] = useState('details');
   const [studentTab, setStudentTab] = useState('details');
+  const [showAll, setShowAll] = useState(false);
+
+  const toggleShowAll = () => setShowAll((prev) => !prev);
+  const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -1073,7 +1077,7 @@ export default function UserDetailsContent({
         )}
 
         <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-          {addresses.map((address, index) => (
+          {displayedAddresses.map((address, index) => (
             <Box key={index} sx={{ width: '100%' }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                 Address Details {index + 1}
@@ -1381,6 +1385,11 @@ export default function UserDetailsContent({
             </Box>
           ))}
         </Stack>
+        {addresses.length > 2 && (
+          <Button variant="outlined" onClick={toggleShowAll}>
+            {showAll ? 'Show Less' : 'Show More'}
+          </Button>
+        )}
       </Scrollbar>
     </Stack>
   );
