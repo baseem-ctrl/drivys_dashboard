@@ -56,11 +56,12 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
+  console.log('selectedLanguage', selectedLanguage);
+  console.log('details?.vendor_translations[0]?.locale', details?.vendor_translations[0]);
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;
@@ -152,7 +153,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   });
   const defaultVendorValues = useMemo(
     () => ({
-      locale: selectedLocaleObject?.locale || '',
+      locale: selectedLocaleObject?.locale || 'En',
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
@@ -293,6 +294,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+  console.log('selectedLanguage', selectedLanguage);
+  console.log('localeOptions', localeOptions); // Check the content of localeOptions
+
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -604,7 +608,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             <MenuItem
                               key={option.id}
                               value={option.id}
-                              disabled={option.id === details?.vendor_user.user?.id} // Disable the current admin
+                              disabled={
+                                details?.vendor_user?.user?.id === option.id // Ensure safe access
+                              }
                             >
                               {option.name}
                             </MenuItem>
@@ -1034,7 +1040,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
+            Wallet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_points !== 0 && (
