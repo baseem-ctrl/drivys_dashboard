@@ -82,6 +82,7 @@ const TrainerPackageCreateEditForm = ({
     city_id: trainer_details?.user_preference?.city_id,
     is_public: 1,
     is_published: 1,
+    category_id: trainer_details?.user_preference?.vehicle_type_id ?? '',
   });
 
   const handleChange = (e) => {

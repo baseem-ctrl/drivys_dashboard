@@ -53,7 +53,13 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
       setEditMode('');
     } catch (error) {
       setEditMode('');
-      console.error('Error creating package:', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
