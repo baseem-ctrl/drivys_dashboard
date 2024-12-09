@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ export function updateDelivery(body: any) {
 
 export function deleteSchool(id: any) {
   const URL = endpoints.school.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetSchoolById(schoolId: string) {
@@ -275,7 +275,7 @@ export function useGetSchoolByIdAdmin(schoolId: string) {
 }
 export function RemoveTrainerFromSchool(id: any) {
   const URL = endpoints.school.removeTrainer + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetAllSchoolAdmin(limit: number, page: number) {

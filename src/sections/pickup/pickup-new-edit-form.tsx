@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Autocomplete, TextField } from '@mui/material';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
 import moment from 'moment';
 
@@ -18,7 +19,12 @@ import DialogContent from '@mui/material/DialogContent';
 
 // components
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFTextField,
+  RHFSwitch,
+  RHFAutocomplete,
+} from 'src/components/hook-form';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { useGetAllCity } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
@@ -40,7 +46,7 @@ export default function PickupCreateEditForm({
     is_published: '1',
   });
   const NewUserSchema = Yup.object().shape({
-    city_id: Yup.string(),
+    city_id: Yup.mixed(),
     end_date: Yup.date().required('End Date is required'),
     end_time: Yup.string().required('End Time is required'),
     start_date: Yup.date().required('Start Date is required'),
@@ -53,7 +59,12 @@ export default function PickupCreateEditForm({
 
   const defaultValues = useMemo(
     () => ({
-      city_id: currentPickup?.city_id || '',
+      city_id: currentPickup?.city
+        ? {
+            value: currentPickup?.city?.id,
+            label: currentPickup?.city?.city_translations[0]?.name || 'Unknown',
+          }
+        : null,
       end_date: currentPickup?.end_date ? moment(currentPickup.end_date).toDate() : new Date(),
       end_time: currentPickup?.end_time ? moment.utc(currentPickup.end_time).toDate() : new Date(),
       start_date: currentPickup?.start_date
@@ -92,7 +103,7 @@ export default function PickupCreateEditForm({
       if (currentPickup?.id) {
         formData.append('id', currentPickup.id);
       }
-      formData.append('city_id', data?.city_id || currentPickup.city_id);
+      formData.append('city_id', data?.city_id?.value || currentPickup.city_id);
       const startDate = data.start_date
         ? new Date(data.start_date).toISOString().split('T')[0]
         : '';
@@ -153,22 +164,20 @@ export default function PickupCreateEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="city_id" label="City">
-              {city?.length > 0 ? (
-                city?.map((option: any) => {
-                  const cityNames = option?.city_translations?.map(
-                    (translation: any) => `${translation.locale}: ${translation.name}`
-                  );
-                  return (
-                    <MenuItem key={option?.id} value={option?.id}>
-                      {cityNames?.join(', ') || 'Unknown City'}
-                    </MenuItem>
-                  );
-                })
-              ) : (
-                <MenuItem disabled>No cities found</MenuItem>
+            <RHFAutocomplete
+              name="city_id"
+              label="City"
+              options={city?.map((option: any) => ({
+                value: option?.id,
+                label: option?.city_translations[0]?.name ?? 'Unknown',
+              }))}
+              getOptionLabel={(option) => option?.label ?? ''}
+              renderOption={(props, option: any) => (
+                <li {...props} key={option?.value.toString()}>
+                  {option?.label ?? 'Unknown'}
+                </li>
               )}
-            </RHFSelect>
+            />
 
             <DatePicker
               name="start_date"

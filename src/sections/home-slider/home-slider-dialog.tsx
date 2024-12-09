@@ -57,6 +57,8 @@ export default function HomeSliderDialog({
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
   const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState('top');
+
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
@@ -75,6 +77,7 @@ export default function HomeSliderDialog({
     published: Yup.boolean(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
+    position: Yup.string(),
   });
 
   // Default values based on updateValue or initial form values
@@ -85,6 +88,7 @@ export default function HomeSliderDialog({
       picture_ids: updateValue?.picture_ids || [],
       published: !!updateValue?.published,
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
+      position: updateValue?.position || 'top',
     }),
     [updateValue, today]
   );
@@ -161,12 +165,14 @@ export default function HomeSliderDialog({
 
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data.position ', data.position);
     try {
       const formData = new FormData();
       formData.append('slider_id', updateValue?.id);
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
       formData.append('published', data.published ? '1' : '0');
+      formData.append('is_hero', selectedPosition === 'top' ? 1 : 0);
       formData.append(
         'show_until',
         data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''
@@ -194,10 +200,13 @@ export default function HomeSliderDialog({
         onReload();
       }
     } catch (error) {
-      if (error.errors) {
-        // Iterate over each error and enqueue them in the snackbar
-        Object.values(error.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -245,7 +254,15 @@ export default function HomeSliderDialog({
                   <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
                 )}
               </RHFSelect>
-
+              <RHFSelect
+                name="position"
+                label="Position"
+                value={selectedPosition}
+                onChange={(e) => setSelectedPosition(e.target.value)} // Update position state
+              >
+                <MenuItem value="top">Top</MenuItem>
+                <MenuItem value="bottom">Bottom</MenuItem>
+              </RHFSelect>
               <RHFTextField
                 name="show_until"
                 label={t('Show Until')}

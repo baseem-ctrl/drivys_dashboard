@@ -539,7 +539,6 @@ export default function UserDetailsContent({
   const handleBookingClick = (booking) => {
     router.push(paths.dashboard.booking.details(booking));
   };
-
   const renderUserPreferences = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
@@ -559,6 +558,10 @@ export default function UserDetailsContent({
                 {
                   label: 'City',
                   value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+                },
+                {
+                  label: 'Area',
+                  value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
                 },
                 { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
@@ -662,7 +665,17 @@ export default function UserDetailsContent({
       }
     } catch (error) {
       console.log('Error updating user address:', error);
-      enqueueSnackbar('Failed to update user address. Please try again.', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -677,7 +690,17 @@ export default function UserDetailsContent({
         enqueueSnackbar('User address created successfully!', { variant: 'success' });
       }
     } catch (error) {
-      console.log('error', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   const [addressForm, setAddressForm] = useState({
@@ -728,7 +751,17 @@ export default function UserDetailsContent({
         if (reloadData) reloadData();
       }
     } catch (error) {
-      enqueueSnackbar('Failed to delete user address!', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   // Add a method to handle the selected location from the map

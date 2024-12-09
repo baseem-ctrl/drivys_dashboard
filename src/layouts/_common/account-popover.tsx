@@ -22,17 +22,6 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-const OPTIONS = [
-  {
-    label: 'Home',
-    linkTo: '/',
-  },
-  {
-    label: 'Settings',
-    linkTo: paths.dashboard.user.account,
-  },
-];
-
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
@@ -40,11 +29,22 @@ export default function AccountPopover() {
 
   // const { user } = useMockedUser();
   const { user, logout } = useAuthContext();
-
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
-
+  const OPTIONS = [
+    {
+      label: 'Home',
+      linkTo: '/',
+    },
+    {
+      label: 'Settings',
+      linkTo:
+        user?.user?.user_type === 'SCHOOL_ADMIN'
+          ? paths.dashboard.school.account
+          : paths.dashboard.user.account,
+    },
+  ];
   const handleLogout = async () => {
     try {
       await logout();
@@ -52,7 +52,17 @@ export default function AccountPopover() {
       router.replace('/');
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 

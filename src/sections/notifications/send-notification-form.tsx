@@ -23,6 +23,7 @@ import { sendNotification } from 'src/api/notification'; // Assuming you have th
 import { IUserItem } from 'src/types/user';
 import { useGetUsers } from 'src/api/users';
 import { Chip, FormControl, InputLabel } from '@mui/material';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
 type Props = {
   currentUser?: IUserItem;
@@ -126,10 +127,17 @@ export default function SendNotificationForm({
       handleClosePopup(false);
       revalidateNotifications();
     } catch (error) {
-      console.error('Error sending notification:', error);
-      enqueueSnackbar('Something went wrong!', {
-        variant: 'error',
-      });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       setLoading(false);
     }
@@ -184,40 +192,29 @@ export default function SendNotificationForm({
                 />
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel>User IDs</InputLabel>
                 <Controller
                   name="user_id"
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <RHFAutocompleteSearch
                       {...field}
                       label="User IDs"
                       multiple
                       disabled={sendAll === 1}
+                      options={users?.map((user) => ({
+                        value: user.id,
+                        label: user.name,
+                      }))}
                       value={field.value || []}
-                      renderValue={(selected) =>
-                        selected.map((id) => {
-                          const user = users.find((user) => user.id === id);
-                          return (
-                            <Chip
-                              key={id}
-                              label={user?.name || id}
-                              onDelete={() => {
-                                const newValue = field.value.filter((value) => value !== id);
-                                field.onChange(newValue);
-                              }}
-                              sx={{ margin: '2px' }}
-                            />
-                          );
-                        })
-                      }
-                    >
-                      {users?.map((user) => (
-                        <MenuItem key={user.id} value={user.id}>
-                          {user.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue.map((user) => user.value));
+                      }}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label || 'Unknown'}
+                        </li>
+                      )}
+                    />
                   )}
                 />
               </FormControl>

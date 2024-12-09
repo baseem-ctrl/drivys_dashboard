@@ -59,7 +59,7 @@ export function useNavData() {
     // USER
     {
       title: t('user'),
-      path: paths.dashboard.user.root,
+      path: paths.dashboard.user.list,
       icon: ICONS.user,
       children: [
         // { title: t('profile'), path: paths.dashboard.user.root },
@@ -213,14 +213,14 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
-      title: t('booking'),
-      path: paths.dashboard.booking.root,
-      icon: ICONS.booking,
-    },
-    {
       title: t('My School'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
+    },
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
     },
   ];
 

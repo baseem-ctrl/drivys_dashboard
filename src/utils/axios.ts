@@ -28,7 +28,7 @@ export default axiosInstance;
 
 // ----------------------------------------------------------------------
 
-export const barrySmasher = async (args: string | [string, AxiosRequestConfig]) => {
+export const drivysSmasher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.delete(url, { ...config });
@@ -159,6 +159,9 @@ export const endpoints = {
       addCommision: 'admin/vendor/bulk/update-commision',
     },
   },
+  schoolAdmin: {
+    verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
+  },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',
     createUpdate: 'admin/home-listing/create-home-listing',
@@ -170,6 +173,7 @@ export const endpoints = {
     details: 'admin/package/get-packge/',
     delete: 'admin/package/delete-packge/',
     createUpdate: 'admin/package/create-packge-translation',
+    publicList: 'public/package/get-packge-list-with-global-package',
   },
   users: {
     enum: 'public/enum/get-user-type-enum',
@@ -190,12 +194,14 @@ export const endpoints = {
       getById: 'admin/user-docs/get-doc',
       deleteById: 'admin/user-docs/delete-user-doc',
       deleteAllByUserId: 'admin/user-docs/delete-user-docs',
+      approve: 'admin/user-docs/update-approve-doc',
     },
   },
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
     getStudents: 'admin/student/get-student-list',
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
+    createTrainer: 'admin/trainers/school/create-trainer',
     workingHours: {
       createUpdate: 'admin/trainer-working-hours/create-update',
       deleteById: 'admin/trainer-working-hours/delete-by-id',
@@ -275,6 +281,7 @@ export const endpoints = {
   pendingRequest: {
     trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
     rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
+    schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-lis',
   },
   pickup: {
     list: 'admin/cityPickupExclusion/get-list',

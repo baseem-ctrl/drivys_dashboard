@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 import { IPickupTableFilters } from 'src/types/city';
@@ -94,6 +94,6 @@ export function useGetCityPickupExclusionById(pickupExclusionId: number | string
 // Function to delete city pickup exclusion by ID
 export function deleteCityPickupExclusionById(id: any) {
   const URL = `${endpoints.pickup.delete}?id=${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

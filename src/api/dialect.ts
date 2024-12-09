@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import { useMemo } from 'react';
@@ -119,7 +119,7 @@ export function useGetDialectById(dialectId: number | string) {
 // Delete a dialect by ID
 export function deleteDialect(id: any) {
   const URL = `${endpoints.dialect.deleteDilect}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
