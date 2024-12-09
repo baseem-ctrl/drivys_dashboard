@@ -26,6 +26,8 @@ import {
   Chip,
   Switch,
   Container,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
@@ -751,14 +753,14 @@ const BookingDetailsComponent = () => {
                   Total Amount:
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.total ? `$${bookingDetails.sub_total}` : 'N/A'}
+                  {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
                 </Typography>
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Booking ID</TableCell>
-                        <TableCell>Session No</TableCell>
+                        <TableCell>Sessions</TableCell>
                         <TableCell>Session Status</TableCell>
                         <TableCell>Rating</TableCell>
                         <TableCell>Start Time</TableCell>
@@ -770,7 +772,28 @@ const BookingDetailsComponent = () => {
                       {sessions.map((session) => (
                         <TableRow key={session?.id || 'N/A'}>
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={`Total Sessions:${session?.no_of_sessions}`}
+                              secondary={
+                                <div>
+                                  <p>Session No:{session?.session_no}</p>
+                                  <p>
+                                    Completed Sessions:
+                                    {bookingDetails.no_of_sessions_completed}
+                                  </p>
+                                </div>
+                              }
+                              secondaryTypographyProps={{
+                                mt: 0.5,
+                                component: 'span',
+                                typography: 'caption',
+                                color: 'text.disabled',
+                              }}
+                            />
+                          </TableCell>
+
+                          {/* <TableCell>{session?.session_no || 'N/A'}</TableCell> */}
 
                           <TableCell>{session?.session_status || 'N/A'}</TableCell>
                           <TableCell>
