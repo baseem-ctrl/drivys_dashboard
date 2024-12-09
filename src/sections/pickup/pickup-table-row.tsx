@@ -62,8 +62,9 @@ export default function PickupTableRow({
           {city_id}
         </TableCell>
         <TableCell>{formattedStartDate}</TableCell>
-        <TableCell>{formattedStartTime}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>
+        <TableCell>{formattedStartTime}</TableCell>
+
         <TableCell>{formattedEndTime}</TableCell>
         <TableCell>
           <Label

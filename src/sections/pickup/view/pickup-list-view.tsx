@@ -41,9 +41,10 @@ import PickupSearch from '../pickup-search';
 
 const TABLE_HEAD = [
   { id: 'city_id', label: 'City ID' },
-  { id: 'start_time', label: 'Start Time', width: 180 },
+
   { id: 'start_date', label: 'Start Date', width: 180 },
   { id: 'end_date', label: 'End Date', width: 180 },
+  { id: 'start_time', label: 'Start Time', width: 180 },
   { id: 'end_time', label: 'End Time', width: 180 },
 
   { id: 'status', label: 'Status', width: 180 },
