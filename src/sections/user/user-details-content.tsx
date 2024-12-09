@@ -138,6 +138,11 @@ export default function UserDetailsContent({
     const lng = e.latLng.lng();
     // setAddressForm({ longitude: lng, latitude: lat });
     setMarkerPosition({ lat, lng });
+    setAddressForm((prev) => ({
+      ...prev,
+      latitude: lat.toString(),
+      longitude: lng.toString(),
+    }));
     // setValue('latitude', lat.toString());
     // setValue('longitude', lng.toString());
   };
@@ -786,17 +791,10 @@ export default function UserDetailsContent({
       if (editingIndex === index) {
         // If the current index is the same, hide the map and clear the editing index
         setEditingIndex(null);
-        // setShowMapIndex(null);
       } else {
         // Show the map for the selected index and update the address form
         setEditingIndex(index);
         setAddressForm(address);
-        //setShowMapIndex(showMapIndex === index ? null : index);
-        // setAddressForm({
-        //   ...addressForm,
-        //   longitude: address.longitude, // Ensure these properties exist on the address object
-        //   latitude: address.latitude,
-        // });
       }
     },
     [addressForm, editingIndex] // Include editingIndex in the dependency array
@@ -838,8 +836,8 @@ export default function UserDetailsContent({
                 landmark: addressForm.landmark,
                 country_code: parseInt(addressForm.country_code, 10),
                 phone_number: addressForm.phone_number,
-                longitude: parseFloat(addressForm.longitude) || 0.0,
-                latitude: parseFloat(addressForm.latitude) || 0.0,
+                longitude: parseFloat(addressForm.longitude) || markerPosition.lng,
+                latitude: parseFloat(addressForm.latitude) || markerPosition.lat,
               };
 
               handleCreateNewUserAddress(addressFormData); // Call to create a new user address
@@ -855,18 +853,6 @@ export default function UserDetailsContent({
                     zoom={12}
                     onClick={handleMapClick}
                   >
-                    {markerPosition && (
-                      <Marker
-                        position={markerPosition}
-                        icon={{
-                          url:
-                            marker && typeof marker === 'string'
-                              ? marker
-                              : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
-                        }}
-                      />
-                    )}
                     {(defaultValues?.latitude || defaultValues?.longitude) && (
                       <Marker
                         position={{
@@ -1156,22 +1142,6 @@ export default function UserDetailsContent({
                               marker && typeof marker === 'string'
                                 ? marker
                                 : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                          }}
-                        />
-                      )}
-                      {(defaultValues?.latitude || defaultValues?.longitude) && (
-                        <Marker
-                          position={{
-                            lat: Number.isNaN(Number(defaultValues?.latitude))
-                              ? 0
-                              : Number(defaultValues?.latitude), // Convert to number
-                            lng: Number.isNaN(Number(defaultValues?.longitude))
-                              ? 0
-                              : Number(defaultValues?.longitude), // Convert to number
-                          }}
-                          icon={{
-                            url: marker, // Specify the URL of your custom marker image
                             scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
                           }}
                         />
