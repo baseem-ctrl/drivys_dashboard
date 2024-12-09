@@ -35,26 +35,24 @@ type useGetStateListParams = {
 export function useGetStateList({
   limit = 10,
   page = 1,
-  sort = 'order',
-  sort_dir = 'asc',
+
   is_published,
   order,
   searchTerm = '',
   locale = '',
+  city_id,
 }: useGetStateListParams = {}) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {
       limit: limit || 100,
       page: page ? page + 1 : 1,
-      sort,
-      sort_dir,
     };
 
     if (is_published !== undefined) {
       queryParams.is_published = is_published === 'published' ? 1 : 0;
     }
     if (order !== undefined) queryParams.order = order;
-
+    if (city_id !== undefined) queryParams.city_id = city_id;
     if (searchTerm) queryParams.search = searchTerm;
     if (locale) queryParams.locale = locale;
 

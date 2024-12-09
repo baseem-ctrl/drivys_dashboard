@@ -62,6 +62,7 @@ import { useGetAllDialect } from 'src/api/dialect';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetSchool } from 'src/api/school';
 import moment from 'moment';
+import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 
 // ----------------------------------------------------------------------
@@ -308,7 +309,12 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  const selectedCity = watch('city_id');
+  const { states, isLoading: stateLoading } = useGetStateList({
+    city_id: selectedCity,
+    limit: 1000,
+    page: 0,
+  });
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'languages',
@@ -418,7 +424,8 @@ export default function UserNewEditForm({
       }
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id);
-      body.append('country_code', '971');
+      if (data?.area_id) body.append('area_id', data?.area_id);
+      body.append('country_code', data?.country_code);
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
 
@@ -765,7 +772,34 @@ export default function UserNewEditForm({
                           {option?.city_translations[0]?.name ?? 'Unknown'}
                         </MenuItem>
                       ))}
+                    {city?.length > 0 ? (
+                      city?.map((option: any) => {
+                        const cityNames = option?.city_translations?.map(
+                          (translation: any) => `${translation.locale}: ${translation.name}`
+                        );
+                        return (
+                          <MenuItem key={option?.id} value={option?.id}>
+                            {cityNames?.join(', ') || 'Unknown City'}
+                          </MenuItem>
+                        );
+                      })
+                    ) : (
+                      <MenuItem disabled>No cities found</MenuItem>
+                    )}
                   </RHFSelect>
+
+                  <RHFSelect name="area_id" label="Select Area">
+                    {stateLoading ? (
+                      <MenuItem disabled>Loading Areas...</MenuItem>
+                    ) : (
+                      states?.map((state: any) => (
+                        <MenuItem key={state.id} value={state.id}>
+                          {state.translations[0]?.name ?? 'Unknown'}
+                        </MenuItem>
+                      )) ?? []
+                    )}
+                  </RHFSelect>
+
                   {values.user_type === 'TRAINER' && (
                     <RHFSelect name="gender" label="Gender">
                       {genderData?.length > 0 &&
@@ -785,6 +819,7 @@ export default function UserNewEditForm({
                       ))}
                   </RHFSelect>
                 </Box>
+
                 {fields.map((languageItem, index) => (
                   <Grid
                     container
@@ -795,7 +830,7 @@ export default function UserNewEditForm({
                   >
                     <Grid item xs={12} md={5}>
                       <RHFAutocomplete
-                        name={`languages[${index}].id`} // Dynamic name for react-hook-form
+                        name={`languages[${index}].id`}
                         label={`Language ${index + 1}`}
                         getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
                         options={dialect ?? []}
