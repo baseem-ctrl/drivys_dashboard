@@ -26,6 +26,7 @@ import NotificationsListingListPage from 'src/pages/dashboard/notifications/noti
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 import CityDetailsView from 'src/sections/city/view/city-details-view';
 import RefundListView from 'src/sections/refund/view/refund-list-view';
+import RefundDetailsComponent from 'src/sections/refund/view/refund-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -225,9 +226,9 @@ const allroutes = [
     path: 'booking',
     children: [
       { element: <BookingListView />, index: true },
-      { path: 'Refund', element: <RefundListView /> },
+      { path: 'refund', element: <RefundListView /> },
+      { path: 'refund/:id', element: <RefundDetailsComponent /> },
       { path: ':id', element: <BookingDetailsComponent /> },
-      // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },
 ];

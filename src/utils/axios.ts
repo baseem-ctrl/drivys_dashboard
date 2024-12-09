@@ -261,6 +261,7 @@ export const endpoints = {
     refund: {
       list: 'admin/booking/refund/get-request-list',
       update: 'admin/booking/refund/update-status-by-booking-id',
+      refundedList: 'admin/booking/refund/get-refunded-list',
     },
   },
   packageTrainer: {

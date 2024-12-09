@@ -187,9 +187,10 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/booking`,
       new: `${ROOTS.DASHBOARD}/booking/new`,
       refund: `${ROOTS.DASHBOARD}/booking/refund`,
-      // list: `${ROOTS.DASHBOARD}/booking/list`,
       details: (id: string) => `${ROOTS.DASHBOARD}/booking/${id}`,
+      refundDetails: (id: string) => `${ROOTS.DASHBOARD}/booking/refund/${id}`,
     },
+
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,

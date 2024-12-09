@@ -1,171 +1,110 @@
 import { useState, useCallback, useEffect } from 'react';
-import { alpha } from '@mui/material/styles';
+import isEqual from 'lodash/isEqual';
+
 import {
   Container,
   Card,
-  Tabs,
-  Tab,
-  Button,
   Table,
   TableBody,
   TableContainer,
   IconButton,
   Tooltip,
-  CircularProgress,
   Skeleton,
   TableCell,
   TableRow,
   Typography,
-  Box,
+  Stack,
 } from '@mui/material';
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
-import { useGetBookings, useGetBookingStatusEnum } from 'src/api/booking';
+import { useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import BookingTableRow from '../refund-table-row';
-import BookingTableToolbar from '../refund-table-tool-bar';
 import { useGetUsers } from 'src/api/users';
-import { useGetRefundRequestList } from 'src/api/refund';
-import RefundTableToolbar from '../refund-table-tool-bar';
+import { useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
+import RefundTableRow from '../refund-table-row';
+import RefundFilters from '../refund-filter';
 
 const TABLE_HEAD = {
   all: [
     { id: 'customerName', label: 'Customer Name', width: 180 },
     { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'packages', label: 'Package', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
     { id: 'price', label: 'Price', width: 120 },
     { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
-  ],
-  confirmed: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
-  ],
-  cancelled: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
-  ],
-  pending: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
+
+    { id: 'reason', label: 'Reason', width: 200 },
+    { id: 'refundStatus', label: 'Refund Status', width: 150 },
     { id: 'created', label: 'Created', width: 200 },
   ],
 };
 
 const defaultFilters = {
-  customerName: '',
-  status: '',
-  bookingType: 'all',
-  paymentStatus: '',
-  vendor: '',
+  city_id: null,
+  category_id: null,
+  driver_id: null,
 };
 
 export default function RefundListView() {
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-  const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
-  const { refundRequests, refundsLoading, revalidateRefunds } = useGetRefundRequestList({
-    page: table.page,
-    limit: table.rowsPerPage,
-    // refund_status: filters.refundType,
-    // customer_name: filters.customerName,
-  });
-  console.log('refunds', refundRequests);
-  const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
-  const [tableData, setTableData] = useState([]);
+  const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
+
   const [filters, setFilters] = useState(defaultFilters);
+
+  const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
+    useGetRefundRequestList({
+      page: table.page,
+      limit: table.rowsPerPage,
+      ...(filters?.category_id && { category_id: filters.category_id }),
+      ...(filters?.city_id && { city_id: filters.city_id }),
+      ...(filters?.driver_id && { driver_id: filters.driver_id }),
+    });
+
+  const { refundedRequests, revalidateRefundedRequests, refundedRequestLoading } =
+    useGetRefundedList({
+      page: table.page,
+      limit: table.rowsPerPage,
+      ...(filters?.category_id && { category_id: filters.category_id }),
+      ...(filters?.city_id && { city_id: filters.city_id }),
+      ...(filters?.driver_id && { driver_id: filters.driver_id }),
+    });
+
+  const openFilters = useBoolean();
+
+  const [tableData, setTableData] = useState([]);
+  const [refundedTableData, setRefundedTableData] = useState([]);
+
   const confirm = useBoolean();
 
-  const paymentStatusMap = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
-  };
-  const paymentStatusCode = paymentStatusMap[filters.paymentStatus] ?? undefined;
-  const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookings({
-    page: table.page,
-    limit: table.rowsPerPage,
-    booking_status: filters.bookingType,
-    // search: filters.customerName,
-    payment_status: paymentStatusCode,
-    driver_id: filters.vendor,
-  });
-  const { users, usersLoading } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'TRAINER',
-  });
-  const [bookingCounts, setBookingCounts] = useState({
-    all: 0,
-    pending: 0,
-    confirmed: 0,
-    cancelled: 0,
-  });
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
 
   useEffect(() => {
-    if (bookings.booking_status_counts) {
-      const initialCounts = { all: 0 };
-      bookingStatusEnum.forEach((status) => {
-        initialCounts[status.value] = 0;
-      });
-
-      Object.keys(bookings.booking_status_counts).forEach((status) => {
-        const statusCount = bookings.booking_status_counts[status] || 0;
-
-        initialCounts[status] = statusCount;
-        initialCounts.all += statusCount;
-      });
-
-      setBookingCounts(initialCounts);
-    }
-  }, [bookings.booking_status_counts, bookingStatusEnum]);
-
-  const vendorOptions = usersLoading
-    ? [{ label: 'Loading...', value: '' }]
-    : users.map((user) => ({
-        label: user.name,
-        value: user.id,
-      }));
-  useEffect(() => {
-    if (bookings?.bookings?.length > 0) {
-      setTableData(bookings.bookings);
+    if (refundRequests?.refundRequests?.length > 0) {
+      setTableData(refundRequests);
     } else {
       setTableData([]);
     }
-  }, [bookings]);
+  }, [refundRequests]);
+  useEffect(() => {
+    if (refundedRequests && refundedRequests.length > 0) {
+      setRefundedTableData(refundedRequests);
+    } else {
+      setRefundedTableData([]);
+    }
+  }, [refundedRequests]);
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -175,32 +114,6 @@ export default function RefundListView() {
       }));
     },
     [table]
-  );
-  useEffect(() => {
-    if (bookings?.bookings?.length > 0) {
-      const filteredBookings = bookings.bookings.filter((booking) => {
-        switch (filters.bookingType) {
-          case 1:
-            return booking.booking_status === 'CONFIRMED';
-          case 2:
-            return booking.booking_status === 'CANCELLED';
-          case 0:
-            return booking.booking_status === 'PENDING';
-          default:
-            return true;
-        }
-      });
-      setTableData(filteredBookings);
-    } else {
-      setTableData([]);
-    }
-  }, [bookings, filters.bookingType]);
-
-  const handleTabChange = useCallback(
-    (event, newValue) => {
-      handleFilters('bookingType', newValue);
-    },
-    [handleFilters]
   );
 
   const currentTableHeaders = (() => {
@@ -216,66 +129,57 @@ export default function RefundListView() {
     }
   })();
 
-  const handleClear = (name) => () => {
-    handleFilters(name, '');
-  };
-
-  const tabBackgroundColors = {
-    all: '#49525b',
-    0: '#d3f2f7',
-    1: '#dbf6e5',
-    2: '#ffe4de',
-  };
-  const tabTextColors = {
-    all: '#ffff',
-    pending: '#212b36',
-    confirmed: '#4ca97e',
-    cancelled: '#ce605b',
-  };
-
   const handleRowClick = (row: any) => {
-    router.push(paths.dashboard.booking.details(row?.id));
+    // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
+  const canReset = !isEqual(defaultFilters, filters);
 
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="flex-end"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      margin={3}
+    >
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <RefundFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          //
+          filters={filters}
+          onFilters={handleFilters}
+          //
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+        />
+
+        {/* <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} /> */}
+      </Stack>
+    </Stack>
+  );
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
         heading="Refund List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Refund', href: paths.dashboard.booking.root },
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Refund', href: paths.dashboard.booking.refund },
           { name: 'List' },
         ]}
         sx={{ mb: 3 }}
       />
-
+      {renderFilters}
       <Card>
-        <RefundTableToolbar
-          filters={filters}
-          onFilters={handleFilters}
-          vendorOptions={vendorOptions}
-        />
-        <Box display="flex" flexDirection="row" gap={1} marginBottom={4} marginLeft={2}>
-          {filters.paymentStatus && (
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <Typography variant="body2">{`Payment Status: ${filters.paymentStatus}`}</Typography>
-              <IconButton size="small" onClick={handleClear('paymentStatus')}>
-                <Iconify icon="mdi:close" />
-              </IconButton>
-            </Box>
-          )}
-          {filters.vendor && (
-            <Box display="flex" alignItems="center">
-              <Typography variant="body2">{`Vendor: ${vendorOptions.find(
-                (v) => v.value === filters.vendor
-              )?.label}`}</Typography>
-              <IconButton size="small" onClick={handleClear('vendor')}>
-                <Iconify icon="mdi:close" />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Typography
+            variant="h6"
+            sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
+          >
+            Refund Requests
+          </Typography>
+
           <TableSelectedAction
             dense={table.dense}
             numSelected={table.selected.length}
@@ -306,7 +210,7 @@ export default function RefundListView() {
                 onSort={table.onSort}
               />
               <TableBody>
-                {bookingsLoading &&
+                {refundRequestLoading &&
                   Array.from(new Array(5)).map((_, index) => (
                     <TableRow key={index}>
                       <TableCell colSpan={currentTableHeaders.length}>
@@ -315,20 +219,95 @@ export default function RefundListView() {
                     </TableRow>
                   ))}
 
-                {!bookingsLoading &&
+                {!refundRequestLoading &&
                   tableData.length > 0 &&
                   tableData.map((row) => (
-                    <BookingTableRow
+                    <RefundTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => handleRowClick(row)}
+                      reload={revalidateRefundRequests}
                       // onDeleteRow={() => handleDeleteRow(row.id)}
                       // onEditRow={() => handleEditRow(row.id)}
                     />
                   ))}
 
-                {!bookingsLoading && tableData.length === 0 && (
+                {!refundRequestLoading && tableData.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={currentTableHeaders.length} align="center">
+                      <Typography variant="h6" color="textSecondary">
+                        No data available
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </TableContainer>
+
+        <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
+          >
+            Refunded List
+          </Typography>
+
+          <TableSelectedAction
+            dense={table.dense}
+            numSelected={table.selected.length}
+            rowCount={tableData.length}
+            onSelectAllRows={(checked) =>
+              table.onSelectAllRows(
+                checked,
+                refundedTableData.map((row) => row.id)
+              )
+            }
+            action={
+              <Tooltip title="Delete">
+                <IconButton onClick={confirm.onTrue}>
+                  <Iconify icon="solar:trash-bin-trash-bold" />
+                </IconButton>
+              </Tooltip>
+            }
+          />
+
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={currentTableHeaders}
+                rowCount={refundedTableData.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+              />
+              <TableBody>
+                {refundedRequestLoading &&
+                  Array.from(new Array(5)).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={currentTableHeaders.length}>
+                        <Skeleton animation="wave" height={40} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                {refundedTableData.length > 0 &&
+                  refundedTableData.map((row) => (
+                    <RefundTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => handleRowClick(row)}
+                      reload={revalidateRefundedRequests}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
+
+                {refundedTableData.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={currentTableHeaders.length} align="center">
                       <Typography variant="h6" color="textSecondary">
