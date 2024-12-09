@@ -283,4 +283,10 @@ export const endpoints = {
     rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
     schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-lis',
   },
+  pickup: {
+    list: 'admin/cityPickupExclusion/get-list',
+    createUpdate: 'admin/cityPickupExclusion/create-update',
+    getById: 'admin/cityPickupExclusion/get-by-id',
+    delete: 'admin/cityPickupExclusion/delete-by-id',
+  },
 };
