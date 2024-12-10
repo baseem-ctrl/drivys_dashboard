@@ -101,7 +101,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }
   }, [language, details]);
 
-  // Find the selectedLocaleObject whenever selectedLanguage or details change
   const selectedLocaleObject = details?.package_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );

@@ -74,17 +74,15 @@ export default function CategoryFilters({
 
   let parentCategoryOptions = category?.map((item) => {
     const translations = item.category_translations;
-
-    // Find the translation for both Arabic and English locales
-    const englishTranslation = translations.find((t) => t.locale === 'en');
-    const arabicTranslation = translations.find((t) => t.locale === 'ar');
+    const translationLabels = translations
+      .map((t) => `${t.name} (${t.locale})`) // Create label for each translation
+      .join(' - '); // Join translations with " - "
 
     return {
-      label: `${englishTranslation?.name || 'Unknown'} (${arabicTranslation?.name || 'Unknown'})`,
+      label: translationLabels || 'Unknown',
       value: item.id,
     };
   });
-  // parentCategoryOptions = parentCategoryOptions?.map((option) => option.label)
 
   const handleFilterPublish = useCallback(
     (newValue: string) => {
