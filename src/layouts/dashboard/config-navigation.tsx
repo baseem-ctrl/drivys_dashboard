@@ -218,15 +218,15 @@ export function useNavData() {
       icon: ICONS.school,
     },
     {
+      title: t('Trainer'),
+      path: paths.dashboard.school.trainer,
+      icon: ICONS.user,
+    },
+    {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
     },
-    // {
-    //   title: t('Trainer'),
-    //   path: paths.dashboard.booking.root,
-    //   icon: ICONS.booking,
-    // },
   ];
 
   const userType = localStorage.getItem('user_type');

@@ -10,7 +10,11 @@ import { IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 // components
 import Iconify from 'src/components/iconify';
-import { RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
+import {
+  RemoveTrainerFromSchool,
+  useGetSchoolTrainerList,
+  useGetSchoolTrainers,
+} from 'src/api/school';
 import { useTable } from 'src/components/table';
 import { Button, CircularProgress, MenuItem, Typography, Grid } from '@mui/material';
 
@@ -64,10 +68,9 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     schoolTrainersError,
     totalPages,
     revalidateTrainers,
-  } = useGetSchoolTrainers({
+  } = useGetSchoolTrainerList({
     page: table?.page + 1,
     limit: table?.rowsPerPage,
-    vendor_id: vendor_id,
   });
 
   const popover = usePopover();

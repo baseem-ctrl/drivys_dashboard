@@ -75,7 +75,9 @@ export default function UserDetailsViewAdmin({ id }: Props) {
       <CustomBreadcrumbs
         heading="User Details"
         links={[
-          {}
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Trainers', href: paths.dashboard.school.trainer },
+          { name: 'Details' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

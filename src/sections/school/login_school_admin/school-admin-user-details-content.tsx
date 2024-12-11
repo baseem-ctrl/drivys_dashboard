@@ -47,6 +47,8 @@ import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './school-admin-trainer-details-content';
 import SchoolAdminTrainerDetailsContent from './school-admin-trainer-details-content';
 import StudentDetailsContent from 'src/sections/user/student-details-content';
+import moment from 'moment';
+import { updateUserVerification } from 'src/api/school-admin';
 
 // ----------------------------------------------------------------------
 
@@ -57,63 +59,25 @@ type Props = {
 };
 
 export default function UserDetailsContentAdmin({ details, loading, reload }: Props) {
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
-  );
-  console.log(details?.user_type, "details");
-
-  const [editMode, setEditMode] = useState(false);
-
   const [currentTab, setCurrentTab] = useState('details');
-
-  const currentTrainer = details;
-
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
 
-  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-    useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-
-  // This useEffect sets the initial selectedLanguage value once details are available
-  useEffect(() => {
-    if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
-    }
-  }, [details]);
-
-  const [localeOptions, setLocaleOptions] = useState([]);
-
-  useEffect(() => {
-    if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
-      let initialLocaleOptions = [];
-      if (Array.isArray(language)) {
-        initialLocaleOptions = language?.map((item: any) => ({
-          label: item?.language_culture,
-          value: item?.language_culture,
-        }));
-      }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
-      setLocaleOptions([...initialLocaleOptions]);
-      // }
-    }
-  }, [language, details]);
-
-  // Find the selectedLocaleObject whenever selectedLanguage or details change
   const router = useRouter();
-  const handleEditRow = useCallback(() => {
-    router.push(paths.dashboard.user.edit(details?.id));
-  }, [router]);
+  const handleVerify = async (e: any, user_id: string) => {
+    e.stopPropagation();
+    const body = {
+      trainer_id: details?.id,
+      verify: 1,
+    };
+    const response = await updateUserVerification(body);
+    if (response) {
+      enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
+      reload();
+    }
+  };
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -165,7 +129,14 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
                 { label: 'Preffered Language', value: details?.locale ?? 'NA' },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
-
+                ...(details?.languages?.length
+                  ? details?.languages.map((lang, index) => ({
+                      label: `Language ${index + 1}`,
+                      value: lang?.dialect?.id
+                        ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
+                        : 'NA',
+                    }))
+                  : [{ label: 'Languages', value: 'N/A' }]),
                 {
                   label: 'Is Active',
                   value:
@@ -177,24 +148,37 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowded in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowded in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                      {
+                        label: 'Verified At',
+                        value: !details?.school_verified_at ? (
+                          <Box>
+                            <Button variant="soft" onClick={handleVerify}>
+                              {' '}
+                              Verify
+                            </Button>
+                          </Box>
+                        ) : (
+                          moment.utc(details?.school_verified_at).format('lll')
+                        ),
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -226,66 +210,9 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
       }}
     >
       {TRAINER_DETAILS_TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-        />
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
       ))}
     </Tabs>
-  );
-
-  const renderCompany = (
-    <Stack
-      component={Paper}
-      variant="outlined"
-      spacing={2}
-      sx={{ p: 3, borderRadius: 2 }}
-      height={350}
-    // onClick={route}
-    >
-      <Avatar
-        alt={details?.vendor_user?.user?.name}
-        src={details?.vendor_user?.name?.user?.photo_url}
-        variant="rounded"
-        sx={{ width: 64, height: 64 }}
-      />
-
-      <Stack spacing={1}>
-        {details?.vendor_user?.user?.name && (
-          <Typography variant="subtitle1">
-            {details?.vendor_user?.user?.name ?? 'Name Not Availbale'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.email && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.email ?? 'Email Not Availbale'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.phone && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.country_code
-              ? details?.vendor_user?.user?.country_code - details?.vendor_user?.user?.phone
-              : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.user_type && (
-          <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.dob && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_balance !== 0 && (
-          <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_points !== 0 && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-      </Stack>
-    </Stack>
   );
 
   return (
@@ -303,26 +230,23 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
         </Box>
       ) : (
         <>
-          {details?.user_type === "TRAINER" && renderTabs}
+          {details?.user_type === 'TRAINER' && renderTabs}
           <Grid container spacing={1} rowGap={1}>
             <Grid xs={12} md={12}>
               {/* For all other user types */}
-              {details?.user_type !== "TRAINER" && renderContent}
+              {details?.user_type !== 'TRAINER' && renderContent}
 
               {/* For trainer user type with 3 tabs */}
-              {currentTab === 'details' && details?.user_type === "TRAINER" && renderContent}
-              {currentTab === 'packages' && details?.user_type === "TRAINER" &&
+              {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
+              {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <SchoolAdminTrainerDetailsContent id={details?.id} />
-              }
-              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+              )}
+              {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
 
-
-
               {/* For trainer user type with 3 tabs */}
             </Grid>
-
 
             {/* <Grid xs={12} md={4}>
             {renderCompany}

@@ -33,8 +33,6 @@ export default function SchoolAdminDetailsView({ id }: Props) {
 
   const currentSchool = details[0]?.vendor;
 
-  console.log(details, 'currentSchool');
-
   const [currentTab, setCurrentTab] = useState('details');
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
