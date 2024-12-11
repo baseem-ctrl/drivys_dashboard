@@ -277,6 +277,21 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
               InputLabelProps={{ shrink: true }}
             />
             <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+            {/* {!currentUser?.user_id && (
+              <>
+                <RHFTextField
+                  name="max_cash_in_hand_allowed"
+                  label="Max Cash in hand"
+                  type="text"
+                />
+                <RHFTextField
+                  name="cash_clearance_date"
+                  label="Cash Clearance Date"
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </>
+            )} */}
             <RHFSwitch name="is_active" label="Is Active" />{' '}
           </Box>
         </DialogContent>
