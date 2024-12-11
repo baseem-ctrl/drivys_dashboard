@@ -84,7 +84,11 @@ export default function UserDetailsViewAdmin({ id }: Props) {
         }}
       />
 
-      <UserDetailsContentAdmin details={details} loading={detailsLoading} />
+      <UserDetailsContentAdmin
+        details={details}
+        loading={detailsLoading}
+        reload={revalidateDetails}
+      />
     </Container>
   );
 }

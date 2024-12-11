@@ -42,10 +42,16 @@ import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/u
 //
 import { deleteLanguage, useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import { Avatar, ListItemText, TableCell, TableRow } from '@mui/material';
-import { useGetSchoolTrainerList, useGetSchoolTrainers } from 'src/api/school';
+import { Avatar, ListItemText, MenuItem, TableCell, TableRow } from '@mui/material';
+import {
+  RemoveTrainerFromSchool,
+  useGetSchoolTrainerList,
+  useGetSchoolTrainers,
+} from 'src/api/school';
 import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
+import TrainerCreateEditForm from './trainer-create-update';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
@@ -54,10 +60,12 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 const TABLE_HEAD = [
   { id: 'name', label: '' },
   { id: 'name', label: 'Name' },
-  { id: 'vehicle_type', label: 'Vehicle Type' },
-  { id: 'gear', label: 'Gear' },
+  { id: 'vehicle_number', label: 'Vehicle Number' },
+  { id: 'dob', label: 'DOB' },
   { id: 'status', label: 'Status' },
   { id: 'verification_status', label: 'Verification' },
+
+  { id: '', label: '' },
 ];
 
 const defaultFilters: IUserTableFilters = {
@@ -76,8 +84,6 @@ export default function SchoolTrainersListView() {
   const router = useRouter();
 
   const confirm = useBoolean();
-
-  const createLanguage = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -163,6 +169,45 @@ export default function SchoolTrainersListView() {
       revalidateTrainers();
     }
   };
+  const createTrainer = useBoolean();
+  const popover = usePopover();
+  const editTrainer = useBoolean();
+  const [trainerDetails, setTrainerDetails] = useState(null);
+  const handlePopoverOpen = (e: any, trainer_details: any) => {
+    e.stopPropagation();
+
+    setTrainerDetails(trainer_details);
+    popover.onOpen(e);
+  };
+  const handleClose = () => {
+    createTrainer.onFalse();
+    editTrainer.onFalse();
+    popover.onClose();
+    revalidateTrainers();
+    setTrainerDetails(null);
+  };
+
+  const handleRemoveTrianer = async () => {
+    try {
+      if (trainerDetails?.id) {
+        const response = await RemoveTrainerFromSchool(trainerDetails?.id);
+        if (response) {
+          enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
+          setTrainerDetails(null);
+          revalidateTrainers();
+          confirm.onFalse();
+        }
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -175,9 +220,8 @@ export default function SchoolTrainersListView() {
           ]}
           action={
             <Button
-              // component={RouterLink}
               onClick={() => {
-                createLanguage.onTrue();
+                createTrainer.onTrue();
               }}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
@@ -268,12 +312,10 @@ export default function SchoolTrainersListView() {
                         </TableCell>
 
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {row?.user?.user_preference?.vehicle_type
-                            ? row?.user?.user_preference?.vehicle_type?.name
-                            : 'NA'}
+                          {row?.vehicle_number ?? 'NA'}
                         </TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {row?.user?.user_preference?.gear ?? 'NA'}
+                          {row?.user?.dob?.split('T')[0] ?? 'NA'}
                         </TableCell>
 
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -300,12 +342,14 @@ export default function SchoolTrainersListView() {
                             moment(row?.user?.school_verified_at).format('lll')
                           )}
                         </TableCell>
-
-                        {/* <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-                        <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-                          <Iconify icon="eva:more-vertical-fill" />
-                        </IconButton>
-                      </TableCell> */}
+                        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+                          <IconButton
+                            color={popover.value ? 'inherit' : 'default'}
+                            onClick={(e) => handlePopoverOpen(e, row)}
+                          >
+                            <Iconify icon="eva:more-vertical-fill" />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     ))}
 
@@ -331,6 +375,57 @@ export default function SchoolTrainersListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <TrainerCreateEditForm
+          open={createTrainer.value}
+          onClose={handleClose}
+          reload={revalidateTrainers}
+          // currentUser={''}
+        />
+        <TrainerCreateEditForm
+          open={editTrainer.value}
+          onClose={handleClose}
+          reload={revalidateTrainers}
+          currentUser={trainerDetails}
+        />
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow="right-top"
+          sx={{ width: 140 }}
+        >
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Remove
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              editTrainer.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        </CustomPopover>
+        <ConfirmDialog
+          open={confirm.value}
+          onClose={confirm.onFalse}
+          title="Remove"
+          content="Are you sure want to remove this trainer?"
+          onConfirm={handleRemoveTrianer}
+          action={
+            <Button variant="contained" color="error">
+              Remove
+            </Button>
+          }
+        />
       </Container>
     </>
   );

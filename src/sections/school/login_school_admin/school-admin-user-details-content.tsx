@@ -55,7 +55,7 @@ import { updateUserVerification } from 'src/api/school-admin';
 type Props = {
   details: any;
   loading?: any;
-  reload?: VoidFunction;
+  reload?: any;
 };
 
 export default function UserDetailsContentAdmin({ details, loading, reload }: Props) {

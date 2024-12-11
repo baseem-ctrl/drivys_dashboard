@@ -492,15 +492,15 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         <ConfirmDialog
           open={confirm.value}
           onClose={confirm.onFalse}
-          title="Delete"
-          content="Are you sure want to delete?"
+          title="Remove"
+          content="Are you sure want to remove this trainer?"
           onConfirm={() => {
             confirm.onFalse();
             handleRemove();
           }}
           action={
             <Button variant="contained" color="error">
-              Delete
+              Remove
             </Button>
           }
         />
