@@ -91,7 +91,7 @@ export default function OverviewEcommerceView() {
             }}
           />
         </Grid>
-        <Grid xs={12} md={12} lg={12}>
+        <Grid xs={12} md={6} lg={8}>
           <TrainerMap />
         </Grid>
 

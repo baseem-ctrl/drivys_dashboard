@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { useGetUsers } from 'src/api/users';
+import { GoogleMap, Marker, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import axios from 'axios';
-import marker from 'react-map-gl/dist/esm/components/marker';
+import Avatar from '@mui/material/Avatar';
 
-import { HOST_API } from 'src/config-global';
+const containerStyle = {
+  width: '100%',
+  height: '500px',
+};
+
+// Default coordinates for the map center and markers
+const defaultLatitude = 31.7151909;
+const defaultLongitude = 37.9588432;
 
 interface Trainer {
   id: string;
@@ -13,33 +19,18 @@ interface Trainer {
   location: { lat: number; lng: number };
 }
 
-const containerStyle = {
-  width: '100%',
-  height: '500px',
-};
-
-const center = {
-  lat: 25.276987,
-  lng: 55.296249,
-};
-
 const TrainerMap: React.FC = () => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
   });
 
-  // Fetching users of type TRAINER
-  const { users, usersLoading } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'TRAINER',
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>({
+    lat: defaultLatitude,
+    lng: defaultLongitude,
   });
 
-  const [trainers, setTrainers] = useState<Trainer[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(
-    null
-  );
-  const fetchNearestTrainers = async (latitude: number, longitude: number) => {
+  const fetchTrainersForLocation = async (latitude: number, longitude: number) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
@@ -56,11 +47,16 @@ const TrainerMap: React.FC = () => {
         }
       );
 
-      if (response?.data?.trainersList) {
+      if (response?.data?.data) {
         setTrainers(
-          response.data.trainersList.map((trainer) => ({
-            ...trainer,
-            location: { lat: trainer.lat, lng: trainer.lng },
+          response.data.data.map((trainer: any) => ({
+            id: trainer.id,
+            name: trainer.name,
+            photoUrl: trainer.photo_url,
+            location: {
+              lat: trainer.address.latitude,
+              lng: trainer.address.longitude,
+            },
           }))
         );
       }
@@ -69,63 +65,67 @@ const TrainerMap: React.FC = () => {
     }
   };
 
+  // Fetch trainers for the default location on mount
   useEffect(() => {
-    if (usersLoading || !users) return;
-
-    const trainersWithLocation: Trainer[] = users.map((user) => {
-      const city = user.user_preference?.city;
-      const cityName = city?.city_translations?.[0]?.name || '';
-      return {
-        id: user.id,
-        name: user.name,
-        photoUrl: user.photo_url,
-        location: cityName === 'Dubai' ? { lat: 25.276987, lng: 55.296249 } : { lat: 20, lng: 20 },
-      };
-    });
-
-    setTrainers(trainersWithLocation);
-  }, [users, usersLoading]);
+    fetchTrainersForLocation(defaultLatitude, defaultLongitude);
+  }, []);
 
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    const lat = e.latLng?.lat() ?? 0;
-    const lng = e.latLng?.lng() ?? 0;
+    const lat = e.latLng?.lat() ?? defaultLatitude;
+    const lng = e.latLng?.lng() ?? defaultLongitude;
     setSelectedLocation({ lat, lng });
+    fetchTrainersForLocation(lat, lng);
   };
-
-  useEffect(() => {
-    if (!selectedLocation) return;
-    const { lat, lng } = selectedLocation;
-
-    fetchNearestTrainers(lat, lng);
-  }, [selectedLocation]);
 
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
-  if (usersLoading || !trainers.length) {
-    return <div>Loading trainers...</div>;
-  }
-
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
-      zoom={15}
-      onClick={handleMapClick} // Handle map click
+      center={selectedLocation}
+      zoom={5}
+      onClick={handleMapClick}
     >
       {trainers.map((trainer) => (
         <Marker
           key={trainer.id}
           position={trainer.location}
           icon={{
-            url:
-              marker && typeof marker === 'string'
-                ? marker
-                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+            url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            scaledSize: new window.google.maps.Size(50, 50),
           }}
-        />
+        >
+          <OverlayView position={trainer.location} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
+            <div
+              style={{
+                borderRadius: '8px',
+                textAlign: 'center',
+                width: '80px',
+
+                fontSize: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {trainer.photoUrl ? (
+                <img
+                  src={trainer.photoUrl}
+                  alt={trainer.name}
+                  style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                />
+              ) : (
+                <Avatar style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}>
+                  {trainer.name?.charAt(0).toUpperCase()}
+                </Avatar>
+              )}
+              <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>{trainer.name}</h4>
+            </div>
+          </OverlayView>
+        </Marker>
       ))}
     </GoogleMap>
   );
