@@ -172,6 +172,7 @@ export function useGetSchoolById(schoolId: string) {
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
+
   const memoizedValue = useMemo(
     () => ({
       details: (data?.data as any) || {},

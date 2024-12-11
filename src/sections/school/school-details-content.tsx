@@ -58,10 +58,8 @@ type Props = {
 };
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+    details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
-  console.log('selectedLanguage', selectedLanguage);
-  console.log('details?.vendor_translations[0]?.locale', details?.vendor_translations[0]);
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;
@@ -101,17 +99,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           value: item?.language_culture,
         }));
       }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
+
       setLocaleOptions([...initialLocaleOptions]);
-      // }
     }
   }, [language, details]);
 
@@ -294,8 +283,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
-  console.log('selectedLanguage', selectedLanguage);
-  console.log('localeOptions', localeOptions); // Check the content of localeOptions
 
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
@@ -544,13 +531,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                            // variant="outlined"
-                            // margin="normal"
                           />
-                          {/* Optional: Show the uploaded file as a clickable link */}
-                          {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
-                            View Uploaded File
-                          </a> */}
                         </Box>
                       )}
                     </>
@@ -633,22 +614,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           </Box>
         )}
       </Scrollbar>
-      {/* <SchoolCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={reload}
-        currentSchool={details}
-      /> */}
-      {/* {editMode && (
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" color="error" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-        </Stack>
-      )} */}
     </Stack>
   );
 
@@ -697,16 +662,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-  // const { control, handleSubmit, setValue, reset } = useForm();
 
-  const {
-    reset,
-    watch,
-    control,
-    setValue,
-    handleSubmit,
-    // formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, control, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {

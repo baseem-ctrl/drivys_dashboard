@@ -42,7 +42,7 @@ import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/u
 //
 import { deleteLanguage, useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import { Avatar, ListItemText, MenuItem, TableCell, TableRow } from '@mui/material';
+import { Avatar, ListItemText, MenuItem, Skeleton, TableCell, TableRow } from '@mui/material';
 import {
   RemoveTrainerFromSchool,
   useGetSchoolTrainerList,
@@ -292,71 +292,78 @@ export default function SchoolTrainersListView() {
                 />
 
                 <TableBody>
-                  {tableData &&
-                    tableData?.length > 0 &&
-                    tableData?.map((row) => (
-                      <TableRow
-                        hover
-                        onClick={(e) => handleRowClick(e, row?.user?.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar alt={row?.user?.name} src={row?.user?.photo_url} sx={{ mr: 2 }} />
-                        </TableCell>
+                  {schoolTrainersLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData &&
+                      tableData?.length > 0 &&
+                      tableData?.map((row) => (
+                        <TableRow
+                          hover
+                          onClick={(e) => handleRowClick(e, row?.user?.id)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Avatar
+                              alt={row?.user?.name}
+                              src={row?.user?.photo_url}
+                              sx={{ mr: 2 }}
+                            />
+                          </TableCell>
 
-                        <TableCell>
-                          <ListItemText
-                            primary={row?.user?.name ?? 'Nِ'}
-                            secondary={row?.user?.email ?? 'NA'}
-                          />
-                        </TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={row?.user?.name ?? 'Nِ'}
+                              secondary={row?.user?.email ?? 'NA'}
+                            />
+                          </TableCell>
 
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {row?.vehicle_number ?? 'NA'}
-                        </TableCell>
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {row?.user?.dob?.split('T')[0] ?? 'NA'}
-                        </TableCell>
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {row?.vehicle_number ?? 'NA'}
+                          </TableCell>
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {row?.user?.dob?.split('T')[0] ?? 'NA'}
+                          </TableCell>
 
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          <Label
-                            variant="soft"
-                            color={!!row?.user?.is_active ? 'success' : 'error'}
-                          >
-                            {!!row?.user?.is_active ? 'Active' : 'In Active'}
-                          </Label>
-                        </TableCell>
-
-                        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                          {!row?.user?.school_verified_at ? (
-                            <Button
-                              startIcon={<Iconify icon="solar:verified-check-bold" />}
-                              variant="outlined"
-                              onClick={(e: any) => {
-                                handleVerify(e, row?.user?.id);
-                              }}
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            <Label
+                              variant="soft"
+                              color={!!row?.user?.is_active ? 'success' : 'error'}
                             >
-                              Verify
-                            </Button>
-                          ) : (
-                            moment(row?.user?.school_verified_at).format('lll')
-                          )}
-                        </TableCell>
-                        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-                          <IconButton
-                            color={popover.value ? 'inherit' : 'default'}
-                            onClick={(e) => handlePopoverOpen(e, row)}
-                          >
-                            <Iconify icon="eva:more-vertical-fill" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                              {!!row?.user?.is_active ? 'Active' : 'In Active'}
+                            </Label>
+                          </TableCell>
 
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {!row?.user?.school_verified_at ? (
+                              <Button
+                                startIcon={<Iconify icon="solar:verified-check-bold" />}
+                                variant="outlined"
+                                onClick={(e: any) => {
+                                  handleVerify(e, row?.user?.id);
+                                }}
+                              >
+                                Verify
+                              </Button>
+                            ) : (
+                              moment(row?.user?.school_verified_at).format('lll')
+                            )}
+                          </TableCell>
+                          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+                            <IconButton
+                              color={popover.value ? 'inherit' : 'default'}
+                              onClick={(e) => handlePopoverOpen(e, row)}
+                            >
+                              <Iconify icon="eva:more-vertical-fill" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
 
                   <TableNoData notFound={notFound} />
                 </TableBody>
