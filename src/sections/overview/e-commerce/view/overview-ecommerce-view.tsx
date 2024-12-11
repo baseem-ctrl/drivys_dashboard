@@ -27,52 +27,55 @@ import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAnalytics } from 'src/api/anlytics';
 
 // ----------------------------------------------------------------------
 
 export default function OverviewEcommerceView() {
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   const theme = useTheme();
 
   const settings = useSettingsContext();
+  const { analytics } = useGetAnalytics({ year: '2024' });
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={12}>
           <EcommerceWelcome
-            title={`Congratulations! \n ${user?.displayName}`}
-            description="Best seller of the month You have done 57.6% more sales today."
-            img={<MotivationIllustration />}
-            action={
-              <Button variant="contained" color="primary">
-                Go Now
-              </Button>
-            }
+            title={`Congratulations! \n ${user?.user?.name}`}
+            description="Let’s start as school and manage your drivers."
+            // img={<MotivationIllustration />}
+            // action={
+            //   <Button variant="contained" color="primary">
+            //     Go Now
+            //   </Button>
+            // }
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        {/* <Grid xs={12} md={4}>
           <EcommerceNewProducts list={_ecommerceNewProducts} />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={4}>
           <EcommerceWidgetSummary
-            title="Product Sold"
-            percent={2.6}
-            total={765}
-            chart={{
-              series: [22, 8, 35, 50, 82, 84, 77, 12, 87, 43],
-            }}
+            title="Total Trainers"
+            // percent={2.6}
+            total={analytics?.trainerCount ?? '0'}
+            // chart={{
+            //   series: [22, 8, 35, 50, 82, 84, 77, 12, 87, 43],
+            // }}
           />
         </Grid>
 
         <Grid xs={12} md={4}>
           <EcommerceWidgetSummary
-            title="Total Balance"
+            title="Total Students"
             percent={-0.1}
-            total={18765}
+            total={analytics?.studentCount ?? '0'}
             chart={{
               colors: [theme.palette.info.light, theme.palette.info.main],
               series: [56, 47, 40, 62, 73, 30, 23, 54, 67, 68],
@@ -81,20 +84,12 @@ export default function OverviewEcommerceView() {
         </Grid>
 
         <Grid xs={12} md={4}>
-          <EcommerceWidgetSummary
-            title="Sales Profit"
-            percent={0.6}
-            total={4876}
-            chart={{
-              colors: [theme.palette.warning.light, theme.palette.warning.main],
-              series: [40, 70, 75, 70, 50, 28, 7, 64, 38, 27],
-            }}
-          />
+          <EcommerceWidgetSummary title="Total Bookings" total={analytics?.bookingsCount ?? '0'} />
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
           <EcommerceSaleByGender
-            title="Sale By Gender"
+            title="Trainers By Gender"
             total={2324}
             chart={{
               series: [
@@ -107,7 +102,7 @@ export default function OverviewEcommerceView() {
 
         <Grid xs={12} md={6} lg={8}>
           <EcommerceYearlySales
-            title="Yearly Sales"
+            title="Yearly Revenue"
             subheader="(+43%) than last year"
             chart={{
               categories: [
@@ -156,19 +151,13 @@ export default function OverviewEcommerceView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
-          <Grid xs={12} md={6} lg={8}>
-            <PendingRequests />
-          </Grid>
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
+        <Grid xs={12} md={12} lg={12}>
           <EcommerceBestSalesman
-            title="Best Salesman"
+            title="Best Trainers"
             tableData={_ecommerceBestSalesman}
             tableLabels={[
               { id: 'name', label: 'Seller' },
@@ -179,9 +168,11 @@ export default function OverviewEcommerceView() {
             ]}
           />
         </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <EcommerceLatestProducts title="Latest Products" list={_ecommerceLatestProducts} />
+        <Grid xs={12} md={6} lg={6}>
+          <PendingRequests />
+        </Grid>
+        <Grid xs={12} md={6} lg={6}>
+          <EcommerceLatestProducts title="Trending Packages" list={_ecommerceLatestProducts} />
         </Grid>
       </Grid>
     </Container>

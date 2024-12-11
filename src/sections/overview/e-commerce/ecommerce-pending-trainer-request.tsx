@@ -123,9 +123,9 @@ export default function PendingRequests() {
   }
   console.log('pendingRequests', pendingRequests);
   return (
-    <Card sx={{ mt: 1, boxShadow: 3 }}>
+    <Card>
       {' '}
-      <Container maxWidth="lg" sx={{ mt: 1 }}>
+      <Container maxWidth="lg">
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           Pending Verification Requests
         </Typography>

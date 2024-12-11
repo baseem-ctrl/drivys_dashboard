@@ -281,12 +281,16 @@ export const endpoints = {
   pendingRequest: {
     trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
     rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
-    schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-lis',
+    schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-list',
   },
   pickup: {
     list: 'admin/cityPickupExclusion/get-list',
     createUpdate: 'admin/cityPickupExclusion/create-update',
     getById: 'admin/cityPickupExclusion/get-by-id',
     delete: 'admin/cityPickupExclusion/delete-by-id',
+  },
+  analytics: {
+    admin: 'admin/analytics/get-admin-analytics',
+    schoolAdmin: 'admin/analytics/get-school-analytics',
   },
 };

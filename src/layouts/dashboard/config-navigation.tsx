@@ -222,6 +222,11 @@ export function useNavData() {
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
     },
+    // {
+    //   title: t('Trainer'),
+    //   path: paths.dashboard.booking.root,
+    //   icon: ICONS.booking,
+    // },
   ];
 
   const userType = localStorage.getItem('user_type');
