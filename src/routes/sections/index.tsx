@@ -20,11 +20,11 @@ export default function Router({ is_user_type_school_admin }: any) {
   const navigate = useNavigate();
 
   // Trigger navigation when path changes
-  useEffect(() => {
-    if (is_user_type_school_admin) {
-      navigate(paths.dashboard.school.admin('admin'));  // Navigate to school details page
-    }
-  }, [is_user_type_school_admin]);
+  // useEffect(() => {
+  //   if (is_user_type_school_admin) {
+  //     navigate(paths.dashboard.school.admin('admin'));  // Navigate to school details page
+  //   }
+  // }, [is_user_type_school_admin]);
 
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE

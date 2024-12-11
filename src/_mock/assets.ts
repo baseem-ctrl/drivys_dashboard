@@ -316,11 +316,11 @@ export const _postTitles = [
 // ----------------------------------------------------------------------
 
 export const _productNames = [
-  'Nike Air Force 1 NDESTRUKT',
-  'Foundations Matte Flip Flop',
-  'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
-  'Arizona Soft Footbed Sandal',
-  'Boston Soft Footbed Sandal',
+  'Golden Package',
+  'Silver Package',
+  'Platinum Package',
+  'Golden Package',
+  'Golden Package',
   'Zoom Freak 2',
   'Gazelle Vintage low-top sneakers',
   'Jordan Delta',

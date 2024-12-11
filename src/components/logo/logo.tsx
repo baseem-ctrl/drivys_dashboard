@@ -14,8 +14,7 @@ export interface LogoProps extends BoxProps {
 
 const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ disabledLink = false, sx, ...other }, ref) => {
-
-    const is_user_type_school_admin = localStorage.getItem('user_type') === "SCHOOL_ADMIN"
+    const is_user_type_school_admin = localStorage.getItem('user_type') === 'SCHOOL_ADMIN';
     const logo = (
       <Box
         ref={ref}
@@ -37,7 +36,7 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
     }
 
     return (
-      <Link component={RouterLink} href={is_user_type_school_admin ? null : "/"} sx={{ display: 'contents' }}>
+      <Link component={RouterLink} href={'/'} sx={{ display: 'contents' }}>
         {logo}
       </Link>
     );
