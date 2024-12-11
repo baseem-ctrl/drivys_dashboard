@@ -109,7 +109,7 @@ export default function DialectCreateEditForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider {...methods}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{currentDialect ? title : 'Create Dialect'}</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <Grid container spacing={2}>

@@ -26,6 +26,7 @@ import NotificationsListingListPage from 'src/pages/dashboard/notifications/noti
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 import CityDetailsView from 'src/sections/city/view/city-details-view';
 import PickupListPage from 'src/pages/pickup/pickup';
+import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -242,6 +243,7 @@ const schooladminRoutes = [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
+      { path: 'trainers-list', element: <SchoolTrainersListView /> },
     ],
   },
   {

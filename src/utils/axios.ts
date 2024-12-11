@@ -158,6 +158,7 @@ export const endpoints = {
     bulk: {
       addCommision: 'admin/vendor/bulk/update-commision',
     },
+    schoolTrainers: 'admin/trainers/get-school-trainer-list',
   },
   schoolAdmin: {
     verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
