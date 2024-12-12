@@ -258,7 +258,6 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
   };
 
   const handleClick = (event, packageItem, id) => {
-    console.log('packageItem', packageItem);
     setAnchorEl(event.currentTarget);
     setSelectedPackageId(packageItem.id);
     setSelectedPackage(packageItem);
@@ -347,30 +346,22 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
             {Array.isArray(details) &&
               details.map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item?.id}>
-                  <Stack
-                    component={Card}
-                    direction="column"
-                    sx={{
-                      marginBottom: '16px',
-                      height: '260px',
-                      position: 'relative',
-                    }}
-                  >
+                  <Stack component={Card} direction="column" key={item?.id}>
                     <Stack
                       sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
                       direction="row"
                       justifyContent="space-between"
                       alignItems="center"
                     >
-                      <Typography
-                        variant="h8"
-                        color="#CF5A0D"
-                        sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        {item?.package?.package_translations?.[0]?.name?.toUpperCase() ||
-                          'UNNAMED PACKAGE'}
-                      </Typography>
-
+                      <Box>
+                        <Typography variant="h5" color="#CF5A0D">
+                          {' '}
+                          {item?.package?.package_translations
+                            ? item?.package?.package_translations[0]?.name
+                            : 'NA'}{' '}
+                        </Typography>
+                        {item?.package?.number_of_sessions} Sessions
+                      </Box>
                       <IconButton
                         onClick={(e) =>
                           handleClick(e, item, item?.package?.package_translations?.[0]?.id)
@@ -379,25 +370,27 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         <Iconify icon="eva:more-vertical-outline" />
                       </IconButton>
                     </Stack>
-
-                    <Stack
-                      spacing={2}
-                      sx={{
-                        px: 3,
-                        pt: 3,
-                        pb: 2,
-                        flexGrow: 1,
-                        overflow: 'auto',
+                    <hr
+                      style={{
+                        width: '100%',
+                        height: '0.5px',
+                        border: 'none',
+                        backgroundColor: '#CF5A0D',
                       }}
-                    >
-                      <Typography variant="body2">
-                        {item?.package?.number_of_sessions} Sessions
-                      </Typography>
+                    />
+                    <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
+                      <Box display={'flex'}>
+                        <Typography variant="h6">{' AED'}</Typography>
+                        <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
+                      </Box>
+
                       <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
-                        What's included
+                        {' '}
+                        What's included{' '}
                       </Typography>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
+
+                      <Stack direction="row" spacing={1}>
+                        {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />{' '} */}
                         <Typography
                           component="span"
                           dangerouslySetInnerHTML={{
@@ -408,18 +401,6 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         />
                       </Stack>
                     </Stack>
-
-                    <hr
-                      style={{
-                        width: '100%',
-                        height: '0.5px',
-                        border: 'none',
-                        backgroundColor: '#CF5A0D',
-                        position: 'absolute',
-                        top: '70px',
-                        left: '0',
-                      }}
-                    />
                   </Stack>
                 </Grid>
               ))}

@@ -22,8 +22,14 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   IconButton,
+  Menu,
   MenuItem,
   Select,
   Switch,
@@ -46,57 +52,29 @@ import { paths } from 'src/routes/paths';
 import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import { useGetPackagesDetailsByTrainer } from 'src/api/trainer';
 import Divider from '@mui/material/Divider';
+import { LoadingButton } from '@mui/lab';
+import TrainerPackageCreateEditForm from 'src/sections/user/trainer-package-create-edit-form';
+import { createPackageTrainer, deletePackageTrainerById } from 'src/api/package-trainer';
 // ----------------------------------------------------------------------
 
 type Props = {
-  id: number | string;
+  trainerDetails: any;
 };
 
-export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
-  const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(id);
+export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Props) {
+  const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
+    trainerDetails?.id
+  );
 
-
-  // const [selectedLanguage, setSelectedLanguage] = useState(
-  //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
-  // );
-
-  // const [editMode, setEditMode] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState(null);
+  const [editMode, setEditMode] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
   const [currentTab, setCurrentTab] = useState('details');
 
   const currentTrainer = details;
 
-
-
-  // const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-  //   useGetAllLanguage(0, 1000);
-  // const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-
-  // This useEffect sets the initial selectedLanguage value once details are available
-  // useEffect(() => {
-  //   if (details?.vendor_translations?.length > 0) {
-  //     setSelectedLanguage(details?.vendor_translations[0]?.locale);
-  //   }
-  // }, [details]);
-
   const [localeOptions, setLocaleOptions] = useState([]);
-
-  // useEffect(() => {
-  //   if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
-  //     let initialLocaleOptions = [];
-  //     if (Array.isArray(language)) {
-  //       initialLocaleOptions = language?.map((item: any) => ({
-  //         label: item?.language_culture,
-  //         value: item?.language_culture,
-  //       }));
-  //     }
-
-  //     setLocaleOptions([...initialLocaleOptions]);
-
-  //   }
-  // }, [language, details]);
-
-  // Find the selectedLocaleObject whenever selectedLanguage or details change
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
@@ -164,24 +142,24 @@ export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowded in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowded in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -203,13 +181,116 @@ export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
       </Stack>
     </Stack>
   );
+  const quickEdit = useBoolean();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const confirm = useBoolean();
+  const [anchorEl, setAnchorEl] = useState(null);
 
-
-  console.log(Array.isArray(details), details, "details");
-
+  const handleAddPackageClick = () => {
+    setEditMode('');
+    setSelectedPackage(null);
+    quickEdit.onTrue();
+  };
+  const handleCreatePackage = async (newPackage) => {
+    try {
+      setIsSubmitting(true);
+      const response = await createPackageTrainer(newPackage);
+      revalidateDetails();
+      enqueueSnackbar(response.message);
+      setIsSubmitting(false);
+      quickEdit.onFalse();
+      setEditMode('');
+    } catch (error) {
+      setEditMode('');
+      setIsSubmitting(false);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
+  const handleDeletePackage = async (id) => {
+    try {
+      setIsSubmitting(true);
+      const response = await deletePackageTrainerById(id);
+      revalidateDetails();
+      enqueueSnackbar('Package City Mapping Deleted successfully.');
+      setIsSubmitting(false);
+      quickEdit.onFalse();
+      confirm.onFalse();
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+      setIsSubmitting(false);
+      console.error('Error deleting package:', error);
+    }
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleEditPackage = (packageItem) => {
+    setEditMode('Edit');
+    setSelectedPackage(packageItem);
+    quickEdit.onTrue();
+    handleClose();
+  };
+  const handleDeleteClick = (id) => {
+    setSelectedPackageId(id);
+    confirm.onTrue();
+  };
+  const handleClick = (event, packageItem, id) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedPackageId(packageItem.id);
+    setSelectedPackage(packageItem);
+  };
 
   return (
     <>
+      {details?.length < 1 && (
+        <Grid item xs={12}>
+          <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
+            No packages available. Click Add Package to create a new one.
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid container item xs={12} justifyContent="flex-start">
+        <Grid item>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={handleAddPackageClick}
+            sx={{
+              backgroundColor: '#CF5A0D',
+              color: 'white',
+              marginTop: '12px',
+              marginBottom: '19px',
+              '&:hover': {
+                backgroundColor: '#FB8C00',
+              },
+            }}
+          >
+            Add Package
+          </Button>
+        </Grid>
+      </Grid>
       {detailsLoading ? (
         <Box
           sx={{
@@ -221,46 +302,123 @@ export default function SchoolAdminTrainerDetailsContent({ id }: Props) {
         >
           <CircularProgress />
         </Box>
-      ) : (
-
-        details?.length > 0 ?
-          <>
-            <Grid container spacing={2} >
-
-              {Array.isArray(details) && details.map((item: any) => (
+      ) : details?.length > 0 ? (
+        <>
+          <Grid container spacing={2}>
+            {Array.isArray(details) &&
+              details.map((item: any) => (
                 <Grid item xs={12} sm={6} md={3}>
-                  <Stack
-                    component={Card}
-                    direction="column"
-                    key={item?.id}
-                  >
-                    <Stack sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}>{item?.number_of_sessions} Sessions</Stack>
-                    <hr style={{ width: "100%", height: "0.5px", border: "none", backgroundColor: "#CF5A0D" }} />
-
+                  <Stack component={Card} direction="column" key={item?.id}>
+                    <Stack
+                      sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <Typography variant="h5" color="#CF5A0D">
+                          {' '}
+                          {item?.package?.package_translations
+                            ? item?.package?.package_translations[0]?.name
+                            : 'NA'}{' '}
+                        </Typography>
+                        {item?.package?.number_of_sessions} Sessions
+                      </Box>
+                      <IconButton
+                        onClick={(e) =>
+                          handleClick(e, item, item?.package?.package_translations?.[0]?.id)
+                        }
+                      >
+                        <Iconify icon="eva:more-vertical-outline" />
+                      </IconButton>
+                    </Stack>
+                    <hr
+                      style={{
+                        width: '100%',
+                        height: '0.5px',
+                        border: 'none',
+                        backgroundColor: '#CF5A0D',
+                      }}
+                    />
                     <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
-                      <Typography variant="h5" color="#CF5A0D" > {item?.package_translations[0]?.name} </Typography>
-                      <Typography sx={{ fontSize: "12px", fontWeight: "700" }}> What's included </Typography>
+                      <Box display={'flex'}>
+                        <Typography variant="h6">{' AED'}</Typography>
+                        <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
+                      </Box>
+
+                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                        {' '}
+                        What's included{' '}
+                      </Typography>
 
                       <Stack direction="row" spacing={1}>
-                        <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> <Typography>  {item?.package_translations[0]?.session_inclusions} </Typography>
+                        {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />{' '} */}
+                        <Typography
+                          component="span"
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              item?.package?.package_translations?.[0]?.session_inclusions ||
+                              'No inclusions available',
+                          }}
+                        />
                       </Stack>
                     </Stack>
-
                   </Stack>
                 </Grid>
               ))}
+          </Grid>
+        </>
+      ) : (
+        'No Packages'
+      )}
+      <>
+        <Dialog open={confirm.value} onClose={confirm.onFalse}>
+          <DialogTitle>Delete Package</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={confirm.onFalse} color="primary">
+              Cancel
+            </Button>
 
-
-
-
-
-              {/* <Grid xs={12} md={4}>
-        {renderCompany}
-      </Grid> */}
-            </Grid>
-          </> : "No Packages"
-      )
-      }
+            <LoadingButton
+              loading={isSubmitting}
+              variant="contained"
+              color="error"
+              onClick={() => handleDeletePackage(selectedPackageId)}
+            >
+              Delete
+            </LoadingButton>
+          </DialogActions>
+        </Dialog>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+          <MenuItem
+            onClick={() => {
+              handleEditPackage(selectedPackage);
+            }}
+          >
+            Edit Package
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleDeleteClick(selectedPackage.id);
+              handleClose();
+            }}
+          >
+            Delete Package
+          </MenuItem>
+        </Menu>
+        <TrainerPackageCreateEditForm
+          editMode={editMode}
+          open={quickEdit.value}
+          onClose={quickEdit.onFalse}
+          onSubmit={handleCreatePackage}
+          selectedPackage={selectedPackage}
+          trainer_details={trainerDetails}
+          setEditMode={setEditMode}
+        />
+      </>
     </>
   );
 }

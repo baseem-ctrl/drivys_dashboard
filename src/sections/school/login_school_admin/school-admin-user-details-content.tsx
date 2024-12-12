@@ -239,7 +239,7 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
               {/* For trainer user type with 3 tabs */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
-                <SchoolAdminTrainerDetailsContent id={details?.id} />
+                <SchoolAdminTrainerDetailsContent trainerDetails={details} />
               )}
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />

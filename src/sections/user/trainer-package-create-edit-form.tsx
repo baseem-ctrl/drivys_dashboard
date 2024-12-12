@@ -163,10 +163,9 @@ const TrainerPackageCreateEditForm = ({
         setIsSubmitting(false);
       });
   };
-  console.log('package', pkg);
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>Add Packages</DialogTitle>
+      <DialogTitle>{editMode ? 'Update Package' : 'Add Package'}</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -190,13 +189,13 @@ const TrainerPackageCreateEditForm = ({
                     {packageLoading ? (
                       <MenuItem disabled>Loading...</MenuItem>
                     ) : (
-                      packageList.map((pkg) =>
-                        pkg.package_translations.map((translation) => (
-                          <MenuItem key={translation.id} value={pkg.id}>
-                            {translation.name} ({translation.locale}) (ID: {pkg.id})
-                          </MenuItem>
-                        ))
-                      )
+                      packageList.map((pkg) => (
+                        <MenuItem key={pkg.id} value={pkg.id}>
+                          {pkg.package_translations.map(
+                            (translation) => `${translation.name} (${translation.locale})-`
+                          )}
+                        </MenuItem>
+                      ))
                     )}
                   </Select>
                 </FormControl>
