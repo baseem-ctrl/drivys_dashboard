@@ -42,7 +42,15 @@ import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/u
 //
 import { deleteLanguage, useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import { Avatar, ListItemText, MenuItem, Skeleton, TableCell, TableRow } from '@mui/material';
+import {
+  Avatar,
+  ListItemText,
+  MenuItem,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import {
   RemoveTrainerFromSchool,
   useGetSchoolTrainerList,
@@ -52,6 +60,7 @@ import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
 import TrainerCreateEditForm from './trainer-create-update';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import TrainerSearch from 'src/sections/user/trainer-search';
 
 // ----------------------------------------------------------------------
 
@@ -89,18 +98,13 @@ export default function SchoolTrainersListView() {
 
   const [tableData, setTableData] = useState<any>([]);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
-
   const {
     schoolTrainersList,
     schoolTrainersLoading,
     schoolTrainersError,
     totalPages,
     revalidateTrainers,
+    revalidateSearch,
   } = useGetSchoolTrainerList({
     page: table?.page + 1,
     limit: table?.rowsPerPage,
@@ -113,16 +117,12 @@ export default function SchoolTrainersListView() {
       setTableData([]);
     }
   }, [schoolTrainersList]);
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
 
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!tableData.length && canReset) || !tableData.length;
 
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
@@ -131,24 +131,10 @@ export default function SchoolTrainersListView() {
         ...prevState,
         [name]: value,
       }));
+      revalidateSearch(value);
     },
     [table]
   );
-
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.user.edit(id));
-    },
-    [router]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -208,6 +194,16 @@ export default function SchoolTrainersListView() {
       }
     }
   };
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+    >
+      <TrainerSearch query={filters.name} results={filters} onSearch={handleFilters} />
+    </Stack>
+  );
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -235,25 +231,14 @@ export default function SchoolTrainersListView() {
         />
 
         <Card>
-          {/* <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
-          /> */}
-
-          {/* {canReset && (
-            <UserTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )} */}
-
+          <Stack
+            spacing={2.5}
+            sx={{
+              m: 1,
+            }}
+          >
+            {renderFilters}
+          </Stack>
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -372,7 +357,7 @@ export default function SchoolTrainersListView() {
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={totalPages}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -439,41 +424,3 @@ export default function SchoolTrainersListView() {
 }
 
 // ----------------------------------------------------------------------
-
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: IUserItem[];
-  comparator: (a: any, b: any) => number;
-  filters: IUserTableFilters;
-}) {
-  const { name, status, role } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
-  }
-
-  return inputData;
-}

@@ -390,7 +390,7 @@ export function useGetSchoolTrainerList({ limit, page }: any) {
     if (searchValue) params.search = searchValue;
     // params.user_types = ['SCHOOL_ADMIN'];
     return params;
-  }, [limit, page]);
+  }, [limit, page, searchValue]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();

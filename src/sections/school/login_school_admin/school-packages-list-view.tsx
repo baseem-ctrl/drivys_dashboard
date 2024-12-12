@@ -51,12 +51,7 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import {
-  RemoveTrainerFromSchool,
-  useGetSchoolPackageList,
-  useGetSchoolTrainerList,
-  useGetSchoolTrainers,
-} from 'src/api/school';
+import { useGetSchoolPackageList } from 'src/api/school';
 import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
 import TrainerCreateEditForm from './trainer-create-update';
