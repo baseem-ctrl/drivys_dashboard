@@ -250,7 +250,9 @@ export default function SchoolPackageListView() {
                             {row?.drivys_commision ?? 'NA'}
                           </TableCell>
                           <TableCell>
-                            {row?.category?.category_translations[0]?.name ?? 'NA'}
+                            {row?.category?.category_translations
+                              ? row?.category?.category_translations[0]?.name
+                              : 'NA' ?? 'NA'}
                           </TableCell>
                         </TableRow>
                       ))}
