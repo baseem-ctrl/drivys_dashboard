@@ -339,11 +339,11 @@ export default function UserNewEditForm({
       setDefaultOption({ label: 'OTHER', value: null });
     } else {
       // Otherwise, retain the selected value
-      const selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
+      const selectedOption = schoolList?.find((school) => school.id === values.vendor_id.value);
       if (selectedOption) {
         setDefaultOption({
-          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption.id,
+          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption?.id,
         });
       }
     }
@@ -352,11 +352,11 @@ export default function UserNewEditForm({
   useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
-      const selectedOption = schoolList.find((school) => school.id === currentUser?.vendor?.id);
+      const selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
       if (selectedOption) {
         setDefaultOption({
-          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption.id,
+          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption?.id,
         });
       }
     }
