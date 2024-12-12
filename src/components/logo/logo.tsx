@@ -20,14 +20,13 @@ const Logo = forwardRef<HTMLDivElement, LogoProps>(
         ref={ref}
         component="div"
         sx={{
-          width: 72,
-          height: 72,
+          marginRight: '20px',
           display: 'inline-flex',
           ...sx,
         }}
         {...other}
       >
-        <img src={LogoSVG} alt="logo" style={{ maxWidth: 'none' }} />
+        <img src={LogoSVG} alt="logo" />
       </Box>
     );
 

@@ -23,6 +23,7 @@ import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Tab, Tabs } from '@mui/material';
+import Logo from 'src/components/logo';
 
 // ----------------------------------------------------------------------
 
@@ -125,9 +126,18 @@ export default function JwtLoginView() {
       </LoadingButton>
     </Stack>
   );
-
+  const renderLogo = (
+    <Logo
+      sx={{
+        // zIndex: 9,
+        // position: 'absolute',
+        margin: 0,
+      }}
+    />
+  );
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
+      {/* {renderLogo} */}
       {renderHead}
 
       <Alert severity="info" sx={{ mb: 3 }}>
