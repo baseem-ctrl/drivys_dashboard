@@ -51,41 +51,41 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import {
-  RemoveTrainerFromSchool,
-  useGetSchoolTrainerList,
-  useGetSchoolTrainers,
-} from 'src/api/school';
+import { useGetSchoolPackageList } from 'src/api/school';
 import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
 import TrainerCreateEditForm from './trainer-create-update';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import TrainerSearch from 'src/sections/user/trainer-search';
+import SchoolSearch from 'src/sections/packages/package-search';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: '' },
+  { id: 'locale', label: 'Language' },
   { id: 'name', label: 'Name' },
-  { id: 'vehicle_number', label: 'Vehicle Number' },
-  { id: 'dob', label: 'DOB' },
-  { id: 'status', label: 'Status' },
-  { id: 'verification_status', label: 'Verification' },
+  // { id: 'session_inclusions', label: 'Session inclusions' },
+  { id: 'number_of_sessions', label: 'Number of sessions' },
+  { id: 'is_published', label: 'Is published' },
+  { id: 'drivys_commision', label: 'Drivys Commision' },
+  { id: 'category', label: 'Category' },
 
-  { id: '', label: '' },
+  // { id: '' },
 ];
 
-const defaultFilters: IUserTableFilters = {
+const defaultFilters: any = {
   name: '',
-  role: [],
-  status: 'all',
+  min_price: 0,
+  max_price: 0,
+  number_of_sessions: 0,
+  is_published: '',
+  locale: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function SchoolTrainersListView() {
+export default function SchoolPackageListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
@@ -99,31 +99,26 @@ export default function SchoolTrainersListView() {
   const [tableData, setTableData] = useState<any>([]);
 
   const {
-    schoolTrainersList,
-    schoolTrainersLoading,
-    schoolTrainersError,
+    schoolPackageList,
+    schoolPackageLoading,
+    schoolPackageError,
     totalPages,
-    revalidateTrainers,
+    revalidatePackage,
     revalidateSearch,
-  } = useGetSchoolTrainerList({
+  } = useGetSchoolPackageList({
     page: table?.page + 1,
     limit: table?.rowsPerPage,
+    search: filters.name,
   });
 
   useEffect(() => {
-    if (schoolTrainersList?.length) {
-      setTableData(schoolTrainersList);
+    if (schoolPackageList?.length) {
+      setTableData(schoolPackageList);
     } else {
       setTableData([]);
     }
-  }, [schoolTrainersList]);
-
+  }, [schoolPackageList]);
   const denseHeight = table.dense ? 52 : 72;
-
-  const canReset = !isEqual(defaultFilters, filters);
-
-  const notFound = (!tableData.length && canReset) || !tableData.length;
-
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
       table.onResetPage();
@@ -131,68 +126,20 @@ export default function SchoolTrainersListView() {
         ...prevState,
         [name]: value,
       }));
-      revalidateSearch(value);
     },
     [table]
   );
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const canReset = !isEqual(defaultFilters, filters);
+
+  const notFound = (!tableData?.length && canReset) || !tableData?.length;
   const handleRowClick = (e: any, user_id: string) => {
     e.stopPropagation();
 
     router.push(paths.dashboard.school.detailsadmin(user_id));
-  };
-  const handleVerify = async (e: any, user_id: string) => {
-    e.stopPropagation();
-    const body = {
-      trainer_id: user_id,
-      verify: 0,
-    };
-    const response = await updateUserVerification(body);
-    if (response) {
-      enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
-      revalidateTrainers();
-    }
-  };
-  const createTrainer = useBoolean();
-  const popover = usePopover();
-  const editTrainer = useBoolean();
-  const [trainerDetails, setTrainerDetails] = useState(null);
-  const handlePopoverOpen = (e: any, trainer_details: any) => {
-    e.stopPropagation();
-
-    setTrainerDetails(trainer_details);
-    popover.onOpen(e);
-  };
-  const handleClose = () => {
-    createTrainer.onFalse();
-    editTrainer.onFalse();
-    popover.onClose();
-    revalidateTrainers();
-    setTrainerDetails(null);
-  };
-
-  const handleRemoveTrianer = async () => {
-    try {
-      if (trainerDetails?.id) {
-        const response = await RemoveTrainerFromSchool(trainerDetails?.id);
-        if (response) {
-          enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
-          setTrainerDetails(null);
-          revalidateTrainers();
-          confirm.onFalse();
-        }
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
   };
   const renderFilters = (
     <Stack
@@ -201,7 +148,7 @@ export default function SchoolTrainersListView() {
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
-      <TrainerSearch query={filters.name} results={filters} onSearch={handleFilters} />
+      <SchoolSearch query={filters.name} results={filters} onSearch={handleFilters} />
     </Stack>
   );
   return (
@@ -211,20 +158,9 @@ export default function SchoolTrainersListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Trainers', href: paths.dashboard.school.trainer },
+            { name: 'Packages', href: paths.dashboard.school.package },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              onClick={() => {
-                createTrainer.onTrue();
-              }}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Create Trainer
-            </Button>
-          }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
@@ -239,6 +175,7 @@ export default function SchoolTrainersListView() {
           >
             {renderFilters}
           </Stack>
+
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
@@ -277,7 +214,7 @@ export default function SchoolTrainersListView() {
                 />
 
                 <TableBody>
-                  {schoolTrainersLoading
+                  {schoolPackageLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
                           <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -290,62 +227,30 @@ export default function SchoolTrainersListView() {
                       tableData?.map((row) => (
                         <TableRow
                           hover
-                          onClick={(e) => handleRowClick(e, row?.user?.id)}
+                          onClick={(e) => (row?.vendor_id ? handleRowClick(e, row?.vendor_id) : '')}
                           style={{ cursor: 'pointer' }}
                         >
                           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar
-                              alt={row?.user?.name}
-                              src={row?.user?.photo_url}
-                              sx={{ mr: 2 }}
-                            />
+                            {row?.package_translations[0]?.locale ?? 'NA'}
                           </TableCell>
 
-                          <TableCell>
-                            <ListItemText
-                              primary={row?.user?.name ?? 'Nِ'}
-                              secondary={row?.user?.email ?? 'NA'}
-                            />
+                          <TableCell>{row?.package_translations[0]?.name}</TableCell>
+
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {(row?.number_of_sessions || 'N/A') ?? 'NA'}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.vehicle_number ?? 'NA'}
-                          </TableCell>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.user?.dob?.split('T')[0] ?? 'NA'}
-                          </TableCell>
-
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            <Label
-                              variant="soft"
-                              color={!!row?.user?.is_active ? 'success' : 'error'}
-                            >
-                              {!!row?.user?.is_active ? 'Active' : 'In Active'}
+                            <Label variant="soft" color={!!row?.is_published ? 'success' : 'error'}>
+                              {!!row?.is_published ? 'Published' : 'Un Published'}
                             </Label>
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {!row?.user?.school_verified_at ? (
-                              <Button
-                                startIcon={<Iconify icon="solar:verified-check-bold" />}
-                                variant="outlined"
-                                onClick={(e: any) => {
-                                  handleVerify(e, row?.user?.id);
-                                }}
-                              >
-                                Verify
-                              </Button>
-                            ) : (
-                              moment(row?.user?.school_verified_at).format('lll')
-                            )}
+                            {row?.drivys_commision ?? 'NA'}
                           </TableCell>
-                          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-                            <IconButton
-                              color={popover.value ? 'inherit' : 'default'}
-                              onClick={(e) => handlePopoverOpen(e, row)}
-                            >
-                              <Iconify icon="eva:more-vertical-fill" />
-                            </IconButton>
+                          <TableCell>
+                            {row?.category?.category_translations[0]?.name ?? 'NA'}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -367,57 +272,6 @@ export default function SchoolTrainersListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
-        <TrainerCreateEditForm
-          open={createTrainer.value}
-          onClose={handleClose}
-          reload={revalidateTrainers}
-          // currentUser={''}
-        />
-        <TrainerCreateEditForm
-          open={editTrainer.value}
-          onClose={handleClose}
-          reload={revalidateTrainers}
-          currentUser={trainerDetails}
-        />
-        <CustomPopover
-          open={popover.open}
-          onClose={popover.onClose}
-          arrow="right-top"
-          sx={{ width: 140 }}
-        >
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              editTrainer.onTrue();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-        </CustomPopover>
-        <ConfirmDialog
-          open={confirm.value}
-          onClose={confirm.onFalse}
-          title="Remove"
-          content="Are you sure want to remove this trainer?"
-          onConfirm={handleRemoveTrianer}
-          action={
-            <Button variant="contained" color="error">
-              Remove
-            </Button>
-          }
-        />
       </Container>
     </>
   );

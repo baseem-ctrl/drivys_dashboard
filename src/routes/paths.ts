@@ -199,6 +199,7 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
       account: `${ROOTS.DASHBOARD}/school/account`,
       trainer: `${ROOTS.DASHBOARD}/school/trainers-list`,
+      package: `${ROOTS.DASHBOARD}/school/package-list`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,

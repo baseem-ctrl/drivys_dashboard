@@ -18,18 +18,14 @@ interface UseGetPendingVerificationRequestProps {
 export function useGetAnalytics({ year }: UseGetPendingVerificationRequestProps) {
   const { user } = useAuthContext();
   const getTheFullUrl = useMemo(() => {
-    if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-      if (year) {
+    if (user?.user?.user_type) {
+      if (user?.user?.user_type === 'SCHOOL_ADMIN') {
         return `${endpoints.analytics.schoolAdmin}?year=${year}`;
       } else {
-        return `${endpoints.analytics.schoolAdmin}`;
+        return `${endpoints.analytics.admin}?year=${year}`;
       }
     } else {
-      if (year) {
-        return `${endpoints.analytics.admin}?year=${year}`;
-      } else {
-        return `${endpoints.analytics.admin}`;
-      }
+      window.location.reload();
     }
   }, []);
 
