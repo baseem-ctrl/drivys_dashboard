@@ -229,6 +229,8 @@ export default function UserNewEditForm({
         doc_side: Yup.mixed(), // Validate the number of add-ons
       })
     ),
+    cash_in_hand: Yup.string(),
+    max_cash_in_hand_allowed: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -288,7 +290,7 @@ export default function UserNewEditForm({
       doc_side: currentUser?.user_preference?.doc_side || '',
       min_price: currentUser?.user_preference?.min_price || '',
       max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
-      is_pickup_enabled: currentUser?.user_preference?.is_pickup_enabled ? 1 : 0,
+      is_pickup_enabled: !!currentUser?.user_preference?.is_pickup_enabled,
       certificate_commission_in_percentage:
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
@@ -299,6 +301,8 @@ export default function UserNewEditForm({
         license_file: doc?.doc_file ?? [],
         doc_side: doc?.doc_side || '',
       })),
+      cash_in_hand: currentUser?.cash_in_hand || 0,
+      max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
@@ -334,6 +338,7 @@ export default function UserNewEditForm({
     name: 'license',
   });
   const values = watch();
+
   useEffect(() => {
     if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
       setDefaultOption({ label: 'OTHER', value: null });
@@ -474,6 +479,10 @@ export default function UserNewEditForm({
           body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
         });
       }
+      if (data?.max_cash_in_hand_allowed)
+        body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
+      if (data?.cash_in_hand) body.append('cash_in_hand', data?.cash_in_hand);
+
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
         body.append('user_id', currentUser?.id);
@@ -657,13 +666,13 @@ export default function UserNewEditForm({
               {values.user_type === 'TRAINER' && (
                 <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled && (
                 <RHFTextField name="min_price" label="Minimum Price" type="number" />
               )}
               {values.user_type === 'TRAINER' && (
@@ -737,7 +746,15 @@ export default function UserNewEditForm({
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />
               )}
               {values.user_type === 'TRAINER' && (
-                <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                <>
+                  <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                  <RHFTextField
+                    name="max_cash_in_hand_allowed"
+                    label="Max cash in hand allowded"
+                    type="number"
+                  />
+                  <RHFTextField name="cash_in_hand" label="Cash in hand" type="number" />
+                </>
               )}
             </Box>
 
