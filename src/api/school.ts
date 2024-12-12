@@ -435,3 +435,60 @@ export function useGetSchoolTrainerList({ limit, page }: any) {
     revalidateSearch,
   };
 }
+export function useGetSchoolPackageList({ limit, page, search }: any) {
+  // Construct query parameters dynamically
+  const [searchValue, setSearchValue] = useState('');
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (search) params.search = search;
+    // params.user_types = ['SCHOOL_ADMIN'];
+    return params;
+  }, [limit, page, search]);
+
+  const fullUrl = useMemo(() => {
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If the value is an array, append each item
+        value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
+      } else {
+        urlSearchParams.append(key, value as string);
+      }
+    });
+    return `${endpoints.school.package.getPackageBySchool}?${urlSearchParams}`;
+  }, [queryParams]);
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePackage = () => {
+    mutate(fullUrl);
+  };
+  const revalidateSearch = (search: any) => {
+    if (search) {
+      setSearchValue(search);
+      mutate(fullUrl);
+    }
+  };
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolPackageList: DelivereyData,
+      schoolPackageLoading: isLoading,
+      schoolPackageError: error,
+      schoolPackageValidating: isValidating,
+      schoolPackageEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePackage,
+    revalidateSearch,
+  };
+}

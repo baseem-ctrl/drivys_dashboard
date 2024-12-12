@@ -218,9 +218,14 @@ export function useNavData() {
       icon: ICONS.school,
     },
     {
-      title: t('Trainer'),
+      title: t('trainers'),
       path: paths.dashboard.school.trainer,
       icon: ICONS.user,
+    },
+    {
+      title: t('packages'),
+      path: paths.dashboard.school.package,
+      icon: ICONS.blank,
     },
     {
       title: t('booking'),

@@ -27,6 +27,7 @@ import NotificationDetails from 'src/sections/notifications/view/notifications-d
 import CityDetailsView from 'src/sections/city/view/city-details-view';
 import PickupListPage from 'src/pages/pickup/pickup';
 import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
+import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -244,6 +245,7 @@ const schooladminRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
       { path: 'trainers-list', element: <SchoolTrainersListView /> },
+      { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
   {
