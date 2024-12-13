@@ -22,16 +22,16 @@ export default function EcommerceWelcome({ title, description, action, img, ...o
     <Stack
       flexDirection={{ xs: 'column', md: 'row' }}
       sx={{
-        ...bgGradient({
-          direction: '135deg',
-          startColor: alpha(theme.palette.primary.light, 0.2),
-          endColor: alpha(theme.palette.primary.main, 0.2),
-        }),
+        // ...bgGradient({
+        //   direction: '135deg',
+        //   startColor: alpha(theme.palette.primary.light, 0.2),
+        //   endColor: alpha(theme.palette.primary.main, 0.2),
+        // }),
         height: { md: 1 },
         borderRadius: 2,
         position: 'relative',
-        color: 'primary.darker',
-        backgroundColor: 'common.white',
+        color: '#118d57',
+        backgroundColor: 'rgba(34, 197, 94, 0.16)',
       }}
       {...other}
     >
