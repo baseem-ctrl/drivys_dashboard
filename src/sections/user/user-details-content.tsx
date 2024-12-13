@@ -1498,9 +1498,10 @@ export default function UserDetailsContent({
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
             <Grid xs={12} md={12}>
-              {(details?.user_type === 'STUDENT' || details?.user_type === 'TRAINER') &&
-                studentTab === 'details' &&
-                renderAddress}
+              {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (
