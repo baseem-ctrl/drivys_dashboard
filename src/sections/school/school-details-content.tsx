@@ -472,14 +472,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Commission in (%)"
+                      label="Certificate Commission in (%)"
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Commission is for certificate" placement="top">
+                            <Tooltip title="Commission for drivys from certificate" placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
