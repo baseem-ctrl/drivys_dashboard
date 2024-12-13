@@ -77,6 +77,7 @@ import BookingStudentTable from './booking-details/student-booking-details';
 import { Link } from '@mui/material';
 import moment from 'moment';
 import { useGetAllCity } from 'src/api/city';
+import { useGetStateList } from 'src/api/state';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -115,6 +116,7 @@ export default function UserDetailsContent({
   const { city, cityLoading, cityError } = useGetAllCity({
     limit: 100,
   });
+
   const {
     userDocuments,
     userDocumentLoading,
@@ -127,13 +129,23 @@ export default function UserDetailsContent({
     lng: parseFloat(addresses?.longitude) || 54.3773,
   });
   // Function to handle map click and update lat/lng values
+  const [addressForm, setAddressForm] = useState({
+    // State for form fields
+    id: '', //
+    plot_number: '', //
+    building_name: '', //
+    street: '', //
+    city_id: '', //
+    label: '', //
+    address: '', //
+    landmark: '', //
+    country_code: '971', //
+    phone_number: '', //
+    longitude: '', //
+    latitude: '', //
+    state_province_id: '',
+  });
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    // setAddressForm((prev) => ({
-    //   ...prev,
-    //   longitude: e.latLng.lat(),
-    //   latitude: e.latLng.lat(),
-    // }));
-    // if (!e.latLng) return;
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
     // setAddressForm({ longitude: lng, latitude: lat });
@@ -149,9 +161,9 @@ export default function UserDetailsContent({
   const defaultValues = useMemo(
     () => ({
       street_address: addresses[0]?.street_address || '',
-      city: addresses[0]?.city || '',
+      city_id: addresses[0]?.city_id || '',
       country: addresses[0]?.country || '',
-      state: addresses[0]?.state || '',
+      state_province_id: addresses[0]?.state_province_id || '',
       latitude: addresses[0]?.latitude || '',
       longitude: addresses[0]?.longitude || '',
     }),
@@ -631,22 +643,12 @@ export default function UserDetailsContent({
     googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
   });
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
-  // const [markerPosition, setMarkerPosition] = useState({
-  //   lat: parseFloat(addresses[0]?.latitude) || 24.4539,
-  //   lng: parseFloat(addresses[0]?.longitude) || 54.3773,
-  // });
-  // const defaultValues = useMemo(
-  //   () => ({
-  //     street_address:
-  //       editingIndex !== null ? details?.vendor_addresses[editingIndex]?.street_address : '',
-  //     city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city : '',
-  //     country: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.country : '',
-  //     state: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.state : '',
-  //     latitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.latitude : '',
-  //     longitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.longitude : '',
-  //   }),
-  //   [details?.vendor_addresses, editingIndex]
-  // );
+
+  const { states, stateLoading, stateError } = useGetStateList({
+    limit: 1000,
+    city_id: addressForm?.city_id ?? '',
+  });
+
   const handleUpdateExistingUserAddress = async (
     body: Address,
     markerPosition: { lat: number; lng: number },
@@ -654,8 +656,6 @@ export default function UserDetailsContent({
     user_id: string
   ) => {
     try {
-      // Log the current state of the address and marker position
-      // Update the body to include latitude and longitude from markerPosition
       const updatedAddress = {
         ...body,
         latitude: markerPosition.lat || addressForm.latitude,
@@ -673,7 +673,6 @@ export default function UserDetailsContent({
         enqueueSnackbar('User address updated successfully!', { variant: 'success' });
       }
     } catch (error) {
-      console.log('Error updating user address:', error);
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
           if (typeof errorMessage === 'object') {
@@ -712,29 +711,11 @@ export default function UserDetailsContent({
       }
     }
   };
-  const [addressForm, setAddressForm] = useState({
-    // State for form fields
-    id: '', //
-    plot_number: '', //
-    building_name: '', //
-    street: '', //
-    city: '', //
-    label: '', //
-    address: '', //
-    landmark: '', //
-    country_code: '', //
-    phone_number: '', //
-    longitude: '', //
-    latitude: '', //
-  });
 
   const handleChangeStoreAddress = (e) => {
     const { name, value } = e.target;
-
-    // Update address form directly for other fields
     setAddressForm((prev) => ({ ...prev, [name]: value }));
 
-    // Directly update markerPosition for latitude and longitude
     if (name === 'latitude') {
       setMarkerPosition((prev) => ({
         ...prev,
@@ -781,18 +762,11 @@ export default function UserDetailsContent({
       latitude: selectedLocation.lat,
     }));
   };
-  // useEffect(() => {
-  //   console.log('Editing index changed to:', editingIndex);
-  //   console.log('showMapIndex', showMapIndex);
-  // }, [editingIndex, showMapIndex]);
   const handleEditAddress = useCallback(
     (index, address) => {
-      // Toggle the editing index
       if (editingIndex === index) {
-        // If the current index is the same, hide the map and clear the editing index
         setEditingIndex(null);
       } else {
-        // Show the map for the selected index and update the address form
         setEditingIndex(index);
         setAddressForm(address);
       }
@@ -827,17 +801,18 @@ export default function UserDetailsContent({
               const addressFormData = {
                 id: parseInt(addressForm.id, 10),
                 user_id,
-                plot_number: addressForm.plot_number,
-                building_name: addressForm.building_name,
-                street: addressForm.street,
-                city: addressForm.city,
-                label: addressForm.label,
-                address: addressForm.address,
-                landmark: addressForm.landmark,
-                country_code: parseInt(addressForm.country_code, 10),
-                phone_number: addressForm.phone_number,
-                longitude: parseFloat(addressForm.longitude) || markerPosition.lng,
-                latitude: parseFloat(addressForm.latitude) || markerPosition.lat,
+                plot_number: addressForm?.plot_number,
+                building_name: addressForm?.building_name,
+                street: addressForm?.street,
+                city_id: addressForm?.city_id,
+                label: addressForm?.label,
+                address: addressForm?.address,
+                landmark: addressForm?.landmark,
+                country_code: parseInt(addressForm?.country_code, 10),
+                phone_number: addressForm?.phone_number,
+                longitude: parseFloat(addressForm?.longitude) || markerPosition?.lng,
+                latitude: parseFloat(addressForm?.latitude) || markerPosition?.lat,
+                state_province_id: addressForm?.state_province_id,
               };
 
               handleCreateNewUserAddress(addressFormData); // Call to create a new user address
@@ -904,14 +879,14 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
               <Controller
-                name="city"
+                name="city_id"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     label="City"
                     variant="outlined"
-                    value={field.value || addressForm.city || ''}
+                    value={field.value || addressForm.city_id || ''}
                     onChange={(e) => {
                       const selectedCityId = e.target.value;
 
@@ -926,7 +901,7 @@ export default function UserDetailsContent({
 
                       handleChangeStoreAddress({
                         ...e,
-                        target: { name: 'city', value: selectedCityName },
+                        target: { name: 'city_id', value: selectedCityId },
                       });
                     }}
                     sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
@@ -964,13 +939,64 @@ export default function UserDetailsContent({
 
             {/* Row 3 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-              <TextField
-                label="Country Code"
-                variant="outlined"
-                name="country_code"
-                value={addressForm.country_code}
-                onChange={(e) => handleChangeStoreAddress(e, true)}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+              <Controller
+                name="state_province_id"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Area"
+                    variant="outlined"
+                    value={field.value || addressForm.state_province_id || ''}
+                    onChange={(e) => {
+                      const selectedAreaId = e.target.value;
+
+                      const selectedArea = states.find(
+                        (cityItem) => cityItem.id === selectedAreaId
+                      );
+                      const selectedAreaName = selectedArea
+                        ? selectedArea?.translations
+                            ?.map((translation) => translation?.name ?? 'Un known')
+                            .join(', ')
+                        : '';
+
+                      field.onChange(e);
+
+                      handleChangeStoreAddress({
+                        ...e,
+                        target: { name: 'state_province_id', value: selectedAreaId },
+                      });
+                    }}
+                    sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                    select
+                    fullWidth
+                    InputProps={{
+                      startAdornment: cityLoading ? (
+                        <InputAdornment position="start">
+                          <CircularProgress size={20} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
+                  >
+                    {stateLoading ? (
+                      <MenuItem disabled>Loading cities...</MenuItem>
+                    ) : states?.length === 0 ? (
+                      <MenuItem disabled>No cities found</MenuItem>
+                    ) : (
+                      states?.map((cityItem) => {
+                        const cityNames = cityItem?.translations?.map(
+                          (translation) => translation?.name ?? 'Unknown'
+                        );
+
+                        return (
+                          <MenuItem key={cityItem.id} value={cityItem.id}>
+                            {cityNames.join(', ') || 'Unknown City'}
+                          </MenuItem>
+                        );
+                      })
+                    )}
+                  </TextField>
+                )}
               />
               <TextField
                 label="Phone Number"
@@ -979,7 +1005,11 @@ export default function UserDetailsContent({
                 value={addressForm.phone_number}
                 onChange={(e) => handleChangeStoreAddress(e, true)}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">+971</InputAdornment>,
+                }}
               />
+
               <TextField
                 label="Plot Number"
                 variant="outlined"
@@ -991,6 +1021,14 @@ export default function UserDetailsContent({
             </Box>
             {/* Row 4 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
+              <TextField
+                label="Address"
+                variant="outlined"
+                name="address"
+                value={addressForm.address}
+                onChange={handleChangeStoreAddress}
+                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+              />
               <TextField
                 label="Label"
                 variant="outlined"
@@ -1004,14 +1042,6 @@ export default function UserDetailsContent({
                 <MenuItem value="home">Home</MenuItem>
                 <MenuItem value="office">Office</MenuItem>
               </TextField>
-              <TextField
-                label="Address"
-                variant="outlined"
-                name="address"
-                value={addressForm.address}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
               <TextField
                 label="Landmark"
                 variant="outlined"
@@ -1073,7 +1103,17 @@ export default function UserDetailsContent({
                 { label: 'Address', value: address?.address ?? 'N/A' },
                 { label: 'Street', value: address?.street ?? 'N/A' },
                 { label: 'Building Name', value: address?.building_name ?? 'N/A' },
-                { label: 'City', value: address?.city ?? 'N/A' },
+                {
+                  label: 'City',
+                  value:
+                    address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
+                },
+                {
+                  label: 'Area',
+                  value: address?.state_province
+                    ? address?.state_province?.translations?.[0]?.name
+                    : 'N/A',
+                },
                 { label: 'Country Code', value: address?.country_code ?? 'N/A' },
                 { label: 'Label', value: address?.label ?? 'N/A' },
                 { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
@@ -1196,25 +1236,28 @@ export default function UserDetailsContent({
                       value={addressForm.phone_number}
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">+971</InputAdornment>,
+                      }}
                     />
                     <Controller
-                      name="city"
+                      name="city_id"
                       control={control}
                       render={({ field }) => (
                         <TextField
                           {...field}
                           label="City"
                           variant="outlined"
-                          value={field.value || addressForm.city || ''}
+                          value={field.value || addressForm?.city_id || ''}
                           onChange={(e) => {
                             const selectedCityId = e.target.value;
 
-                            const selectedCity = city.find(
-                              (cityItem) => cityItem.id === selectedCityId
+                            const selectedCity = city?.find(
+                              (cityItem) => cityItem?.id === selectedCityId
                             );
                             const selectedCityName = selectedCity
-                              ? selectedCity.city_translations
-                                  .map((translation) => translation.name)
+                              ? selectedCity?.city_translations
+                                  ?.map((translation) => translation?.name ?? 'Un Known')
                                   .join(', ')
                               : '';
 
@@ -1222,7 +1265,7 @@ export default function UserDetailsContent({
 
                             handleChangeStoreAddress({
                               ...e,
-                              target: { name: 'city', value: selectedCityName },
+                              target: { name: 'city_id', value: selectedCityId },
                             });
                           }}
                           sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
@@ -1242,8 +1285,67 @@ export default function UserDetailsContent({
                             <MenuItem disabled>No cities found</MenuItem>
                           ) : (
                             city.map((cityItem) => {
-                              const cityNames = cityItem.city_translations.map(
-                                (translation) => translation.name
+                              const cityNames = cityItem?.city_translations?.map(
+                                (translation) => translation?.name ?? 'Un Known '
+                              );
+
+                              return (
+                                <MenuItem key={cityItem?.id} value={cityItem.id}>
+                                  {cityNames.join(', ') || 'Unknown City'}
+                                </MenuItem>
+                              );
+                            })
+                          )}
+                        </TextField>
+                      )}
+                    />
+                    <Controller
+                      name="state_province_id"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Area"
+                          variant="outlined"
+                          value={field.value || addressForm.state_province_id || ''}
+                          onChange={(e) => {
+                            const selectedAreaId = e.target.value;
+
+                            const selectedArea = states.find(
+                              (cityItem) => cityItem.id === selectedAreaId
+                            );
+                            const selectedAreaName = selectedArea
+                              ? selectedArea?.translations
+                                  ?.map((translation) => translation?.name ?? 'Un known')
+                                  .join(', ')
+                              : '';
+
+                            field.onChange(e);
+
+                            handleChangeStoreAddress({
+                              ...e,
+                              target: { name: 'state_province_id', value: selectedAreaId },
+                            });
+                          }}
+                          sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
+                          select
+                          fullWidth
+                          InputProps={{
+                            startAdornment: cityLoading ? (
+                              <InputAdornment position="start">
+                                <CircularProgress size={20} />
+                              </InputAdornment>
+                            ) : null,
+                          }}
+                        >
+                          {stateLoading ? (
+                            <MenuItem disabled>Loading cities...</MenuItem>
+                          ) : states?.length === 0 ? (
+                            <MenuItem disabled>No cities found</MenuItem>
+                          ) : (
+                            states?.map((cityItem) => {
+                              const cityNames = cityItem?.translations?.map(
+                                (translation) => translation?.name ?? 'Unknown'
                               );
 
                               return (
@@ -1255,15 +1357,6 @@ export default function UserDetailsContent({
                           )}
                         </TextField>
                       )}
-                    />
-                    <TextField
-                      label="Country Code"
-                      variant="outlined"
-                      fullWidth
-                      name="country_code"
-                      value={addressForm.country_code}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
                   </Box>
 
@@ -1403,6 +1496,9 @@ export default function UserDetailsContent({
               )}
 
               {/*<----- For trainer user type with 3 tabs ----> */}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
