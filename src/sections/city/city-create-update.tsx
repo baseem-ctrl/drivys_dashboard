@@ -53,7 +53,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   );
   console.log('defaultValues', defaultValues);
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
