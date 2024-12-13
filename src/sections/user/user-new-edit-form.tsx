@@ -242,7 +242,10 @@ export default function UserNewEditForm({
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
-        ? language?.find((option) => option?.language_culture === currentUser?.locale)
+        ? language?.find(
+            (option) =>
+              option?.language_culture?.toLowerCase() === currentUser?.locale?.toLowerCase()
+          )
         : '',
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
@@ -268,7 +271,8 @@ export default function UserNewEditForm({
           ?.category_translations.map((translation: any) => translation.name) // Extract all names
           .join(' - ') || '',
       vendor_id: currentUser?.vendor?.id
-        ? schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
+        ? schoolList?.length > 0 &&
+          schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
             ?.name
         : [{ label: 'Other', value: null }],
       gender:
@@ -681,16 +685,23 @@ export default function UserNewEditForm({
                   label="Select School"
                   placeholder="Search School..."
                   options={
-                    [
-                      ...schoolList?.map((item: any) => ({
-                        label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
-                        value: item.id,
-                      })),
-                      {
-                        label: 'OTHER', // Add the "Other" option
-                        value: null, // Value for the "Other" option
-                      },
-                    ] ?? []
+                    schoolList && schoolList.length > 0
+                      ? [
+                          ...schoolList.map((item: any) => ({
+                            label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                            value: item.id,
+                          })),
+                          {
+                            label: 'OTHER', // Add the "Other" option
+                            value: null, // Value for the "Other" option
+                          },
+                        ]
+                      : [
+                          {
+                            label: 'OTHER', // Add the "Other" option
+                            value: null, // Value for the "Other" option
+                          },
+                        ]
                   }
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                   disableClearable={false}
@@ -721,13 +732,11 @@ export default function UserNewEditForm({
                 name="locale"
                 label="Locale"
                 options={language ?? []}
-                getOptionLabel={(option) => {
-                  return option ? `${option?.name}` : '';
-                }}
+                getOptionLabel={(option) => (option ? `${option?.name ?? ''}` : '')}
                 renderOption={(props, option: any) => {
                   return (
                     <li {...props} key={option?.id}>
-                      {option?.name}
+                      {option?.name ?? 'Unknown'}
                     </li>
                   );
                 }}
@@ -777,10 +786,10 @@ export default function UserNewEditForm({
                     placeholder="Search Category..."
                     options={
                       category?.map((item: any) => ({
-                        label: item.category_translations
-                          .map((translation: any) => translation.name) // Extract all names
+                        label: item?.category_translations
+                          ?.map((translation: any) => translation?.name ?? 'Unknown') // Extract all names
                           .join(' - '), // Display full name
-                        value: item.id,
+                        value: item?.id ?? 'Unknown',
                       })) ?? []
                     }
                     setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
@@ -791,10 +800,12 @@ export default function UserNewEditForm({
                   <RHFAutocompleteSearch
                     name="city_id"
                     label="City"
-                    options={city?.map((option: any) => ({
-                      value: option?.id,
-                      label: option?.city_translations[0]?.name ?? 'Unknown',
-                    }))}
+                    options={
+                      city?.map((option: any) => ({
+                        value: option?.id ?? 'Unknown',
+                        label: option?.city_translations?.[0]?.name ?? 'Unknown',
+                      })) ?? []
+                    }
                     getOptionLabel={(option) => option?.label ?? ''}
                     renderOption={(props, option: any) => (
                       <li {...props} key={option?.value}>
