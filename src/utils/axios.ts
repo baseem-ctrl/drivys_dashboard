@@ -187,6 +187,8 @@ export const endpoints = {
     delete: 'admin/user/delete-user-by-id',
     update: 'admin/user/user-update-by-id',
     addressList: 'admin/user/address/get-user-address-list',
+    getTrainerAddress: 'admin/user/address/get-trainer-address',
+    getTrainerNearestAddress: 'admin/trainers/get-nearest-trainers-list',
     deleteAddressFromList: 'admin/user/address/delete-user-address',
     createNewAdressForUser: 'admin/user/address/create-update-user-address',
     userDocument: {

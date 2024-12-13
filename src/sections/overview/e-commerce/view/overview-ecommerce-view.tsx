@@ -26,6 +26,7 @@ import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
+import TrainerMap from '../ecommerce-tainer-map';
 import PendingRequests from '../ecommerce-pending-trainer-request';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAnalytics } from 'src/api/anlytics';
@@ -87,11 +88,25 @@ export default function OverviewEcommerceView() {
 
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary
+              title="Sales Profit"
+              percent={0.6}
+              total={4876}
+              chart={{
+                colors: [theme.palette.warning.light, theme.palette.warning.main],
+                series: [40, 70, 75, 70, 50, 28, 7, 64, 38, 27],
+              }}
+            />
+          </Grid>
+
+          <Grid xs={12} md={4}>
+            <EcommerceWidgetSummary
               title="Total Bookings"
               total={analytics?.bookingsCount ?? '0'}
             />
           </Grid>
-
+          <Grid xs={12} md={6} lg={8}>
+            <TrainerMap />
+          </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
