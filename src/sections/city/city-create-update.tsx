@@ -37,17 +37,23 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
   });
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   const defaultValues = useMemo(
     () => ({
       name: currentCity?.city_translations[0]?.name || '',
-      locale: currentCity?.city_translations[0]?.locale || 'en',
+      locale: currentCity?.city_translations[0]?.locale || localeOptions[0]?.value,
       published: currentCity?.is_published === 1 ? true : false,
     }),
     [currentCity]
   );
+  console.log('defaultValues', defaultValues);
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
+    resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
 
@@ -58,12 +64,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     setValue,
     formState: { isSubmitting },
   } = methods;
-  const { language } = useGetAllLanguage(0, 1000);
 
-  const localeOptions = (language || []).map((lang) => ({
-    value: lang.language_culture,
-    label: lang.name,
-  }));
   const selectedLocale = watch('locale');
 
   useEffect(() => {
@@ -102,15 +103,27 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       onClose();
       reload();
     } catch (error) {
-      if (error.errors) {
-        Object.values(error.errors).forEach((errorMessage) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     }
   });
+  useEffect(() => {
+    const defaultLocale = 'En'; // default value
+
+    // Check if locale is not set or incorrect, then set it
+    if (!watch('locale')) {
+      setValue('locale', defaultLocale);
+    }
+  }, [watch, setValue]);
 
   return (
     <Dialog
@@ -150,12 +163,19 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               <MenuItem value="" disabled>
                 Select Locale
               </MenuItem>
-              {localeOptions?.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {localeOptions?.length > 0 ? (
+                localeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value="" disabled>
+                  No options available
                 </MenuItem>
-              ))}
+              )}
             </RHFSelect>
+
             <RHFTextField name="name" label="Name" />
             <RHFSwitch name="published" label="Published" />
           </Box>

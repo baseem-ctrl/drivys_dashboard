@@ -60,7 +60,6 @@ const TABLE_HEAD = [
   { id: 'is_published', label: 'Is published' },
   { id: 'Vendor', label: 'School' },
   { id: 'drivys_commision', label: 'Drivys Commision' },
-  { id: 'vendor_commision', label: 'Vendor Commision' },
   { id: 'category', label: 'Category' },
   { id: 'action', label: 'Action' },
 
@@ -161,7 +160,17 @@ export default function PackageListView() {
       revalidatePackage();
       enqueueSnackbar(response?.message);
     } catch (error) {
-      enqueueSnackbar(error?.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 

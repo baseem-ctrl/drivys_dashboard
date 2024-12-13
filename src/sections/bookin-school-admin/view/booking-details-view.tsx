@@ -96,7 +96,17 @@ const BookingDetailsComponent = () => {
       revalidateBooking();
       console.log('Payment status updated:', response);
     } catch (error) {
-      console.error('Failed to update payment status:', error);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
       revalidateBooking();
     }
   };
@@ -581,163 +591,117 @@ const BookingDetailsComponent = () => {
           </Grid>
         )}
         {value === 1 && (
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Card
               sx={{
                 boxShadow: 3,
                 borderRadius: 2,
-                minHeight: cardHeight,
-                minWidth: 400,
                 overflow: 'auto',
-                position: 'relative',
               }}
             >
-              <CardContent
-                sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}
-              >
+              <CardContent>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
                   Payment Information:
                 </Typography>
 
-                {/* Payment Status */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 3, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Payment Status
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{
-                      width: '150px',
-                      borderRadius: '10px',
-                      color:
-                        (bookingDetails?.payment_status === 'PENDING' && 'info.main') ||
-                        (bookingDetails?.payment_status === 'PAID' && 'success.main') ||
-                        (bookingDetails?.payment_status === 'REFUNDED' && 'warning.main') ||
-                        (bookingDetails?.payment_status === 'PARTIALLY PAID' && 'primary.main') ||
-                        (bookingDetails?.payment_status === 'FAILED' && 'error.main') ||
-                        'text.primary',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background:
-                        (bookingDetails?.payment_status === 'PENDING' &&
-                          'rgba(0, 123, 255, 0.1)') ||
-                        (bookingDetails?.payment_status === 'PAID' && 'rgba(0, 204, 102, 0.1)') ||
-                        (bookingDetails?.payment_status === 'REFUNDED' &&
-                          'rgba(255, 165, 0, 0.1)') ||
-                        (bookingDetails?.payment_status === 'PARTIALLY PAID' &&
-                          'rgba(0, 128, 255, 0.1)') ||
-                        (bookingDetails?.payment_status === 'FAILED' && 'rgba(255, 59, 48, 0.1)') || // light red for failed
-                        'grey',
-                    }}
+                <Box sx={{ mb: 3 }}>
+                  <Button
+                    color={
+                      (bookingDetails.payment_status === 'PENDING' && 'info') ||
+                      (bookingDetails.payment_status === 'PAID' && 'success') ||
+                      (bookingDetails.payment_status === 'REFUNDED' && 'warning') ||
+                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'primary') ||
+                      (bookingDetails.payment_status === 'FAILED' && 'error') ||
+                      'inherit'
+                    }
+                    variant="soft"
+                    endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+                    onClick={popover.onOpen}
+                    sx={{ textTransform: 'capitalize', width: '40%' }}
                   >
-                    {bookingDetails?.payment_status || 'N/A'}
-                  </Box>
+                    {bookingDetails.payment_status}
+                  </Button>
                 </Box>
 
-                {/* Booking Status */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Booking Status
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{
-                      width: '150px',
-                      background:
-                        (bookingDetails?.booking_status === 'CONFIRMED' &&
-                          'rgba(76, 175, 80, 0.1)') ||
-                        (bookingDetails?.booking_status === 'PENDING' &&
-                          'rgba(3, 169, 244, 0.1)') ||
-                        (bookingDetails?.booking_status === 'CANCELLED' &&
-                          'rgba(244, 67, 54, 0.1)') ||
-                        'grey',
-                      color:
-                        (bookingDetails?.booking_status === 'CONFIRMED' && 'success.main') ||
-                        (bookingDetails?.booking_status === 'PENDING' && 'info.main') ||
-                        (bookingDetails?.booking_status === 'CANCELLED' && 'error.main') ||
-                        'text.primary',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '10px',
-                    }}
-                  >
-                    {bookingDetails?.booking_status || 'N/A'}
-                  </Box>
-                </Box>
-                {/* Booking Method */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Booking Method
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {bookingDetails?.booking_method || 'N/A'}
-                  </Box>
-                </Box>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Booking Method:
+                      </Typography>
+                      <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
+                    </Box>
 
-                {/* Amount Due */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Due
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_due || 'N/A'}`}
-                  </Box>
-                </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Booking Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
+                    </Box>
 
-                {/* Discount */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Discount
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.discount || 'N/A'}`}
-                  </Box>
-                </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Tax Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.tax_amount || 'N/A'} AED`}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Due:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_due || 'N/A'} AED`}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Paid:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_paid || 'N/A'} AED`}</Typography>
+                    </Box>
 
-                {/* Amount Paid */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Paid
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_paid || 'N/A'}`}
-                  </Box>
-                </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Refunded:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_refunded || 'N/A'} AED`}</Typography>
+                    </Box>
+                    {bookingDetails?.coupon_code && (
+                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                          Coupon Used:
+                        </Typography>
+                        <Typography>{`${bookingDetails?.coupon_code || 'N/A'} AED`}</Typography>
+                      </Box>
+                    )}
+                    {bookingDetails?.wallet_amount_used !== '0.00' && (
+                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                          Wallet Amount Used:
+                        </Typography>
+                        <Typography>{`${
+                          bookingDetails?.wallet_amount_used || 'N/A'
+                        } AED`}</Typography>
+                      </Box>
+                    )}
+                  </Grid>
 
-                {/* Amount Refunded */}
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Refunded
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_refunded || 'N/A'}`}
-                  </Box>
-                </Box>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Discount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.discount || 'N/A'} AED`}</Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Total Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.total || 'N/A'} AED`}</Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>

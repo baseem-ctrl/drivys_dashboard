@@ -100,13 +100,6 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         }),
       }}
     >
-      <Typography
-        variant="h3"
-        sx={{ maxWidth: 480, textAlign: 'center', color: theme.palette.text.white }}
-      >
-        {title || 'Hi, Welcome back'}
-      </Typography>
-
       <Box
         component="img"
         alt="auth"
@@ -114,11 +107,17 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         sx={{
           maxWidth: {
             xs: 480,
-            lg: 560,
-            xl: 720,
+            // lg: 560,
+            // xl: 720,
           },
         }}
       />
+      <Typography
+        variant="h3"
+        sx={{ maxWidth: 480, textAlign: 'center', color: theme.palette.text.white }}
+      >
+        {title || 'Hi, Welcome back'}
+      </Typography>
     </Stack>
   );
 
@@ -130,7 +129,7 @@ export default function AuthClassicLayout({ children, image, title }: Props) {
         minHeight: '100vh',
       }}
     >
-      {renderLogo}
+      {/* {renderLogo} */}
 
       {mdUp && renderSection}
 

@@ -145,6 +145,7 @@ export default function CategoryListView() {
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
+    window.location.reload();
   }, []);
 
   const handleAddNewCategory = () => {
@@ -191,8 +192,6 @@ export default function CategoryListView() {
           employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
           publishOptions={['all', ...PUBLISH_OPTIONS.map((option) => option.label)]}
         />
-
-        {/* <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} /> */}
       </Stack>
     </Stack>
   );

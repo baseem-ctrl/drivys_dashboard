@@ -183,66 +183,154 @@ export default function HomeSliderListView() {
                     <Droppable droppableId="droppable">
                       {(provided) => (
                         <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                          {tableData.map((row: any, index: number) => (
-                            <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
-                              {(provided, snapshot) => (
-                                <TableRow
+                          {/* Top Section (is_hero === 1) */}
+                          <TableRow>
+                            <TableCell
+                              colSpan={6}
+                              style={{
+                                fontWeight: 'bold',
+                                color: '#B76E00',
+                              }}
+                            >
+                              <span>Top Banners</span>
+                            </TableCell>
+                          </TableRow>
+
+                          {/* Display message if no data for Top section */}
+                          {tableData.filter((row) => row.is_hero === true).length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                                No data available for the Top section.
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            tableData
+                              .filter((row) => row.is_hero === true)
+                              .map((row: any, index: number) => (
+                                <Draggable
                                   key={row.id}
-                                  hover
-                                  // selected={selected}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  {...provided.draggableProps.style}
+                                  draggableId={row.id.toString()}
+                                  index={index}
                                 >
-                                  <TableCell>{row.display_order}</TableCell>
-                                  <TableCell>
-                                    <Avatar
-                                      alt={row.name}
-                                      src={row?.pictures[0]?.picture?.virtual_path}
-                                      sx={{ mr: 2 }}
-                                    />
-                                  </TableCell>
-
-                                  <TableCell>{row.name}</TableCell>
-
-                                  <TableCell>
-                                    <Label
-                                      variant="soft"
-                                      color={!!row.published ? 'success' : 'warning'}
+                                  {(provided) => (
+                                    <TableRow
+                                      hover
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      {...provided.draggableProps.style}
                                     >
-                                      {!!row.published ? 'Yes' : 'No'}
-                                    </Label>
-                                  </TableCell>
-                                  {/* <TableCell>
-                                    <Label
-                                      variant="soft"
-                                      color={row.is_monthly === true ? 'primary' : 'warning'}
-                                    >
-                                      {row.is_monthly === true ? 'Yes' : 'No'}
-                                    </Label>
-                                  </TableCell> */}
-                                  <TableCell>{row?.show_until}</TableCell>
+                                      <TableCell>{row.display_order}</TableCell>
+                                      <TableCell>
+                                        <Avatar
+                                          alt={row.name}
+                                          src={row?.pictures[0]?.picture?.virtual_path}
+                                          sx={{ mr: 2 }}
+                                        />
+                                      </TableCell>
+                                      <TableCell>{row.name}</TableCell>
+                                      <TableCell>
+                                        <Label
+                                          variant="soft"
+                                          color={row.published ? 'success' : 'warning'}
+                                        >
+                                          {row.published ? 'Yes' : 'No'}
+                                        </Label>
+                                      </TableCell>
+                                      <TableCell>{row?.show_until}</TableCell>
+                                      <TableCell>
+                                        <IconButton
+                                          onClick={() => {
+                                            confirm.onTrue();
+                                            setDeleteId(row?.id);
+                                          }}
+                                        >
+                                          <Iconify icon="eva:trash-2-outline" />
+                                        </IconButton>
+                                        <IconButton onClick={() => handleEditRow(row.id)}>
+                                          <Iconify icon="eva:edit-outline" />
+                                        </IconButton>
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+                                </Draggable>
+                              ))
+                          )}
 
-                                  {/* <TableCell>{row?.type}</TableCell> */}
+                          {/* Bottom Section (is_hero === 0) */}
+                          <TableRow>
+                            <TableCell
+                              colSpan={6}
+                              style={{
+                                fontWeight: 'bold',
+                                color: '#B76E00',
+                              }}
+                            >
+                              <span>Bottom Banners</span>
+                            </TableCell>
+                          </TableRow>
 
-                                  <TableCell>
-                                    <IconButton
-                                      onClick={() => {
-                                        confirm.onTrue();
-                                        setDeleteId(row?.id);
-                                      }}
+                          {/* Display message if no data for Bottom section */}
+                          {tableData.filter((row) => row.is_hero === false).length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                                No data available for the Bottom section.
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            tableData
+                              .filter((row) => row.is_hero === false)
+                              .map((row: any, index: number) => (
+                                <Draggable
+                                  key={row.id}
+                                  draggableId={row.id.toString()}
+                                  index={index}
+                                >
+                                  {(provided) => (
+                                    <TableRow
+                                      hover
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      {...provided.draggableProps.style}
                                     >
-                                      <Iconify icon="eva:trash-2-outline" />
-                                    </IconButton>
-                                    <IconButton onClick={() => handleEditRow(row.id)}>
-                                      <Iconify icon="eva:edit-outline" />
-                                    </IconButton>
-                                  </TableCell>
-                                </TableRow>
-                              )}
-                            </Draggable>
-                          ))}
+                                      <TableCell>{row.display_order}</TableCell>
+                                      <TableCell>
+                                        <Avatar
+                                          alt={row.name}
+                                          src={row?.pictures[0]?.picture?.virtual_path}
+                                          sx={{ mr: 2 }}
+                                        />
+                                      </TableCell>
+                                      <TableCell>{row.name}</TableCell>
+                                      <TableCell>
+                                        <Label
+                                          variant="soft"
+                                          color={row.published ? 'success' : 'warning'}
+                                        >
+                                          {row.published ? 'Yes' : 'No'}
+                                        </Label>
+                                      </TableCell>
+                                      <TableCell>{row?.show_until}</TableCell>
+                                      <TableCell>
+                                        <IconButton
+                                          onClick={() => {
+                                            confirm.onTrue();
+                                            setDeleteId(row?.id);
+                                          }}
+                                        >
+                                          <Iconify icon="eva:trash-2-outline" />
+                                        </IconButton>
+                                        <IconButton onClick={() => handleEditRow(row.id)}>
+                                          <Iconify icon="eva:edit-outline" />
+                                        </IconButton>
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+                                </Draggable>
+                              ))
+                          )}
+
                           {provided.placeholder}
                           <TableNoData notFound={!tableData.length} />
                         </TableBody>

@@ -92,9 +92,9 @@ function CarouselItem({ item }: CarouselItemProps) {
           {name}
         </Typography>
 
-        <Button color="primary" variant="contained">
+        {/* <Button color="primary" variant="contained">
           Buy Now
-        </Button>
+        </Button> */}
       </CardContent>
 
       {renderImg}

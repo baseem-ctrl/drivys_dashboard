@@ -4,17 +4,24 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 // components
 import Iconify from 'src/components/iconify';
+import { Divider } from '@mui/material';
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
   InputAdornment,
+  InputLabel,
   MenuItem,
   Select,
   Switch,
+  Tab,
+  Tabs,
   TextField,
   Tooltip,
+  TabPanel,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -35,6 +42,10 @@ import PackageDocumentCreateUpdate from './create-update-package-document-form';
 import PackageDocumentDetails from './view/package-document-details.tsx';
 import { useGetAllCategory } from 'src/api/category';
 import { InfoOutlined } from '@mui/icons-material';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import FormProvider from 'src/components/hook-form/form-provider';
+import { RHFEditor, RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import LoadingButton from '@mui/lab/LoadingButton';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -54,14 +65,19 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const [editMode, setEditMode] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const router = useRouter();
+  const [searchValue, setSearchValue] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
+  const [editCityIndex, setEditCityIndex] = useState<number | null>(null);
 
+  const [selectedTab, setSelectedTab] = useState(0);
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
-  const { schoolList, schoolLoading } = useGetSchool(1000, 1);
-  const { category } = useGetAllCategory({
+  const { schoolList, schoolLoading } = useGetSchool({ limit: 1000, page: 1, search: searchValue });
+  const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    search: searchCategory,
   });
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
@@ -85,7 +101,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }
   }, [language, details]);
 
-  // Find the selectedLocaleObject whenever selectedLanguage or details change
   const selectedLocaleObject = details?.package_translations?.find(
     (item: { locale: string }) => item.locale === selectedLanguage
   );
@@ -97,8 +112,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     number_of_sessions: Yup.string(),
     status: Yup.string(),
     is_published: Yup.boolean(),
-    vendor_id: Yup.string(),
-    category_id: Yup.string(),
+    vendor_id: Yup.mixed(),
+    category_id: Yup.mixed(),
   });
   const defaultVendorValues = useMemo(
     () => ({
@@ -106,13 +121,18 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       name: selectedLocaleObject?.name || '',
       session_inclusions: selectedLocaleObject?.session_inclusions || '',
       number_of_sessions: details?.number_of_sessions || '',
-      is_published: true,
-      vendor_id: details?.vendor_id,
-      category_id: details?.category_id,
+      is_published: !!details?.is_published,
+      vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
+        ?.vendor_translations[0]?.name,
+      category_id:
+        category?.length > 0
+          ? category.find((category) => category?.id === details?.category_id)
+              ?.category_translations[0]?.name
+          : '',
     }),
-    [selectedLocaleObject, details, editMode]
+    [selectedLocaleObject, details, schoolList, category]
   );
-  const Schoolethods = useForm({
+  const Schoolmethods = useForm({
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,
   });
@@ -121,11 +141,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     watch: schoolWatch,
     control: schoolControl,
     setValue: schoolSetValue,
-    handleSubmit: schoolSubmit,
+    handleSubmit: packageSubmit,
     formState: schoolFormState,
-  } = Schoolethods;
+  } = Schoolmethods;
   const { isSubmitting, errors } = schoolFormState;
-
+  const values = schoolWatch();
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
     const selectedLocaleObject = details?.package_translations.find(
@@ -141,28 +161,33 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       schoolSetValue('session_inclusions', ''); // Update name to match the locale
     }
   };
-  console.log('detailsdetails', details);
+
   useEffect(() => {
-    if (details) {
-      const defaultVendorValues = {
-        locale: selectedLocaleObject?.locale || '',
-        name: selectedLocaleObject?.name || '',
-        number_of_sessions: details?.number_of_sessions || '',
-        session_inclusions: selectedLocaleObject?.session_inclusions || '',
-        is_published: details?.is_published === 0 ? false : true,
-        vendor_id: details?.vendor_id,
-        category_id: details?.category_id || '',
-      };
+    if (editMode !== null) {
       schoolReset(defaultVendorValues);
     }
-  }, [details, schoolReset, selectedLocaleObject]);
+  }, [selectedLocaleObject, editMode, schoolList, category]);
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-  const onSubmit = schoolSubmit(async (data) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+
+  // Function to handle the edit action for a specific city
+  const handleEditCity = (index: number) => {
+    setEditCityIndex(index);
+    setEditMode(true);
+  };
+  const handleCancelEdit = () => {
+    setEditCityIndex(null);
+    setEditMode(false);
+  };
+  const onSubmit = packageSubmit(async (data) => {
+    console.log('data', data);
     try {
       let payload = {
         package_translations: [
@@ -175,11 +200,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         ],
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
-        vendor_id: data?.vendor_id || details?.vendor_id,
-        category_id: data?.category_id || details?.category_id,
+        vendor_id: data?.vendor_id?.value || details?.vendor_id,
+        category_id: data?.category_id?.value || details?.category_id,
       };
-      let formData = new FormData();
 
+      let formData = new FormData();
+      console.log('payload', payload);
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
       formData.append('number_of_sessions', payload.number_of_sessions);
@@ -199,6 +225,33 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           'package_translation[0][session_inclusions]',
           payload.package_translations[0].session_inclusions || ''
         );
+      }
+
+      // Handle City Edits
+      if (details?.package_city && details.package_city.length > 0) {
+        details.package_city.forEach((cityItem, index) => {
+          if (editCityIndex === index) {
+            const updatedCity = data.cities_ids?.[index];
+
+            formData.append(`cities_ids[${index}][id]`, cityItem?.city_id ?? '');
+            formData.append(
+              `cities_ids[${index}][min_price]`,
+              updatedCity?.min_price ?? cityItem?.min_price ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][max_price]`,
+              updatedCity?.max_price ?? cityItem?.max_price ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][commision]`,
+              updatedCity?.commision ?? cityItem?.commision ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][commision_type]`,
+              updatedCity?.commision_type ?? cityItem?.commision_type ?? ''
+            );
+          }
+        });
       }
 
       const response = await createUpdatePackage(formData);
@@ -225,6 +278,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -308,174 +362,267 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             ))}
           </Stack>
         ) : (
-          <Box component="form" rowGap={2} columnGap={2} display="grid" onSubmit={onSubmit} pb={1}>
-            <Box
-              mt={2}
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
-            >
+          <Box rowGap={2} columnGap={2} display="grid" pb={1}>
+            <FormProvider methods={Schoolmethods} onSubmit={onSubmit}>
               <Box
+                mt={2}
+                rowGap={3}
+                columnGap={2}
                 display="grid"
-                gap={1}
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: '25% 70% ',
-                  // md: 'repeat(2, 1fr)',
-                }}
+                gridTemplateColumns="repeat(1, 1fr)"
               >
-                <Controller
-                  name="locale"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <Select {...field} value={selectedLanguage || ''} onChange={handleChange}>
-                      {localeOptions?.map((option: any) => (
-                        <MenuItem key={option?.value} value={option?.value}>
-                          {option?.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-                <Controller
-                  name="name"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <TextField
-                      label="Name"
-                      {...field}
-                      error={errors?.name?.message}
-                      helperText={errors?.name ? errors?.name?.message : ''}
-                    />
-                  )}
-                />
-              </Box>
-            </Box>
-
-            <Box
-              mt={2}
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns="repeat(1, 1fr)"
-              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
-            >
-              <Box
-                display="grid"
-                gap={1}
-                gridTemplateColumns={{
-                  // xs: 'repeat(1, 1fr)',
-                  sm: '48% 47% ',
-                  // md: 'repeat(2, 1fr)',
-                }}
-                pt={1}
-              >
-                <Controller
-                  name="number_of_sessions"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <TextField
-                      label="Number of sessions"
-                      {...field}
-                      error={!!errors.number_of_sessions}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
-                              <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
-                            </Tooltip>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="vendor_id"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <Select {...field} value={field?.value || ''}>
-                      {schoolList?.map((option: any) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option?.vendor_translations.find(
-                            (item) => item?.locale?.toLowerCase() === 'en'
-                          )?.name || 'Unknown'}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-                <Controller
-                  name="category_id"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      value={field.value || ''} // Ensure the field value is controlled
-                      displayEmpty // This prop allows the placeholder to be visible
-                    >
-                      <MenuItem value="" disabled>
-                        <em>Select a category</em>
+                <Box
+                  display="grid"
+                  gap={1}
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: '25% 70% ',
+                  }}
+                >
+                  <RHFSelect
+                    name="locale (Language)"
+                    label="Locale"
+                    value={selectedLanguage}
+                    onChange={(e) => handleChange(e)}
+                  >
+                    {localeOptions?.map((option: any) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
                       </MenuItem>
-                      {category?.length > 0 ? (
-                        category.map((item) =>
-                          item.category_translations.map((translation) => (
-                            <MenuItem key={`${item.id}-${translation.id}`} value={item.id}>
-                              {translation.name} ({translation.locale})
-                            </MenuItem>
-                          ))
-                        )
-                      ) : (
-                        <MenuItem disabled value="">
-                          <em>No categories available</em>
-                        </MenuItem>
-                      )}
-                    </Select>
-                  )}
-                />
+                    ))}
+                  </RHFSelect>
+                  <RHFTextField name="name" label="Name" />
+                </Box>
+              </Box>
 
-                <Stack direction="row" alignItems="center">
-                  <Typography>Published</Typography>
-                  <Controller
-                    name="is_published"
-                    control={schoolControl}
-                    render={({ field }) => (
-                      <Switch {...field} error={!!errors.is_published} checked={field.value} />
-                    )}
+              <Box
+                mt={2}
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns="repeat(1, 1fr)"
+                // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              >
+                <Box
+                  display="grid"
+                  gap={1}
+                  gridTemplateColumns={{
+                    // xs: 'repeat(1, 1fr)',
+                    sm: '48% 47% ',
+                    // md: 'repeat(2, 1fr)',
+                  }}
+                  pt={1}
+                >
+                  <RHFTextField
+                    name="number_of_sessions"
+                    label="Number of sessions"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
+                            <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
+                          </Tooltip>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
+
+                  <RHFAutocompleteSearch
+                    name="vendor_id"
+                    label="Select School"
+                    placeholder="Search School..."
+                    options={schoolList.map((item: any) => ({
+                      label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                      value: item.id,
+                    }))}
+                    setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
+                    disableClearable={true}
+                    loading={schoolLoading}
+                  />
+                  <RHFAutocompleteSearch
+                    name="category_id"
+                    label="Select Category"
+                    placeholder="Search Category..."
+                    options={category.map((item: any) => ({
+                      label: `${item.category_translations?.[0]?.name}`, // Display full name
+                      value: item.id,
+                    }))}
+                    setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
+                    disableClearable={true}
+                    loading={categoryLoading}
+                  />
+                  <Stack direction="row" alignItems="center">
+                    <RHFSwitch name="is_published" label="Publish" />
+                  </Stack>
+                </Box>
+                <Stack spacing={1.5}>
+                  <Typography variant="subtitle2">Session Inclusion</Typography>
+                  <RHFEditor name="session_inclusions" />
                 </Stack>
               </Box>
-            </Box>
-            <Controller
-              name="session_inclusions"
-              control={schoolControl}
-              render={({ field, fieldState: { error } }) => (
-                <Editor
-                  id="session_inclusions"
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={!!error}
-                  helperText={
-                    !!error && (
-                      <FormHelperText error={!!error} sx={{ px: 2 }}>
-                        {error ?? error?.message}
-                      </FormHelperText>
-                    )
-                  }
-                />
-              )}
-            />
-            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-              <Button variant="outlined" color="error" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="contained">
-                {isSubmitting ? <CircularProgress size="20px" /> : 'Save'}
-              </Button>
-            </Stack>
+              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+                <Button variant="outlined" color="error" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                {/* <Button type="submit" variant="contained">
+                  {isSubmitting ? <CircularProgress size="20px" /> : 'Save'}
+                </Button> */}
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  Update
+                </LoadingButton>
+              </Stack>
+            </FormProvider>
+          </Box>
+        )}
+      </Scrollbar>
+    </Stack>
+  );
+  const handleCardClick = (cityId) => {
+    router.push(paths.dashboard.system.viewDetails(cityId));
+  };
+
+  const renderCityContent = (
+    <Stack spacing={3}>
+      <Scrollbar>
+        {!editMode ? (
+          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
+            {details?.package_city?.map((cityItem: any, index: number) => (
+              <Box
+                key={index}
+                sx={{
+                  width: '90%',
+                  mt: 2,
+                  mb: 2,
+                  position: 'relative',
+                  ml: 4,
+                  padding: 4,
+                }}
+                component={Card}
+              >
+                <Box
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: 'h6',
+                    mb: 2,
+                  }}
+                >
+                  City {index + 1}
+                </Box>
+
+                <hr style={{ borderColor: '#CF5A0D', margin: '0 0 16px 0', borderWidth: '1px' }} />
+
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleEditCity(index)} // Function to handle editing specific city
+                >
+                  <Iconify icon="solar:pen-bold" />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    cursor: 'pointer',
+                    mb: 1,
+                    mt: 5,
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                  onClick={() => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)}
+                >
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    City
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.city?.city_translations[0]?.name ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Min Price
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.min_price ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Max Price
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.max_price ?? 'N/A'}
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    Commission
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.commision ?? 'N/A'}
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <Box rowGap={2} columnGap={2} display="grid" pb={1}>
+            <FormProvider methods={Schoolmethods} onSubmit={onSubmit}>
+              <Box
+                mt={2}
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns="repeat(1, 1fr)"
+              >
+                {details?.package_city?.map((cityItem: any, index: number) => (
+                  <Box key={index}>
+                    {editCityIndex === index && ( // Only render editable fields for the clicked city
+                      <>
+                        <RHFTextField
+                          name={`cities_ids[${index}][min_price]`}
+                          label="Min Price"
+                          defaultValue={cityItem?.min_price ?? ''}
+                          sx={{ mt: 1, mb: 3 }}
+                        />
+                        <RHFTextField
+                          name={`cities_ids[${index}][max_price]`}
+                          label="Max Price"
+                          defaultValue={cityItem?.max_price ?? ''}
+                          sx={{ mt: 1, mb: 3 }}
+                        />
+                      </>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+
+              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
+                <Button variant="outlined" color="error" onClick={handleCancelEdit}>
+                  Cancel
+                </Button>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  Update
+                </LoadingButton>
+              </Stack>
+            </FormProvider>
           </Box>
         )}
       </Scrollbar>
@@ -484,6 +631,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   return (
     <>
+      <Tabs value={selectedTab} onChange={handleTabChange} aria-label="package details tabs">
+        <Tab label="Details" />
+        <Tab label="City" />
+      </Tabs>
       {loading ? (
         <Box
           sx={{
@@ -498,20 +649,31 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       ) : (
         <>
           {' '}
-          <Grid container spacing={1} rowGap={1}>
-            <Grid xs={12} md={8}>
-              {renderContent}
+          {selectedTab === 0 && (
+            <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
+              <Grid xs={12} md={8}>
+                {renderContent}
+              </Grid>
             </Grid>
-          </Grid>{' '}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            sx={{ mt: 7, mb: 5 }}
-            onClick={handleOpenDialog}
-          >
-            Add package document
-          </Button>
+          )}{' '}
+          {selectedTab === 0 && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              sx={{ mt: 7, mb: 5 }}
+              onClick={handleOpenDialog}
+            >
+              Add package document
+            </Button>
+          )}
+          {selectedTab === 1 && (
+            <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
+              <Grid xs={12} md={8}>
+                {renderCityContent}
+              </Grid>
+            </Grid>
+          )}
           <PackageDocumentCreateUpdate
             open={openDialog}
             onClose={handleCloseDialog}

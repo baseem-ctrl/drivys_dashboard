@@ -56,10 +56,9 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+    details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
@@ -100,17 +99,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           value: item?.language_culture,
         }));
       }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
+
       setLocaleOptions([...initialLocaleOptions]);
-      // }
     }
   }, [language, details]);
 
@@ -152,7 +142,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   });
   const defaultVendorValues = useMemo(
     () => ({
-      locale: selectedLocaleObject?.locale || '',
+      locale: selectedLocaleObject?.locale || 'En',
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
@@ -273,11 +263,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         setEditMode(false);
       }
     } catch (error) {
-      if (error?.errors) {
-        enqueueSnackbar(error?.message, { variant: 'error' });
-        enqueueSnackbar(error?.message, { variant: 'error' });
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -291,6 +283,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -479,14 +472,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Commission in (%)"
+                      label="Certificate Commission in (%)"
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Commission is for certificate" placement="top">
+                            <Tooltip title="Commission for drivys from certificate" placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -538,13 +531,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                            // variant="outlined"
-                            // margin="normal"
                           />
-                          {/* Optional: Show the uploaded file as a clickable link */}
-                          {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
-                            View Uploaded File
-                          </a> */}
                         </Box>
                       )}
                     </>
@@ -602,7 +589,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             <MenuItem
                               key={option.id}
                               value={option.id}
-                              disabled={option.id === details?.vendor_user.user?.id} // Disable the current admin
+                              disabled={
+                                details?.vendor_user?.user?.id === option.id // Ensure safe access
+                              }
                             >
                               {option.name}
                             </MenuItem>
@@ -625,22 +614,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           </Box>
         )}
       </Scrollbar>
-      {/* <SchoolCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={reload}
-        currentSchool={details}
-      /> */}
-      {/* {editMode && (
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" color="error" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-        </Stack>
-      )} */}
     </Stack>
   );
 
@@ -689,16 +662,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-  // const { control, handleSubmit, setValue, reset } = useForm();
 
-  const {
-    reset,
-    watch,
-    control,
-    setValue,
-    handleSubmit,
-    // formState: { isSubmitting },
-  } = methods;
+  const { reset, watch, control, setValue, handleSubmit } = methods;
 
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
@@ -733,9 +698,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         });
       }
     } catch (error) {
-      if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -1028,7 +997,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
+            Wallet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_points !== 0 && (

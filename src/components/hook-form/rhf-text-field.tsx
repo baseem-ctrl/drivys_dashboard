@@ -2,6 +2,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { InputAdornment } from '@mui/material';
+import { useRef } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -10,6 +11,7 @@ type Props = TextFieldProps & {
   borderRadius?: string;
   maxLength?: number;
   prefix?: string;
+  suffix?: string;
 };
 
 export default function RHFTextField({
@@ -19,10 +21,11 @@ export default function RHFTextField({
   helperText,
   type,
   prefix,
+  suffix,
   ...other
 }: Props) {
   const { control } = useFormContext();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
   return (
     <Controller
       name={name}
@@ -35,6 +38,11 @@ export default function RHFTextField({
             ...(prefix
               ? {
                   startAdornment: <InputAdornment position="start">{prefix}</InputAdornment>,
+                }
+              : {}),
+            ...(suffix
+              ? {
+                  endAdornment: <InputAdornment position="start">{suffix}</InputAdornment>,
                 }
               : {}),
             ...(!borderRadius
@@ -50,6 +58,7 @@ export default function RHFTextField({
             maxLength: maxLength,
           }}
           type={type}
+          inputRef={type === 'file' ? fileInputRef : undefined}
           value={type === 'number' && field.value === 0 ? '' : field.value}
           onChange={(event) => {
             if (type === 'number') {

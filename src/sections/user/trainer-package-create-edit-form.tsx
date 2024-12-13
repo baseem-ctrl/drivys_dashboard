@@ -17,7 +17,7 @@ import {
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useGetPackageTrainerById } from 'src/api/package-trainer';
-import { useGetPackage } from 'src/api/package';
+import { useGetPackage, useGetPublicPackage } from 'src/api/package';
 
 const TrainerPackageCreateEditForm = ({
   open,
@@ -30,7 +30,6 @@ const TrainerPackageCreateEditForm = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [errors, setErrors] = useState({});
   const [formValues, setFormValues] = useState({
     trainer_price: '',
@@ -38,7 +37,6 @@ const TrainerPackageCreateEditForm = ({
     is_published: false,
     package_id: '',
   });
-
   useEffect(() => {
     if (open) {
       if (editMode === 'Edit' && selectedPackage) {
@@ -77,23 +75,26 @@ const TrainerPackageCreateEditForm = ({
   };
 
   useEffect(() => {});
-  const { packageList, packageLoading } = useGetPackage({
+  const { packageList, packageLoading } = useGetPublicPackage({
     vendor_id: trainer_details?.vendor?.id,
     city_id: trainer_details?.user_preference?.city_id,
     is_public: 1,
+    is_published: 1,
+    category_id: trainer_details?.user_preference?.vehicle_type_id ?? '',
   });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (!name || !value) {
+    if (!name || value === undefined) {
       console.error('Missing name or value in event:', e);
       return;
     }
 
+    const updatedValue = name === 'trainer_price' && value !== '' ? parseFloat(value) : value;
+
     setFormValues((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: updatedValue,
     }));
 
     setErrors((prev) => ({
@@ -104,10 +105,26 @@ const TrainerPackageCreateEditForm = ({
 
   const validateFields = () => {
     const newErrors = {};
-    if (!formValues.trainer_price) newErrors.trainer_price = 'Trainer Price is required.';
+
+    if (!formValues.trainer_price) {
+      newErrors.trainer_price = 'Trainer Price is required.';
+    } else {
+      const selectedPkg = packageList.find((pkg) => pkg.id === formValues.package_id);
+      const min_price = selectedPkg?.package_city[0]?.min_price;
+      const max_price = selectedPkg?.package_city[0]?.max_price;
+      if (selectedPkg) {
+        if (formValues.trainer_price < min_price || formValues.trainer_price > max_price) {
+          newErrors.trainer_price = `Trainer price must be between ${min_price} and ${max_price}.`;
+        }
+      } else {
+        newErrors.package_id = 'Selected package is invalid.';
+      }
+    }
+
     if (!formValues.package_id && !selectedPackage) {
       newErrors.package_id = 'Package ID is required.';
     }
+
     return newErrors;
   };
 
@@ -146,10 +163,9 @@ const TrainerPackageCreateEditForm = ({
         setIsSubmitting(false);
       });
   };
-
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>Add Packages</DialogTitle>
+      <DialogTitle>{editMode ? 'Update Package' : 'Add Package'}</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -158,17 +174,6 @@ const TrainerPackageCreateEditForm = ({
         ) : (
           <>
             <Box display="flex" justifyContent="space-between" mb={5} mt={2}>
-              <TextField
-                name="trainer_price"
-                label="Trainer Price"
-                type="number"
-                value={formValues.trainer_price}
-                onChange={handleChange}
-                fullWidth
-                error={Boolean(errors.trainer_price)}
-                helperText={errors.trainer_price}
-                sx={{ marginRight: 3 }}
-              />
               {!selectedPackage && (
                 <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
                   <InputLabel id="package-id-label">Package ID</InputLabel>
@@ -184,17 +189,28 @@ const TrainerPackageCreateEditForm = ({
                     {packageLoading ? (
                       <MenuItem disabled>Loading...</MenuItem>
                     ) : (
-                      packageList.map((pkg) =>
-                        pkg.package_translations.map((translation) => (
-                          <MenuItem key={translation.id} value={pkg.id}>
-                            {translation.name} ({translation.locale}) (ID: {pkg.id})
-                          </MenuItem>
-                        ))
-                      )
+                      packageList.map((pkg) => (
+                        <MenuItem key={pkg.id} value={pkg.id}>
+                          {pkg.package_translations.map(
+                            (translation) => `${translation.name} (${translation.locale})-`
+                          )}
+                        </MenuItem>
+                      ))
                     )}
                   </Select>
                 </FormControl>
               )}
+              <TextField
+                name="trainer_price"
+                label="Trainer Price"
+                type="number"
+                value={formValues.trainer_price}
+                onInput={handleChange}
+                fullWidth
+                error={Boolean(errors.trainer_price)}
+                helperText={errors.trainer_price}
+                sx={{ marginRight: 3 }}
+              />
             </Box>
             <FormControlLabel
               control={

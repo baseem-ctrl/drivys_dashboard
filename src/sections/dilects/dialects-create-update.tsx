@@ -86,7 +86,17 @@ export default function DialectCreateEditForm({
         reset();
       }
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     } finally {
       setIsSubmitting(false); // Reset loading state
     }
@@ -99,7 +109,7 @@ export default function DialectCreateEditForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider {...methods}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{currentDialect ? title : 'Create Dialect'}</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <Grid container spacing={2}>

@@ -25,10 +25,11 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { InfoOutlined } from '@mui/icons-material';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 type Props = {
   open: boolean;
@@ -124,10 +125,10 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('Maximum 15 digit', 'Maximum 15 digit', function (value) {
+    phone: Yup.string().test('Maximum 9 digit', 'Maximum 9 digit', function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
-        return value && value.length <= 15; // Ensures password is filled if create_new_user is true
+        return value && value.length <= 9; // Ensures password is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
@@ -225,13 +226,15 @@ export default function SchoolCreateForm({
     formData.append('status', data?.status);
     formData.append('is_active', data.is_active ? '1' : '0');
     formData.append('create_new_user', data.create_new_user ? '1' : '0');
-    formData.append('user_id', data?.user_id?.value);
+    if (!data?.create_new_user) {
+      formData.append('user_id', data?.user_id?.value);
+    }
     if (data?.create_new_user) {
       formData.append('name', data?.user_name);
       formData.append('user_email', data?.user_email);
       formData.append('password', data?.password);
       formData.append('phone', data?.phone);
-      formData.append('country_code', data?.country_code?.phone);
+      formData.append('country_code', '971');
     }
     formData.append(`vendor_translations[0][name]`, data?.name);
     formData.append(`vendor_translations[0][locale]`, data?.locale);
@@ -264,6 +267,7 @@ export default function SchoolCreateForm({
     setSelectedLocale('en');
     setTranslations({});
   };
+  const password = useBoolean();
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
@@ -338,12 +342,12 @@ export default function SchoolCreateForm({
             <Grid item xs={6} mt={2}>
               <RHFTextField
                 name="commission_in_percentage"
-                label="Commission in (%)"
+                label="Certificate Commission in (%)"
                 type="number"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title="Commission is for certificate" placement="top">
+                      <Tooltip title="Commission for drivys from certificate" placement="top">
                         <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                       </Tooltip>
                     </InputAdornment>
@@ -384,7 +388,22 @@ export default function SchoolCreateForm({
               >
                 <RHFTextField name="user_name" label="User Name" />
                 <RHFTextField name="user_email" label="User Email" />
-                <RHFTextField name="password" label="Password" type="password" />
+                <RHFTextField
+                  name="password"
+                  label="Password"
+                  type={password.value ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={password.onToggle} edge="end">
+                          <Iconify
+                            icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                          />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
                 {/* <RHFAutocomplete
                   name="country_code"
                   label="Country Code"

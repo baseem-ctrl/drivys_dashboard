@@ -10,6 +10,7 @@ import {
   Chip,
   Grid,
   Typography,
+  Box,
 } from '@mui/material';
 import { useGetBookingByTrainerId } from 'src/api/booking';
 
@@ -47,8 +48,7 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
           </TableRow>
         </TableHead>
         <TableBody>
-          {bookingDetails &&
-            bookingDetails.length > 0 &&
+          {bookingDetails && bookingDetails.length > 0 ? (
             bookingDetails.map((booking) => (
               <TableRow
                 key={booking.id}
@@ -94,7 +94,18 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                   />
                 </TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                <Box sx={{ py: 2 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    No bookings available under this trainer
+                  </Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

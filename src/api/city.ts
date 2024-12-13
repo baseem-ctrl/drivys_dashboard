@@ -1,4 +1,4 @@
-import { fetcher, endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -121,7 +121,7 @@ export function useGetCityById(cityId: number | string) {
 // Delete a city by ID :to do
 export function deleteCity(id: any) {
   const URL = endpoints.city.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -155,7 +155,7 @@ export function createPackageCity(body: any) {
 // Delete a package-city mapping by ID
 export function deletePackageCityById(packageId: number | string) {
   const URL = `${endpoints.city.deletePackageList}${packageId}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -209,12 +209,12 @@ export function useGetPackageCityList({ city_id }: UseGetPackageCityListParams =
 //     '&' +
 //     'pictures_ids[]=' +
 //     pictures_ids;
-//   const response = barrySmasher(URL);
+//   const response = drivysSmasher(URL);
 //   return response;
 // }
 
 // export function deleteCategoryById(id: any) {
 //   const URL = endpoints.category.deleteId + id;
-//   const response = barrySmasher(URL);
+//   const response = drivysSmasher(URL);
 //   return response;
 // }

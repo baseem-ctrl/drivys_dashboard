@@ -1,4 +1,4 @@
-import { endpoints, drivysCreator, drivysFetcher, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -35,26 +35,24 @@ type useGetStateListParams = {
 export function useGetStateList({
   limit = 10,
   page = 1,
-  sort = 'order',
-  sort_dir = 'asc',
+
   is_published,
   order,
   searchTerm = '',
   locale = '',
+  city_id,
 }: useGetStateListParams = {}) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {
       limit: limit || 100,
       page: page ? page + 1 : 1,
-      sort,
-      sort_dir,
     };
 
     if (is_published !== undefined) {
       queryParams.is_published = is_published === 'published' ? 1 : 0;
     }
     if (order !== undefined) queryParams.order = order;
-
+    if (city_id !== undefined) queryParams.city_id = city_id;
     if (searchTerm) queryParams.search = searchTerm;
     if (locale) queryParams.locale = locale;
 
@@ -108,7 +106,7 @@ export function useGetStateById(stateId: number | string) {
 // Function to delete state by ID
 export function deleteStateById(id: any) {
   const URL = `${endpoints.state.deleteById}/${id}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 
@@ -118,6 +116,6 @@ export function deleteStateTranslation(translation_ids: number[]) {
   const URL = `${endpoints.state.deleteStateProvince}?translation_ids[]=${translation_ids.join(
     ','
   )}`;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }

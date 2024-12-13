@@ -21,8 +21,9 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { sendNotification } from 'src/api/notification'; // Assuming you have this utility
 import { IUserItem } from 'src/types/user';
-import { useGetUserTypeEnum } from 'src/api/users';
-import { FormControl, InputLabel } from '@mui/material';
+import { useGetUsers } from 'src/api/users';
+import { Chip, FormControl, InputLabel } from '@mui/material';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 
 type Props = {
   currentUser?: IUserItem;
@@ -40,11 +41,14 @@ export default function SendNotificationForm({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const NotificationSchema = Yup.object().shape({
     userType: Yup.string().required('User type is required'),
-    user_id: Yup.string().when('sendAll', {
-      is: (sendAll) => sendAll === 0 || sendAll === false,
-      then: (schema) => schema.required('User ID is required'),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+    user_id: Yup.array()
+      .of(Yup.string())
+      .when('sendAll', {
+        is: (sendAll) => sendAll === 0 || sendAll === false,
+        then: (schema) => schema.min(1, 'At least one User ID is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
     title: Yup.string().required('Title is required'),
     description: Yup.string().required('Description is required'),
     detailMessage: Yup.string().required('Detail message is required'),
@@ -56,6 +60,7 @@ export default function SendNotificationForm({
       title: '',
       description: '',
       detailMessage: '',
+      user_id: [],
       sendAll: 0,
     }),
     [currentUser]
@@ -79,14 +84,32 @@ export default function SendNotificationForm({
   const sendAll = watch('sendAll');
   console.log(watch('sendAll'));
   // Use the custom hook to get user types
-  const { enumData, enumLoading, enumError } = useGetUserTypeEnum();
-
+  const { users, usersLoading, revalidateUsers } = useGetUsers({
+    page: 0,
+    limit: 1000,
+    user_types: watch('userType'),
+  });
+  const enumData = [
+    {
+      name: 'STUDENT',
+      value: 'STUDENT',
+    },
+    {
+      name: 'TRAINER',
+      value: 'TRAINER',
+    },
+    {
+      name: 'SCHOOL ADMIN',
+      value: 'SCHOOL_ADMIN',
+    },
+  ];
   const onSubmit = handleSubmit(async (data) => {
     try {
       setLoading(true);
-      console.log('data', data);
+
+      // Prepare the notification data
       const notificationData = {
-        user_ids: data.sendAll ? [] : [data?.user_id],
+        user_ids: data.sendAll ? [] : data.user_id, // `user_id` is now an array
         user_type: data.userType,
         title: data.title,
         description: data.description,
@@ -100,26 +123,25 @@ export default function SendNotificationForm({
         variant: 'success',
       });
 
+      reset();
       handleClosePopup(false);
-      setLoading(false);
       revalidateNotifications();
     } catch (error) {
-      enqueueSnackbar('Something went wrong!', {
-        variant: 'error',
-      });
-      handleClosePopup(false);
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
       setLoading(false);
     }
   });
-
-  if (enumLoading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-  if (enumError) return <Typography>Error loading user types.</Typography>;
 
   return (
     <FormProvider
@@ -139,13 +161,66 @@ export default function SendNotificationForm({
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              <FormControl fullWidth>
+                <InputLabel>User Type</InputLabel>
+                <Controller
+                  name="userType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="User Type"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        revalidateUsers({ user_types: e.target.value });
+
+                        setTimeout(() => {
+                          document.activeElement?.blur();
+                        }, 0);
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select User Type
+                      </MenuItem>
+                      {Object.entries(enumData).map(([key, value]) => (
+                        <MenuItem key={key} value={value.value}>
+                          {value.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <Controller
+                  name="user_id"
+                  control={control}
+                  render={({ field }) => (
+                    <RHFAutocompleteSearch
+                      {...field}
+                      label="User IDs"
+                      multiple
+                      disabled={sendAll === 1}
+                      options={users?.map((user) => ({
+                        value: user.id,
+                        label: user.name,
+                      }))}
+                      value={field.value || []}
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue.map((user) => user.value));
+                      }}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label || 'Unknown'}
+                        </li>
+                      )}
+                    />
+                  )}
+                />
+              </FormControl>
+
               <RHFTextField name="title" label="Notification Title" fullWidth />
-
-              {/* Conditionally change the label for user_id */}
-
-              <RHFTextField name="user_id" label="User ID" fullWidth disabled={sendAll === 1} />
-
-              <RHFTextField name="description" label="Description" fullWidth multiline rows={4} />
+              <RHFTextField name="description" label="Description" fullWidth />
               <RHFTextField
                 name="detailMessage"
                 label="Detail Message"
@@ -153,30 +228,6 @@ export default function SendNotificationForm({
                 multiline
                 rows={4}
               />
-
-              {/* Add Select for userType */}
-              <FormControl fullWidth>
-                <InputLabel>User Type</InputLabel>
-                <Controller
-                  name="userType"
-                  control={control}
-                  render={({ field }) => (
-                    <Select {...field} label="User Type">
-                      {/* Placeholder */}
-                      <MenuItem value="" disabled>
-                        Select User Type
-                      </MenuItem>
-
-                      {/* Enum Data */}
-                      {Object.entries(enumData).map(([key, value]) => (
-                        <MenuItem key={key} value={value.value}>
-                          {value.name} {/* Display the name of the user type */}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
 
               <RHFSwitch name="sendAll" label="Send to all users?" labelPlacement="start" />
             </Box>

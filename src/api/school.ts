@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
-import { endpoints, drivysFetcher, drivysCreator, barrySmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ export function updateDelivery(body: any) {
 
 export function deleteSchool(id: any) {
   const URL = endpoints.school.delete + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetSchoolById(schoolId: string) {
@@ -172,6 +172,7 @@ export function useGetSchoolById(schoolId: string) {
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
+
   const memoizedValue = useMemo(
     () => ({
       details: (data?.data as any) || {},
@@ -275,7 +276,7 @@ export function useGetSchoolByIdAdmin(schoolId: string) {
 }
 export function RemoveTrainerFromSchool(id: any) {
   const URL = endpoints.school.removeTrainer + id;
-  const response = barrySmasher(URL);
+  const response = drivysSmasher(URL);
   return response;
 }
 export function useGetAllSchoolAdmin(limit: number, page: number) {
@@ -378,4 +379,116 @@ export function AddBulkSchoolCommision(body: any) {
   const URL = endpoints.school.bulk.addCommision;
   const response = drivysCreator([URL, body]);
   return response;
+}
+export function useGetSchoolTrainerList({ limit, page }: any) {
+  // Construct query parameters dynamically
+  const [searchValue, setSearchValue] = useState('');
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (searchValue) params.search = searchValue;
+    // params.user_types = ['SCHOOL_ADMIN'];
+    return params;
+  }, [limit, page, searchValue]);
+
+  const fullUrl = useMemo(() => {
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If the value is an array, append each item
+        value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
+      } else {
+        urlSearchParams.append(key, value as string);
+      }
+    });
+    return `${endpoints.school.schoolTrainers}?${urlSearchParams}`;
+  }, [queryParams]);
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidateTrainers = () => {
+    mutate(fullUrl);
+  };
+  const revalidateSearch = (search: any) => {
+    setSearchValue(search);
+    mutate(fullUrl);
+  };
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolTrainersList: DelivereyData,
+      schoolTrainersLoading: isLoading,
+      schoolTrainersError: error,
+      schoolTrainersValidating: isValidating,
+      schoolTrainersEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidateTrainers,
+    revalidateSearch,
+  };
+}
+export function useGetSchoolPackageList({ limit, page, search }: any) {
+  // Construct query parameters dynamically
+  const [searchValue, setSearchValue] = useState('');
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (search) params.search = search;
+    // params.user_types = ['SCHOOL_ADMIN'];
+    return params;
+  }, [limit, page, search]);
+
+  const fullUrl = useMemo(() => {
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If the value is an array, append each item
+        value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
+      } else {
+        urlSearchParams.append(key, value as string);
+      }
+    });
+    return `${endpoints.school.package.getPackageBySchool}?${urlSearchParams}`;
+  }, [queryParams]);
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePackage = () => {
+    mutate(fullUrl);
+  };
+  const revalidateSearch = (search: any) => {
+    if (search) {
+      setSearchValue(search);
+      mutate(fullUrl);
+    }
+  };
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    const DelivereyData = data?.data || [];
+    return {
+      schoolPackageList: DelivereyData,
+      schoolPackageLoading: isLoading,
+      schoolPackageError: error,
+      schoolPackageValidating: isValidating,
+      schoolPackageEmpty: DelivereyData.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePackage,
+    revalidateSearch,
+  };
 }

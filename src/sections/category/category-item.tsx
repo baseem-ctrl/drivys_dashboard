@@ -94,9 +94,7 @@ export default function JobItem({
   //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.category_translations || [];
-    return translations.find((trans) => trans.locale.toLowerCase() === 'en')
-      ? 'en'
-      : translations[0]?.locale || '';
+    return translations.find((trans) => trans.locale.toLowerCase() === 'en')?.locale;
   });
 
   const [isSubmittingImage, setIsSubmitting] = useState(false);
@@ -175,10 +173,13 @@ export default function JobItem({
       enqueueSnackbar(response.message);
       setIsSubmitting(false);
     } catch (error) {
-      if (error.errors) {
-        // Iterate over each error and enqueue them in the snackbar
-        Object.values(error.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -207,7 +208,17 @@ export default function JobItem({
       // Update the UI or state after successful deletion
       enqueueSnackbar(response?.message);
     } catch (error) {
-      enqueueSnackbar('error deleting category', { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
 
@@ -229,8 +240,18 @@ export default function JobItem({
       const res = await createCategory(payload);
       enqueueSnackbar('Status update successfully', { variant: 'success' });
       reload();
-    } catch (err) {
-      enqueueSnackbar(err?.message, { variant: 'error' });
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
 
     // setPublish(newValue);
@@ -308,10 +329,13 @@ export default function JobItem({
         setSearchValue('');
       }
     } catch (error) {
-      if (error?.errors) {
-        // Iterate over each error and enqueue them in the snackbar
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -360,10 +384,9 @@ export default function JobItem({
         sx={{ mt: 2 }}
         label="Parent Category"
         options={parentCategoryOptions || []}
-        onInputChange={(event, value) => {
-          searchCategory(value.split(' (')[0]);
-        }}
+        onInput={(e) => searchCategory(e.target.value)}
       />
+
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
         <LoadingButton
           sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}

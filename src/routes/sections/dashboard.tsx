@@ -25,6 +25,9 @@ import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin
 import NotificationsListingListPage from 'src/pages/dashboard/notifications/notifications';
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 import CityDetailsView from 'src/sections/city/view/city-details-view';
+import PickupListPage from 'src/pages/pickup/pickup';
+import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
+import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -201,6 +204,7 @@ const allroutes = [
       { path: 'state', element: <StateListPage /> },
       { path: 'appsettings', element: <AppSettingsListPage /> },
       { path: 'dialect', element: <DialectListPage /> },
+      { path: 'pickup', element: <PickupListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },
@@ -239,6 +243,9 @@ const schooladminRoutes = [
     children: [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+      { path: 'account', element: <UserAccountPage /> },
+      { path: 'trainers-list', element: <SchoolTrainersListView /> },
+      { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
   {
