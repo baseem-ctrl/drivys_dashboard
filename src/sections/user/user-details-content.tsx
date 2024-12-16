@@ -510,7 +510,7 @@ export default function UserDetailsContent({
                         value: details?.last_booking_was ?? 'N/A',
                       },
                       {
-                        label: 'Vendor Name',
+                        label: 'School Name',
                         value: details?.vendor?.vendor_translations?.[0]?.name ? (
                           <Link
                             onClick={() => handleClickTrainer(details?.vendor?.id)}
@@ -525,7 +525,7 @@ export default function UserDetailsContent({
                             {details?.vendor?.vendor_translations?.[0]?.name}
                           </Link>
                         ) : (
-                          'N/A'
+                          details?.school_name ?? 'N/A'
                         ),
                       },
                       {
