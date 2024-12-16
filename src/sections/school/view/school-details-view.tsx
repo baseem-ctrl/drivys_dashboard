@@ -20,7 +20,7 @@ import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import Iconify from 'src/components/iconify';
-import { Button, Stack } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolPackageDetails from './school-package-details';
 
@@ -137,8 +137,19 @@ export default function SchoolDetailsView({ id }: Props) {
           )}
           {currentTab === 'package' && <SchoolPackageDetails id={id} />}
         </>
-      ) : (
+      ) : !details ? (
         <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // height: '100vh', // Full viewport height
+          }}
+        >
+          <CircularProgress />
+        </Box>
       )}
     </Container>
   );
