@@ -111,7 +111,10 @@ export default function PackageTableRow({
     name: Yup.string(),
     locale: Yup.mixed(),
     email: Yup.string(),
-    phone_number: Yup.string(),
+    phone_number: Yup.string().matches(
+      /^5\d{0,8}$/,
+      'Phone number should start with 5 and not exceed 9 digits'
+    ),
     status: Yup.mixed(),
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),

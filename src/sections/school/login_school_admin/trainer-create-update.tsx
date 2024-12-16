@@ -66,7 +66,7 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
         : Yup.string().required('Password is required'); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string()
-      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits ')
+      .matches(/^5\d{0,8}$/, 'Phone number should start with 5 and not exceed 9 digits')
       .nullable(),
     country_code: Yup.string().nullable(),
     is_active: Yup.boolean(),

@@ -152,7 +152,10 @@ export default function UserNewEditForm({
         ? Yup.string() // No requirements if `currentUser.id` exists
         : Yup.string(); // Required if `currentUser.id` is not present
     }),
-    phone: Yup.string().matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+    phone: Yup.string().matches(
+      /^5\d{0,8}$/,
+      'Phone number should start with 5 and not exceed 9 digits'
+    ),
     dob: Yup.string()
       .nullable()
       .when('user_type', {
@@ -586,9 +589,11 @@ export default function UserNewEditForm({
               {currentUser && (
                 <Label
                   color={
-                    (values.is_active === true && 'success') ||
-                    (values.is_active === false && 'error') ||
-                    'warning'
+                    values.is_active === true || values.is_active === 1
+                      ? 'success'
+                      : values.is_active === false || values.is_active === 0
+                      ? 'error'
+                      : 'warning'
                   }
                   sx={{ position: 'absolute', top: 24, right: 24 }}
                 >

@@ -34,7 +34,9 @@ type Props = {
 export default function AddressNewForm({ open, onClose, onCreate }: Props) {
   const NewAddressSchema = Yup.object().shape({
     name: Yup.string().required('Fullname is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
+    phoneNumber: Yup.string()
+      .required('Phone number is required')
+      .matches(/^5\d{0,8}$/, 'Phone number should start with 5 and not exceed 9 digits'),
     address: Yup.string().required('Address is required'),
     city: Yup.string().required('City is required'),
     state: Yup.string().required('State is required'),

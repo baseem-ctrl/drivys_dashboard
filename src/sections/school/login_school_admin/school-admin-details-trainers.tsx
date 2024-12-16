@@ -78,7 +78,10 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const NewUserSchema = Yup.object().shape({
     vendor_commission_in_percentage: Yup.string().required(),
     vehicle_number: Yup.string().nullable(), // not required
-    phone: Yup.string(),
+    phone: Yup.string().matches(
+      /^5\d{0,8}$/,
+      'Phone number should start with 5 and not exceed 9 digits'
+    ),
     dob: Yup.string()
       .required('Date of birth is required for students and trainers.')
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {

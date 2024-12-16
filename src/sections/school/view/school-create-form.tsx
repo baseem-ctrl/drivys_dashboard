@@ -125,13 +125,17 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('Maximum 9 digit', 'Maximum 9 digit', function (value) {
-      const { create_new_user } = this.parent;
-      if (create_new_user) {
-        return value && value.length <= 9; // Ensures password is filled if create_new_user is true
+    phone: Yup.string().test(
+      'Maximum 9 digit',
+      'Maximum 9 digit and start with 5',
+      function (value) {
+        const { create_new_user } = this.parent;
+        if (create_new_user) {
+          return value && value.length === 9 && /^5\d{0,8}$/.test(value); // Ensures password is filled if create_new_user is true
+        }
+        return true; // No validation if create_new_user is false
       }
-      return true; // No validation if create_new_user is false
-    }),
+    ),
     country_code: Yup.string(),
   });
 
