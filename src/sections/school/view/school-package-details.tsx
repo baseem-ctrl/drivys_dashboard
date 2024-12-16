@@ -13,7 +13,7 @@ export default function SchoolPackageDetails({ id }) {
     vendor_id: id,
   });
   const handlePackageClick = (packageItem) => {
-    router.push(paths.dashboard.package.details(id));
+    router.push(paths.dashboard.package.details(packageItem?.id));
   };
 
   return (
