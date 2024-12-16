@@ -134,13 +134,23 @@ export default function EcommerceYearlySales({ title, subheader, chart, ...other
           }
         />
 
-        {chartData?.series.map((item) => (
-          <Box key={item.year} sx={{ mt: 3, mx: 3 }}>
-            {item.year === seriesData && (
-              <Chart dir="ltr" type="area" series={item.data} options={chartOptions} height={364} />
-            )}
-          </Box>
-        ))}
+        {chartData?.series ? (
+          chartData?.series.map((item) => (
+            <Box key={item?.year} sx={{ mt: 3, mx: 3 }}>
+              {item?.year === seriesData && (
+                <Chart
+                  dir="ltr"
+                  type="area"
+                  series={item.data}
+                  options={chartOptions}
+                  height={364}
+                />
+              )}
+            </Box>
+          ))
+        ) : (
+          <Box>No revenue data found</Box>
+        )}
       </Card>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
