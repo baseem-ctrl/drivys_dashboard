@@ -489,6 +489,14 @@ export default function UserDetailsContent({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
+                        label: 'Is Suspended',
+                        value: !!details?.is_suspended ? (
+                          <Chip label="Suspended" color="error" variant="soft" />
+                        ) : (
+                          <Chip label="No" color="success" variant="soft" />
+                        ),
+                      },
+                      {
                         label: 'Max Cash Allowed in Hand',
                         value: details?.max_cash_in_hand_allowed ?? 'N/A',
                       },

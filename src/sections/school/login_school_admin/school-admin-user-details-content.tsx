@@ -146,8 +146,17 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
                       <Chip label="In Active" color="error" variant="soft" />
                     ),
                 },
+
                 ...(details?.user_type === 'TRAINER'
                   ? [
+                      {
+                        label: 'Is Suspended',
+                        value: !!details?.is_suspended ? (
+                          <Chip label="Suspended" color="error" variant="soft" />
+                        ) : (
+                          'NA'
+                        ),
+                      },
                       {
                         label: 'Max Cash Allowded in Hand',
                         value: details?.max_cash_in_hand_allowed ?? 'N/A',
