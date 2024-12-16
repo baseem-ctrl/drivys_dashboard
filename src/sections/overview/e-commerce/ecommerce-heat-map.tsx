@@ -1,0 +1,168 @@
+import React, { useEffect, useState } from 'react';
+import { GoogleMap, useJsApiLoader, HeatmapLayer } from '@react-google-maps/api';
+import axios from 'axios';
+import { useGoogleMaps } from './GoogleMapsProvider';
+import { Box, Card, CardHeader, Typography } from '@mui/material';
+
+const containerStyle = {
+  width: '100%',
+  height: '500px',
+};
+const circleStyle = (color: string) => ({
+  width: '12px',
+  height: '12px',
+  borderRadius: '50%',
+  backgroundColor: color,
+  display: 'inline-block',
+  marginRight: '8px',
+});
+// Default map center coordinates
+const defaultLatitude = 24.2765;
+const defaultLongitude = 54.346;
+
+interface Person {
+  id: string;
+  location: { lat: number; lng: number };
+}
+
+const HeatMap: React.FC = () => {
+  const { isLoaded } = useGoogleMaps();
+
+  const [trainers, setTrainers] = useState<Person[]>([]);
+  const [students, setStudents] = useState<Person[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number }>({
+    lat: defaultLatitude,
+    lng: defaultLongitude,
+  });
+
+  // Fetch trainers data
+  const fetchTrainers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_HOST_API}admin/trainers/get-nearest-trainers-list`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
+        }
+      );
+      if (response?.data?.data) {
+        setTrainers(
+          response.data.data.map((trainer: any) => ({
+            id: trainer.id,
+            location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching trainers:', error);
+    }
+  };
+
+  // Fetch students data
+  const fetchStudents = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${import.meta.env.VITE_HOST_API}admin/studentMap/get-student-under-radius`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
+        }
+      );
+      if (response?.data?.data) {
+        setStudents(
+          response.data.data.map((student: any) => ({
+            id: student.id,
+            location: { lat: student.address.latitude, lng: student.address.longitude },
+          }))
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchTrainers();
+    fetchStudents();
+  }, []);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  // Convert locations to LatLng for Heatmap
+  const trainerHeatmapData = trainers.map(
+    (trainer) => new google.maps.LatLng(trainer.location.lat, trainer.location.lng)
+  );
+
+  const studentHeatmapData = students.map(
+    (student) => new google.maps.LatLng(student.location.lat, student.location.lng)
+  );
+
+  return (
+    <Card>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 2, px: 2, pt: 2 }}
+      >
+        <CardHeader title="Heat Map" />
+
+        {/* Legend */}
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box display="flex" alignItems="center">
+            <Box sx={circleStyle('#0000FF')} /> {/* Blue color for trainers */}
+            <Typography variant="body2">Trainers</Typography>
+          </Box>
+
+          <Box display="flex" alignItems="center">
+            <Box sx={circleStyle('#FF0000')} /> {/* Red color for students */}
+            <Typography variant="body2">Students</Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      <GoogleMap mapContainerStyle={containerStyle} center={selectedLocation} zoom={8}>
+        {/* Trainer Heatmap */}
+        <HeatmapLayer
+          data={trainerHeatmapData}
+          options={{
+            radius: 20,
+            opacity: 0.7,
+            gradient: [
+              'rgba(0, 255, 255, 0)',
+              'rgba(0, 255, 255, 1)',
+              'rgba(0, 191, 255, 1)',
+              'rgba(0, 127, 255, 1)',
+              'rgba(0, 63, 255, 1)',
+              'rgba(0, 0, 255, 1)',
+            ],
+          }}
+        />
+
+        {/* Student Heatmap */}
+        <HeatmapLayer
+          data={studentHeatmapData}
+          options={{
+            radius: 20,
+            opacity: 0.7,
+            gradient: [
+              'rgba(255, 0, 0, 0)',
+              'rgba(255, 0, 0, 1)',
+              'rgba(191, 0, 0, 1)',
+              'rgba(127, 0, 0, 1)',
+              'rgba(63, 0, 0, 1)',
+              'rgba(255, 0, 0, 1)',
+            ],
+          }}
+        />
+      </GoogleMap>
+    </Card>
+  );
+};
+
+export default HeatMap;

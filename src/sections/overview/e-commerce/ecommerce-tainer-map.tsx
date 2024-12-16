@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, Marker, useJsApiLoader, OverlayView } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
+  OverlayView,
+  HeatmapLayer,
+} from '@react-google-maps/api';
 import axios from 'axios';
 import Avatar from '@mui/material/Avatar';
-
+import profile from '../../../../public/logo/avatar.png';
+import { useGoogleMaps } from './GoogleMapsProvider';
 const containerStyle = {
   width: '100%',
   height: '500px',
 };
 
 // Default coordinates for the map center and markers
-const defaultLatitude = 31.7151909;
-const defaultLongitude = 37.9588432;
+const defaultLatitude = 24.453884;
+const defaultLongitude = 54.3773438;
 
 interface Trainer {
   id: string;
@@ -20,9 +27,7 @@ interface Trainer {
 }
 
 const TrainerMap: React.FC = () => {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
 
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>({
@@ -81,12 +86,17 @@ const TrainerMap: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  // Convert trainer locations to heatmap data
+  const heatmapData = trainers.map((trainer) => {
+    return new google.maps.LatLng(trainer.location.lat, trainer.location.lng);
+  });
+
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={selectedLocation}
-      zoom={5}
-      onClick={handleMapClick}
+      zoom={12}
+      // onClick={handleMapClick}
     >
       {trainers.map((trainer) => (
         <Marker
@@ -94,7 +104,7 @@ const TrainerMap: React.FC = () => {
           position={trainer.location}
           icon={{
             url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-            scaledSize: new window.google.maps.Size(50, 50),
+            // scaledSize: new window.google.maps.Size(50, 50),
           }}
         >
           <OverlayView position={trainer.location} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
@@ -113,14 +123,15 @@ const TrainerMap: React.FC = () => {
             >
               {trainer.photoUrl ? (
                 <img
-                  src={trainer.photoUrl}
-                  alt={trainer.name}
+                  src={trainer?.photoUrl}
+                  alt={trainer?.name}
                   style={{ width: '50px', height: '50px', borderRadius: '50%' }}
                 />
               ) : (
-                <Avatar style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}>
-                  {trainer.name?.charAt(0).toUpperCase()}
-                </Avatar>
+                <Avatar
+                  style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
+                  src={profile}
+                />
               )}
               <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>{trainer.name}</h4>
             </div>

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 //
 import App from './App';
+import { GoogleMapsProvider } from './sections/overview/e-commerce/GoogleMapsProvider';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +14,9 @@ root.render(
   <HelmetProvider>
     <BrowserRouter>
       <Suspense>
-        <App />
+        <GoogleMapsProvider>
+          <App />
+        </GoogleMapsProvider>
       </Suspense>
     </BrowserRouter>
   </HelmetProvider>
