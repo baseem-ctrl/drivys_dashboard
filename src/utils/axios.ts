@@ -295,5 +295,7 @@ export const endpoints = {
   analytics: {
     admin: 'admin/analytics/get-admin-analytics',
     schoolAdmin: 'admin/analytics/get-school-analytics',
+    schoolAdminRevenue: 'admin/analytics/get-school-revenue',
+    adminRevenue: 'admin/analytics/get-admin-revenue',
   },
 };

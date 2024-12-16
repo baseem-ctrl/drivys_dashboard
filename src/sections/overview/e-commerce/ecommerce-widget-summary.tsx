@@ -17,28 +17,22 @@ interface Props extends CardProps {
   title: string;
   total: number;
   percent?: number;
-  // chart?: {
-  //   colors?: string[];
-  //   series?: number[];
-  //   options?: ApexOptions;
-  // };
+  chart?: {
+    colors?: string[];
+    series?: number[];
+    options?: ApexOptions;
+  };
 }
 
 export default function EcommerceWidgetSummary({
   title,
   percent,
   total,
-  // chart,
+  chart,
   sx,
   ...other
 }: Props) {
   const theme = useTheme();
-
-  // const {
-  //   colors = [theme.palette.primary.light, theme.palette.primary.main],
-  //   series,
-  //   options,
-  // } = chart;
 
   // const chartOptions = useChart({
   //   colors: [colors[1]],

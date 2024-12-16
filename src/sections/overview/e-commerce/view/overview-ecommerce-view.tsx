@@ -40,7 +40,7 @@ export default function OverviewEcommerceView() {
   const theme = useTheme();
 
   const settings = useSettingsContext();
-  const { analytics, analyticsLoading } = useGetAnalytics({ year: '2024' });
+  const { analytics, analyticsLoading } = useGetAnalytics();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -68,9 +68,9 @@ export default function OverviewEcommerceView() {
               title="Total Trainers"
               // percent={2.6}
               total={analytics?.trainerCount ?? '0'}
-              // chart={{
-              //   series: [22, 8, 35, 50, 82, 84, 77, 12, 87, 43],
-              // }}
+              chart={{
+                colors: [theme.palette.info.light, theme.palette.info.main],
+              }}
             />
           </Grid>
 
@@ -110,11 +110,18 @@ export default function OverviewEcommerceView() {
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
-              total={2324}
+              total={analytics?.trainerCount ?? 0}
               chart={{
                 series: [
-                  { label: 'Mens', value: 44 },
-                  { label: 'Womens', value: 75 },
+                  { label: 'Mens', value: analytics?.maleTrainers?.length ?? 0 },
+                  { label: 'Womens', value: analytics?.femaleTrainers?.length ?? 0 },
+                  {
+                    label: 'Other',
+                    value:
+                      Number(analytics?.trainerCount) -
+                        (Number(analytics?.femaleTrainers?.length) +
+                          Number(analytics?.maleTrainers?.length)) ?? 0,
+                  },
                 ],
               }}
             />
@@ -123,7 +130,7 @@ export default function OverviewEcommerceView() {
           <Grid xs={12} md={6} lg={8}>
             <EcommerceYearlySales
               title="Yearly Revenue"
-              subheader="(+43%) than last year"
+              // subheader="(+43%) than last year"
               chart={{
                 categories: [
                   'Jan',
@@ -139,34 +146,6 @@ export default function OverviewEcommerceView() {
                   'Nov',
                   'Dec',
                 ],
-                series: [
-                  {
-                    year: '2019',
-                    data: [
-                      {
-                        name: 'Total Income',
-                        data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 35, 51, 49],
-                      },
-                      {
-                        name: 'Total Expenses',
-                        data: [10, 34, 13, 56, 77, 88, 99, 77, 45, 13, 56, 77],
-                      },
-                    ],
-                  },
-                  {
-                    year: '2020',
-                    data: [
-                      {
-                        name: 'Total Income',
-                        data: [51, 35, 41, 10, 91, 69, 62, 148, 91, 69, 62, 49],
-                      },
-                      {
-                        name: 'Total Expenses',
-                        data: [56, 13, 34, 10, 77, 99, 88, 45, 77, 99, 88, 77],
-                      },
-                    ],
-                  },
-                ],
               }}
             />
           </Grid>
@@ -177,22 +156,21 @@ export default function OverviewEcommerceView() {
 
           <Grid xs={12} md={12} lg={12}>
             <EcommerceBestSalesman
-              title="Best Trainers"
-              tableData={_ecommerceBestSalesman}
+              title="Top Trending Trainers"
+              tableData={analytics?.topTrendingTrainers}
               tableLabels={[
-                { id: 'name', label: 'Seller' },
-                { id: 'category', label: 'Product' },
-                { id: 'country', label: 'Country', align: 'center' },
-                { id: 'totalAmount', label: 'Total', align: 'right' },
-                { id: 'rank', label: 'Rank', align: 'right' },
+                { id: 'name', label: 'Name' },
+                { id: 'email', label: 'Email' },
+                { id: 'total_bookings', label: 'Total Bookings' },
               ]}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={6}>
-            <PendingRequests />
+            <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
-            <EcommerceLatestProducts title="Trending Packages" list={_ecommerceLatestProducts} />
+            <PendingRequests />
           </Grid>
         </Grid>
       ) : (
