@@ -78,6 +78,7 @@ import { Link } from '@mui/material';
 import moment from 'moment';
 import { useGetAllCity } from 'src/api/city';
 import { useGetStateList } from 'src/api/state';
+import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -639,9 +640,7 @@ export default function UserDetailsContent({
       ))}
     </Tabs>
   );
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
 
   const { states, stateLoading, stateError } = useGetStateList({
@@ -1502,9 +1501,6 @@ export default function UserDetailsContent({
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' && studentTab === 'details' && renderAddress}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (

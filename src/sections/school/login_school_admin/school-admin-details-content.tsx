@@ -29,6 +29,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
+import { useGoogleMaps } from 'src/sections/overview/e-commerce/GoogleMapsProvider';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -119,9 +120,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
     </Stack>
   );
   // Address ///////////////////////////////
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
   const defaultCenter = {
     lat: parseFloat(details?.latitude) || 0,

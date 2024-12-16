@@ -48,6 +48,7 @@ import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { InfoOutlined } from '@mui/icons-material';
+import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 
 // ----------------------------------------------------------------------
 
@@ -617,9 +618,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     </Stack>
   );
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
   const defaultCenter = {
     lat: parseFloat(details?.latitude) || 0,

@@ -26,11 +26,12 @@ import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
-import TrainerMap from '../ecommerce-tainer-map';
 import PendingRequests from '../ecommerce-pending-trainer-request';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAnalytics } from 'src/api/anlytics';
 import { Box, CircularProgress } from '@mui/material';
+import HeatMap from '../ecommerce-heat-map';
+import TrainerMap from '../ecommerce-tainer-map';
 
 // ----------------------------------------------------------------------
 
@@ -58,11 +59,9 @@ export default function OverviewEcommerceView() {
               // }
             />
           </Grid>
-
           {/* <Grid xs={12} md={4}>
           <EcommerceNewProducts list={_ecommerceNewProducts} />
         </Grid> */}
-
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary
               title="Total Trainers"
@@ -73,7 +72,6 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary
               title="Total Students"
@@ -85,7 +83,6 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary
               title="Sales Profit"
@@ -97,15 +94,29 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary
               title="Total Bookings"
               total={analytics?.bookingsCount ?? '0'}
             />
           </Grid>
-          <Grid xs={12} md={6} lg={8}>
+          <Grid xs={12} md={4}>
+            <EcommerceWidgetSummary
+              title="Confirmed Bookings"
+              total={analytics?.bookingsCount ?? '0'}
+            />
+          </Grid>{' '}
+          <Grid xs={12} md={4}>
+            <EcommerceWidgetSummary
+              title="Cancelled Bookings"
+              total={analytics?.bookingsCount ?? '0'}
+            />
+          </Grid>
+          {/* <Grid xs={12} md={6} lg={6}>
             <TrainerMap />
+          </Grid> */}
+          <Grid xs={12} md={12} lg={12}>
+            <HeatMap />
           </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
@@ -126,7 +137,6 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
           <Grid xs={12} md={6} lg={8}>
             <EcommerceYearlySales
               title="Yearly Revenue"
@@ -149,11 +159,9 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
-
           <Grid xs={12} md={12} lg={12}>
             <EcommerceBestSalesman
               title="Top Trending Trainers"
@@ -165,7 +173,6 @@ export default function OverviewEcommerceView() {
               ]}
             />
           </Grid>
-
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
