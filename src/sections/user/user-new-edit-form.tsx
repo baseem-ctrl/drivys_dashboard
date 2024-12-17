@@ -51,6 +51,7 @@ import {
   InputAdornment,
   MenuItem,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -64,6 +65,7 @@ import { useGetSchool } from 'src/api/school';
 import moment from 'moment';
 import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
+import { InfoOutlined } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 
@@ -731,6 +733,15 @@ export default function UserNewEditForm({
                   name="certificate_commission_in_percentage"
                   label="Certificate Commission (%)"
                   type="number"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Tooltip title="Commission for school from certificate" placement="top">
+                          <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                        </Tooltip>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               )}
               <RHFAutocomplete
