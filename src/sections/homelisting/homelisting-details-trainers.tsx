@@ -70,7 +70,7 @@ export default function HomeListingTrainers({
     limit: table?.rowsPerPage,
     user_types: 'TRAINER',
     search: search,
-    is_active: '1',
+    is_verified: '1',
   });
 
   const popover = usePopover();
@@ -213,26 +213,6 @@ export default function HomeListingTrainers({
     setTrainerId(trainer?.id);
     setTrainerMappingId(trainer?.id);
   };
-  // const handleRemove = async () => {
-  //   try {
-  //     if (trainerMappingId) {
-  //       const response = await RemoveTrainerFromSchool(trainerMappingId);
-  //       if (response) {
-  //         enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
-  //         setTrainerId('');
-  //         revalidateDetails();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     if (error?.errors) {
-  //       Object.values(error?.errors).forEach((errorMessage: any) => {
-  //         enqueueSnackbar(errorMessage[0], { variant: 'error' });
-  //       });
-  //     } else {
-  //       enqueueSnackbar(error.message, { variant: 'error' });
-  //     }
-  //   }
-  // };
   return (
     <Box
       gap={3}
