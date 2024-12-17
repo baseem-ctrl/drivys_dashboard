@@ -380,7 +380,7 @@ export default function HomeListingTrainers({
         ) : (
           !create && (
             <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-              No trainer under this school
+              No trainer found
             </Typography>
           )
         )

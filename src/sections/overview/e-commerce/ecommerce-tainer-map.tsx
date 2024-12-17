@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   GoogleMap,
   Marker,
@@ -25,8 +25,10 @@ interface Trainer {
   photoUrl: string;
   location: { lat: number; lng: number };
 }
-
-const TrainerMap: React.FC = () => {
+interface TrainerMapProps {
+  setZoomLevel: Function; // Expecting setZoomLevel as prop
+}
+const TrainerMap: React.FC<TrainerMapProps> = ({ setZoomLevel }) => {
   const { isLoaded } = useGoogleMaps();
 
   const [trainers, setTrainers] = useState<Trainer[]>([]);
@@ -74,7 +76,13 @@ const TrainerMap: React.FC = () => {
   useEffect(() => {
     fetchTrainersForLocation(defaultLatitude, defaultLongitude);
   }, []);
-
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const handleZoomChanged = () => {
+    if (mapRef.current) {
+      const zoom = mapRef.current.getZoom();
+      setZoomLevel(zoom || 12);
+    }
+  };
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     const lat = e.latLng?.lat() ?? defaultLatitude;
     const lng = e.latLng?.lng() ?? defaultLongitude;
@@ -97,6 +105,10 @@ const TrainerMap: React.FC = () => {
       center={selectedLocation}
       zoom={12}
       // onClick={handleMapClick}
+      onLoad={(map) => {
+        mapRef.current = map;
+      }}
+      onZoomChanged={handleZoomChanged}
     >
       {trainers.map((trainer) => (
         <Marker

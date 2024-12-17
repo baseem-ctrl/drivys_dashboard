@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { GoogleMap, useJsApiLoader, HeatmapLayer } from '@react-google-maps/api';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  GoogleMap,
+  useJsApiLoader,
+  HeatmapLayer,
+  Marker,
+  OverlayView,
+} from '@react-google-maps/api';
 import axios from 'axios';
 import { useGoogleMaps } from './GoogleMapsProvider';
-import { Box, Card, CardHeader, Typography } from '@mui/material';
+import { Avatar, Box, Card, CardHeader, Typography } from '@mui/material';
+import TrainerMap from './ecommerce-tainer-map';
+import profile from '../../../../public/logo/avatar.png';
 
 const containerStyle = {
   width: '100%',
@@ -23,6 +31,8 @@ const defaultLongitude = 54.346;
 interface Person {
   id: string;
   location: { lat: number; lng: number };
+  photoUrl: string;
+  name: string;
 }
 
 const HeatMap: React.FC = () => {
@@ -51,6 +61,8 @@ const HeatMap: React.FC = () => {
           response.data.data.map((trainer: any) => ({
             id: trainer.id,
             location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
+            name: trainer.name,
+            photoUrl: trainer.photo_url,
           }))
         );
       }
@@ -88,7 +100,14 @@ const HeatMap: React.FC = () => {
     fetchTrainers();
     fetchStudents();
   }, []);
-
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(12);
+  const updateZoomLevel = () => {
+    if (mapRef.current) {
+      const zoom = mapRef.current.getZoom();
+      if (zoom !== null) setZoomLevel(zoom);
+    }
+  };
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
@@ -126,40 +145,98 @@ const HeatMap: React.FC = () => {
         </Box>
       </Box>
 
-      <GoogleMap mapContainerStyle={containerStyle} center={selectedLocation} zoom={8}>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={selectedLocation}
+        zoom={zoomLevel}
+        onLoad={(map) => {
+          mapRef.current = map;
+        }}
+        onZoomChanged={updateZoomLevel}
+      >
         {/* Trainer Heatmap */}
-        <HeatmapLayer
-          data={trainerHeatmapData}
-          options={{
-            radius: 20,
-            opacity: 0.7,
-            gradient: [
-              'rgba(0, 255, 255, 0)',
-              'rgba(0, 255, 255, 1)',
-              'rgba(0, 191, 255, 1)',
-              'rgba(0, 127, 255, 1)',
-              'rgba(0, 63, 255, 1)',
-              'rgba(0, 0, 255, 1)',
-            ],
-          }}
-        />
+        {zoomLevel > 9 ? (
+          // <TrainerMap setZoomLevel={setZoomLevel} />
+          <>
+            {trainers.map((trainer) => (
+              <Marker
+                key={trainer.id}
+                position={trainer.location}
+                icon={{
+                  url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                  scaledSize: new google.maps.Size(0, 0),
+                }}
+              >
+                <OverlayView
+                  position={trainer.location}
+                  mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                >
+                  <div
+                    style={{
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      width: '80px',
 
-        {/* Student Heatmap */}
-        <HeatmapLayer
-          data={studentHeatmapData}
-          options={{
-            radius: 20,
-            opacity: 0.7,
-            gradient: [
-              'rgba(255, 0, 0, 0)',
-              'rgba(255, 0, 0, 1)',
-              'rgba(191, 0, 0, 1)',
-              'rgba(127, 0, 0, 1)',
-              'rgba(63, 0, 0, 1)',
-              'rgba(255, 0, 0, 1)',
-            ],
-          }}
-        />
+                      fontSize: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {trainer.photoUrl ? (
+                      <img
+                        src={trainer?.photoUrl}
+                        alt={trainer?.name}
+                        style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                      />
+                    ) : (
+                      <Avatar
+                        style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
+                        src={profile}
+                      />
+                    )}
+                    <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>{trainer.name}</h4>
+                  </div>
+                </OverlayView>
+              </Marker>
+            ))}
+          </>
+        ) : (
+          <>
+            <HeatmapLayer
+              data={trainerHeatmapData}
+              options={{
+                radius: 20,
+                opacity: 0.7,
+                gradient: [
+                  'rgba(0, 255, 255, 0)',
+                  'rgba(0, 255, 255, 1)',
+                  'rgba(0, 191, 255, 1)',
+                  'rgba(0, 127, 255, 1)',
+                  'rgba(0, 63, 255, 1)',
+                  'rgba(0, 0, 255, 1)',
+                ],
+              }}
+            />
+
+            {/* <HeatmapLayer
+              data={studentHeatmapData}
+              options={{
+                radius: 20,
+                opacity: 0.7,
+                gradient: [
+                  'rgba(255, 0, 0, 0)',
+                  'rgba(255, 0, 0, 1)',
+                  'rgba(191, 0, 0, 1)',
+                  'rgba(127, 0, 0, 1)',
+                  'rgba(63, 0, 0, 1)',
+                  'rgba(255, 0, 0, 1)',
+                ],
+              }}
+            /> */}
+          </>
+        )}
       </GoogleMap>
     </Card>
   );
