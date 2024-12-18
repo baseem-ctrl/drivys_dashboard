@@ -31,7 +31,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetAnalytics } from 'src/api/anlytics';
 import { Box, CircularProgress } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
-import TrainerMap from '../ecommerce-tainer-map';
+import TrainerMap from '../ecommerce-school-admin-map';
+import SchoolAdminMap from '../ecommerce-school-admin-map';
 
 // ----------------------------------------------------------------------
 
@@ -115,9 +116,15 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={6}>
             <TrainerMap />
           </Grid> */}
-          <Grid xs={12} md={12} lg={12}>
-            <HeatMap />
-          </Grid>
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' ? (
+            <Grid xs={12} md={12} lg={12}>
+              <HeatMap />
+            </Grid>
+          ) : (
+            <Grid xs={12} md={12} lg={12}>
+              <SchoolAdminMap />
+            </Grid>
+          )}
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
