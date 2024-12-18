@@ -126,10 +126,11 @@ export default function UserTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {country_code ? `${country_code}-${phone}` : phone || 'NA'}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {dob ? new Date(dob).toISOString().split('T')[0] : 'N/A'}
-        </TableCell>
-
+        {currentUserType !== 'TRAINER' && (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            {dob ? new Date(dob).toISOString().split('T')[0] : 'N/A'}
+          </TableCell>
+        )}
         <TableCell>
           <Label
             variant="soft"
@@ -140,7 +141,6 @@ export default function UserTableRow({
             {is_active ? 'Active' : 'In Active'}
           </Label>
         </TableCell>
-
         {currentUserType === 'TRAINER' && (
           <>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -150,12 +150,22 @@ export default function UserTableRow({
               {row?.max_cash_in_hand_allowed ?? 'NA'}
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
+              <Label
+                variant="soft"
+                color={
+                  row?.is_suspended === true || row?.is_suspended === 1
+                    ? 'success'
+                    : row?.is_suspended === false || row?.is_suspended === 0
+                    ? 'error'
+                    : 'warning'
+                }
+                sx={{ alignContent: 'center' }}
+              >
+                {row?.is_suspended ? 'Yes' : 'No'}
+              </Label>
+            </TableCell>
           </>
-        )}
-        {currentUserType === 'TRAINER' && (
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {row?.verified_at ? moment.utc(row?.verified_at).format('lll') : 'NA' ?? 'NA'}
-          </TableCell>
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="Quick Edit" placement="top" arrow>
