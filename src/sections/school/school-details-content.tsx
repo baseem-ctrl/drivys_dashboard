@@ -147,7 +147,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
-      commission_in_percentage: details?.commission_in_percentage || '',
+      commission_in_percentage: details?.commission_in_percentage || '0',
       license_expiry: details?.license_expiry || '',
       license_file: null,
       website: details?.website || '',
@@ -196,7 +196,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         name: selectedLocaleObject?.name || '',
         contact_email: details?.email || '',
         phone_number: details?.phone_number || '',
-        commission_in_percentage: details?.commission_in_percentage || '',
+        commission_in_percentage: details?.commission_in_percentage || '0',
         license_expiry: details?.license_expiry || '',
         license_file: null,
         website: details?.website || '',
@@ -220,7 +220,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         contact_phone_number: data?.phone_number,
         status: data?.status,
         is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage: data?.commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage || 0,
         create_new_user: 0,
         license_expiry: data?.license_expiry,
         license_file: data?.license_file,
@@ -235,7 +235,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       formData.append('contact_phone_number', payload.contact_phone_number || '');
       formData.append('status', payload.status || '');
       formData.append('is_active', payload.is_active);
-      formData.append('commission_in_percentage', payload.commission_in_percentage || '');
+      formData.append('commission_in_percentage', payload.commission_in_percentage || '0');
       formData.append('create_new_user', payload.create_new_user.toString());
       formData.append('license_expiry', payload.license_expiry || '');
       formData.append('user_id', payload.user_id || '');
@@ -315,7 +315,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Email', value: details?.email ?? 'NA' },
               { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
+              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? '0' },
 
               { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
               {

@@ -156,7 +156,7 @@ export default function SchoolTableRow({
       }
     ),
     phone_number: Yup.string(),
-    status: Yup.mixed(),
+    status: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
     user_id: Yup.string(),
     commission_in_percentage: Yup.string(),
@@ -220,7 +220,7 @@ export default function SchoolTableRow({
             ? vendor_user.user_id
             : '',
         is_active: data?.is_active ? 1 : 0,
-        commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage || 0,
         create_new_user: 0,
         vendor_id: row?.id,
       };
@@ -253,6 +253,8 @@ export default function SchoolTableRow({
 
     setBulkEditIds((prev) => (checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)));
   };
+  console.log(errors);
+
   return (
     <>
       <TableRow

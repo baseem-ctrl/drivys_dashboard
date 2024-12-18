@@ -25,7 +25,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { InfoOutlined } from '@mui/icons-material';
@@ -363,15 +363,17 @@ export default function SchoolCreateForm({
             <Grid item xs={6} mt={2} mb={2}>
               <RHFCheckbox name="is_active" label="Active" />
             </Grid>
-
-            <Grid item xs={6} mt={2} mb={2}>
-              <RHFCheckbox name="create_new_user" label="Create New User" />
-            </Grid>
           </Box>
+          <Grid item xs={6} mt={2} mb={2}>
+            <Typography variant="body1" sx={{ fontWeight: '600' }}>
+              Choose a School Admin: Create New or Select Existing
+            </Typography>
+            <RHFCheckbox name="create_new_user" label="Create New School Admin" />
+          </Grid>
           {!values?.create_new_user ? (
             <RHFAutocomplete
               name="user_id"
-              label="Select Owner"
+              label="Select School Admin"
               options={schoolAdminList.map(({ name, email, id }) => ({
                 label: `${name}[${email}]`,
                 value: id,

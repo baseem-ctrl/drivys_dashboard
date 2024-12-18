@@ -197,6 +197,10 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
         enqueueSnackbar(response.message, {
           variant: 'success',
         });
+        setEditingIndex(null);
+        setNewAddress(null);
+        reset();
+        reload();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -210,11 +214,6 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
-    } finally {
-      setEditingIndex(null);
-      setNewAddress(null);
-      reset();
-      reload();
     }
   });
   // Function to handle map click and update lat/lng values
