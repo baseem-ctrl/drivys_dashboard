@@ -85,15 +85,7 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           <Grid xs={12} md={4}>
-            <EcommerceWidgetSummary
-              title="Sales Profit"
-              percent={0.6}
-              total={4876}
-              chart={{
-                colors: [theme.palette.warning.light, theme.palette.warning.main],
-                series: [40, 70, 75, 70, 50, 28, 7, 64, 38, 27],
-              }}
-            />
+            <EcommerceWidgetSummary title="Total School" total={analytics?.schoolCount ?? '0'} />
           </Grid>
           <Grid xs={12} md={4}>
             <EcommerceWidgetSummary

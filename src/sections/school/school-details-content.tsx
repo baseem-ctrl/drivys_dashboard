@@ -563,7 +563,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="is_active"
                   control={schoolControl}
                   render={({ field }) => (
-                    <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Is Active</Typography>
+                      <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    </Box>
                   )}
                 />
                 <Controller

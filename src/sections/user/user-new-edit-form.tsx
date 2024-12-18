@@ -736,7 +736,7 @@ export default function UserNewEditForm({
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <Tooltip title="Commission for school from certificate" placement="top">
+                        <Tooltip title="Commission for trainer from certificate" placement="top">
                           <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                         </Tooltip>
                       </InputAdornment>
