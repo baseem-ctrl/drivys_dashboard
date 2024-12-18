@@ -476,39 +476,8 @@ export default function UserDetailsContent({
                         : 'NA',
                     }))
                   : [{ label: 'Languages', value: 'N/A' }]),
-                {
-                  label: 'Is Active',
-                  value: (
-                    <Chip
-                      label={details?.is_active ? 'Active' : 'Inactive'}
-                      color={details?.is_active ? 'success' : 'error'}
-                      variant="soft"
-                    />
-                  ),
-                },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      {
-                        label: 'Is Suspended',
-                        value: !!details?.is_suspended ? (
-                          <Chip label="Suspended" color="error" variant="soft" />
-                        ) : (
-                          <Chip label="No" color="success" variant="soft" />
-                        ),
-                      },
-                      {
-                        label: 'Max Cash Allowed in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                      },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                      {
-                        label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
-                      },
-                      {
-                        label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
-                      },
                       {
                         label: 'School Name',
                         value: details?.vendor?.vendor_translations?.[0]?.name ? (
@@ -532,8 +501,64 @@ export default function UserDetailsContent({
                         label: 'Vendor Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
                       },
+                    ]
+                  : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+      </Stack>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+          p: 2.5,
+          // pr: { xs: 2.5, md: 1 },
+        }}
+      >
+        <Grid item xs={12} sm={12} md={6}>
+          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                {
+                  label: 'Active',
+                  value: (
+                    <Chip
+                      label={details?.is_active ? 'Yes' : 'No'}
+                      color={details?.is_active ? 'success' : 'error'}
+                      variant="soft"
+                    />
+                  ),
+                },
+                ...(details?.user_type === 'TRAINER'
+                  ? [
                       {
-                        label: 'Verified At',
+                        label: 'Suspended',
+                        value: !!details?.is_suspended ? (
+                          <Chip label="Yes" color="success" variant="soft" />
+                        ) : (
+                          <Chip label="No" color="error" variant="soft" />
+                        ),
+                      },
+                      {
+                        label: 'Verification',
                         value: !details?.verified_at ? (
                           <Box>
                             <Button variant="soft" onClick={handleVerify}>
@@ -552,7 +577,7 @@ export default function UserDetailsContent({
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                     {item.label}
                   </Box>
-                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
@@ -563,6 +588,45 @@ export default function UserDetailsContent({
             </Stack>
           </Scrollbar>
         </Grid>
+        {details?.user_type === 'TRAINER' && (
+          <Grid item xs={12} sm={12} md={6}>
+            <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
+              Vendor Financial Summary
+            </Typography>
+            <Scrollbar>
+              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+                {[
+                  {
+                    label: 'Max Cash Allowed in Hand',
+                    value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                  },
+                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                  {
+                    label: 'Cash Clearance Date',
+                    value: details?.cash_clearance_date ?? 'N/A',
+                  },
+                  {
+                    label: 'Last Booking At',
+                    value: details?.last_booking_was ?? 'N/A',
+                  },
+                  ,
+                ].map((item, index) => (
+                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span" sx={{ flex: 1 }}>
+                      {item.value ?? 'N/A'}
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Scrollbar>
+          </Grid>
+        )}
       </Stack>
     </Stack>
   );

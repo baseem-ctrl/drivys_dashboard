@@ -465,7 +465,7 @@ export default function UserNewEditForm({
         if (data?.bio) body.append('bio', data?.bio);
       }
 
-      body.append('locale', data?.locale?.language_culture);
+      if (data?.locale) body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
