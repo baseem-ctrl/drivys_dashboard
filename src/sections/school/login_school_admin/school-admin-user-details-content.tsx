@@ -49,22 +49,48 @@ import SchoolAdminTrainerDetailsContent from './school-admin-trainer-details-con
 import StudentDetailsContent from 'src/sections/user/student-details-content';
 import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
+import { useGetAllCity } from 'src/api/city';
+import { useGetUserDocumentList } from 'src/api/user-document';
 
 // ----------------------------------------------------------------------
 
 type Props = {
+  addresses: any;
+  addressesLoading: any;
   details: any;
   loading?: any;
   reload?: any;
 };
 
-export default function UserDetailsContentAdmin({ details, loading, reload }: Props) {
+export default function UserDetailsContentAdmin({
+  details,
+  loading,
+  reload,
+  addresses,
+  addressesLoading,
+}: Props) {
   const [currentTab, setCurrentTab] = useState('details');
+  const [load, setLoad] = useState(false);
+  const { reset, control } = useForm();
+  const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
-
+  const toggleShowAll = () => setShowAll((prev) => !prev);
+  const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
+  const {
+    userDocuments,
+    userDocumentLoading,
+    userDocumentError,
+    totalPages,
+    revalidateUserDocuments,
+  } = useGetUserDocumentList({ userId: details.id });
   const router = useRouter();
   const handleVerify = async (e: any, user_id: string) => {
     e.stopPropagation();

@@ -233,7 +233,7 @@ export function useGetAddressList({
   page: number;
   limit: number;
   search?: string;
-  userId: number;
+  userId: any;
 }) {
   const getAddressUrl = () => {
     const queryParams: { [key: string]: any } = {
