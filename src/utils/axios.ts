@@ -162,6 +162,7 @@ export const endpoints = {
   },
   schoolAdmin: {
     verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
+    locations: 'admin/studentTrainerRadius/get-student-trainer-under-radius',
   },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',

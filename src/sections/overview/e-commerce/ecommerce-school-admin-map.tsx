@@ -44,7 +44,7 @@ interface Person {
   name: string;
 }
 
-const HeatMap: React.FC = () => {
+const SchoolAdminMap: React.FC = () => {
   const { isLoaded } = useGoogleMaps();
 
   const [trainers, setTrainers] = useState<Person[]>([]);
@@ -61,15 +61,28 @@ const HeatMap: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_HOST_API}admin/trainers/get-nearest-trainers-list`,
+        `${
+          import.meta.env.VITE_HOST_API
+        }admin/studentTrainerRadius/get-student-trainer-under-radius`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
         }
       );
-      if (response?.data?.data) {
+
+      if (response?.data?.trainer) {
         setTrainers(
-          response.data.data.map((trainer: any) => ({
+          response.data.trainer.map((trainer: any) => ({
+            id: trainer.id,
+            location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
+            name: trainer.name,
+            photoUrl: trainer.photo_url,
+          }))
+        );
+      }
+      if (response?.data?.student) {
+        setStudents(
+          response.data.student.map((trainer: any) => ({
             id: trainer.id,
             location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
             name: trainer.name,
@@ -82,36 +95,9 @@ const HeatMap: React.FC = () => {
     }
   };
 
-  // Fetch students data
-  const fetchStudents = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${import.meta.env.VITE_HOST_API}admin/studentMap/get-student-under-radius`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
-        }
-      );
-      if (response?.data?.data) {
-        setStudents(
-          response.data.data.map((student: any) => ({
-            id: student.id,
-            location: { lat: student.address.latitude, lng: student.address.longitude },
-            name: student?.name,
-            photoUrl: student?.photo_url,
-          }))
-        );
-      }
-    } catch (error) {
-      console.error('Error fetching students:', error);
-    }
-  };
-
   // Fetch data on component mount
   useEffect(() => {
     fetchTrainers();
-    fetchStudents();
   }, []);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [zoomLevel, setZoomLevel] = useState(6);
@@ -312,4 +298,4 @@ const HeatMap: React.FC = () => {
   );
 };
 
-export default HeatMap;
+export default SchoolAdminMap;
