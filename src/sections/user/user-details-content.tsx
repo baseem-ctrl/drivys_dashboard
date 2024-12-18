@@ -1211,8 +1211,12 @@ export default function UserDetailsContent({
                     setShowMapIndex(showMapIndex === index ? null : index);
                     setAddressForm({
                       ...addressForm,
-                      longitude: address.longitude, // Ensure these properties exist on the address object
-                      latitude: address.latitude,
+                      longitude: address?.longitude, // Ensure these properties exist on the address object
+                      latitude: address?.latitude,
+                    });
+                    setMarkerPosition({
+                      lat: address?.latitude, // Ensure these properties exist on the address object
+                      lng: address?.longitude,
                     });
                     // handleEditAddress(index, address);
                   }}

@@ -94,12 +94,11 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
             { label: 'Status', value: details?.status ?? 'NA' },
             {
               label: 'Is Active',
-              value:
-                details?.is_active === '1' ? (
-                  <Iconify color="green" icon="bi:check-square-fill" />
-                ) : (
-                  <Iconify color="red" icon="bi:x-square-fill" />
-                ),
+              value: !!details?.is_active ? (
+                <Iconify color="green" icon="bi:check-square-fill" />
+              ) : (
+                <Iconify color="red" icon="bi:x-square-fill" />
+              ),
             },
           ].map((item, index) => (
             <Box key={index} sx={{ display: 'flex', width: '100%' }}>
