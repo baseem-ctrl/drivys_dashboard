@@ -288,8 +288,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mt: 7,
-          mb: 8,
+          mb: 2,
         }}
       >
         <Button

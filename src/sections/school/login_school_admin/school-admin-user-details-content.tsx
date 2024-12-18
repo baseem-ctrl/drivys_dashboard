@@ -51,6 +51,10 @@ import moment from 'moment';
 import { updateUserVerification } from 'src/api/school-admin';
 import { useGetAllCity } from 'src/api/city';
 import { useGetUserDocumentList } from 'src/api/user-document';
+import { useGoogleMaps } from 'src/sections/overview/e-commerce/GoogleMapsProvider';
+import TrainerWorkingHour from 'src/sections/user/trainer-working-hour';
+import UserDocumentDetails from 'src/sections/user/user-document/user-document-details';
+import BookingTrainerTable from 'src/sections/user/booking-details/trainer-booking-details';
 
 // ----------------------------------------------------------------------
 
@@ -70,10 +74,9 @@ export default function UserDetailsContentAdmin({
   addressesLoading,
 }: Props) {
   const [currentTab, setCurrentTab] = useState('details');
-  const [load, setLoad] = useState(false);
+  const [load, setLoad] = useState(true);
   const { reset, control } = useForm();
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
@@ -91,17 +94,31 @@ export default function UserDetailsContentAdmin({
     totalPages,
     revalidateUserDocuments,
   } = useGetUserDocumentList({ userId: details.id });
-  const router = useRouter();
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: parseFloat(addresses?.latitude) || 24.4539,
+    lng: parseFloat(addresses?.longitude) || 54.3773,
+  });
+
   const handleVerify = async (e: any, user_id: string) => {
-    e.stopPropagation();
-    const body = {
-      trainer_id: details?.id,
-      verify: 1,
-    };
-    const response = await updateUserVerification(body);
-    if (response) {
-      enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
-      reload();
+    // e.stopPropagation();
+    try {
+      const body = {
+        trainer_id: details?.id,
+        verify: 1,
+      };
+      const response = await updateUserVerification(body);
+      if (response) {
+        enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
   };
   const renderContent = (
@@ -115,9 +132,7 @@ export default function UserDetailsContentAdmin({
           // top: '1.5rem',
           right: '1rem',
         }}
-      >
-        {/* <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} /> */}
-      </Stack>
+      ></Stack>
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
@@ -163,55 +178,11 @@ export default function UserDetailsContentAdmin({
                         : 'NA',
                     }))
                   : [{ label: 'Languages', value: 'N/A' }]),
-                {
-                  label: 'Is Active',
-                  value:
-                    details?.is_active === '1' ? (
-                      <Chip label="Active" color="success" variant="soft" />
-                    ) : (
-                      <Chip label="In Active" color="error" variant="soft" />
-                    ),
-                },
-
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Is Suspended',
-                        value: !!details?.is_suspended ? (
-                          <Chip label="Suspended" color="error" variant="soft" />
-                        ) : (
-                          'NA'
-                        ),
-                      },
-                      {
-                        label: 'Max Cash Allowded in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                      },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                      {
-                        label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
-                      },
-                      {
-                        label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
-                      },
-                      {
                         label: 'Vendor Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
-                      },
-                      {
-                        label: 'Verified At',
-                        value: !details?.school_verified_at ? (
-                          <Box>
-                            <Button variant="soft" onClick={handleVerify}>
-                              {' '}
-                              Verify
-                            </Button>
-                          </Box>
-                        ) : (
-                          moment.utc(details?.school_verified_at).format('lll')
-                        ),
                       },
                     ]
                   : []),
@@ -233,6 +204,122 @@ export default function UserDetailsContentAdmin({
           </Scrollbar>
         </Grid>
       </Stack>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+          p: 2.5,
+          // pr: { xs: 2.5, md: 1 },
+        }}
+      >
+        <Grid item xs={12} sm={12} md={6}>
+          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                {
+                  label: 'Active',
+                  value: (
+                    <Chip
+                      label={details?.is_active ? 'Yes' : 'No'}
+                      color={details?.is_active ? 'success' : 'error'}
+                      variant="soft"
+                    />
+                  ),
+                },
+                ...(details?.user_type === 'TRAINER'
+                  ? [
+                      {
+                        label: 'Suspended',
+                        value: !!details?.is_suspended ? (
+                          <Chip label="Yes" color="success" variant="soft" />
+                        ) : (
+                          <Chip label="No" color="error" variant="soft" />
+                        ),
+                      },
+                      {
+                        label: 'School Verification',
+                        value: !details?.school_verified_at ? (
+                          <Box>
+                            <Button variant="soft" onClick={handleVerify}>
+                              {' '}
+                              Verify
+                            </Button>
+                          </Box>
+                        ) : (
+                          moment.utc(details?.school_verified_at).format('ll')
+                        ),
+                      },
+                      {
+                        label: 'Admin Verification',
+                        value: !details?.verified_at ? (
+                          <Box>Not Verified Yet</Box>
+                        ) : (
+                          moment.utc(details?.verified_at).format('ll')
+                        ),
+                      },
+                    ]
+                  : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+        {details?.user_type === 'TRAINER' && (
+          <Grid item xs={12} sm={12} md={6}>
+            <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
+              Vendor Financial Summary
+            </Typography>
+            <Scrollbar>
+              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+                {[
+                  {
+                    label: 'Max Cash Allowed in Hand',
+                    value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                  },
+                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                  {
+                    label: 'Cash Clearance Date',
+                    value: details?.cash_clearance_date ?? 'N/A',
+                  },
+                  {
+                    label: 'Last Booking At',
+                    value: details?.last_booking_was ?? 'N/A',
+                  },
+                  ,
+                ].map((item, index) => (
+                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span" sx={{ flex: 1 }}>
+                      {item.value ?? 'N/A'}
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Scrollbar>
+          </Grid>
+        )}
+      </Stack>
     </Stack>
   );
 
@@ -249,7 +336,157 @@ export default function UserDetailsContentAdmin({
       ))}
     </Tabs>
   );
+  const renderUserPreferences = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{}}
+      >
+        <Grid item xs={12} sm={8} md={8}>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                {
+                  label: 'City',
+                  value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+                },
+                {
+                  label: 'Area',
+                  value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
+                },
+                { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
+                { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+
+                {
+                  label: 'Vehicle type',
+                  value:
+                    details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
+                },
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+      </Stack>
+    </Stack>
+  );
+  const [showMapIndex, setShowMapIndex] = useState(null);
+  const router = useRouter();
+  const { isLoaded } = useGoogleMaps();
+  const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
+  const handleBookingClick = (booking) => {
+    router.push(paths.dashboard.booking.details(booking));
+  };
+  const renderAddress = (
+    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
+      <Scrollbar>
+        {/* Form for Adding or Editing an Address */}
+        <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
+          {displayedAddresses.map((address, index) => (
+            <Grid container spacing={3} key={index}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Address Details {index + 1}
+                </Typography>
+                {/* Address Details */}
+                {[
+                  { label: 'Address', value: address?.address ?? 'N/A' },
+                  { label: 'Street', value: address?.street ?? 'N/A' },
+                  { label: 'Building Name', value: address?.building_name ?? 'N/A' },
+                  {
+                    label: 'City',
+                    value:
+                      address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
+                  },
+                  {
+                    label: 'Area',
+                    value: address?.state_province
+                      ? address?.state_province?.translations?.[0]?.name
+                      : 'N/A',
+                  },
+                  { label: 'Country Code', value: address?.country_code ?? 'N/A' },
+                  { label: 'Label', value: address?.label ?? 'N/A' },
+                  { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
+                  { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
+                  { label: 'Country', value: address?.country ?? 'N/A' },
+                  { label: 'Landmark', value: address?.landmark ?? 'N/A' },
+                ].map((item, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span">{item.value}</Box>
+                  </Box>
+                ))}
+
+                {/* Edit and Delete Buttons */}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ pt: 2, pb: 2 }}>
+                  {isLoaded && load ? (
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={{
+                        lat: address?.latitude, // Ensure these properties exist on the address object
+                        lng: address?.longitude,
+                      }}
+                      zoom={12}
+                      // onClick={handleMapClick}
+                    >
+                      {address?.latitude && address?.longitude && (
+                        <Marker
+                          position={{
+                            lat: address?.latitude, // Ensure these properties exist on the address object
+                            lng: address?.longitude,
+                          }}
+                          icon={{
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
+                    </GoogleMap>
+                  ) : (
+                    <div>Loading Map...</div>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          ))}
+        </Stack>
+        {addresses.length > 2 && (
+          <Button variant="outlined" onClick={toggleShowAll}>
+            {showAll ? 'Show Less' : 'Show More'}
+          </Button>
+        )}
+      </Scrollbar>
+    </Stack>
+  );
   return (
     <>
       {loading ? (
@@ -279,13 +516,34 @@ export default function UserDetailsContentAdmin({
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
-
-              {/* For trainer user type with 3 tabs */}
+              {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
+                <TrainerWorkingHour userId={details?.id} />
+              )}
+              <Grid xs={12} md={12}>
+                {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (
+                  <UserDocumentDetails
+                    id={details?.id}
+                    documents={userDocuments}
+                    reload={revalidateUserDocuments}
+                  />
+                )}
+              </Grid>
+              <Grid xs={12} md={12}>
+                {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
+                  <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
+                )}
+              </Grid>
+            </Grid>
+            <Grid xs={12} md={12}>
+              {addresses?.length > 0 &&
+                details?.user_type === 'TRAINER' &&
+                currentTab === 'details' &&
+                renderAddress}
             </Grid>
 
-            {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
+            <Grid xs={12} md={12}>
+              {renderUserPreferences}
+            </Grid>
           </Grid>
         </>
       )}
