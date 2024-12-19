@@ -206,6 +206,7 @@ export default function UserNewEditForm({
     vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
+    area_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
         id: Yup.mixed().required('Language is required'), // Validate court add-on
@@ -293,6 +294,13 @@ export default function UserNewEditForm({
             label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || 'Unknown',
           }
         : '',
+      area_id: currentUser?.user_preference?.state_province
+        ? {
+            value: currentUser?.user_preference?.state_province_id,
+            label:
+              currentUser?.user_preference?.state_province?.translations?.[0]?.name || 'Unknown',
+          }
+        : '',
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage || '',
       price_per_km: currentUser?.user_preference?.price_per_km || '',
@@ -347,6 +355,7 @@ export default function UserNewEditForm({
     name: 'license',
   });
   const values = watch();
+  console.log(values);
 
   useEffect(() => {
     if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
@@ -444,7 +453,7 @@ export default function UserNewEditForm({
       }
       if (data?.gender) body.append('gender', data?.gender);
       if (data?.city_id) body.append('city_id', data?.city_id.value);
-      if (data?.area_id) body.append('area_id', data?.area_id);
+      if (data?.area_id) body.append('area_id', data?.area_id?.value);
       if (data?.phone) body.append('country_code', data?.country_code ?? '971');
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
@@ -812,7 +821,6 @@ export default function UserNewEditForm({
                     disableClearable={true}
                     loading={categoryLoading}
                   />
-
                   <RHFAutocompleteSearch
                     name="city_id"
                     label="City"
@@ -829,19 +837,22 @@ export default function UserNewEditForm({
                       </li>
                     )}
                   />
-
-                  <RHFSelect name="area_id" label="Select Area">
-                    {stateLoading ? (
-                      <MenuItem disabled>Loading Areas...</MenuItem>
-                    ) : (
-                      states?.map((state: any) => (
-                        <MenuItem key={state.id} value={state.id}>
-                          {state.translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      )) ?? []
+                  <RHFAutocompleteSearch
+                    name="area_id"
+                    label="Area"
+                    options={
+                      states?.map((option: any) => ({
+                        value: option?.id ?? 'Unknown',
+                        label: option?.translations?.[0]?.name ?? 'Unknown',
+                      })) ?? []
+                    }
+                    getOptionLabel={(option) => option?.label ?? ''}
+                    renderOption={(props, option: any) => (
+                      <li {...props} key={option?.value}>
+                        {option?.label ?? 'Unknown'}
+                      </li>
                     )}
-                  </RHFSelect>
-
+                  />
                   {values.user_type === 'TRAINER' && (
                     <RHFSelect name="gender" label="Gender">
                       {genderData?.length > 0 &&
