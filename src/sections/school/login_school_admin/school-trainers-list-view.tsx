@@ -147,7 +147,7 @@ export default function SchoolTrainersListView() {
     e.stopPropagation();
     const body = {
       trainer_id: user_id,
-      verify: 0,
+      verify: 1,
     };
     const response = await updateUserVerification(body);
     if (response) {

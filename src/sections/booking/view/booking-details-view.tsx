@@ -67,7 +67,7 @@ const BookingDetailsComponent = () => {
     const selectedStatus = event;
     const formData = new FormData();
     formData.append('booking_status', selectedStatus);
-    formData.append('id', id);
+    formData.append('booking_id', id);
 
     try {
       const response = await updatePaymentBookingStatus(formData);
