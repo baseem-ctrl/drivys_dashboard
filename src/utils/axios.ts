@@ -285,6 +285,7 @@ export const endpoints = {
   pendingRequest: {
     trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
     rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
+    updateVerificationStatus: 'admin/trainerBySchoolAdmin/update-trainer-status',
     schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-list',
   },
   pickup: {

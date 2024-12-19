@@ -20,11 +20,15 @@ import { useSnackbar } from 'src/components/snackbar';
 
 import {
   rejectAcceptPendingRequest,
+  updateUserVerificationAdmin,
+  updateUserVerificationSchool,
   useGetPendingVerificationRequest,
 } from 'src/api/trainerPendingRequest';
 import { ASSETS_API } from 'src/config-global';
 import moment from 'moment';
 import { useTable, TablePaginationCustom } from 'src/components/table';
+import { useAuthContext } from 'src/auth/hooks';
+import { updateUserVerification } from 'src/api/school-admin';
 
 // Type Definitions
 type ItemProps = {
@@ -43,7 +47,7 @@ export default function PendingRequests() {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable({ defaultRowsPerPage: 2, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
+  const { user } = useAuthContext();
   const {
     pendingRequests,
     pendingRequestsError,
@@ -58,19 +62,26 @@ export default function PendingRequests() {
   const handleClickSchoolDetails = (userId: string) => {
     router.push(paths.dashboard.school.details(userId));
   };
-  const handleVerifyRequest = async (id: string, status) => {
+
+  const handleVerifyRequest = async (request: any, status: any) => {
     try {
-      const response = await rejectAcceptPendingRequest(id, status);
+      let response;
+
+      if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+        const body = {
+          trainer_id: request?.user_id,
+          verify: status,
+        };
+        response = await updateUserVerification(body);
+      } else {
+        const body = {
+          mapping_id: request?.id,
+          verify: status,
+        };
+        response = await updateUserVerificationAdmin(body);
+      }
       if (response) {
-        if (status === 1) {
-          enqueueSnackbar('Request accepted successfully!', {
-            variant: 'success',
-          });
-        } else {
-          enqueueSnackbar('Request rejected successfully!', {
-            variant: 'error',
-          });
-        }
+        enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
       }
     } catch (error) {
       if (error?.errors) {
@@ -84,7 +95,6 @@ export default function PendingRequests() {
       revalidatePendingRequests();
     }
   };
-
   // Loading state
   if (pendingRequestsLoading) {
     return (
@@ -121,7 +131,6 @@ export default function PendingRequests() {
       </Container>
     );
   }
-  console.log('pendingRequests', pendingRequests);
   return (
     <Card>
       {' '}
@@ -202,7 +211,7 @@ export default function PendingRequests() {
                   sx={{ flex: 1, mr: 1 }}
                   variant="contained"
                   color="error"
-                  onClick={() => handleVerifyRequest(request.id, 0)}
+                  onClick={() => handleVerifyRequest(request, 0)}
                 >
                   Reject
                 </Button>
@@ -211,7 +220,7 @@ export default function PendingRequests() {
                   sx={{ flex: 1, ml: 1 }}
                   variant="contained"
                   color="success"
-                  onClick={() => handleVerifyRequest(request.id, 1)}
+                  onClick={() => handleVerifyRequest(request, 1)}
                 >
                   Accept
                 </Button>

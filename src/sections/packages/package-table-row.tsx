@@ -377,8 +377,10 @@ export default function PackageTableRow({
           ) : (
             <ListItemText
               primary={
-                vendor?.vendor_translations?.find((item) => item?.locale?.toLowerCase() === 'en')
-                  ?.name ?? 'NA'
+                vendor?.vendor_translations?.find(
+                  (item) =>
+                    item?.locale?.toLowerCase() === 'en' ?? item?.locale?.toLowerCase() === 'ar'
+                )?.name ?? 'NA'
               }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{

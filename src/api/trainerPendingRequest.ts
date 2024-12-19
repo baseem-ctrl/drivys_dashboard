@@ -58,13 +58,13 @@ export function useGetPendingVerificationRequest({
 
   return { ...memoizedValue, revalidatePendingRequests };
 }
-export function rejectAcceptPendingRequest(mappingId: number, verify: number) {
-  const body = {
-    mapping_id: mappingId,
-    verify: verify,
-  };
-
+export function updateUserVerificationAdmin(body: any) {
   const URL = endpoints.pendingRequest.rejectAcceptPendingRequest;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function updateUserVerificationSchool(body: any) {
+  const URL = endpoints.pendingRequest.updateVerificationStatus;
   const response = drivysCreator([URL, body]);
   return response;
 }

@@ -15,6 +15,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import { ASSETS_API } from 'src/config-global';
+import { Container, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -49,15 +50,23 @@ export default function EcommerceBestSalesman({
 
       <TableContainer sx={{ overflow: 'unset' }}>
         <Scrollbar>
-          <Table sx={{ minWidth: 640 }}>
-            <TableHeadCustom headLabel={tableLabels} />
+          {tableData && tableData?.length > 0 ? (
+            <Table sx={{ minWidth: 640 }}>
+              <TableHeadCustom headLabel={tableLabels} />
 
-            <TableBody>
-              {tableData.map((row) => (
-                <EcommerceBestSalesmanRow key={row.id} row={row} />
-              ))}
-            </TableBody>
-          </Table>
+              <TableBody>
+                {tableData.map((row) => (
+                  <EcommerceBestSalesmanRow key={row.id} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4, mb: 2 }}>
+              <Typography variant="body1" color="text.secondary">
+                No {title} at the moment.
+              </Typography>
+            </Container>
+          )}
         </Scrollbar>
       </TableContainer>
     </Card>

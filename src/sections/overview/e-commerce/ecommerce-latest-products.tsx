@@ -14,6 +14,7 @@ import { ColorPreview } from 'src/components/color-utils';
 import Package from '../../../../public/logo/package-icon.svg';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
+import { Container, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,19 @@ interface Props extends CardProps {
 }
 
 export default function EcommerceLatestProducts({ title, subheader, list, ...other }: Props) {
+  // Empty state
+  if (!list || list.length === 0) {
+    return (
+      <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          {title}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          No {title} at the moment.
+        </Typography>
+      </Container>
+    );
+  }
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
