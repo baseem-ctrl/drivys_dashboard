@@ -379,7 +379,7 @@ export default function PackageTableRow({
               primary={
                 vendor?.vendor_translations?.find(
                   (item) =>
-                    item?.locale?.toLowerCase() === 'en' ?? item?.locale?.toLowerCase() === 'ar'
+                    item?.locale?.toLowerCase() === 'en' || item?.locale?.toLowerCase() === 'ar'
                 )?.name ?? 'NA'
               }
               primaryTypographyProps={{ typography: 'body2' }}

@@ -253,8 +253,6 @@ export default function SchoolTableRow({
 
     setBulkEditIds((prev) => (checked ? [...prev, id] : prev.filter((rowId) => rowId !== id)));
   };
-  console.log(errors);
-
   return (
     <>
       <TableRow
@@ -578,26 +576,30 @@ export default function SchoolTableRow({
           View
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            handleEditClick();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
+        {!row?.is_default && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              handleEditClick();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            confirm.onTrue();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
+        {!row?.is_default && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              confirm.onTrue();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
     </>
   );

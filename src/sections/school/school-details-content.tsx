@@ -569,6 +569,23 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     </Box>
                   )}
                 />
+                {/*  */}
+                {/* <Grid item xs={6} mt={2} mb={2}> */}
+                {/* <Typography variant="body1" sx={{ fontWeight: '600' }}>
+                  Choose a School Admin: Create New or Select Existing
+                </Typography>
+                <Controller
+                  name="create_new_user"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Create New School Admin</Typography>
+                      <Switch {...field} error={!!errors.create_new_user} checked={field.value} />
+                    </Box>
+                  )}
+                /> */}
+                {/* </Grid> */}
+                {/* {!values?.create_new_user ? ( */}
                 <Controller
                   className="editor"
                   control={schoolControl}
@@ -954,8 +971,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         borderRadius: 2,
         cursor: 'pointer',
         display: 'flex',
-
         width: '100%',
+        position: 'relative',
       }}
       height={350}
       onClick={() =>
@@ -964,6 +981,20 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           : ''
       }
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16, // Adjust spacing from top
+          right: 16, // Adjust spacing from right
+          width: 12, // Small round indicator
+          height: 12,
+          borderRadius: '50%',
+          backgroundColor: details?.vendor_user?.user?.is_active ? '#22C55E' : '#B71D18',
+          border: '1px solid #fff', // Optional: Add a border for better visibility
+          boxShadow: '0 0 2px rgba(0, 0, 0, 0.2)', // Optional: Add a shadow for better emphasis
+        }}
+      />
+
       <Avatar
         alt={details?.vendor_user?.user?.name}
         src={details?.vendor_user?.name?.user?.photo_url}
