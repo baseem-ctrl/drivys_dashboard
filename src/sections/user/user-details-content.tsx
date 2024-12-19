@@ -323,6 +323,27 @@ export default function UserDetailsContent({
       }
     }
   };
+  const handleSuspend = async () => {
+    try {
+      const body = {
+        user_id: details?.id,
+        is_suspended: details?.is_suspended ? 0 : 1,
+      };
+      const response = await updateUser(body);
+      if (response) {
+        enqueueSnackbar('Trainer Updated Successfully');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
@@ -551,10 +572,12 @@ export default function UserDetailsContent({
                   ? [
                       {
                         label: 'Suspended',
-                        value: !!details?.is_suspended ? (
-                          <Chip label="Yes" color="success" variant="soft" />
-                        ) : (
-                          <Chip label="No" color="error" variant="soft" />
+                        value: (
+                          <Switch
+                            checked={!!details?.is_suspended}
+                            onChange={() => handleSuspend()}
+                            color="error"
+                          />
                         ),
                       },
                       {
