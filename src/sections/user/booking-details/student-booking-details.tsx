@@ -11,6 +11,7 @@ import {
   Grid,
   Typography,
   Box,
+  Stack,
 } from '@mui/material';
 import { useGetBookingByStudentId } from 'src/api/school';
 
@@ -40,12 +41,14 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Email</TableCell>
+            <TableCell>Trainer Name</TableCell>
+            <TableCell>Trainer Email</TableCell>
             <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Sessions</TableCell>
+            <TableCell align="center">Total Sessions</TableCell>
+            <TableCell align="center">Session No </TableCell>
             <TableCell align="center">Booking Status</TableCell>
             <TableCell align="center">Payment Status</TableCell>
+            <TableCell align="center">Payment Method</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -67,31 +70,58 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 <TableCell>
                   <Grid container alignItems="center" spacing={1}>
                     <Grid item>
-                      <Typography>{booking?.user?.name || 'N/A'}</Typography>
+                      <Typography>{booking?.driver?.name || 'N/A'}</Typography>
                     </Grid>
                   </Grid>
                 </TableCell>
-                <TableCell>{booking.user.email}</TableCell>
+                <TableCell>{booking?.driver?.email ?? 'NA'}</TableCell>
                 <TableCell align="center">${booking.total}</TableCell>
+                <TableCell align="center">{booking?.no_of_sessions ?? 'NA'}</TableCell>
                 <TableCell>
-                  {booking.sessions.map((session) => (
-                    <Typography key={session.id} align="center">
-                      {session.id}
-                    </Typography>
-                  ))}
+                  {booking?.sessions && (
+                    <Stack spacing={1}>
+                      {booking.sessions
+                        .reduce((rows, session, index) => {
+                          if (index % 3 === 0) rows.push([]); // Start a new row every 3 items
+                          rows[rows.length - 1].push(session?.session_no); // Add session_no to the current row
+                          return rows;
+                        }, [])
+                        .map((row, rowIndex) => (
+                          <Box key={rowIndex}>
+                            {row.join(', ')} {/* Join the row items with commas */}
+                          </Box>
+                        ))}
+                    </Stack>
+                  )}
                 </TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.booking_status}
-                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking.booking_status === 'PENDING'
+                        ? 'info'
+                        : booking.booking_status === 'CANCELLED'
+                        ? 'error'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.payment_status}
-                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking?.payment_status === 'PENDING'
+                        ? 'info'
+                        : booking?.payment_status === 'FAILED'
+                        ? 'error'
+                        : booking?.payment_status === 'REFUNDED'
+                        ? 'warning'
+                        : booking?.payment_status === 'PARTIALLY PAID'
+                        ? 'primary'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
               </TableRow>

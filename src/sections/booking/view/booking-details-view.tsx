@@ -653,14 +653,14 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Method:
+                        Payment Method:
                       </Typography>
-                      <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
+                      <Typography>{bookingDetails?.payment_method || 'N/A'}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Amount:
+                        Pyment Amount:
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>
@@ -795,7 +795,21 @@ const BookingDetailsComponent = () => {
 
                           {/* <TableCell>{session?.session_no || 'N/A'}</TableCell> */}
 
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={session?.session_status}
+                              color={
+                                session?.session_status === 'PENDING'
+                                  ? 'info'
+                                  : session?.session_status === 'CANCELLED'
+                                  ? 'error'
+                                  : session?.session_status === 'CONFIRMED'
+                                  ? 'default'
+                                  : 'success'
+                              }
+                              variant="soft"
+                            />
+                          </TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
