@@ -1212,7 +1212,7 @@ export default function UserDetailsContent({
                 { label: 'Label', value: address?.label ?? 'N/A' },
                 { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
                 { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
-                { label: 'Country', value: address?.country ?? 'N/A' },
+                { label: 'Country', value: address?.country ?? 'UAE' },
                 { label: 'Landmark', value: address?.landmark ?? 'N/A' },
               ].map((item, idx) => (
                 <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
