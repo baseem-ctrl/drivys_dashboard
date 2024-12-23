@@ -159,6 +159,8 @@ export const endpoints = {
       addCommision: 'admin/vendor/bulk/update-commision',
     },
     schoolTrainers: 'admin/trainers/get-school-trainer-list',
+    messageToTrainer: 'admin/message/message-to-trainer',
+    createRewardTrainer: 'admin/reward/reward-to-trainer',
   },
   schoolAdmin: {
     verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
