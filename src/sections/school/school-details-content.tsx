@@ -755,8 +755,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     try {
       let payload = {
         street_address: data?.street_address,
-        city: selectedCity,
-        state: selectedState,
+        city: selectedCity.toString(),
+        state: selectedState.toString(),
         country: data?.country,
         latitude: data?.latitude,
         longitude: data?.longitude,
@@ -766,12 +766,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       if (editingIndex !== null) {
         payload.id = details?.vendor_addresses[editingIndex]?.id; // Add id if editingIndex is not null
       }
-      // const response = await createUpdateSchoolAddress(payload);
-      // if (response) {
-      //   enqueueSnackbar(response.message, {
-      //     variant: 'success',
-      //   });
-      // }
+      const response = await createUpdateSchoolAddress(payload);
+      if (response) {
+        enqueueSnackbar(response.message, {
+          variant: 'success',
+        });
+      }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
@@ -785,10 +785,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
-      // setEditingIndex(null);
-      // setNewAddress(null);
-      // reset();
-      // reload();
+      setEditingIndex(null);
+      setNewAddress(null);
+      reset();
+      reload();
     }
   });
   // Function to handle map click and update lat/lng values
@@ -861,7 +861,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         {[
                           { label: 'Street Address', value: details?.street_address ?? 'N/A' },
                           { label: 'City', value: details?.city ?? 'N/A' },
-                          { label: 'State', value: details?.state ?? 'N/A' },
+                          { label: 'Area', value: details?.state ?? 'N/A' },
                           { label: 'Country', value: details?.country ?? 'N/A' },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
@@ -912,7 +912,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 {[
                   { label: 'Street Address', name: 'street_address' },
                   { label: 'City', name: 'city', isDropdown: true, options: cityOptions },
-                  { label: 'State', name: 'state', isDropdown: true, options: stateOptions },
+                  { label: 'Area', name: 'state', isDropdown: true, options: stateOptions },
                   { label: 'Country', name: 'country' },
                   { label: 'Latitude', name: 'latitude' },
                   { label: 'Longitude', name: 'longitude' },
@@ -947,7 +947,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           ) : item.name === 'state' && stateLoading ? (
                             <MenuItem value="">
                               <CircularProgress size={24} />
-                              Loading States...
+                              Loading Areas...
                             </MenuItem>
                           ) : (
                             (item.name === 'city' ? cityOptions : stateOptions).map(
@@ -985,11 +985,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   </Button>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Selected City: {selectedCity}
-                </Typography>
-              </Grid>
+
               {/* Map Section */}
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
