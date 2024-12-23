@@ -56,7 +56,7 @@ export function useGetStateList({
     if (city_id !== undefined) queryParams.city_id = city_id;
     if (searchTerm) queryParams.search = searchTerm;
     if (locale) queryParams.locale = locale;
-
+    if (city_id) queryParams.city_id = city_id;
     return `${endpoints.state.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
