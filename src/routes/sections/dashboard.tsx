@@ -28,6 +28,8 @@ import CityDetailsView from 'src/sections/city/view/city-details-view';
 import PickupListPage from 'src/pages/pickup/pickup';
 import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
 import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
+import RewardDetailsPage from 'src/sections/school/trainer-reward/reward-details';
+import TrainerNotificationForm from 'src/sections/school/trainer-reward/create-trainer-notification';
 
 // ----------------------------------------------------------------------
 
@@ -244,7 +246,12 @@ const schooladminRoutes = [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
-      { path: 'trainers-list', element: <SchoolTrainersListView /> },
+      { path: 'rewards', element: <RewardDetailsPage /> },
+      { path: 'notifications', element: <TrainerNotificationForm /> },
+      {
+        path: 'trainers-list',
+        element: <SchoolTrainersListView />,
+      },
       { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
@@ -257,6 +264,7 @@ const schooladminRoutes = [
     ],
   },
 ];
+
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
   switch (userType) {

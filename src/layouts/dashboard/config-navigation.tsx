@@ -221,6 +221,11 @@ export function useNavData() {
       title: t('trainers'),
       path: paths.dashboard.school.trainer,
       icon: ICONS.user,
+      children: [
+        { title: t('Trainer List'), path: paths.dashboard.school.trainer },
+        { title: t('rewards'), path: paths.dashboard.school.trainerRewards },
+        { title: t('notifications'), path: paths.dashboard.school.trainerNotifications },
+      ],
     },
     {
       title: t('packages'),
