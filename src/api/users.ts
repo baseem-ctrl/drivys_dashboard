@@ -233,7 +233,7 @@ export function useGetAddressList({
   page: number;
   limit: number;
   search?: string;
-  userId: number;
+  userId: any;
 }) {
   const getAddressUrl = () => {
     const queryParams: { [key: string]: any } = {
@@ -271,4 +271,9 @@ export function useGetAddressList({
     ...memoizedValue,
     revalidateAddresses,
   };
+}
+export function createTrainer(body: any) {
+  const URL = endpoints.trainer.createTrainer;
+  const response = drivysCreator([URL, body]);
+  return response;
 }

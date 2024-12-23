@@ -50,6 +50,7 @@ import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { InfoOutlined } from '@mui/icons-material';
+import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 
 // ----------------------------------------------------------------------
 
@@ -58,10 +59,9 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+    details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
@@ -104,17 +104,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           value: item?.language_culture,
         }));
       }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
+
       setLocaleOptions([...initialLocaleOptions]);
-      // }
     }
   }, [language, details]);
 
@@ -156,11 +147,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   });
   const defaultVendorValues = useMemo(
     () => ({
-      locale: selectedLocaleObject?.locale || '',
+      locale: selectedLocaleObject?.locale || 'En',
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
-      commission_in_percentage: details?.commission_in_percentage || '',
+      commission_in_percentage: details?.commission_in_percentage || '0',
       license_expiry: details?.license_expiry || '',
       license_file: null,
       website: details?.website || '',
@@ -236,7 +227,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         name: selectedLocaleObject?.name || '',
         contact_email: details?.email || '',
         phone_number: details?.phone_number || '',
-        commission_in_percentage: details?.commission_in_percentage || '',
+        commission_in_percentage: details?.commission_in_percentage || '0',
         license_expiry: details?.license_expiry || '',
         license_file: null,
         website: details?.website || '',
@@ -261,7 +252,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         contact_phone_number: data?.phone_number,
         status: data?.status,
         is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage: data?.commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage || 0,
         create_new_user: 0,
         license_expiry: data?.license_expiry,
         license_file: data?.license_file,
@@ -276,7 +267,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       formData.append('contact_phone_number', payload.contact_phone_number || '');
       formData.append('status', payload.status || '');
       formData.append('is_active', payload.is_active);
-      formData.append('commission_in_percentage', payload.commission_in_percentage || '');
+      formData.append('commission_in_percentage', payload.commission_in_percentage || '0');
       formData.append('create_new_user', payload.create_new_user.toString());
       formData.append('license_expiry', payload.license_expiry || '');
       formData.append('user_id', payload.user_id || '');
@@ -325,6 +316,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -355,7 +347,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Email', value: details?.email ?? 'NA' },
               { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
+              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? '0' },
 
               { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
               {
@@ -513,14 +505,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Commission in (%)"
+                      label="Certificate Commission in (%)"
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Commission is for certificate" placement="top">
+                            <Tooltip title="Commission for drivys from certificate" placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -572,13 +564,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                            // variant="outlined"
-                            // margin="normal"
                           />
-                          {/* Optional: Show the uploaded file as a clickable link */}
-                          {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
-                            View Uploaded File
-                          </a> */}
                         </Box>
                       )}
                     </>
@@ -609,9 +595,29 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="is_active"
                   control={schoolControl}
                   render={({ field }) => (
-                    <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Is Active</Typography>
+                      <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    </Box>
                   )}
                 />
+                {/*  */}
+                {/* <Grid item xs={6} mt={2} mb={2}> */}
+                {/* <Typography variant="body1" sx={{ fontWeight: '600' }}>
+                  Choose a School Admin: Create New or Select Existing
+                </Typography>
+                <Controller
+                  name="create_new_user"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Create New School Admin</Typography>
+                      <Switch {...field} error={!!errors.create_new_user} checked={field.value} />
+                    </Box>
+                  )}
+                /> */}
+                {/* </Grid> */}
+                {/* {!values?.create_new_user ? ( */}
                 <Controller
                   className="editor"
                   control={schoolControl}
@@ -636,7 +642,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             <MenuItem
                               key={option.id}
                               value={option.id}
-                              disabled={option.id === details?.vendor_user.user?.id} // Disable the current admin
+                              disabled={
+                                details?.vendor_user?.user?.id === option.id // Ensure safe access
+                              }
                             >
                               {option.name}
                             </MenuItem>
@@ -659,28 +667,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           </Box>
         )}
       </Scrollbar>
-      {/* <SchoolCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={reload}
-        currentSchool={details}
-      /> */}
-      {/* {editMode && (
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" color="error" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-        </Stack>
-      )} */}
     </Stack>
   );
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
   const defaultCenter = {
     lat: parseFloat(details?.latitude) || 0,
@@ -1062,8 +1052,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         borderRadius: 2,
         cursor: 'pointer',
         display: 'flex',
-
         width: '100%',
+        position: 'relative',
       }}
       height={350}
       onClick={() =>
@@ -1072,6 +1062,20 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           : ''
       }
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16, // Adjust spacing from top
+          right: 16, // Adjust spacing from right
+          width: 12, // Small round indicator
+          height: 12,
+          borderRadius: '50%',
+          backgroundColor: details?.vendor_user?.user?.is_active ? '#22C55E' : '#B71D18',
+          border: '1px solid #fff', // Optional: Add a border for better visibility
+          boxShadow: '0 0 2px rgba(0, 0, 0, 0.2)', // Optional: Add a shadow for better emphasis
+        }}
+      />
+
       <Avatar
         alt={details?.vendor_user?.user?.name}
         src={details?.vendor_user?.name?.user?.photo_url}
@@ -1107,7 +1111,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
+            Wallet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_points !== 0 && (

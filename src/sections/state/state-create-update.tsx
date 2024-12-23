@@ -2,6 +2,8 @@ import * as Yup from 'yup';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+
 // @mui components
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
@@ -15,9 +17,15 @@ import DialogContent from '@mui/material/DialogContent';
 import { IStateItem } from 'src/types/state';
 // custom components
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, {
+  RHFSelect,
+  RHFTextField,
+  RHFSwitch,
+  RHFAutocomplete,
+} from 'src/components/hook-form';
 import { createStateTranslation, updateStateTranslation } from 'src/api/state';
 import { useGetAllLanguage } from 'src/api/language';
+import { useGetAllCity } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +47,9 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
     order: Yup.number().required('Order is required').integer('Order must be an integer'), // New validation for orderj
   });
   const { language } = useGetAllLanguage(0, 1000);
-
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -47,13 +57,18 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
   const defaultValues = useMemo(
     () => ({
       name: currentState?.translations?.[0]?.name || '',
-      locale: currentState?.translations?.[0]?.locale || 'en',
+      locale: currentState?.translations?.[0]?.locale || localeOptions[0]?.value,
+      city_id: currentState?.city
+        ? {
+            value: currentState?.city?.id,
+            label: currentState?.city?.city_translations[0]?.name || 'Unknown',
+          }
+        : null,
       published: currentState?.is_published === 1,
       order: currentState?.order || 0, // Set default order to 0 if not provided
     }),
     [currentState]
   );
-
   const methods = useForm({
     resolver: yupResolver(CitySchema) as any,
     defaultValues,
@@ -100,13 +115,15 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       const formData = new FormData();
 
       // Add the state ID while updating
-      formData.append('state_id', currentState?.id || '');
+
+      formData.append('city_id', currentState?.city_id || data?.city_id?.value);
       formData.append('is_published', data.published ? '1' : '0');
       formData.append('translations[0][locale]', data.locale);
       formData.append('translations[0][name]', data.name);
       formData.append('order', data.order.toString()); // Append the order value
 
       if (currentState?.id) {
+        formData.append('state_id', currentState?.id || '');
         await updateStateTranslation(formData);
         enqueueSnackbar('State translation updated successfully.');
       } else {
@@ -166,6 +183,22 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
                 </MenuItem>
               ))}
             </RHFSelect>
+
+            <RHFAutocomplete
+              name="city_id"
+              label="City"
+              options={city?.map((option: any) => ({
+                value: option?.id,
+                label: option?.city_translations[0]?.name ?? 'Unknown',
+              }))}
+              getOptionLabel={(option) => option?.label ?? ''}
+              renderOption={(props, option: any) => (
+                <li {...props} key={option?.value}>
+                  {option?.label ?? 'Unknown'}
+                </li>
+              )}
+            />
+
             <RHFTextField name="name" label="Name" />
             <RHFTextField name="order" label="Order" type="number" />
             <RHFSwitch name="published" label="Published" />

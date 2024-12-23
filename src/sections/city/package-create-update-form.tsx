@@ -15,6 +15,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useGetPackage } from 'src/api/package';
+import { useSnackbar } from 'src/components/snackbar';
 
 const PackageCreateEditForm = ({
   open,
@@ -34,6 +35,8 @@ const PackageCreateEditForm = ({
     commision_type: '',
     package_id: '',
   });
+  const { enqueueSnackbar } = useSnackbar();
+
   const [errors, setErrors] = useState({});
   useEffect(() => {
     if (open) {
@@ -79,8 +82,6 @@ const PackageCreateEditForm = ({
   const validateFields = () => {
     const newErrors = {};
     if (!formValues.min_price) newErrors.min_price = 'Minimum Price is required.';
-    if (!formValues.commision) newErrors.commision = 'Commission is required.';
-    if (!formValues.commision_type) newErrors.commision_type = 'Commission Type is required.';
     if (!formValues.package_id) newErrors.package_id = 'Package ID is required.';
     return newErrors;
   };
@@ -108,8 +109,6 @@ const PackageCreateEditForm = ({
           id: city_id,
           min_price: min_price,
           max_price: max_price,
-          commision: commision,
-          commision_type: commision_type,
         },
       ],
     };
@@ -119,7 +118,13 @@ const PackageCreateEditForm = ({
         onClose();
       })
       .catch((error) => {
-        console.error('Submission failed:', error);
+        if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors).forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
         setIsSubmitting(false);
       });
   };
@@ -157,37 +162,6 @@ const PackageCreateEditForm = ({
                 helperText={errors.max_price}
               />
             </Box>
-            <Box display="flex" justifyContent="space-between" mb={2}>
-              <TextField
-                name="commision"
-                label="Commission"
-                type="number"
-                value={formValues.commision}
-                onChange={handleChange}
-                fullWidth
-                error={Boolean(errors.commision)}
-                helperText={errors.commision}
-                sx={{ mb: 2, marginRight: 2 }}
-              />
-              <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.commision_type)}>
-                <InputLabel id="commision-type-label">Commission Type</InputLabel>
-                <Select
-                  labelId="commision-type-label"
-                  name="commision_type"
-                  value={formValues.commision_type}
-                  onChange={handleChange}
-                  label="Commission Type"
-                >
-                  <MenuItem value="percentage">Percentage</MenuItem>
-                  <MenuItem value="flat_amount">Flat Amount</MenuItem>
-                </Select>
-                {errors.commision_type && (
-                  <Typography color="error" variant="caption">
-                    {errors.commision_type}
-                  </Typography>
-                )}
-              </FormControl>
-            </Box>
             <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
               <InputLabel id="package-id-label">Package ID</InputLabel>
               <Select
@@ -202,7 +176,7 @@ const PackageCreateEditForm = ({
                 ) : (
                   packageList.map((pkg) => {
                     const packageTranslation = pkg.package_translations.find(
-                      (translation) => translation.locale === 'en'
+                      (translation) => translation.locale.toLowerCase() === 'en'
                     );
                     const packageName = packageTranslation
                       ? packageTranslation.name

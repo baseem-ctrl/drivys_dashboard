@@ -54,8 +54,8 @@ const docTypeOptions = [
   { value: 'OTHER', label: 'OTHER' },
 ];
 const docSideOptions = [
-  { value: 'Front', label: 'Front' },
-  { value: 'Back', label: 'Back' },
+  { value: 'FRONT', label: 'FRONT' },
+  { value: 'BACK', label: 'BACK' },
 ];
 export default function UserDocumentDetails({ id, documents, reload }: Props) {
   const [editMode, setEditMode] = useState<number | null>(null);
@@ -91,7 +91,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
     file_type: Yup.string(),
   });
   const defaultDocumentValues = (details: any | null) => ({
-    doc_type: details?.doc_type || '',
+    doc_type: details?.doc_type ? details.doc_type.toUpperCase() : '' || '',
     doc_side: details?.doc_side || '',
     doc_file: details?.doc_file || '' || [],
     expiry: details?.expiry || '',
@@ -288,8 +288,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
         sx={{
           display: 'flex',
           justifyContent: 'flex-end',
-          mt: 7,
-          mb: 8,
+          mb: 2,
         }}
       >
         <Button

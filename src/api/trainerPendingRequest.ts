@@ -2,6 +2,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,8 @@ export function useGetPendingVerificationRequest({
   sort_by = 'desc',
   is_verified = 0,
 }: UseGetPendingVerificationRequestProps) {
+  const { user } = useAuthContext();
+
   const getTheFullUrl = () => {
     let queryParams: any = {
       page,
@@ -25,8 +28,15 @@ export function useGetPendingVerificationRequest({
       sort_by,
       is_verified,
     };
-
-    return `${endpoints.pendingRequest.trainerPendingRequest}?${new URLSearchParams(queryParams)}`;
+    if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+      return `${endpoints.pendingRequest.schoolAdminTrainerPendingRequest}?${new URLSearchParams(
+        queryParams
+      )}`;
+    } else {
+      return `${endpoints.pendingRequest.trainerPendingRequest}?${new URLSearchParams(
+        queryParams
+      )}`;
+    }
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
@@ -48,13 +58,13 @@ export function useGetPendingVerificationRequest({
 
   return { ...memoizedValue, revalidatePendingRequests };
 }
-export function rejectAcceptPendingRequest(mappingId: number, verify: number) {
-  const body = {
-    mapping_id: mappingId,
-    verify: verify,
-  };
-
+export function updateUserVerificationAdmin(body: any) {
   const URL = endpoints.pendingRequest.rejectAcceptPendingRequest;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function updateUserVerificationSchool(body: any) {
+  const URL = endpoints.pendingRequest.updateVerificationStatus;
   const response = drivysCreator([URL, body]);
   return response;
 }

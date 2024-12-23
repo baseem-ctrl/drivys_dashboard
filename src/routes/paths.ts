@@ -198,6 +198,8 @@ export const paths = {
       admin: (id: string) => `${ROOTS.DASHBOARD}/school/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
       account: `${ROOTS.DASHBOARD}/school/account`,
+      trainer: `${ROOTS.DASHBOARD}/school/trainers-list`,
+      package: `${ROOTS.DASHBOARD}/school/package-list`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,
@@ -227,6 +229,7 @@ export const paths = {
       state: `${ROOTS.DASHBOARD}/system/state`,
       dialect: `${ROOTS.DASHBOARD}/system/dialect`,
       cityList: `${ROOTS.DASHBOARD}/system/city/list`,
+      pickup: `${ROOTS.DASHBOARD}/system/pickup`,
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,

@@ -35,9 +35,9 @@ export default function CategoryList({
     useGetAllCategory({
       limit: 1000,
       page: 1,
-      search: searchValue ?? "",
+      search: searchValue ?? '',
+      has_child: 1,
     });
-
 
   const handleView = useCallback(
     (id: string) => {

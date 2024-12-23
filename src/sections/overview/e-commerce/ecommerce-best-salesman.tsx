@@ -14,6 +14,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
+import { ASSETS_API } from 'src/config-global';
+import { Container, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -48,15 +50,23 @@ export default function EcommerceBestSalesman({
 
       <TableContainer sx={{ overflow: 'unset' }}>
         <Scrollbar>
-          <Table sx={{ minWidth: 640 }}>
-            <TableHeadCustom headLabel={tableLabels} />
+          {tableData && tableData?.length > 0 ? (
+            <Table sx={{ minWidth: 640 }}>
+              <TableHeadCustom headLabel={tableLabels} />
 
-            <TableBody>
-              {tableData.map((row) => (
-                <EcommerceBestSalesmanRow key={row.id} row={row} />
-              ))}
-            </TableBody>
-          </Table>
+              <TableBody>
+                {tableData.map((row) => (
+                  <EcommerceBestSalesmanRow key={row.id} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4, mb: 2 }}>
+              <Typography variant="body1" color="text.secondary">
+                No {title} at the moment.
+              </Typography>
+            </Container>
+          )}
         </Scrollbar>
       </TableContainer>
     </Card>
@@ -66,39 +76,21 @@ export default function EcommerceBestSalesman({
 // ----------------------------------------------------------------------
 
 type EcommerceBestSalesmanRowProps = {
-  row: RowProps;
+  row?: any;
 };
 
 function EcommerceBestSalesmanRow({ row }: EcommerceBestSalesmanRowProps) {
+  const CoverUrl = `${ASSETS_API}/assets/images/avatar/avatar_2.jpg`;
   return (
     <TableRow>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={row.name} src={row.avatarUrl} sx={{ mr: 2 }} />
-        {row.name}
+        <Avatar alt={CoverUrl} src={CoverUrl} sx={{ mr: 2 }} />
+        {row?.name ?? 'NA'}
       </TableCell>
 
-      <TableCell>{row.category}</TableCell>
+      <TableCell>{row?.email ?? 'NA'}</TableCell>
 
-      <TableCell align="center">
-        <Iconify icon={row.flag} sx={{ borderRadius: 0.65, width: 28 }} />
-      </TableCell>
-
-      <TableCell align="right">{fCurrency(row.totalAmount)}</TableCell>
-
-      <TableCell align="right">
-        <Label
-          variant="soft"
-          color={
-            (row.rank === 'Top 1' && 'primary') ||
-            (row.rank === 'Top 2' && 'info') ||
-            (row.rank === 'Top 3' && 'success') ||
-            (row.rank === 'Top 4' && 'warning') ||
-            'error'
-          }
-        >
-          {row.rank}
-        </Label>
-      </TableCell>
+      <TableCell align="center">{row?.total_bookings ?? 'NA'}</TableCell>
     </TableRow>
   );
 }

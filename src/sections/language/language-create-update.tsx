@@ -54,7 +54,12 @@ export default function LanguageCreateEditForm({
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
-    language_culture: Yup.string().required('Language culture is required'),
+    language_culture: Yup.string()
+      .required('Language culture is required')
+      .test('is-two-letters', 'Language culture must be exactly two letters', function (value) {
+        // Check if the value is defined and matches the two-letter format
+        return /^[a-zA-Z]{2}$/.test(value || '');
+      }),
     flag_id: Yup.string().required('Flag is required'),
     published: Yup.boolean(),
     display_order: Yup.string().required('Display order is required'),

@@ -26,6 +26,8 @@ import {
   Chip,
   Switch,
   Container,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
@@ -65,7 +67,7 @@ const BookingDetailsComponent = () => {
     const selectedStatus = event;
     const formData = new FormData();
     formData.append('booking_status', selectedStatus);
-    formData.append('id', id);
+    formData.append('booking_id', id);
 
     try {
       const response = await updatePaymentBookingStatus(formData);
@@ -156,7 +158,7 @@ const BookingDetailsComponent = () => {
         statusOptions={bookingStatusEnum}
         statusId={statusId}
       />
-      <Grid container spacing={4} sx={{ maxWidth: 1200, mx: 'auto', mt: 4 }}>
+      <Grid container spacing={4}>
         <Grid item xs={12}>
           <Tabs value={value} onChange={(event, newValue) => setValue(newValue)}>
             <Tab label="Booking Details" />
@@ -615,24 +617,20 @@ const BookingDetailsComponent = () => {
           </Grid>
         )}
         {value === 1 && (
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Card
               sx={{
                 boxShadow: 3,
                 borderRadius: 2,
-                minHeight: cardHeight,
-                minWidth: 400,
                 overflow: 'auto',
-                position: 'relative', // Added for positioning the icon
               }}
             >
-              <CardContent
-                sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}
-              >
+              <CardContent>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
                   Payment Information:
                 </Typography>
-                <Box sx={{ display: 'flex', ml: 5 }}>
+
+                <Box sx={{ mb: 3 }}>
                   <Button
                     color={
                       (bookingDetails.payment_status === 'PENDING' && 'info') ||
@@ -645,68 +643,91 @@ const BookingDetailsComponent = () => {
                     variant="soft"
                     endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
                     onClick={popover.onOpen}
-                    sx={{ textTransform: 'capitalize', width: '100%' }}
+                    sx={{ textTransform: 'capitalize', width: '40%' }}
                   >
                     {bookingDetails.payment_status}
                   </Button>
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Booking Method
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {bookingDetails?.booking_method || 'N/A'}
-                  </Box>
-                </Box>
 
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Due
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_due || 'N/A'}`} {/* Format to currency */}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Discount
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.discount || 'N/A'}`} {/* Format to currency */}
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Paid
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_paid || 'N/A'}`}
-                  </Box>
-                </Box>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Payment Method:
+                      </Typography>
+                      <Typography>{bookingDetails?.payment_method || 'N/A'}</Typography>
+                    </Box>
 
-                <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
-                  <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Refunded
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_refunded || 'N/A'}`}
-                  </Box>
-                </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Pyment Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Tax Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.tax_amount || 'N/A'} AED`}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Due:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_due || 'N/A'} AED`}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Paid:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_paid || 'N/A'} AED`}</Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Amount Refunded:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.amount_refunded || 'N/A'} AED`}</Typography>
+                    </Box>
+                    {bookingDetails?.coupon_code && (
+                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                          Coupon Used:
+                        </Typography>
+                        <Typography>{`${bookingDetails?.coupon_code || 'N/A'} AED`}</Typography>
+                      </Box>
+                    )}
+                    {bookingDetails?.wallet_amount_used !== '0.00' && (
+                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                          Wallet Amount Used:
+                        </Typography>
+                        <Typography>{`${
+                          bookingDetails?.wallet_amount_used || 'N/A'
+                        } AED`}</Typography>
+                      </Box>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Discount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.discount || 'N/A'} AED`}</Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        Total Amount:
+                      </Typography>
+                      <Typography>{`${bookingDetails?.total || 'N/A'} AED`}</Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
@@ -732,14 +753,14 @@ const BookingDetailsComponent = () => {
                   Total Amount:
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : 'N/A'}
+                  {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
                 </Typography>
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Booking ID</TableCell>
-                        <TableCell>Session No</TableCell>
+                        <TableCell>Sessions</TableCell>
                         <TableCell>Session Status</TableCell>
                         <TableCell>Rating</TableCell>
                         <TableCell>Start Time</TableCell>
@@ -751,9 +772,44 @@ const BookingDetailsComponent = () => {
                       {sessions.map((session) => (
                         <TableRow key={session?.id || 'N/A'}>
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={`Total Sessions:${session?.no_of_sessions}`}
+                              secondary={
+                                <div>
+                                  <p>Session No:{session?.session_no}</p>
+                                  <p>
+                                    Completed Sessions:
+                                    {bookingDetails.no_of_sessions_completed}
+                                  </p>
+                                </div>
+                              }
+                              secondaryTypographyProps={{
+                                mt: 0.5,
+                                component: 'span',
+                                typography: 'caption',
+                                color: 'text.disabled',
+                              }}
+                            />
+                          </TableCell>
 
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          {/* <TableCell>{session?.session_no || 'N/A'}</TableCell> */}
+
+                          <TableCell>
+                            <Chip
+                              label={session?.session_status}
+                              color={
+                                session?.session_status === 'PENDING'
+                                  ? 'info'
+                                  : session?.session_status === 'CANCELLED'
+                                  ? 'error'
+                                  : session?.session_status === 'CONFIRMED'
+                                  ? 'default'
+                                  : 'success'
+                              }
+                              variant="soft"
+                            />
+                          </TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>

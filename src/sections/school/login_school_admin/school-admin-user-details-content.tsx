@@ -47,73 +47,80 @@ import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './school-admin-trainer-details-content';
 import SchoolAdminTrainerDetailsContent from './school-admin-trainer-details-content';
 import StudentDetailsContent from 'src/sections/user/student-details-content';
+import moment from 'moment';
+import { updateUserVerification } from 'src/api/school-admin';
+import { useGetAllCity } from 'src/api/city';
+import { useGetUserDocumentList } from 'src/api/user-document';
+import { useGoogleMaps } from 'src/sections/overview/e-commerce/GoogleMapsProvider';
+import TrainerWorkingHour from 'src/sections/user/trainer-working-hour';
+import UserDocumentDetails from 'src/sections/user/user-document/user-document-details';
+import BookingTrainerTable from 'src/sections/user/booking-details/trainer-booking-details';
 
 // ----------------------------------------------------------------------
 
 type Props = {
+  addresses: any;
+  addressesLoading: any;
   details: any;
   loading?: any;
-  reload?: VoidFunction;
+  reload?: any;
 };
 
-export default function UserDetailsContentAdmin({ details, loading, reload }: Props) {
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
-  );
-  console.log(details?.user_type, "details");
-
-  const [editMode, setEditMode] = useState(false);
-
+export default function UserDetailsContentAdmin({
+  details,
+  loading,
+  reload,
+  addresses,
+  addressesLoading,
+}: Props) {
   const [currentTab, setCurrentTab] = useState('details');
-
-  const currentTrainer = details;
-
+  const [load, setLoad] = useState(true);
+  const { reset, control } = useForm();
+  const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
+  const [showAll, setShowAll] = useState(false);
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
+  const toggleShowAll = () => setShowAll((prev) => !prev);
+  const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
+  const { city, cityLoading, cityError } = useGetAllCity({
+    limit: 100,
+  });
+  const {
+    userDocuments,
+    userDocumentLoading,
+    userDocumentError,
+    totalPages,
+    revalidateUserDocuments,
+  } = useGetUserDocumentList({ userId: details.id });
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: parseFloat(addresses?.latitude) || 24.4539,
+    lng: parseFloat(addresses?.longitude) || 54.3773,
+  });
 
-  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-    useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-
-  // This useEffect sets the initial selectedLanguage value once details are available
-  useEffect(() => {
-    if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
-    }
-  }, [details]);
-
-  const [localeOptions, setLocaleOptions] = useState([]);
-
-  useEffect(() => {
-    if ((language && language?.length > 0) || details?.vendor_translations?.length > 0) {
-      let initialLocaleOptions = [];
-      if (Array.isArray(language)) {
-        initialLocaleOptions = language?.map((item: any) => ({
-          label: item?.language_culture,
-          value: item?.language_culture,
-        }));
+  const handleVerify = async (e: any, user_id: string) => {
+    // e.stopPropagation();
+    try {
+      const body = {
+        trainer_id: details?.id,
+        verify: 1,
+      };
+      const response = await updateUserVerification(body);
+      if (response) {
+        enqueueSnackbar(response?.message ?? 'Trainer Verified Successfully');
+        reload();
       }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
-      setLocaleOptions([...initialLocaleOptions]);
-      // }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
     }
-  }, [language, details]);
-
-  // Find the selectedLocaleObject whenever selectedLanguage or details change
-  const router = useRouter();
-  const handleEditRow = useCallback(() => {
-    router.push(paths.dashboard.user.edit(details?.id));
-  }, [router]);
+  };
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -125,9 +132,7 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
           // top: '1.5rem',
           right: '1rem',
         }}
-      >
-        {/* <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} /> */}
-      </Stack>
+      ></Stack>
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
@@ -165,37 +170,205 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
                 { label: 'Preffered Language', value: details?.locale ?? 'NA' },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
-
+                ...(details?.languages?.length
+                  ? details?.languages.map((lang, index) => ({
+                      label: `Language ${index + 1}`,
+                      value: lang?.dialect?.id
+                        ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
+                        : 'NA',
+                    }))
+                  : [{ label: 'Languages', value: 'N/A' }]),
+                ...(details?.user_type === 'TRAINER'
+                  ? [
+                      {
+                        label: 'Vendor Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
+                  : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+      </Stack>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+          p: 2.5,
+          // pr: { xs: 2.5, md: 1 },
+        }}
+      >
+        <Grid item xs={12} sm={12} md={6}>
+          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
                 {
-                  label: 'Is Active',
-                  value:
-                    details?.is_active === '1' ? (
-                      <Chip label="Active" color="success" variant="soft" />
-                    ) : (
-                      <Chip label="In Active" color="error" variant="soft" />
-                    ),
+                  label: 'Active',
+                  value: (
+                    <Chip
+                      label={details?.is_active ? 'Yes' : 'No'}
+                      color={details?.is_active ? 'success' : 'error'}
+                      variant="soft"
+                    />
+                  ),
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowded in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'Vendor Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Suspended',
+                        value: !!details?.is_suspended ? (
+                          <Chip label="Yes" color="success" variant="soft" />
+                        ) : (
+                          <Chip label="No" color="error" variant="soft" />
+                        ),
+                      },
+                      {
+                        label: 'School Verification',
+                        value: !details?.school_verified_at ? (
+                          <Box>
+                            <Button variant="soft" onClick={handleVerify}>
+                              {' '}
+                              Verify
+                            </Button>
+                          </Box>
+                        ) : (
+                          moment.utc(details?.school_verified_at).format('ll')
+                        ),
+                      },
+                      {
+                        label: 'Admin Verification',
+                        value: !details?.verified_at ? (
+                          <Box>Not Verified Yet</Box>
+                        ) : (
+                          moment.utc(details?.verified_at).format('ll')
+                        ),
+                      },
+                    ]
                   : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {item.value ?? 'N/A'}
+                  </Box>
+                </Box>
+              ))}
+            </Stack>
+          </Scrollbar>
+        </Grid>
+        {details?.user_type === 'TRAINER' && (
+          <Grid item xs={12} sm={12} md={6}>
+            <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
+              Vendor Financial Summary
+            </Typography>
+            <Scrollbar>
+              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+                {[
+                  {
+                    label: 'Max Cash Allowed in Hand',
+                    value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                  },
+                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                  {
+                    label: 'Cash Clearance Date',
+                    value: details?.cash_clearance_date ?? 'N/A',
+                  },
+                  {
+                    label: 'Last Booking At',
+                    value: details?.last_booking_was ?? 'N/A',
+                  },
+                  ,
+                ].map((item, index) => (
+                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span" sx={{ flex: 1 }}>
+                      {item.value ?? 'N/A'}
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+            </Scrollbar>
+          </Grid>
+        )}
+      </Stack>
+    </Stack>
+  );
+
+  const renderTabs = (
+    <Tabs
+      value={currentTab}
+      onChange={handleChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {TRAINER_DETAILS_TABS.map((tab) => (
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+    </Tabs>
+  );
+  const renderUserPreferences = (
+    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
+      <Stack
+        spacing={1}
+        alignItems={{ xs: 'center', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{}}
+      >
+        <Grid item xs={12} sm={8} md={8}>
+          <Scrollbar>
+            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+              {[
+                {
+                  label: 'City',
+                  value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+                },
+                {
+                  label: 'Area',
+                  value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
+                },
+                { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
+
+                { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+
+                {
+                  label: 'Vehicle type',
+                  value:
+                    details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
+                },
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -216,78 +389,104 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
       </Stack>
     </Stack>
   );
+  const [showMapIndex, setShowMapIndex] = useState(null);
+  const router = useRouter();
+  const { isLoaded } = useGoogleMaps();
+  const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
+  const handleBookingClick = (booking) => {
+    router.push(paths.dashboard.booking.details(booking));
+  };
+  const renderAddress = (
+    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
+      <Scrollbar>
+        {/* Form for Adding or Editing an Address */}
+        <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
+          {displayedAddresses.map((address, index) => (
+            <Grid container spacing={3} key={index}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Address Details {index + 1}
+                </Typography>
+                {/* Address Details */}
+                {[
+                  { label: 'Address', value: address?.address ?? 'N/A' },
+                  { label: 'Street', value: address?.street ?? 'N/A' },
+                  { label: 'Building Name', value: address?.building_name ?? 'N/A' },
+                  {
+                    label: 'City',
+                    value:
+                      address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
+                  },
+                  {
+                    label: 'Area',
+                    value: address?.state_province
+                      ? address?.state_province?.translations?.[0]?.name
+                      : 'N/A',
+                  },
+                  { label: 'Country Code', value: address?.country_code ?? 'N/A' },
+                  { label: 'Label', value: address?.label ?? 'N/A' },
+                  { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
+                  { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
+                  { label: 'Country', value: address?.country ?? 'N/A' },
+                  { label: 'Landmark', value: address?.landmark ?? 'N/A' },
+                ].map((item, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      {item.label}
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span">{item.value}</Box>
+                  </Box>
+                ))}
 
-  const renderTabs = (
-    <Tabs
-      value={currentTab}
-      onChange={handleChangeTab}
-      sx={{
-        mb: { xs: 3, md: 5 },
-      }}
-    >
-      {TRAINER_DETAILS_TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-        />
-      ))}
-    </Tabs>
-  );
-
-  const renderCompany = (
-    <Stack
-      component={Paper}
-      variant="outlined"
-      spacing={2}
-      sx={{ p: 3, borderRadius: 2 }}
-      height={350}
-    // onClick={route}
-    >
-      <Avatar
-        alt={details?.vendor_user?.user?.name}
-        src={details?.vendor_user?.name?.user?.photo_url}
-        variant="rounded"
-        sx={{ width: 64, height: 64 }}
-      />
-
-      <Stack spacing={1}>
-        {details?.vendor_user?.user?.name && (
-          <Typography variant="subtitle1">
-            {details?.vendor_user?.user?.name ?? 'Name Not Availbale'}
-          </Typography>
+                {/* Edit and Delete Buttons */}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ pt: 2, pb: 2 }}>
+                  {isLoaded && load ? (
+                    <GoogleMap
+                      mapContainerStyle={mapContainerStyle}
+                      center={{
+                        lat: address?.latitude, // Ensure these properties exist on the address object
+                        lng: address?.longitude,
+                      }}
+                      zoom={12}
+                      // onClick={handleMapClick}
+                    >
+                      {address?.latitude && address?.longitude && (
+                        <Marker
+                          position={{
+                            lat: address?.latitude, // Ensure these properties exist on the address object
+                            lng: address?.longitude,
+                          }}
+                          icon={{
+                            url:
+                              marker && typeof marker === 'string'
+                                ? marker
+                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                          }}
+                        />
+                      )}
+                    </GoogleMap>
+                  ) : (
+                    <div>Loading Map...</div>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          ))}
+        </Stack>
+        {addresses.length > 2 && (
+          <Button variant="outlined" onClick={toggleShowAll}>
+            {showAll ? 'Show Less' : 'Show More'}
+          </Button>
         )}
-        {details?.vendor_user?.user?.email && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.email ?? 'Email Not Availbale'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.phone && (
-          <Typography variant="body2">
-            {details?.vendor_user?.user?.country_code
-              ? details?.vendor_user?.user?.country_code - details?.vendor_user?.user?.phone
-              : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.user_type && (
-          <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.dob && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_balance !== 0 && (
-          <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
-          </Typography>
-        )}
-        {details?.vendor_user?.user?.wallet_points !== 0 && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
-        )}
-      </Stack>
+      </Scrollbar>
     </Stack>
   );
-
   return (
     <>
       {loading ? (
@@ -303,30 +502,48 @@ export default function UserDetailsContentAdmin({ details, loading, reload }: Pr
         </Box>
       ) : (
         <>
-          {details?.user_type === "TRAINER" && renderTabs}
+          {details?.user_type === 'TRAINER' && renderTabs}
           <Grid container spacing={1} rowGap={1}>
             <Grid xs={12} md={12}>
               {/* For all other user types */}
-              {details?.user_type !== "TRAINER" && renderContent}
+              {details?.user_type !== 'TRAINER' && renderContent}
 
               {/* For trainer user type with 3 tabs */}
-              {currentTab === 'details' && details?.user_type === "TRAINER" && renderContent}
-              {currentTab === 'packages' && details?.user_type === "TRAINER" &&
-                <SchoolAdminTrainerDetailsContent id={details?.id} />
-              }
-              {currentTab === 'students' && details?.user_type === "TRAINER" && (
+              {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
+              {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
+                <SchoolAdminTrainerDetailsContent trainerDetails={details} />
+              )}
+              {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
-
-
-
-              {/* For trainer user type with 3 tabs */}
+              {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
+                <TrainerWorkingHour userId={details?.id} />
+              )}
+              <Grid xs={12} md={12}>
+                {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (
+                  <UserDocumentDetails
+                    id={details?.id}
+                    documents={userDocuments}
+                    reload={revalidateUserDocuments}
+                  />
+                )}
+              </Grid>
+              <Grid xs={12} md={12}>
+                {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
+                  <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
+                )}
+              </Grid>
+            </Grid>
+            <Grid xs={12} md={12}>
+              {addresses?.length > 0 &&
+                details?.user_type === 'TRAINER' &&
+                currentTab === 'details' &&
+                renderAddress}
             </Grid>
 
-
-            {/* <Grid xs={12} md={4}>
-            {renderCompany}
-          </Grid> */}
+            <Grid xs={12} md={12}>
+              {renderUserPreferences}
+            </Grid>
           </Grid>
         </>
       )}

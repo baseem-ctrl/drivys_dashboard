@@ -30,11 +30,12 @@ type useGetStateListParams = {
   order?: string;
   searchTerm?: string;
   locale?: string;
+  city_id?: string;
 };
 
 export function useGetStateList({
   limit = 10,
-  page = 1,
+  page = 0,
 
   is_published,
   order,
@@ -52,7 +53,7 @@ export function useGetStateList({
       queryParams.is_published = is_published === 'published' ? 1 : 0;
     }
     if (order !== undefined) queryParams.order = order;
-
+    if (city_id !== undefined) queryParams.city_id = city_id;
     if (searchTerm) queryParams.search = searchTerm;
     if (locale) queryParams.locale = locale;
     if (city_id) queryParams.city_id = city_id;

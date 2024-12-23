@@ -45,7 +45,7 @@ export default function AccountGeneral() {
     photoURL: Yup.mixed<any>().nullable(),
     phoneNumber: Yup.string()
       .required('Phone number is required')
-      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+      .matches(/^5\d{0,8}$/, 'Phone number should start with 5 and not exceed 9 digits'),
     countryCode: Yup.string().required('Country Code is required'),
     DOB: Yup.string(), // Optional field
     isPublic: Yup.boolean(),

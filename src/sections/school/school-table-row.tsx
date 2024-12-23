@@ -156,7 +156,7 @@ export default function SchoolTableRow({
       }
     ),
     phone_number: Yup.string(),
-    status: Yup.mixed(),
+    status: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
     user_id: Yup.string(),
     commission_in_percentage: Yup.string(),
@@ -220,7 +220,7 @@ export default function SchoolTableRow({
             ? vendor_user.user_id
             : '',
         is_active: data?.is_active ? 1 : 0,
-        commission_in_percentage: data?.commission_in_percentage || commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage || 0,
         create_new_user: 0,
         vendor_id: row?.id,
       };
@@ -576,26 +576,30 @@ export default function SchoolTableRow({
           View
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            handleEditClick();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
+        {!row?.is_default && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              handleEditClick();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+        )}
 
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            confirm.onTrue();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
+        {!row?.is_default && (
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              confirm.onTrue();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        )}
       </CustomPopover>
     </>
   );
