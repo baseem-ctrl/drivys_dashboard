@@ -17,6 +17,7 @@ import {
   TableRow,
   Paper,
   InputAdornment,
+  Tooltip,
 } from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
@@ -560,6 +561,7 @@ export default function UserDetailsContent({
               {[
                 {
                   label: 'Active',
+                  tooltip: 'Indicates if the user is currently active.',
                   value: (
                     <Chip
                       label={details?.is_active ? 'Yes' : 'No'}
@@ -571,17 +573,53 @@ export default function UserDetailsContent({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Suspended',
+                        label: 'Admin Suspended',
+                        tooltip: 'Indicates if the trainer is suspended by an admin.',
                         value: (
-                          <Switch
-                            checked={!!details?.is_suspended}
-                            onChange={() => handleSuspend()}
-                            color="error"
-                          />
+                          <>
+                            {/* <Chip
+                              label={details?.is_suspended ? 'Yes' : 'No'}
+                              color={details?.is_suspended ? 'error' : 'error'}
+                              variant="soft"
+                            /> */}
+                            <Switch
+                              checked={!!details?.is_suspended}
+                              onChange={() => handleSuspend()}
+                              color="error"
+                            />
+                          </>
+                        ),
+                      },
+                      {
+                        label: 'Auto Suspended',
+                        tooltip:
+                          'Indicates if the trainer is automatically suspended due to exceeding cash limits.',
+                        value: (
+                          <>
+                            <Chip
+                              label={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'Yes'
+                                    : 'No'
+                                  : 'No'
+                              }
+                              color={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'error'
+                                    : 'default'
+                                  : 'default'
+                              }
+                              variant="soft"
+                            />
+                          </>
                         ),
                       },
                       {
                         label: 'Verification',
+                        tooltip:
+                          'Indicates if the admin has verified the user. Displays the verification date if verified.',
                         value: !details?.verified_at ? (
                           <Box>
                             <Button variant="soft" onClick={handleVerify}>
@@ -597,13 +635,21 @@ export default function UserDetailsContent({
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {item.label}
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
+                    <Tooltip title={item.tooltip || ''} arrow>
+                      <span>{item.label}</span>
+                    </Tooltip>
                   </Box>
-                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '40px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
                     :
                   </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
+                  <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
                     {item.value ?? 'N/A'}
                   </Box>
                 </Box>
