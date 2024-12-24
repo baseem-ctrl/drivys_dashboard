@@ -28,6 +28,7 @@ import {
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -223,6 +224,7 @@ export default function UserDetailsContentAdmin({
               {[
                 {
                   label: 'Active',
+                  tooltip: 'Indicates if the user is currently active.',
                   value: (
                     <Chip
                       label={details?.is_active ? 'Yes' : 'No'}
@@ -234,15 +236,48 @@ export default function UserDetailsContentAdmin({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Suspended',
-                        value: !!details?.is_suspended ? (
-                          <Chip label="Yes" color="success" variant="soft" />
-                        ) : (
-                          <Chip label="No" color="error" variant="soft" />
+                        label: 'Admin Suspended',
+                        tooltip: 'Indicates if the trainer is suspended by an admin.',
+                        value: (
+                          <>
+                            <Chip
+                              label={details?.is_suspended ? 'Yes' : 'No'}
+                              color={details?.is_suspended ? 'error' : 'default'}
+                              variant="soft"
+                            />
+                          </>
+                        ),
+                      },
+                      {
+                        label: 'Auto Suspended',
+                        tooltip:
+                          'Indicates if the trainer is automatically suspended due to exceeding cash limits.',
+                        value: (
+                          <>
+                            <Chip
+                              label={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'Yes'
+                                    : 'No'
+                                  : 'No'
+                              }
+                              color={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'error'
+                                    : 'default'
+                                  : 'default'
+                              }
+                              variant="soft"
+                            />
+                          </>
                         ),
                       },
                       {
                         label: 'School Verification',
+                        tooltip:
+                          'Indicates if the school has verified the user. Click "Verify" to verify.',
                         value: !details?.school_verified_at ? (
                           <Box>
                             <Button variant="soft" onClick={handleVerify}>
@@ -256,6 +291,8 @@ export default function UserDetailsContentAdmin({
                       },
                       {
                         label: 'Admin Verification',
+                        tooltip:
+                          'Indicates if the admin has verified the user. Displays the verification date if verified.',
                         value: !details?.verified_at ? (
                           <Box>Not Verified Yet</Box>
                         ) : (
@@ -267,7 +304,9 @@ export default function UserDetailsContentAdmin({
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {item.label}
+                    <Tooltip title={item?.tooltip || ''} arrow>
+                      <span>{item.label}</span>
+                    </Tooltip>
                   </Box>
                   <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
                     :

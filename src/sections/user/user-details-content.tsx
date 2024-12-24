@@ -17,6 +17,7 @@ import {
   TableRow,
   Paper,
   InputAdornment,
+  Tooltip,
 } from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
@@ -560,6 +561,7 @@ export default function UserDetailsContent({
               {[
                 {
                   label: 'Active',
+                  tooltip: 'Indicates if the user is currently active.',
                   value: (
                     <Chip
                       label={details?.is_active ? 'Yes' : 'No'}
@@ -572,6 +574,7 @@ export default function UserDetailsContent({
                   ? [
                       {
                         label: 'Admin Suspended',
+                        tooltip: 'Indicates if the trainer is suspended by an admin.',
                         value: (
                           <>
                             {/* <Chip
@@ -589,6 +592,8 @@ export default function UserDetailsContent({
                       },
                       {
                         label: 'Auto Suspended',
+                        tooltip:
+                          'Indicates if the trainer is automatically suspended due to exceeding cash limits.',
                         value: (
                           <>
                             <Chip
@@ -613,6 +618,8 @@ export default function UserDetailsContent({
                       },
                       {
                         label: 'Verification',
+                        tooltip:
+                          'Indicates if the admin has verified the user. Displays the verification date if verified.',
                         value: !details?.verified_at ? (
                           <Box>
                             <Button variant="soft" onClick={handleVerify}>
@@ -632,7 +639,9 @@ export default function UserDetailsContent({
                     component="span"
                     sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
                   >
-                    {item.label}
+                    <Tooltip title={item.tooltip || ''} arrow>
+                      <span>{item.label}</span>
+                    </Tooltip>
                   </Box>
                   <Box
                     component="span"
