@@ -30,6 +30,7 @@ export default function TrainerNotificationForm() {
       page: 0,
       limit: 100,
     });
+  const verifiedTrainers = trainers?.filter((trainer) => trainer?.verified_at != null);
 
   const validationSchema = Yup.object().shape({
     trainer_id: Yup.mixed().required('Trainer is required'),
@@ -112,7 +113,7 @@ export default function TrainerNotificationForm() {
               <RHFAutocompleteSearch
                 name="trainer_id"
                 label="Select Trainer"
-                options={trainers || []}
+                options={verifiedTrainers || []}
                 value={methods.watch('trainer_id') || null}
                 onChange={(event, newValue) => {
                   methods.setValue('trainer_id', newValue);
