@@ -36,6 +36,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
+    is_certificate_available: Yup.boolean(),
+    certificate_price: Yup.string(),
+    certificate_link: Yup.string(),
   });
   const { language } = useGetAllLanguage(0, 1000);
 
@@ -48,10 +51,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       name: currentCity?.city_translations[0]?.name || '',
       locale: currentCity?.city_translations[0]?.locale || localeOptions[0]?.value,
       published: currentCity?.is_published === 1 ? true : false,
+      is_certificate_available: !!currentCity?.is_certificate_available ?? false,
+      certificate_price: currentCity?.certificate_price || 0,
+      certificate_link: currentCity?.certificate_link || '',
     }),
     [currentCity]
   );
-  console.log('defaultValues', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -64,12 +69,14 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     setValue,
     formState: { isSubmitting },
   } = methods;
-
+  const values = watch();
   const selectedLocale = watch('locale');
 
   useEffect(() => {
     if (currentCity?.id) {
       reset(defaultValues);
+    } else {
+      reset();
     }
   }, [currentCity, defaultValues, reset]);
   useEffect(() => {
@@ -89,8 +96,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       formData.append('is_published', data.published ? '1' : '0');
       formData.append('city_translation[0][locale]', data.locale);
       formData.append('city_translation[0][name]', data.name);
+      formData.append('is_certificate_available', data.is_certificate_available ? '1' : '0');
+      if (data?.is_certificate_available) {
+        formData.append('certificate_price', data.certificate_price ?? '0');
+        formData.append('certificate_link', data.certificate_link ?? '');
+      }
 
-      // Conditional API call based on presence of currentCity
       if (currentCity?.id) {
         await updateCityTranslation(formData);
         enqueueSnackbar('City translation updated successfully.');
@@ -175,9 +186,20 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
                 </MenuItem>
               )}
             </RHFSelect>
-
             <RHFTextField name="name" label="Name" />
             <RHFSwitch name="published" label="Published" />
+            <RHFSwitch name="is_certificate_available" label="Is Certificate Available" />
+            {values?.is_certificate_available && (
+              <>
+                <RHFTextField
+                  name="certificate_price"
+                  label="Certificate Price"
+                  prefix="AED"
+                  type="number"
+                />
+                <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
+              </>
+            )}
           </Box>
         </DialogContent>
 

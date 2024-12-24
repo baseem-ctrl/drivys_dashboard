@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TablePagination,
 } from '@mui/material';
 import { useState } from 'react';
 import { createPackageCity, deletePackageCityById } from 'src/api/city';
@@ -20,6 +21,7 @@ import PackageCreateEditForm from '../package-create-update-form';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { useTable } from 'src/components/table';
 
 // ----------------------------------------------------------------------
 
@@ -126,9 +128,10 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
               <Stack
                 component={Card}
                 direction="column"
+                key={packageItem?.id}
                 sx={{
                   marginBottom: '16px',
-                  height: '260px',
+                  height: '360px',
                   position: 'relative',
                 }}
               >
@@ -138,30 +141,42 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                   alignItems="center"
                   sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
                 >
-                  <Typography
-                    variant="h8"
-                    color="#CF5A0D"
-                    sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
-                  >
-                    {packageItem?.package?.package_translations
-                      ? packageItem?.package?.package_translations[0]?.name.toUpperCase()
-                      : 'NA' || 'UNNAMED PACKAGE'}
-                  </Typography>
+                  <Box>
+                    <Typography variant="h5" color="#CF5A0D">
+                      {packageItem?.package?.package_translations
+                        ? packageItem?.package?.package_translations[0]?.name.toUpperCase()
+                        : 'NA' || 'UNNAMED PACKAGE'}
+                    </Typography>
+                    {packageItem?.package?.number_of_sessions ?? '0'} Sessions
+                  </Box>
 
                   <IconButton onClick={(e) => handleClick(e, packageItem)}>
                     <Iconify icon="eva:more-vertical-outline" />
                   </IconButton>
                 </Stack>
-
+                <hr
+                  style={{
+                    width: '100%',
+                    height: '0.5px',
+                    border: 'none',
+                    backgroundColor: '#CF5A0D',
+                  }}
+                />
                 <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
-                  <Typography variant="body2">
-                    {packageItem?.package?.number_of_sessions ?? 'NA'} Sessions
-                  </Typography>
+                  <Box display={'flex'}>
+                    {/* <Typography variant="h6">{' AED'}</Typography> */}
+                    <Typography variant="h6">
+                      {packageItem?.min_price ? parseFloat(packageItem?.min_price) : '0'}
+                      {'AED '}- {packageItem?.max_price ? parseFloat(packageItem?.max_price) : '0'}{' '}
+                      {'AED '}
+                    </Typography>
+                  </Box>
+
                   <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
                     What's included
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
+                    {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> */}
                     <Typography
                       component="span"
                       dangerouslySetInnerHTML={{
@@ -172,21 +187,10 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     />
                   </Stack>
                 </Stack>
-
-                <hr
-                  style={{
-                    width: '100%',
-                    height: '0.5px',
-                    border: 'none',
-                    backgroundColor: '#CF5A0D',
-                    position: 'absolute',
-                    top: '70px',
-                    left: '0',
-                  }}
-                />
               </Stack>
             </Grid>
           ))}
+
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
           <DialogTitle>Delete Package</DialogTitle>
           <DialogContent>

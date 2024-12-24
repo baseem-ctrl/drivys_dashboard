@@ -346,7 +346,16 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
             {Array.isArray(details) &&
               details.map((item) => (
                 <Grid item xs={12} sm={6} md={3} key={item?.id}>
-                  <Stack component={Card} direction="column" key={item?.id}>
+                  <Stack
+                    component={Card}
+                    direction="column"
+                    key={item?.id}
+                    sx={{
+                      marginBottom: '16px',
+                      height: '260px',
+                      position: 'relative',
+                    }}
+                  >
                     <Stack
                       sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
                       direction="row"
@@ -381,7 +390,9 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                     <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
                       <Box display={'flex'}>
                         <Typography variant="h6">{' AED'}</Typography>
-                        <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
+                        <Typography variant="h4">
+                          {item?.price ? parseFloat(item?.price) : '0'}{' '}
+                        </Typography>
                       </Box>
 
                       <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
