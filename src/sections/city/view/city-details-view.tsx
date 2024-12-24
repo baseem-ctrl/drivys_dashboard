@@ -6,7 +6,14 @@ import Container from '@mui/material/Container';
 // components
 import { useGetAllCities, useGetCityById, useGetPackageCityList } from 'src/api/city';
 import { useParams } from 'src/routes/hooks';
-import { Box, CircularProgress, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  TablePagination,
+} from '@mui/material';
 
 // custom components for tabs
 import CityDetails from './city-detail';
@@ -14,17 +21,23 @@ import CityPackageDetails from './city-package-details';
 import CityNewEditForm from '../city-new-edit-form';
 import { paths } from 'src/routes/paths';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import { useTable } from 'src/components/table';
 
 // ----------------------------------------------------------------------
 
 export default function CityDetailsView() {
+  const table = useTable({ defaultRowsPerPage: 20 });
+
   const [currentTab, setCurrentTab] = useState('cityDetails');
   const { id } = useParams();
-  const { packageCityList, packageCityListLoading, revalidatePackage } = useGetPackageCityList({
-    id,
-  });
-  const { revalidateCities } = useGetAllCities();
-  const { city, cityLoading, cityError } = useGetCityById(id);
+  const { packageCityList, packageCityListLoading, revalidatePackage, totalPages } =
+    useGetPackageCityList({
+      city_id: id,
+      page: table?.page,
+      limit: table?.rowsPerPage,
+    });
+  // const { revalidateCities } = useGetAllCities();
+  const { city, cityLoading, cityError, revalidate } = useGetCityById(id);
   const [openEditPopup, setOpenEditPopup] = useState(false);
 
   const CITY_DETAILS_TABS = [
@@ -34,6 +47,7 @@ export default function CityDetailsView() {
   const handleEditClick = () => {
     setOpenEditPopup(true);
   };
+  console.log(table?.page, 'table?.page');
 
   const handleClosePopup = () => {
     setOpenEditPopup(false);
@@ -85,21 +99,29 @@ export default function CityDetailsView() {
       {currentTab === 'cityDetails' && <CityDetails city={city} onEdit={setOpenEditPopup} />}
 
       {currentTab === 'package' && (
-        <CityPackageDetails
-          reload={revalidatePackage}
-          city={city}
-          packageDetails={packageCityList}
-          packageCityListLoading={packageCityListLoading}
-        />
+        <>
+          <CityPackageDetails
+            reload={revalidatePackage}
+            city={city}
+            packageDetails={packageCityList}
+            packageCityListLoading={packageCityListLoading}
+            totalPages={totalPages}
+          />
+          <TablePagination
+            count={totalPages}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
+          />
+        </>
       )}
       <Dialog open={openEditPopup} onClose={handleClosePopup}>
         <DialogTitle>Edit Emirate</DialogTitle>
         <DialogContent>
-          <CityNewEditForm
-            city={city}
-            reload={revalidateCities}
-            handleClosePopup={handleClosePopup}
-          />
+          <CityNewEditForm city={city} reload={revalidate} handleClosePopup={handleClosePopup} />
         </DialogContent>
       </Dialog>
     </Container>
