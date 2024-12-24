@@ -67,7 +67,7 @@ export default function CityDetailsView() {
   return (
     <Container maxWidth="lg" sx={{ pb: 4 }}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Details"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
