@@ -171,6 +171,7 @@ export const endpoints = {
     createUpdate: 'admin/home-listing/create-home-listing',
     details: 'admin/home-listing/get-home-listing/',
     delete: 'admin/home-listing/delete-home-listing/',
+    deleteTrainer: 'admin/home-listing/remove-trainer-by-trainer-id',
   },
   package: {
     list: 'admin/package/get-packge-list',

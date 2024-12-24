@@ -205,8 +205,8 @@ export function useGetHomeListingByIdAdmin(HomeListingId: string) {
 
   return { ...memoizedValue, revalidateDetails };
 }
-export function RemoveTrainerFromHomeListing(id: any) {
-  const URL = endpoints.homeListing.removeTrainer + id;
+export function RemoveTrainerFromHomeListing(home_listing_id: number, trainer_id: number) {
+  const URL = `${endpoints.homeListing.deleteTrainer}?home_listing_id=${home_listing_id}&trainer_id=${trainer_id}`;
   const response = drivysSmasher(URL);
   return response;
 }
