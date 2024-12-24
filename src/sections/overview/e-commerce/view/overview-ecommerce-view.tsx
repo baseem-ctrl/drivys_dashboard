@@ -43,7 +43,7 @@ export default function OverviewEcommerceView() {
 
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-
+  console.log('analytics', analytics);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -63,19 +63,25 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={4}>
           <EcommerceNewProducts list={_ecommerceNewProducts} />
         </Grid> */}
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
               title="Total Trainers"
+              icon="eva:person-done-outline"
               // percent={2.6}
               total={analytics?.trainerCount ?? '0'}
+              bgcolor="rgba(0, 123, 255, 0.1)"
+              textColor="rgba(0, 123, 255, 0.9)"
               chart={{
                 colors: [theme.palette.info.light, theme.palette.info.main],
               }}
             />
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
               title="Total Students"
+              icon="eva:person-fill"
+              bgcolor="rgba(40, 167, 69, 0.1)"
+              textColor="rgba(40, 167, 69, 0.9)"
               percent={-0.1}
               total={analytics?.studentCount ?? '0'}
               chart={{
@@ -84,25 +90,67 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-          <Grid xs={12} md={4}>
-            <EcommerceWidgetSummary title="Total School" total={analytics?.schoolCount ?? '0'} />
-          </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
+              icon="mdi:steering"
+              bgcolor="rgba(255, 193, 7, 0.1)"
+              textColor="rgba(220, 53, 69, 0.9)"
+              title="Total School"
+              total={analytics?.schoolCount ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              bgcolor="rgba(220, 53, 69, 0.1)"
               title="Total Bookings"
+              icon="mdi:ticket"
+              textColor="rgba(255, 165, 0, 0.9)"
               total={analytics?.bookingsCount ?? '0'}
             />
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
+              bgcolor="rgba(155, 89, 182, 0.1)"
+              textColor="rgba(138, 43, 226, 0.9)"
               title="Confirmed Bookings"
-              total={analytics?.bookingsCount ?? '0'}
+              icon="mdi:check-circle"
+              total={analytics?.confirmedBookingsCount ?? '0'}
             />
           </Grid>{' '}
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
+              bgcolor="rgba(108, 117, 125, 0.1)"
+              textColor="rgba(108, 117, 125, 0.9)"
               title="Cancelled Bookings"
-              total={analytics?.bookingsCount ?? '0'}
+              icon="mdi:cancel-circle"
+              total={analytics?.canceledBookingsCount ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              bgcolor="rgba(0, 123, 255, 0.1)"
+              title="Pending Bookings"
+              icon="material-symbols:pending"
+              textColor="rgba(0, 123, 255, 0.9)"
+              total={analytics?.pendingBookingsCount ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              bgcolor="rgba(255, 165, 0, 0.1)"
+              textColor="rgba(255, 193, 7, 0.9)"
+              title="Completed Bookings"
+              icon="mdi:check-circle"
+              total={analytics?.completedBookingsCount ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              bgcolor="rgba(0, 204, 204, 0.1)"
+              textColor="rgba(0, 123, 255, 0.9)"
+              title="Refund Requests"
+              icon="mdi:cash-refund"
+              total={analytics?.refundReqs ?? '0'}
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={6}>

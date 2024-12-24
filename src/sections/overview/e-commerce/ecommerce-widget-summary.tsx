@@ -30,6 +30,9 @@ export default function EcommerceWidgetSummary({
   total,
   chart,
   sx,
+  icon,
+  bgcolor = 'background.paper',
+  textColor = 'text.primary',
   ...other
 }: Props) {
   const theme = useTheme();
@@ -102,30 +105,78 @@ export default function EcommerceWidgetSummary({
   // );
 
   return (
-    <Card sx={{ display: 'flex', alignItems: 'center', p: 3, ...sx }} {...other}>
-      <Box sx={{ flexGrow: 1, display: 'flex' }}>
-        {/* <Typography variant="subtitle2" sx={{ mb: 2 }}>
+    <Card
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        p: 2,
+        borderRadius: 2,
+        boxShadow: 3,
+        bgcolor: bgcolor,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: 6,
+          transform: 'translateY(-5px)',
+        },
+        position: 'relative',
+        ...sx,
+      }}
+      {...other}
+    >
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+            mb: 0.5,
+            fontWeight: 600,
+            fontSize: '1rem',
+            // textTransform: 'uppercase',
+            letterSpacing: 0.3,
+          }}
+        >
           {title}
         </Typography>
 
-        <Typography variant="h3" gutterBottom>
+        <Typography
+          variant="h4"
+          sx={{
+            color: textColor,
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            lineHeight: 1.2,
+          }}
+        >
           {fNumber(total)}
-        </Typography> */}
-        <Box>{title} </Box>
-        <Box component="span" sx={{ fontWeight: 'bold' }}>
-          : {fNumber(total)}
-        </Box>
-
-        {/* {renderTrending} */}
+        </Typography>
       </Box>
 
-      {/* <Chart
-        type="line"
-        series={[{ data: series }]}
-        options={chartOptions}
-        width={96}
-        height={64}
-      /> */}
+      {icon && (
+        <Iconify
+          icon={icon}
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            color: 'text.secondary',
+            cursor: 'pointer',
+            '&:hover': {
+              color: 'primary.main',
+            },
+          }}
+        />
+      )}
     </Card>
   );
 }
