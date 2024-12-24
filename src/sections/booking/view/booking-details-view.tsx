@@ -97,7 +97,7 @@ const BookingDetailsComponent = () => {
     const selectedStatus = event;
     const formData = new FormData();
     formData.append('payment_status', selectedStatus);
-    formData.append('id', id);
+    formData.append('booking_id', id);
     try {
       const response = await updatePaymentBookingStatus(formData);
       enqueueSnackbar(response.message ?? 'Status Updated successfully', {

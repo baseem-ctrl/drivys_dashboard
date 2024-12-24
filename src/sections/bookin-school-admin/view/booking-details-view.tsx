@@ -616,7 +616,7 @@ const BookingDetailsComponent = () => {
                     }
                     variant="soft"
                     endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-                    onClick={popover.onOpen}
+                    // onClick={popover.onOpen}
                     sx={{ textTransform: 'capitalize', width: '40%' }}
                   >
                     {bookingDetails.payment_status}

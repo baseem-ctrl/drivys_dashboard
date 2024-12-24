@@ -210,7 +210,7 @@ export const endpoints = {
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
     createTrainer: 'admin/trainers/school/create-trainer',
     workingHours: {
-      createUpdate: 'admin/trainer-working-hours/create-update',
+      createUpdate: 'admin/trainer-working-hours/create',
       deleteById: 'admin/trainer-working-hours/delete-by-id',
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
