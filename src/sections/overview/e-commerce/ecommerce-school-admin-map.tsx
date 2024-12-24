@@ -74,7 +74,7 @@ const SchoolAdminMap: React.FC = () => {
         setTrainers(
           response.data.trainer.map((trainer: any) => ({
             id: trainer.id,
-            location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
+            location: { lat: trainer?.latitude, lng: trainer?.longitude },
             name: trainer.name,
             photoUrl: trainer.photo_url,
           }))
