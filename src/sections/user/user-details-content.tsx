@@ -571,13 +571,44 @@ export default function UserDetailsContent({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Suspended',
+                        label: 'Admin Suspended',
                         value: (
-                          <Switch
-                            checked={!!details?.is_suspended}
-                            onChange={() => handleSuspend()}
-                            color="error"
-                          />
+                          <>
+                            {/* <Chip
+                              label={details?.is_suspended ? 'Yes' : 'No'}
+                              color={details?.is_suspended ? 'error' : 'error'}
+                              variant="soft"
+                            /> */}
+                            <Switch
+                              checked={!!details?.is_suspended}
+                              onChange={() => handleSuspend()}
+                              color="error"
+                            />
+                          </>
+                        ),
+                      },
+                      {
+                        label: 'Auto Suspended',
+                        value: (
+                          <>
+                            <Chip
+                              label={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'Yes'
+                                    : 'No'
+                                  : 'No'
+                              }
+                              color={
+                                details?.max_cash_in_hand_allowed
+                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                    ? 'error'
+                                    : 'default'
+                                  : 'default'
+                              }
+                              variant="soft"
+                            />
+                          </>
                         ),
                       },
                       {
@@ -597,13 +628,19 @@ export default function UserDetailsContent({
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
                     {item.label}
                   </Box>
-                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '40px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
                     :
                   </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
+                  <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
                     {item.value ?? 'N/A'}
                   </Box>
                 </Box>
