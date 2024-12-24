@@ -32,7 +32,7 @@ export default function CreateRewardForm() {
       page: 0,
       limit: 100,
     });
-
+  const verifiedTrainers = trainers?.filter((trainer) => trainer?.verified_at != null);
   const validationSchema = Yup.object().shape({
     trainer_id: Yup.mixed().required('Trainer is required'),
     reward_amount: Yup.number().required('Reward amount is required'),
@@ -122,7 +122,7 @@ export default function CreateRewardForm() {
                   <RHFAutocompleteSearch
                     {...field}
                     label="Select Trainer"
-                    options={trainers || []}
+                    options={verifiedTrainers || []}
                     value={field.value || null}
                     onChange={(event, newValue) => field.onChange(newValue)}
                     getOptionLabel={(option) => option?.user?.name || 'No Name'}
