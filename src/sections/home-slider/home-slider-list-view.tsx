@@ -74,6 +74,8 @@ export default function HomeSliderListView() {
   useEffect(() => {
     if (homeSlider.length) {
       setTableData(homeSlider);
+    } else {
+      setTableData([]);
     }
   }, [homeSlider]);
 
@@ -85,13 +87,15 @@ export default function HomeSliderListView() {
         const response = await deleteHomeSlider(deleteId);
         if (response) {
           enqueueSnackbar(response?.message, { variant: 'success' });
-          revalidateHomeSlider();
+
           confirm.onFalse();
           setDeleteId('');
         }
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      revalidateHomeSlider();
     }
   };
   const [updateValue, setUpdateValue] = useState<string>('');
@@ -100,7 +104,6 @@ export default function HomeSliderListView() {
     try {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const res = await useGetHomeSliderById(id);
-      console.log('respose', res);
 
       if (res) {
         // Update the state based on the response
@@ -332,7 +335,7 @@ export default function HomeSliderListView() {
                           )}
 
                           {provided.placeholder}
-                          <TableNoData notFound={!tableData.length} />
+                          {/* <TableNoData notFound={!tableData.length} /> */}
                         </TableBody>
                       )}
                     </Droppable>
