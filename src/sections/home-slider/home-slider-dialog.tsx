@@ -49,8 +49,6 @@ export default function HomeSliderDialog({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  console.log('updateValue', updateValue);
-
   const router = useRouter();
 
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -88,7 +86,7 @@ export default function HomeSliderDialog({
       picture_ids: updateValue?.picture_ids || [],
       published: !!updateValue?.published,
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      position: updateValue?.position || 'top',
+      position: updateValue?.is_hero === true ? 'top' : 'bottom',
     }),
     [updateValue, today]
   );
@@ -144,6 +142,7 @@ export default function HomeSliderDialog({
   }, [updateValue, reset, defaultValues, selectedLanguage]);
 
   useEffect(() => {
+    setSelectedPosition(updateValue?.is_hero === true ? 'top' : 'bottom');
     if (updateValue?.pictures) {
       setSelectedLanguage(updateValue?.pictures[0]?.locale);
     }
@@ -165,7 +164,6 @@ export default function HomeSliderDialog({
 
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data.position ', data.position);
     try {
       const formData = new FormData();
       formData.append('slider_id', updateValue?.id);
