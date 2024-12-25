@@ -1,4 +1,4 @@
-import { endpoints, drivysFetcher, drivysSmasher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysSmasher, drivysCreator } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -99,6 +99,6 @@ export function deleteReview({
   if (session_id) queryParams.session_id = session_id;
 
   const URL = `${endpoints.review.deleteReview}${new URLSearchParams(queryParams)}`;
-  const response = drivysSmasher(URL);
+  const response = drivysCreator(URL);
   return response;
 }

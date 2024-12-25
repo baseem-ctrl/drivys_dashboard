@@ -38,7 +38,6 @@ const TABLE_HEAD = [
   { id: 'student-name', label: 'Student', width: 180 },
   { id: 'student-email', label: 'Student Email', width: 180 },
   { id: 'student-phone', label: 'Student Phone', width: 180 },
-  { id: 'avg-rating', label: 'Average Rating', width: 180 },
   { id: 'reviews', label: 'Reviews', width: 180 },
 ];
 
