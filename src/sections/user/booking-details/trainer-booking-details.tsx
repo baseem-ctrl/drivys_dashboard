@@ -11,6 +11,7 @@ import {
   Grid,
   Typography,
   Box,
+  Skeleton,
 } from '@mui/material';
 import { useGetBookingByTrainerId } from 'src/api/booking';
 
@@ -32,8 +33,9 @@ interface BookingTableProps {
 
 // Define the functional component
 const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
-  const { bookingTrainerDetails } = useGetBookingByTrainerId(id);
+  const { bookingTrainerDetails, bookingLoading } = useGetBookingByTrainerId(id);
   const bookingDetails = bookingTrainerDetails.bookings;
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -42,13 +44,23 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
             <TableCell>User</TableCell>
             <TableCell>Email</TableCell>
             <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Sessions</TableCell>
+            <TableCell align="center">Total Sessions</TableCell>
+            <TableCell align="center">Total Sessions Booked</TableCell>
+            <TableCell align="center">Completed Sessions</TableCell>
             <TableCell align="center">Booking Status</TableCell>
             <TableCell align="center">Payment Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {bookingDetails && bookingDetails.length > 0 ? (
+          {bookingLoading ? (
+            Array.from(new Array(5)).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton animation="wave" height={40} />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : bookingDetails && bookingDetails.length > 0 ? (
             bookingDetails.map((booking) => (
               <TableRow
                 key={booking.id}
@@ -71,26 +83,42 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                   </Grid>
                 </TableCell>
                 <TableCell>{booking.user.email}</TableCell>
-                <TableCell align="center">${booking.total}</TableCell>
-                <TableCell>
-                  {booking.sessions.map((session) => (
-                    <Typography key={session.id} align="center">
-                      {session.id}
-                    </Typography>
-                  ))}
-                </TableCell>
+                <TableCell align="center">{booking.total} AED</TableCell>
+                <TableCell>{booking.package?.number_of_sessions}</TableCell>
+                <TableCell>{booking?.no_of_sessions}</TableCell>
+                <TableCell>{booking?.no_of_sessions_completed}</TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.booking_status}
-                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking?.booking_status === 'PENDING'
+                        ? 'info'
+                        : booking?.booking_status === 'CANCELLED'
+                        ? 'error'
+                        : booking?.booking_status === 'IN PROGRESS'
+                        ? 'warning'
+                        : booking?.booking_status === 'CONFIRMED'
+                        ? 'secondary'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.payment_status}
-                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking?.payment_status === 'PENDING'
+                        ? 'info'
+                        : booking?.payment_status === 'FAILED'
+                        ? 'error'
+                        : booking?.payment_status === 'REFUNDED'
+                        ? 'warning'
+                        : booking?.payment_status === 'PARTIALLY PAID'
+                        ? 'primary'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
               </TableRow>
