@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Label from 'src/components/label';
+import Tooltip from '@mui/material/Tooltip';
 import { Box, Paper, Table, TableBody, TableHead, Typography, Button } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star'; //
 import CommentIcon from '@mui/icons-material/Comment';
@@ -32,7 +33,7 @@ export default function StudentReviewRow({ row }) {
   const handleDeleteComment = async (session_id) => {
     try {
       const response = await deleteReview({
-        delete_student_comment: 1,
+        delete_trainer_comment: 1,
         session_id,
       });
 
@@ -74,19 +75,7 @@ export default function StudentReviewRow({ row }) {
         </TableCell>
         <TableCell>{student_email}</TableCell>
         <TableCell>{student_phone}</TableCell>
-        <TableCell>
-          <Box display="flex" alignItems="center">
-            {avg_rating
-              ? Array.from({ length: 5 }).map((_, index) =>
-                  index < avg_rating ? (
-                    <StarIcon key={index} style={{ color: '#CF5A0D' }} />
-                  ) : (
-                    <StarBorderIcon key={index} style={{ color: '#CF5A0D' }} />
-                  )
-                )
-              : 'No Ratings'}
-          </Box>
-        </TableCell>
+
         <TableCell>{reviews.length} Reviews</TableCell>
       </TableRow>
 
@@ -174,16 +163,24 @@ export default function StudentReviewRow({ row }) {
 
                       <TableCell>{review.driver_comments || 'No Comments'}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          sx={{
-                            backgroundColor: '#CF5A0D',
-                          }}
-                          onClick={() => handleDeleteComment(review.session_id)}
+                        <Tooltip
+                          title={review.driver_comments ? '' : 'No comments to delete'}
+                          arrow
                         >
-                          Delete
-                        </Button>
+                          <span>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              sx={{
+                                backgroundColor: '#CF5A0D',
+                              }}
+                              onClick={() => handleDeleteComment(review.session_id)}
+                              disabled={!review.driver_comments}
+                            >
+                              Delete
+                            </Button>
+                          </span>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}

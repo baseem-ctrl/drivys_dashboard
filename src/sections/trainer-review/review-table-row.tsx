@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Label from 'src/components/label';
-import { Box, Button, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableHead,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star'; //
 import CommentIcon from '@mui/icons-material/Comment';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -33,7 +42,7 @@ export default function TrainerReviewRow({ row }) {
     try {
       // Call the deleteReview function with the necessary parameters
       const response = await deleteReview({
-        delete_trainer_comment: 1,
+        delete_student_comment: 1,
         session_id,
       });
 
@@ -175,16 +184,24 @@ export default function TrainerReviewRow({ row }) {
 
                       <TableCell>{review.user_comments || 'No Comments'}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          sx={{
-                            backgroundColor: '#CF5A0D',
-                          }}
-                          onClick={() => handleDeleteComment(review.session_id)}
+                        <Tooltip
+                          title={review.driver_comments ? '' : 'No comments to delete'}
+                          arrow
                         >
-                          Delete
-                        </Button>
+                          <span>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              sx={{
+                                backgroundColor: '#CF5A0D',
+                              }}
+                              onClick={() => handleDeleteComment(review.session_id)}
+                              disabled={!review.driver_comments}
+                            >
+                              Delete
+                            </Button>
+                          </span>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
