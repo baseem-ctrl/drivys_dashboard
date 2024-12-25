@@ -33,6 +33,7 @@ import { Box, CircularProgress } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
+import EcommerceBestTrainer from '../ecommerce-best-salesman';
 
 // ----------------------------------------------------------------------
 
@@ -213,21 +214,13 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
-          <Grid xs={12} md={12} lg={12}>
-            <EcommerceBestSalesman
-              title="Top Trending Trainers"
-              tableData={analytics?.topTrendingTrainers}
-              tableLabels={[
-                { id: 'name', label: 'Name' },
-                { id: 'email', label: 'Email' },
-                { id: 'total_bookings', label: 'Total Bookings' },
-              ]}
-            />
+          <Grid xs={12} md={6} lg={12}>
+            <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
-          <Grid xs={12} md={6} lg={6}>
+          <Grid xs={12} md={12} lg={6}>
             <PendingRequests />
           </Grid>
         </Grid>
