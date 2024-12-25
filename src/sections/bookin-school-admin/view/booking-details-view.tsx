@@ -26,6 +26,7 @@ import {
   Chip,
   Switch,
   Container,
+  ListItemText,
 } from '@mui/material';
 import { Star } from '@mui/icons-material';
 
@@ -746,9 +747,42 @@ const BookingDetailsComponent = () => {
                       {sessions.map((session) => (
                         <TableRow key={session?.id || 'N/A'}>
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
-
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={`Total Sessions Booked:${session?.no_of_sessions}`}
+                              secondary={
+                                <div>
+                                  <p>Session No:{session?.session_no}</p>
+                                  <p>
+                                    Completed Sessions:
+                                    {bookingDetails.no_of_sessions_completed}
+                                  </p>
+                                </div>
+                              }
+                              secondaryTypographyProps={{
+                                mt: 0.5,
+                                component: 'span',
+                                typography: 'caption',
+                                color: 'text.disabled',
+                              }}
+                            />
+                          </TableCell>
+                          {/* <TableCell>{session?.session_status || 'N/A'}</TableCell> */}
+                          <TableCell>
+                            <Chip
+                              label={session?.session_status}
+                              color={
+                                session?.session_status === 'PENDING'
+                                  ? 'info'
+                                  : session?.session_status === 'CANCELLED'
+                                  ? 'error'
+                                  : session?.session_status === 'CONFIRMED'
+                                  ? 'default'
+                                  : 'success'
+                              }
+                              variant="soft"
+                            />
+                          </TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
