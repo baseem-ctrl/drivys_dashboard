@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Label from 'src/components/label';
-import { Box, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
+import { Box, Paper, Table, TableBody, TableHead, Typography, Button } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star'; //
 import CommentIcon from '@mui/icons-material/Comment';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { deleteReview } from 'src/api/review';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
 export default function StudentReviewRow({ row }) {
+  const { enqueueSnackbar } = useSnackbar();
+
   const { student_name, student_email, student_phone, avg_rating, reviews = [] } = row;
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
@@ -24,6 +28,30 @@ export default function StudentReviewRow({ row }) {
   };
   const handleUserDetails = (user_id) => {
     router.push(paths.dashboard.user.details(user_id));
+  };
+  const handleDeleteComment = async (session_id) => {
+    try {
+      const response = await deleteReview({
+        delete_student_comment: 1,
+        session_id,
+      });
+
+      if (response.status === 'success') {
+        enqueueSnackbar('Comment deleted successfully.');
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
   };
   return (
     <>
@@ -82,7 +110,8 @@ export default function StudentReviewRow({ row }) {
                     <TableCell>Booking ID</TableCell>
                     <TableCell>Trainer Name</TableCell>
                     <TableCell>Rating</TableCell>
-                    <TableCell sx={{ borderTopRightRadius: '12px' }}>Comments</TableCell>
+                    <TableCell>Comments</TableCell>
+                    <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -144,6 +173,18 @@ export default function StudentReviewRow({ row }) {
                       </TableCell>
 
                       <TableCell>{review.driver_comments || 'No Comments'}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          sx={{
+                            backgroundColor: '#CF5A0D',
+                          }}
+                          onClick={() => handleDeleteComment(review.session_id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
