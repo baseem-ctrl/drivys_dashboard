@@ -1,9 +1,21 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableRow, Box, Typography } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Box,
+  Typography,
+  Tooltip,
+  Button,
+} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { deleteReview } from 'src/api/review';
+import { useSnackbar } from 'src/components/snackbar';
 
 type Review = {
   session_id: number;
@@ -30,11 +42,37 @@ type Props = {
 
 const StudentReviewsTable: React.FC<Props> = ({ students }) => {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleBookingClick = (booking_id) => {
     router.push(paths.dashboard.booking.details(booking_id));
   };
   const handleUserDetails = (user_id) => {
     router.push(paths.dashboard.user.details(user_id));
+  };
+  const handleDeleteComment = async (session_id) => {
+    try {
+      const response = await deleteReview({
+        delete_student_comment: 1,
+        session_id,
+      });
+
+      if (response.status === 'success') {
+        enqueueSnackbar('Comment deleted successfully.');
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
   };
   return (
     <div>
@@ -48,7 +86,8 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                 <TableCell>Booking ID</TableCell>
                 <TableCell>Trainer Name</TableCell>
                 <TableCell>Rating</TableCell>
-                <TableCell sx={{ borderTopRightRadius: '12px' }}>Comments</TableCell>
+                <TableCell>Comments</TableCell>
+                <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -108,6 +147,23 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                     )}
                   </TableCell>
                   <TableCell>{review.driver_comments || 'No Comments'}</TableCell>
+                  <TableCell>
+                    <Tooltip title={review.driver_comments ? '' : 'No comments to delete'} arrow>
+                      <span>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          sx={{
+                            backgroundColor: '#CF5A0D',
+                          }}
+                          onClick={() => handleDeleteComment(review.session_id)}
+                          disabled={!review.driver_comments}
+                        >
+                          Delete
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

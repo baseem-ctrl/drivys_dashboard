@@ -48,10 +48,6 @@ export default function TrainerReviewRow({ row }) {
 
       if (response.status === 'success') {
         enqueueSnackbar('Comment deleted successfully.');
-        // If deletion is successful, filter out the deleted review
-      } else {
-        // Handle failure case (optional)
-        alert('Failed to delete comment');
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
