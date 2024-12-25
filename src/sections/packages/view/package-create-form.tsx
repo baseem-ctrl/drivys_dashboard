@@ -258,9 +258,13 @@ export default function PackageCreateForm({
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
+        if (typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors).forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.errors, { variant: 'error' });
+        }
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
@@ -273,9 +277,10 @@ export default function PackageCreateForm({
     reset(defaultValues);
     onClose();
     setCityFields([{ id: null, min_price: '', max_price: '' }]);
+    setSelectedLocale('');
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>Create Package</DialogTitle>
 
