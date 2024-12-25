@@ -615,7 +615,7 @@ const BookingDetailsComponent = () => {
                       'inherit'
                     }
                     variant="soft"
-                    endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+                    // endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
                     // onClick={popover.onOpen}
                     sx={{ textTransform: 'capitalize', width: '40%' }}
                   >
@@ -627,14 +627,14 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Method:
+                        Payment Method :
                       </Typography>
                       <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Amount:
+                        Payment Amount:
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>

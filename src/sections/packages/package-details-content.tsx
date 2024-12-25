@@ -263,9 +263,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
+        if (typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors).forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.errors, { variant: 'error' });
+        }
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }

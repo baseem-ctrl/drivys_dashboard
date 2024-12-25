@@ -636,7 +636,7 @@ const BookingDetailsComponent = () => {
                       (bookingDetails.payment_status === 'PENDING' && 'info') ||
                       (bookingDetails.payment_status === 'PAID' && 'success') ||
                       (bookingDetails.payment_status === 'REFUNDED' && 'warning') ||
-                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'primary') ||
+                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'default') ||
                       (bookingDetails.payment_status === 'FAILED' && 'error') ||
                       'inherit'
                     }
@@ -660,7 +660,7 @@ const BookingDetailsComponent = () => {
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Pyment Amount:
+                        Payment Amount:
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>

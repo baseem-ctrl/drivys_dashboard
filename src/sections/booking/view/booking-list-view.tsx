@@ -217,9 +217,11 @@ export default function BookingListView() {
 
   const tabBackgroundColors = {
     all: '#49525b',
-    0: '#d3f2f7',
-    1: '#dbf6e5',
+    0: '#ffab0029',
+    1: '#8e33ff29',
     2: '#ffe4de',
+    3: '#dbf6e5',
+    4: '#d3f2f7',
   };
   const tabTextColors = {
     all: '#ffff',
