@@ -755,6 +755,7 @@ const BookingDetailsComponent = () => {
                 <Typography sx={{ fontWeight: '500' }}>
                   {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
                 </Typography>
+
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
                     <TableHead>
@@ -774,7 +775,7 @@ const BookingDetailsComponent = () => {
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
                           <TableCell>
                             <ListItemText
-                              primary={`Total Sessions:${session?.no_of_sessions}`}
+                              primary={`Total Sessions Booked:${session?.no_of_sessions}`}
                               secondary={
                                 <div>
                                   <p>Session No:{session?.session_no}</p>
