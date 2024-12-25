@@ -235,9 +235,11 @@ export default function BookingSchoolAdminListView() {
 
   const tabBackgroundColors = {
     all: '#49525b',
-    pending: '#d3f2f7',
-    confirmed: '#dbf6e5',
-    cancelled: '#ffe4de',
+    0: '#ffab0029',
+    1: '#8e33ff29',
+    2: '#ffe4de',
+    3: '#dbf6e5',
+    4: '#d3f2f7',
   };
   const tabTextColors = {
     all: '#ffff',
