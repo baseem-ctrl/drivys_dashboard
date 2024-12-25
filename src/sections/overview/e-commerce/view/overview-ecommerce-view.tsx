@@ -51,7 +51,11 @@ export default function OverviewEcommerceView() {
           <Grid xs={12} md={12}>
             <EcommerceWelcome
               title={`Congratulations! \n ${user?.user?.name}`}
-              description="Let’s start as school and manage your drivers."
+              description={
+                user?.user?.user_type === 'SCHOOL_ADMIN'
+                  ? 'Let’s start as school and manage your drivers.'
+                  : 'Effortlessly manage users, schools, and operations with full control.'
+              }
               // img={<MotivationIllustration />}
               // action={
               //   <Button variant="contained" color="primary">
