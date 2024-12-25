@@ -30,6 +30,8 @@ import SchoolTrainersListView from 'src/sections/school/login_school_admin/schoo
 import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
 import RewardDetailsPage from 'src/sections/school/trainer-reward/reward-details';
 import TrainerNotificationForm from 'src/sections/school/trainer-reward/create-trainer-notification';
+import StudentReviewListView from 'src/sections/student-review/view/review-list-view';
+import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -194,6 +196,13 @@ const allroutes = [
   {
     path: 'coupon',
     children: [{ path: 'list', element: <CouponListPage />, index: true }],
+  },
+  {
+    path: 'review',
+    children: [
+      { path: 'student-review', element: <StudentReviewListView /> },
+      { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
+    ],
   },
 
   {

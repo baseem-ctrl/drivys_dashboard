@@ -139,6 +139,11 @@ export const endpoints = {
     delete: 'admin/discount/delete-discount/',
     createUpdate: 'admin/discount/create-discount',
   },
+  review: {
+    getStudentReview: 'admin/reviews/get-students-reviews',
+    getTrainerReview: 'admin/reviews/get-trainers-reviews',
+    deleteReview: 'admin/reviews/delete-review?',
+  },
   school: {
     list: 'admin/vendor/get-vendor-list',
     details: 'admin/vendor/get-vendor/',

@@ -15,7 +15,6 @@ const ROOTS = {
 };
 
 // ----------------------------------------------------------------------
-
 export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
@@ -141,6 +140,7 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/invoice/${MOCK_ID}/edit`,
       },
     },
+
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,
@@ -188,6 +188,11 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/booking/new`,
       // list: `${ROOTS.DASHBOARD}/booking/list`,
       details: (id: string) => `${ROOTS.DASHBOARD}/booking/${id}`,
+    },
+    review: {
+      root: `${ROOTS.DASHBOARD}/review/student-review`,
+      studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
+      trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,

@@ -44,6 +44,8 @@ import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-map
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import * as Yup from 'yup';
 import {
   createSchool,
@@ -80,6 +82,11 @@ import moment from 'moment';
 import { useGetAllCity } from 'src/api/city';
 import { useGetStateList } from 'src/api/state';
 import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
+import { useGetStudentReview, useGetTrainerReview } from 'src/api/review';
+import TrainerSessionsTable from './student-review-table';
+import TrainerReviewsTable from './trainer-review-table';
+import StudentReviewRow from '../student-review/review-table-row';
+import StudentReviewsTable from './student-review-table';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -108,7 +115,16 @@ export default function UserDetailsContent({
   const [currentTab, setCurrentTab] = useState('details');
   const [studentTab, setStudentTab] = useState('details');
   const [showAll, setShowAll] = useState(false);
+  const { trainerReviews, trainerReviewsLoading, revalidateTrainerReviews } = useGetTrainerReview({
+    trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
+    student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
+  });
 
+  const { studentReviews, studentReviewsLoading, revalidateStudentReviews } = useGetStudentReview({
+    trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
+    student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
+  });
+  console.log('studentReviews', studentReviews);
   const toggleShowAll = () => setShowAll((prev) => !prev);
   const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
   const currentTrainer = details;
@@ -538,6 +554,36 @@ export default function UserDetailsContent({
                   </Box>
                 </Box>
               ))}
+              {trainerReviews && trainerReviews[0]?.avg_rating && (
+                <Grid item xs={12} sm={12} md={6}>
+                  <Box sx={{ display: 'flex', width: '100%' }}>
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                      Average Review
+                    </Box>
+                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                      :
+                    </Box>
+                    <Box component="span" sx={{ flex: 1 }}>
+                      {/* Display stars based on avg_rating */}
+                      <Box display="flex" alignItems="center">
+                        {Array.from({ length: 5 }).map((_, index) =>
+                          index < trainerReviews[0].avg_rating ? (
+                            <StarIcon
+                              key={index}
+                              style={{ color: '#CF5A0D', marginRight: '4px' }}
+                            />
+                          ) : (
+                            <StarBorderIcon
+                              key={index}
+                              style={{ color: '#CF5A0D', marginRight: '4px' }}
+                            />
+                          )
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+              )}
             </Stack>
           </Scrollbar>
         </Grid>
@@ -657,6 +703,7 @@ export default function UserDetailsContent({
             </Stack>
           </Scrollbar>
         </Grid>
+
         {details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
             <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
@@ -1600,7 +1647,7 @@ export default function UserDetailsContent({
       </Scrollbar>
     </Stack>
   );
-
+  console.log('currentTab', currentTab);
   return (
     <>
       {loading || !details.id ? (
@@ -1643,6 +1690,16 @@ export default function UserDetailsContent({
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'STUDENT' && studentTab === 'review' && (
+                <StudentReviewsTable students={studentReviews} />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' && currentTab === 'review' && (
+                <TrainerReviewsTable trainers={trainerReviews} />
+              )}
             </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
