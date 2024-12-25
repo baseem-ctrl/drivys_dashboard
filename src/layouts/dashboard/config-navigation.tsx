@@ -54,7 +54,6 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
-
   const allroutes = [
     // USER
     {
@@ -169,6 +168,15 @@ export function useNavData() {
       title: t('slider'),
       path: paths.dashboard.slider.root,
       icon: ICONS.external,
+    },
+    {
+      title: t('Reviews'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.chat,
+      children: [
+        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
+        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+      ],
     },
 
     // TOUR

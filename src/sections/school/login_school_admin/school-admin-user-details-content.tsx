@@ -219,6 +219,8 @@ export default function UserDetailsContentAdmin({
       >
         <Grid item xs={12} sm={12} md={6}>
           <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
