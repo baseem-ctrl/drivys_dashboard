@@ -506,14 +506,14 @@ export default function UserDetailsContent({
                 },
                 { label: 'Wallet Balance', value: details?.wallet_balance ?? 'N/A' },
                 { label: 'Wallet Points', value: details?.wallet_points ?? 'N/A' },
-                ...(details?.languages?.length
+                ...(details?.user_type === 'TRAINER' && details?.languages?.length
                   ? details?.languages.map((lang, index) => ({
                       label: `Language ${index + 1}`,
                       value: lang?.dialect?.id
                         ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
                         : 'NA',
                     }))
-                  : [{ label: 'Languages', value: 'N/A' }]),
+                  : []),
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
@@ -782,6 +782,14 @@ export default function UserDetailsContent({
                   value:
                     details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
                 },
+                ...(details?.user_type === 'STUDENT'
+                  ? [
+                      {
+                        label: 'Trainer Language',
+                        value: details?.preferred_trainer_lang?.language_name ?? 'NA',
+                      },
+                    ]
+                  : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
