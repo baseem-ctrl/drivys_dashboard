@@ -576,7 +576,8 @@ export default function UserNewEditForm({
     enumLoading ||
     genderLoading ||
     gearLoading ||
-    categoryLoading
+    categoryLoading ||
+    schoolLoading
   ) {
     return (
       <Box
@@ -873,59 +874,62 @@ export default function UserNewEditForm({
                       ))}
                   </RHFSelect>
                 </Box>
-
-                {fields.map((languageItem, index) => (
-                  <Grid
-                    container
-                    item
-                    spacing={2}
-                    sx={{ mt: 2, mb: 2 }}
-                    key={languageItem.id || index}
-                  >
-                    <Grid item xs={12} md={5}>
-                      <RHFAutocomplete
-                        name={`languages[${index}].id`}
-                        label={`Language ${index + 1}`}
-                        getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
-                        options={dialect ?? []}
-                        renderOption={(props, option: any) => (
-                          <li {...props} key={option?.id}>
-                            {option?.dialect_name ?? 'Unknown'}
-                          </li>
-                        )}
-                        defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
-                      />
-                    </Grid>
-
-                    {/* Value Field */}
-                    <Grid item xs={12} md={5}>
-                      <RHFSelect
-                        name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
-                        label="Fluency level"
-                        defaultValue={languageItem.fluency_level}
+                {values.user_type === 'TRAINER' && (
+                  <>
+                    {fields.map((languageItem, index) => (
+                      <Grid
+                        container
+                        item
+                        spacing={2}
+                        sx={{ mt: 2, mb: 2 }}
+                        key={languageItem.id || index}
                       >
-                        {fluencyOptions.map((option: any) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.name}
-                          </MenuItem>
-                        ))}
-                      </RHFSelect>
-                    </Grid>
+                        <Grid item xs={12} md={5}>
+                          <RHFAutocomplete
+                            name={`languages[${index}].id`}
+                            label={`Language ${index + 1}`}
+                            getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
+                            options={dialect ?? []}
+                            renderOption={(props, option: any) => (
+                              <li {...props} key={option?.id}>
+                                {option?.dialect_name ?? 'Unknown'}
+                              </li>
+                            )}
+                            defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
+                          />
+                        </Grid>
 
-                    {/* Delete Button */}
-                    <Grid item xs={12} md={2}>
-                      <IconButton onClick={() => handleRemove(index)}>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                ))}
+                        {/* Value Field */}
+                        <Grid item xs={12} md={5}>
+                          <RHFSelect
+                            name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
+                            label="Fluency level"
+                            defaultValue={languageItem.fluency_level}
+                          >
+                            {fluencyOptions.map((option: any) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.name}
+                              </MenuItem>
+                            ))}
+                          </RHFSelect>
+                        </Grid>
 
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Button variant="contained" onClick={handleAddMore}>
-                    Add Language
-                  </Button>
-                </Grid>
+                        {/* Delete Button */}
+                        <Grid item xs={12} md={2}>
+                          <IconButton onClick={() => handleRemove(index)}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                    ))}
+
+                    <Grid item xs={12} sx={{ mt: 2 }}>
+                      <Button variant="contained" onClick={handleAddMore}>
+                        Add Language
+                      </Button>
+                    </Grid>
+                  </>
+                )}
                 {values.user_type === 'TRAINER' && !currentUser?.id && (
                   <>
                     {licenseFields.map((docItem, index) => (
