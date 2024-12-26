@@ -77,8 +77,8 @@ export const transformData = (monthlyData = [], yearlyData = [], weeklyData = []
   return {
     categories,
     series: [
-      { type: 'Monthly', data: monthlySeries.data },
       { type: 'Yearly', data: yearlySeries.data },
+      { type: 'Monthly', data: monthlySeries.data },
       { type: 'Weekly', data: weeklySeries.data },
     ],
   };

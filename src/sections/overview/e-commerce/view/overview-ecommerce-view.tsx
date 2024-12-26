@@ -45,19 +45,30 @@ export default function OverviewEcommerceView() {
 
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
-  const [seriesData, setSeriesData] = useState('Yearly');
+  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
+  const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
+
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-  console.log('analytics', analytics);
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
   const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
   const weeklyIssuedCertificates = analytics?.weeklyIssuedCertificates || [];
+  const monthlyCompletedSessions = analytics?.monthlyCompletedSessions || [];
+  const yearlyCompletedSessions = analytics?.yearlyCompletedSessions || [];
+  const weeklyCompletedSessions = analytics?.weeklyCompletedSessions || [];
 
-  const chartData = transformData(
+  const chartCertificateIssuedData = transformData(
     monthlyIssuedCertificates,
     yearlyIssuedCertificates,
     weeklyIssuedCertificates,
-    seriesData
+    issuedCerificateSeriesData
+  );
+  console.log('yearlyCompletedSessions', yearlyCompletedSessions);
+  const chartCompletedSessionData = transformData(
+    monthlyCompletedSessions,
+    yearlyCompletedSessions,
+    weeklyCompletedSessions,
+    sessionSeriesData
   );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -223,13 +234,22 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
-          <Grid xs={12} md={6} lg={8}>
+          <Grid xs={12} md={6} lg={6}>
             {' '}
             <BookingStatistics
-              title="Issued Certificates Statistics"
-              chart={chartData}
-              seriesData={seriesData}
-              setSeriesData={setSeriesData}
+              title="Issued Certificates"
+              chart={chartCertificateIssuedData}
+              seriesData={issuedCerificateSeriesData}
+              setSeriesData={setIssuedCertificateSeriesData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            {' '}
+            <BookingStatistics
+              title="Completed Session"
+              chart={chartCompletedSessionData}
+              seriesData={sessionSeriesData}
+              setSeriesData={setSessionSeriesData}
             />
           </Grid>
           <Grid xs={12} md={6} lg={4}>

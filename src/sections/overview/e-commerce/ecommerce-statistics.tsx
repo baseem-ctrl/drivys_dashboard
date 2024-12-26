@@ -40,7 +40,7 @@ export default function BookingStatistics({
 }: Props) {
   const { categories, colors, series, options } = chart;
   const popover = usePopover();
-
+  console.log('chart', chart);
   const chartOptions = useChart({
     type: 'line',
     colors,
