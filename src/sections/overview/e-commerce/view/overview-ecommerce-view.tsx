@@ -34,6 +34,9 @@ import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
+import BookingStatistics from '../ecommerce-statistics';
+import { transformData } from '../helper-functions/transform-certificate-date';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -42,10 +45,31 @@ export default function OverviewEcommerceView() {
 
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
+  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
+  const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
 
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-  console.log('revenue', revenue);
+  const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
+  const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
+  const weeklyIssuedCertificates = analytics?.weeklyIssuedCertificates || [];
+  const monthlyCompletedSessions = analytics?.monthlyCompletedSessions || [];
+  const yearlyCompletedSessions = analytics?.yearlyCompletedSessions || [];
+  const weeklyCompletedSessions = analytics?.weeklyCompletedSessions || [];
+
+  const chartCertificateIssuedData = transformData(
+    monthlyIssuedCertificates,
+    yearlyIssuedCertificates,
+    weeklyIssuedCertificates,
+    issuedCerificateSeriesData
+  );
+  console.log('yearlyCompletedSessions', yearlyCompletedSessions);
+  const chartCompletedSessionData = transformData(
+    monthlyCompletedSessions,
+    yearlyCompletedSessions,
+    weeklyCompletedSessions,
+    sessionSeriesData
+  );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -210,6 +234,24 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
+          <Grid xs={12} md={6} lg={6}>
+            {' '}
+            <BookingStatistics
+              title="Issued Certificates"
+              chart={chartCertificateIssuedData}
+              seriesData={issuedCerificateSeriesData}
+              setSeriesData={setIssuedCertificateSeriesData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            {' '}
+            <BookingStatistics
+              title="Completed Session"
+              chart={chartCompletedSessionData}
+              seriesData={sessionSeriesData}
+              setSeriesData={setSessionSeriesData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
