@@ -34,6 +34,9 @@ import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
+import BookingStatistics from '../ecommerce-statistics';
+import { transformData } from '../helper-functions/transform-certificate-date';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -42,10 +45,20 @@ export default function OverviewEcommerceView() {
 
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
-
+  const [seriesData, setSeriesData] = useState('Yearly');
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-  console.log('revenue', revenue);
+  console.log('analytics', analytics);
+  const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
+  const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
+  const weeklyIssuedCertificates = analytics?.weeklyIssuedCertificates || [];
+
+  const chartData = transformData(
+    monthlyIssuedCertificates,
+    yearlyIssuedCertificates,
+    weeklyIssuedCertificates,
+    seriesData
+  );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -210,6 +223,15 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
+          <Grid xs={12} md={6} lg={8}>
+            {' '}
+            <BookingStatistics
+              title="Issued Certificates Statistics"
+              chart={chartData}
+              seriesData={seriesData}
+              setSeriesData={setSeriesData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
