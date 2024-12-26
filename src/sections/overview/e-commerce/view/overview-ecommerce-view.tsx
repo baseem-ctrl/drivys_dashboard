@@ -296,7 +296,7 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
-          <Grid xs={12} md={6} lg={12}>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
