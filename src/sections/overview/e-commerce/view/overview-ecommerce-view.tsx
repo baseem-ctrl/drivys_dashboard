@@ -28,7 +28,7 @@ import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics } from 'src/api/anlytics';
+import { useGetAnalytics, useGetRevenue } from 'src/api/anlytics';
 import { Box, CircularProgress } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
@@ -41,10 +41,11 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
+  const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
 
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-  console.log('analytics', analytics);
+  console.log('revenue', revenue);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -73,6 +74,7 @@ export default function OverviewEcommerceView() {
               bgcolor="rgba(0, 204, 204, 0.1)"
               textColor="rgba(0, 123, 255, 0.9)"
               title="Total Revenue"
+              percent={revenue?.earningsPercentChange}
               icon="mdi:account-cash"
               total={analytics?.revenueGenerated ?? '0'}
             />
@@ -96,7 +98,7 @@ export default function OverviewEcommerceView() {
               icon="eva:person-fill"
               bgcolor="rgba(40, 167, 69, 0.1)"
               textColor="rgba(40, 167, 69, 0.9)"
-              percent={-0.1}
+              // percent={-0.1}
               total={analytics?.studentCount ?? '0'}
               chart={{
                 colors: [theme.palette.info.light, theme.palette.info.main],
@@ -165,6 +167,35 @@ export default function OverviewEcommerceView() {
               title="Refund Requests"
               icon="mdi:cash-refund"
               total={analytics?.refundReqs ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              title="Issued Certificates"
+              icon="mdi:file-certificate"
+              bgcolor="rgba(40, 167, 69, 0.1)"
+              textColor="rgba(40, 167, 69, 0.9)"
+              total={analytics?.issuedCertificates ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              title="Pending Certificates"
+              icon="mdi:seal"
+              // percent={2.6}
+              total={analytics?.pendingCertificates ?? '0'}
+              bgcolor="rgba(0, 123, 255, 0.1)"
+              textColor="rgba(0, 123, 255, 0.9)"
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              icon="mdi:calendar-check"
+              bgcolor="rgba(255, 193, 7, 0.1)"
+              textColor="rgba(220, 53, 69, 0.9)"
+              title="Rescheduled Booking Count"
+              total={analytics?.rescheduledBookingsCount ?? '0'}
+              percent={analytics?.rescheduledPercentage ?? 0}
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={6}>
