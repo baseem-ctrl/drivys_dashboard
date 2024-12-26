@@ -171,7 +171,7 @@ export default function RefundListView() {
         sx={{ mb: 3 }}
       />
       {renderFilters}
-      <Card>
+      <Card sx={{ mb: 5 }}>
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
           <Typography
             variant="h6"
@@ -246,7 +246,9 @@ export default function RefundListView() {
             </Table>
           </Scrollbar>
         </TableContainer>
+      </Card>
 
+      <Card>
         <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
           <Typography
             variant="h6"

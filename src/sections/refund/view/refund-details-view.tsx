@@ -42,7 +42,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useParams, useRouter } from 'src/routes/hooks';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
-import BookingDetailsToolbar from '../booking-details-toolbar';
+import BookingDetailsToolbar from 'src/sections/booking/booking-details-toolbar';
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -794,4 +794,4 @@ const RefundDetailsComponent = () => {
   );
 };
 
-export default BookingDetailsComponent;
+export default RefundDetailsComponent;
