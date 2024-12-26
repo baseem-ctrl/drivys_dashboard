@@ -303,7 +303,7 @@ export default function OverviewEcommerceView() {
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
           <Grid xs={12} md={12} lg={6}>
-            <PendingRequests />
+            <PendingRequests height={'400px'} />
           </Grid>
         </Grid>
       ) : (

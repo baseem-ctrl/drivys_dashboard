@@ -196,6 +196,11 @@ export const paths = {
       studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
       trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
     },
+    todo: {
+      root: `${ROOTS.DASHBOARD}/todo/pending-verification`,
+      pendingVerification: `${ROOTS.DASHBOARD}/todo/pending-verification`,
+      pendingRefund: `${ROOTS.DASHBOARD}/todo/pending-refund`,
+    },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,
