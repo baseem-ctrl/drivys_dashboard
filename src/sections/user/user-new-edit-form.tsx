@@ -321,7 +321,7 @@ export default function UserNewEditForm({
       cash_in_hand: currentUser?.cash_in_hand || 0,
       max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
     }),
-    [currentUser?.locale, dialect, language, schoolList]
+    [currentUser?.locale, dialect, language, schoolList, currentUser?.user_preference]
   );
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
