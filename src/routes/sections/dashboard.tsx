@@ -34,6 +34,8 @@ import RewardDetailsPage from 'src/sections/school/trainer-reward/reward-details
 import TrainerNotificationForm from 'src/sections/school/trainer-reward/create-trainer-notification';
 import StudentReviewListView from 'src/sections/student-review/view/review-list-view';
 import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-view';
+import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-verification';
+import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 
 // ----------------------------------------------------------------------
 
@@ -104,7 +106,7 @@ const allroutes = [
   {
     path: 'user',
     children: [
-      { element: <UserProfilePage />, index: true },
+      { element: <UserListPage />, index: true },
       { path: 'profile', element: <UserProfilePage /> },
       { path: 'cards', element: <UserCardsPage /> },
       { path: 'list', element: <UserListPage /> },
@@ -197,7 +199,7 @@ const allroutes = [
   // to do
   {
     path: 'coupon',
-    children: [{ path: 'list', element: <CouponListPage />, index: true }],
+    children: [{ element: <CouponListPage />, index: true }],
   },
   {
     path: 'review',
@@ -206,7 +208,14 @@ const allroutes = [
       { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
     ],
   },
-
+  {
+    path: 'todo',
+    children: [
+      { element: <ToDoListViewVerification />, index: true },
+      { path: 'pending-verification', element: <ToDoListViewVerification /> },
+      { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+    ],
+  },
   {
     path: 'system',
     children: [
