@@ -33,6 +33,8 @@ import { Box, CircularProgress } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
+import PieChartComponent from '../ecommerce-pie-chart';
+import AnalyticsActiveUsers from '../analytics-active-users';
 
 // ----------------------------------------------------------------------
 
@@ -43,7 +45,18 @@ export default function OverviewEcommerceView() {
 
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
-  console.log('analytics', analytics);
+
+  const chartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -165,6 +178,13 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Trainer Analytics"
+              subheader={`Total Trainers: ${analytics.trainerCount}`}
+              chart={chartData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
