@@ -26,6 +26,7 @@ import {
   Chip,
   Switch,
   Container,
+  ListItemText,
 } from '@mui/material';
 import { Star } from '@mui/icons-material';
 
@@ -615,8 +616,8 @@ const BookingDetailsComponent = () => {
                       'inherit'
                     }
                     variant="soft"
-                    endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-                    onClick={popover.onOpen}
+                    // endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+                    // onClick={popover.onOpen}
                     sx={{ textTransform: 'capitalize', width: '40%' }}
                   >
                     {bookingDetails.payment_status}
@@ -627,14 +628,14 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Method:
+                        Payment Method :
                       </Typography>
                       <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Amount:
+                        Payment Amount:
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>
@@ -746,9 +747,42 @@ const BookingDetailsComponent = () => {
                       {sessions.map((session) => (
                         <TableRow key={session?.id || 'N/A'}>
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
-
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={`Total Sessions Booked:${session?.no_of_sessions}`}
+                              secondary={
+                                <div>
+                                  <p>Session No:{session?.session_no}</p>
+                                  <p>
+                                    Completed Sessions:
+                                    {bookingDetails.no_of_sessions_completed}
+                                  </p>
+                                </div>
+                              }
+                              secondaryTypographyProps={{
+                                mt: 0.5,
+                                component: 'span',
+                                typography: 'caption',
+                                color: 'text.disabled',
+                              }}
+                            />
+                          </TableCell>
+                          {/* <TableCell>{session?.session_status || 'N/A'}</TableCell> */}
+                          <TableCell>
+                            <Chip
+                              label={session?.session_status}
+                              color={
+                                session?.session_status === 'PENDING'
+                                  ? 'info'
+                                  : session?.session_status === 'CANCELLED'
+                                  ? 'error'
+                                  : session?.session_status === 'CONFIRMED'
+                                  ? 'default'
+                                  : 'success'
+                              }
+                              variant="soft"
+                            />
+                          </TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>

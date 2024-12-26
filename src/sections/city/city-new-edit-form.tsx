@@ -16,7 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 // utils
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import { updateCityTranslation } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
 
@@ -34,6 +34,9 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     name: Yup.string().required('City name is required'),
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
+    is_certificate_available: Yup.boolean(),
+    certificate_price: Yup.string(),
+    certificate_link: Yup.string(),
   });
   const methods = useForm({
     resolver: yupResolver(CitySchema),
@@ -42,6 +45,9 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       locale: city?.city_translations?.[0]?.locale || 'ar',
       published: city?.is_published === 1,
       id: city?.id || '',
+      is_certificate_available: !!city?.is_certificate_available ?? false,
+      certificate_price: city?.certificate_price || 0,
+      certificate_link: city?.certificate_link || '',
     },
   });
 
@@ -55,7 +61,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   } = methods;
 
   const selectedLocale = watch('locale');
-
+  const values = watch();
   useEffect(() => {
     if (city) {
       reset({
@@ -63,6 +69,9 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
         locale: city?.city_translations?.[0]?.locale || 'ar',
         published: city?.is_published === 1,
         id: city?.id || '',
+        is_certificate_available: !!city?.is_certificate_available ?? false,
+        certificate_price: city?.certificate_price || 0,
+        certificate_link: city?.certificate_link || '',
       });
     }
   }, [city, reset]);
@@ -86,7 +95,11 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       formData.append('is_published', city.published ? '1' : '0');
       formData.append('city_translation[0][locale]', city.locale);
       formData.append('city_translation[0][name]', city.name);
-
+      formData.append('is_certificate_available', city.is_certificate_available ? '1' : '0');
+      if (city?.is_certificate_available) {
+        formData.append('certificate_price', city.certificate_price ?? '0');
+        formData.append('certificate_link', city.certificate_link ?? '');
+      }
       // Update city call
       const response = await updateCityTranslation(formData);
       if (response) {
@@ -119,7 +132,6 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
             sm: 'repeat(2, 1fr)',
           }}
         >
-          <RHFTextField name="name" label="City Name" />
           <RHFSelect name="locale" label="Locale">
             <MenuItem value="" disabled>
               Select Locale
@@ -130,6 +142,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
               </MenuItem>
             ))}
           </RHFSelect>
+          <RHFTextField name="name" label="City Name" />
 
           <FormControlLabel
             control={
@@ -141,6 +154,18 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
             }
             label="Published"
           />
+          <RHFSwitch name="is_certificate_available" label="Is Certificate Available" />
+          {values?.is_certificate_available && (
+            <>
+              <RHFTextField
+                name="certificate_price"
+                label="Certificate Price"
+                prefix="AED"
+                type="number"
+              />
+              <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
+            </>
+          )}
         </Box>
         <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
           <LoadingButton variant="contained" onClick={handleClosePopup} sx={{ width: '120px' }}>

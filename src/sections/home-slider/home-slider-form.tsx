@@ -66,7 +66,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
       picture_ids: updateValue?.picture_ids || [],
       published: updateValue?.published === '1',
       show_until: moment(updateValue?.show_until).format('YYYY-MM-DD') || today,
-      position: updateValue?.position || 'top',
+      position: updateValue?.is_hero === true ? 'top' : 'bottom',
     }),
     [updateValue, today]
   );
@@ -109,7 +109,8 @@ export default function HomeSliderForm({ updateValue }: Props) {
       formData.append('name', data.name || '');
       formData.append('display_order', data.display_order || '');
       formData.append('published', data.published ? '1' : '0');
-      formData.append('is_hero', data.position === 'top' ? 1 : 0);
+      formData.append('is_hero', selectedPosition === 'top' ? 1 : 0);
+
       formData.append(
         'show_until',
         data.show_until ? moment(data.show_until).format('YYYY-MM-DD') : ''

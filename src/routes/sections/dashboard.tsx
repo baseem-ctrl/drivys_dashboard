@@ -27,6 +27,13 @@ import NotificationDetails from 'src/sections/notifications/view/notifications-d
 import CityDetailsView from 'src/sections/city/view/city-details-view';
 import RefundListView from 'src/sections/refund/view/refund-list-view';
 import RefundDetailsComponent from 'src/sections/refund/view/refund-details-view';
+import PickupListPage from 'src/pages/pickup/pickup';
+import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
+import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
+import RewardDetailsPage from 'src/sections/school/trainer-reward/reward-details';
+import TrainerNotificationForm from 'src/sections/school/trainer-reward/create-trainer-notification';
+import StudentReviewListView from 'src/sections/student-review/view/review-list-view';
+import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -192,6 +199,13 @@ const allroutes = [
     path: 'coupon',
     children: [{ path: 'list', element: <CouponListPage />, index: true }],
   },
+  {
+    path: 'review',
+    children: [
+      { path: 'student-review', element: <StudentReviewListView /> },
+      { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
+    ],
+  },
 
   {
     path: 'system',
@@ -203,6 +217,7 @@ const allroutes = [
       { path: 'state', element: <StateListPage /> },
       { path: 'appsettings', element: <AppSettingsListPage /> },
       { path: 'dialect', element: <DialectListPage /> },
+      { path: 'pickup', element: <PickupListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },
@@ -243,6 +258,13 @@ const schooladminRoutes = [
       { path: 'admin', element: <SchoolAdminDetailsPage /> },
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
+      { path: 'rewards', element: <RewardDetailsPage /> },
+      { path: 'notifications', element: <TrainerNotificationForm /> },
+      {
+        path: 'trainers-list',
+        element: <SchoolTrainersListView />,
+      },
+      { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
   {
@@ -254,6 +276,7 @@ const schooladminRoutes = [
     ],
   },
 ];
+
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
   switch (userType) {

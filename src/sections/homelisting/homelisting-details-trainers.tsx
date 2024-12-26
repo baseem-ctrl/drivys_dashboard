@@ -32,7 +32,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-import { createHomeListing } from 'src/api/homelisting';
+import { createHomeListing, RemoveTrainerFromHomeListing } from 'src/api/homelisting';
 import { useParams } from 'react-router';
 import { deleteTrainer } from 'src/api/trainer';
 
@@ -59,18 +59,15 @@ export default function HomeListingTrainers({
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
-  const [deleteId, setDeleteId] = useState('');
-
   const [trainerMappingId, setTrainerMappingId] = useState('');
 
   // const [loadingButton, setLoadingButton] = useState(false);
-
   const { users, usersLoading, revalidateUsers } = useGetUsers({
     page: table?.page,
     limit: table?.rowsPerPage,
     user_types: 'TRAINER',
     search: search,
-    is_active: '1',
+    is_verified: '1',
   });
 
   const popover = usePopover();
@@ -105,55 +102,6 @@ export default function HomeListingTrainers({
       reset(defaultValues);
     }
   }, [homelistingdetails, reset]);
-
-  // Function to delete trainer
-  const handleDeleteTrainer = async (id: string | number) => {
-    const body = new FormData();
-    console.log('Deleting trainer with id:', id);
-
-    // Append translation details
-    homelistingdetails?.translations?.forEach(
-      (
-        translation: { title: string | Blob; locale: string; description: string | Blob },
-        index: any
-      ) => {
-        body.append(`translation[${index}][title]`, translation.title);
-        body.append(`translation[${index}][locale]`, translation.locale);
-        body.append(`translation[${index}][description]`, translation.description);
-      }
-    );
-
-    // Append trainers, but omit the trainer with the matching id
-    if (homelistingdetails?.trainers?.length > 0) {
-      homelistingdetails.trainers.forEach((trainer: { trainer_id: string }, index: number) => {
-        // Only append trainers that don't match the id to be deleted
-        if (trainer.trainer_id !== id) {
-          body.append(`trainers[${index}][user_id]`, trainer.trainer_id);
-        }
-      });
-    }
-
-    // Append home_listing_id
-    body.append('home_listing_id', params?.id ?? '');
-
-    try {
-      // Call the API with the updated FormData
-      const response = await createHomeListing(body);
-      if (response) {
-        enqueueSnackbar('Trainer Deleted Successfully!');
-        revalidateDetails(); // Assuming this revalidates the details
-      }
-    } catch (error) {
-      // Error handling
-      if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
 
   const onSubmit = async (data: any) => {
     const body = new FormData();
@@ -207,32 +155,31 @@ export default function HomeListingTrainers({
       // setLoadingButton(false);
     }
   };
+  const handleDeleteTrainer = async (homeListingId, trainerId) => {
+    try {
+      const response = await RemoveTrainerFromHomeListing(homeListingId, trainerId);
+      if (response) {
+        enqueueSnackbar('Trainer Deleted successfully."', {
+          variant: 'success',
+        });
+        revalidateDetails();
+      }
+    } catch (error) {
+      if (error?.errors) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
 
   const handlePopoverOpen = (e, trainer: any, deleteId) => {
     popover.onOpen(e);
     setTrainerId(trainer?.id);
     setTrainerMappingId(trainer?.id);
   };
-  // const handleRemove = async () => {
-  //   try {
-  //     if (trainerMappingId) {
-  //       const response = await RemoveTrainerFromSchool(trainerMappingId);
-  //       if (response) {
-  //         enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
-  //         setTrainerId('');
-  //         revalidateDetails();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     if (error?.errors) {
-  //       Object.values(error?.errors).forEach((errorMessage: any) => {
-  //         enqueueSnackbar(errorMessage[0], { variant: 'error' });
-  //       });
-  //     } else {
-  //       enqueueSnackbar(error.message, { variant: 'error' });
-  //     }
-  //   }
-  // };
   return (
     <Box
       gap={3}
@@ -380,7 +327,7 @@ export default function HomeListingTrainers({
         ) : (
           !create && (
             <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-              No trainer under this school
+              No trainer found
             </Typography>
           )
         )
@@ -396,6 +343,35 @@ export default function HomeListingTrainers({
           <CircularProgress />
         </Box>
       )}
+
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+        <MenuItem
+          onClick={() => {
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            router.push(paths.dashboard.user.details(trainerId));
+          }}
+        >
+          <Iconify icon="eva:eye-outline" sx={{ mr: 1 }} />
+          View
+        </MenuItem>
+      </CustomPopover>
+
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -403,7 +379,7 @@ export default function HomeListingTrainers({
         content="Are you sure want to delete?"
         onConfirm={() => {
           confirm.onFalse();
-          handleDeleteTrainer(trainerMappingId);
+          handleDeleteTrainer(homelistingdetails?.id, trainerId);
         }}
         action={
           <Button variant="contained" color="error">
@@ -411,34 +387,6 @@ export default function HomeListingTrainers({
           </Button>
         }
       />
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="bottom-center"
-        sx={{ width: 140 }}
-      >
-        <MenuItem
-          onClick={(e) => {
-            popover.onClose();
-            router.push(paths.dashboard.user.details(trainerId));
-          }}
-        >
-          <Iconify icon="solar:eye-bold" />
-          View
-        </MenuItem>
-
-        {/* <MenuItem
-          onClick={() => {
-            popover.onClose();
-            confirm.onTrue();
-            // handleDeleteTrainer(trainerId);
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Remove
-        </MenuItem> */}
-      </CustomPopover>
     </Box>
   );
 }

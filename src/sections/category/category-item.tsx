@@ -384,10 +384,9 @@ export default function JobItem({
         sx={{ mt: 2 }}
         label="Parent Category"
         options={parentCategoryOptions || []}
-        onInputChange={(event, value) => {
-          searchCategory(value.split(' (')[0]);
-        }}
+        onInput={(e) => searchCategory(e.target.value)}
       />
+
       <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
         <LoadingButton
           sx={{ width: '100%', color: '#CF5A0D', borderColor: '#CF5A0D' }}

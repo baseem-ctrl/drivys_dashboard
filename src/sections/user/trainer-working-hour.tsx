@@ -12,6 +12,7 @@ import {
   TableRow,
   TableCell,
   Button,
+  Chip,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -53,10 +54,18 @@ export default function TrainerWorkingHour({ userId }: Props) {
   };
   const workingHoursHeaders = [
     { key: 'day', label: 'Day' },
-    { key: 'start_time', label: 'Start Time' },
-    { key: 'end_time', label: 'End Time' },
-    { key: 'full_day', label: 'Full Day' },
     { key: 'off_day', label: 'Off Day' },
+    { key: 'shift_time', label: 'Available Time' },
+    // Conditionally include start_time and end_time headers
+    // ...(!workingHours?.some((hour) => hour.is_full_day)
+    //   ? [
+    //       { key: 'shift_time', label: 'Available Time' },
+    //       { key: 'action', label: '' },
+    //     ]
+    //   : [
+    //       // { key: 'full_day', label: 'Full Day' },
+    //       // { key: 'action', label: '' },
+    //     ]),
   ];
 
   if (workingHoursLoading) {
@@ -77,7 +86,16 @@ export default function TrainerWorkingHour({ userId }: Props) {
     setSelectedWorkingHour(null);
     quickEdit.onTrue();
   };
-
+  const groupedWorkingHours = (workingHours || []).reduce(
+    (acc, hour) => {
+      const day = hour.day_of_week;
+      const id = hour?.id;
+      if (!acc[day]) acc[day] = [];
+      acc[day].push(hour);
+      return acc;
+    },
+    {} as Record<string, typeof workingHours>
+  );
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -115,82 +133,33 @@ export default function TrainerWorkingHour({ userId }: Props) {
                     <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
-                  {workingHours.map((hour) => (
-                    <TableRow key={hour.id}>
+                  {Object.keys(groupedWorkingHours).map((day) => (
+                    <TableRow key={day}>
                       <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
-                          }}
-                        >
-                          {hour.day_of_week}
-                        </Typography>
+                        <Typography variant="body2">{day}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
-                          }}
-                        >
-                          {hour.is_full_day
-                            ? moment(hour.start_time).utc().format('h:mm A')
-                            : hour.is_off_day
-                            ? 'N/A'
-                            : moment(hour.start_time).utc().format('h:mm A')}
+                        <Typography variant="body2">
+                          {groupedWorkingHours[day].some((hour) => hour.is_off_day) ? 'Yes' : 'No'}
                         </Typography>
                       </TableCell>
+
+                      {/* Conditionally render shift time or full day */}
                       <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
-                          }}
-                        >
-                          {' '}
-                          {hour.is_full_day
-                            ? moment(hour.end_time).utc().format('h:mm A')
-                            : hour.is_off_day
-                            ? 'N/A'
-                            : moment(hour.end_time).utc().format('h:mm A')}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
-                          }}
-                        >
-                          {hour.is_full_day ? 'Yes' : 'No'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: hour.is_full_day ? 'green' : hour.is_off_day ? 'red' : 'inherit',
-                          }}
-                        >
-                          {hour.is_off_day ? 'Yes' : 'No'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        onClick={() => {
-                          setWorkingHourID(hour.id);
-                          setSelectedWorkingHour(hour);
-                        }}
-                      >
-                        <IconButton
-                          color={popover.open ? 'inherit' : 'default'}
-                          onClick={popover.onOpen}
-                        >
-                          <Iconify icon="eva:more-vertical-fill" />
-                        </IconButton>
+                        {groupedWorkingHours[day][0]?.is_full_day ? (
+                          <Chip label="Full Day" color="primary" />
+                        ) : (
+                          // <TableCell align="center">
+                          groupedWorkingHours[day].map((hour, index) => (
+                            <Box key={index} component="div">
+                              <Typography variant="body2">
+                                {moment(hour.start_time).utc().format('h:mm A')} -{' '}
+                                {moment(hour.end_time).utc().format('h:mm A')}
+                              </Typography>
+                            </Box>
+                          ))
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -217,7 +186,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             quickEdit.onTrue();
             popover.onClose();
@@ -225,7 +194,7 @@ export default function TrainerWorkingHour({ userId }: Props) {
         >
           <Iconify icon="solar:pen-bold" />
           Edit
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog

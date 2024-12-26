@@ -45,7 +45,7 @@ export default function PackageDocumentDetails({
   const [docID, setDocID] = useState<number | null>(null);
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
+  const [uploadedFile, setUploadedFile] = useState(null);
   // Function to handle image file selection
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,6 +55,19 @@ export default function PackageDocumentDetails({
       setSelectedImage(URL.createObjectURL(file));
     }
   };
+  const handleClickFileUpload = () => {
+    const inputElement = document.getElementById('iconUpload');
+    if (inputElement) {
+      inputElement.click();
+      inputElement.onchange = (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          setUploadedFile(file);
+        }
+      };
+    }
+  };
+
   const [confirm, setConfirm] = useState({
     value: false,
     onFalse: () => setConfirm({ ...confirm, value: false }),
@@ -104,6 +117,7 @@ export default function PackageDocumentDetails({
     if (editMode !== null && documents[editMode]) {
       const document = documents[editMode];
       setValue('title', document.title || '');
+      setValue('description', document.description || '');
       setValue('status', document.status || '');
       setValue('type', document.type || '');
       setValue('file', document.file || '');
@@ -126,10 +140,14 @@ export default function PackageDocumentDetails({
       if (filePreviewURL) {
         updatedDocument.append('file', filePreviewURL);
       }
+      if (uploadedFile) {
+        updatedDocument.append('icon', uploadedFile);
+      }
       console.log('formData', formData);
       updatedDocument.append('doc_id', document.id);
       updatedDocument.append('title', formData.title || document.title);
       updatedDocument.append('session_no', formData.session || document.session_no);
+      updatedDocument.append('description', formData.description || document.description);
       updatedDocument.append('type', formData.type || document.type);
       updatedDocument.append('status', formData.status || document.status);
 
@@ -205,10 +223,10 @@ export default function PackageDocumentDetails({
   };
   return (
     <>
-      <Stack component={Card} spacing={3} sx={{ p: 3 }}>
+      <Stack spacing={3} sx={{ p: 3 }}>
         <Scrollbar>
           {documents && documents.length > 0 ? (
-            <Grid container spacing={3}>
+            <Grid container>
               {documents.map((doc, index) => (
                 <Grid item xs={12} sm={6} key={doc.id}>
                   <Stack
@@ -216,11 +234,13 @@ export default function PackageDocumentDetails({
                     spacing={3}
                     sx={{
                       mb: 3,
-                      border: '1px solid #ccc',
-                      p: 2,
-                      borderRadius: '4px',
+
+                      p: 5,
+                      borderRadius: '10px',
                       position: 'relative',
                       height: 'auto',
+                      ml: 1,
+                      mt: 1,
                     }}
                   >
                     {editMode !== index && (
@@ -243,7 +263,7 @@ export default function PackageDocumentDetails({
                           alignItems: 'center',
                           padding: 2,
                           width: '100%',
-                          height: '590px',
+                          height: '690px',
                         }}
                       >
                         <Stack
@@ -331,6 +351,7 @@ export default function PackageDocumentDetails({
                               </Typography>
                             ))}
                         </Stack>
+
                         <Stack
                           spacing={2}
                           alignItems="flex-start"
@@ -363,7 +384,33 @@ export default function PackageDocumentDetails({
                               {doc.title ?? 'N/A'}
                             </Typography>
                           </Box>
-
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              width: '100%',
+                              borderRadius: 1,
+                              padding: 1,
+                              backgroundColor: 'background.default',
+                            }}
+                          >
+                            <Typography
+                              sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                            >
+                              Description
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                            >
+                              :
+                            </Typography>
+                            <Typography
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                            >
+                              {doc.description ?? 'N/A'}
+                            </Typography>
+                          </Box>
                           <Box
                             sx={{
                               display: 'flex',
@@ -395,6 +442,52 @@ export default function PackageDocumentDetails({
                               </Typography>
                             </Tooltip>
                           </Box>
+
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              width: '100%',
+                              borderRadius: 1,
+                              padding: 1,
+                              backgroundColor: 'background.default',
+                            }}
+                          >
+                            <Typography
+                              sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                            >
+                              Icon
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                            >
+                              :
+                            </Typography>
+                            <Typography
+                              sx={{
+                                textAlign: 'left',
+                                marginLeft: 2,
+                                fontSize: 15,
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                  textDecoration: 'underline',
+                                },
+                              }}
+                              onClick={() => window.open(doc?.icon?.virtual_path, '_blank')}
+                            >
+                              {doc?.icon?.virtual_path
+                                ? doc.icon.virtual_path.length > 10
+                                  ? `${doc.icon.virtual_path.slice(
+                                      0,
+                                      8
+                                    )}...${doc.icon.virtual_path.slice(-14)}`
+                                  : doc.icon.virtual_path
+                                : 'N/A'}
+                            </Typography>
+                          </Box>
+
                           <Box
                             sx={{
                               display: 'flex',
@@ -490,7 +583,7 @@ export default function PackageDocumentDetails({
                           flexDirection: 'column',
                           alignItems: 'stretch',
                           marginTop: '20px',
-                          height: '570px',
+                          height: '720px',
                           width: '100%',
                         }}
                       >
@@ -575,6 +668,51 @@ export default function PackageDocumentDetails({
                             onChange={handleImageUpload}
                           />
                         </Stack>
+
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: '100%',
+                            borderRadius: 1,
+                            padding: 1,
+                            backgroundColor: 'background.default',
+                          }}
+                          onClick={handleClickFileUpload}
+                        >
+                          <Typography sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}>
+                            Icon
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                          >
+                            :
+                          </Typography>
+                          <Typography
+                            sx={{
+                              textAlign: 'left',
+                              marginLeft: 2,
+                              fontSize: 15,
+                              cursor: 'pointer',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            {uploadedFile
+                              ? uploadedFile.name
+                              : `${doc.icon.virtual_path.slice(
+                                  0,
+                                  8
+                                )}...${doc.icon.virtual_path.slice(-14)}`}
+                          </Typography>
+                        </Box>
+                        <input
+                          id="iconUpload"
+                          type="file"
+                          style={{ display: 'none' }}
+                          onChange={handleClickFileUpload}
+                        />
+
                         <Controller
                           name="title"
                           control={control}
@@ -588,7 +726,19 @@ export default function PackageDocumentDetails({
                             />
                           )}
                         />
-
+                        <Controller
+                          name="description"
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              label="Description"
+                              variant="outlined"
+                              error={Boolean(errors.description)}
+                              helperText={errors.description?.message}
+                            />
+                          )}
+                        />
                         <Controller
                           name="status"
                           control={control}

@@ -54,7 +54,6 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
-
   const allroutes = [
     // USER
     {
@@ -170,6 +169,15 @@ export function useNavData() {
       path: paths.dashboard.slider.root,
       icon: ICONS.external,
     },
+    {
+      title: t('Reviews'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.chat,
+      children: [
+        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
+        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+      ],
+    },
 
     // TOUR
     // {
@@ -202,6 +210,7 @@ export function useNavData() {
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('Areas'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
+        { title: t('Pickup'), path: paths.dashboard.system.pickup },
         { title: t('App Settings'), path: paths.dashboard.system.appsettings },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
@@ -215,6 +224,21 @@ export function useNavData() {
       title: t('My School'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
+    },
+    {
+      title: t('trainers'),
+      path: paths.dashboard.school.trainer,
+      icon: ICONS.user,
+      children: [
+        { title: t('Trainer List'), path: paths.dashboard.school.trainer },
+        { title: t('rewards'), path: paths.dashboard.school.trainerRewards },
+        { title: t('notifications'), path: paths.dashboard.school.trainerNotifications },
+      ],
+    },
+    {
+      title: t('packages'),
+      path: paths.dashboard.school.package,
+      icon: ICONS.blank,
     },
     {
       title: t('booking'),

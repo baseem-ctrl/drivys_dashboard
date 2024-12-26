@@ -110,9 +110,6 @@ export default function PackageTableRow({
   const NewSchema = Yup.object().shape({
     name: Yup.string(),
     locale: Yup.mixed(),
-    email: Yup.string(),
-    phone_number: Yup.string(),
-    status: Yup.mixed(),
     is_published: Yup.boolean(),
     vendor_id: Yup.string(),
     number_of_sessions: Yup.number().test(
@@ -132,22 +129,17 @@ export default function PackageTableRow({
     ),
     category_id: Yup.string(),
     drivys_commision: Yup.string(),
-    is_percentage: Yup.boolean(),
   });
   const defaultValues = useMemo(
     () => ({
       name: selectedLocaleObject?.name || '',
       locale: selectedLocaleObject?.locale || '',
       // session_inclusions: selectedLocaleObject?.session_inclusions || '',
-      email: email || '',
-      phone_number: phone_number || '',
-      status: status,
       is_published: String(is_published) || 1,
       vendor_id: vendor_id || '',
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
       drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
-      is_percentage: row?.is_percentage || 1,
     }),
     [selectedLocaleObject, row, editingRowId]
   );
@@ -192,15 +184,11 @@ export default function PackageTableRow({
               package_translations[0]?.session_inclusions,
           },
         ],
-        contact_email: data?.email || email,
-        contact_phone_number: data?.phone_number || phone_number,
-        status: data?.status || status,
         vendor_id: data?.vendor_id || vendor?.vendor_user?.vendor_id,
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,
         drivys_commision: data?.drivys_commision || drivys_commision,
-        is_percentage: data.is_percentage === true ? 1 : 0,
         package_id: row?.id,
       };
       const response = await createUpdatePackage(payload);
@@ -211,9 +199,13 @@ export default function PackageTableRow({
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
+        if (typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors).forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.errors, { variant: 'error' });
+        }
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
@@ -223,6 +215,7 @@ export default function PackageTableRow({
     }
   });
   const router = useRouter();
+  console.log(errors, 'asdsfdb');
 
   return (
     <>
@@ -244,10 +237,6 @@ export default function PackageTableRow({
           }
         }}
       >
-        {/* <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell> */}
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {editingRowId === row.id ? (
             <Controller
@@ -285,24 +274,6 @@ export default function PackageTableRow({
             selectedLocaleObject?.name || 'NA'
           )}
         </TableCell>
-
-        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {editingRowId === row.id ? (
-            <Controller
-              name="session_inclusions"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.name}
-                  helperText={errors.name ? errors.name.message : ''}
-                />
-              )}
-            />
-          ) : (
-            selectedLocaleObject?.session_inclusions || 'N/A'
-          )}
-        </TableCell> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {' '}
@@ -374,8 +345,10 @@ export default function PackageTableRow({
           ) : (
             <ListItemText
               primary={
-                vendor?.vendor_translations?.find((item) => item?.locale?.toLowerCase() === 'en')
-                  ?.name ?? 'NA'
+                vendor?.vendor_translations?.find(
+                  (item) =>
+                    item?.locale?.toLowerCase() === 'en' || item?.locale?.toLowerCase() === 'ar'
+                )?.name ?? 'NA'
               }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{

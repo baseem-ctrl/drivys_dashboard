@@ -16,6 +16,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import Grid from '@mui/material/Grid';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { createOrUpdatePackageDocument } from 'src/api/packageDocument';
+import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 
 type Props = {
   open: boolean;
@@ -35,7 +36,6 @@ export default function PackageDocumentCreateUpdate({
   sessionNumber,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
-
   const DocumentSchema = Yup.object().shape({
     title: Yup.string(),
     type: Yup.string(),
@@ -53,6 +53,7 @@ export default function PackageDocumentCreateUpdate({
       type: currentDocument?.type || 'image',
       status: currentDocument?.status || 'active',
       session: currentDocument?.session_no || '',
+      icon: currentDocument?.icon || null,
     }),
     [currentDocument, packageId]
   );
@@ -85,15 +86,22 @@ export default function PackageDocumentCreateUpdate({
 
   const onSubmit = async (data: any) => {
     try {
+      console.log('data', data);
       // Create a new FormData object
       const updatedDocument = new FormData();
 
-      // Append the file if it exists
-      if (data.file && data.file.length > 0) {
-        const file = data.file[0];
+      if (data.icon) {
+        const icon = data.icon;
+        updatedDocument.append('icon', icon);
+      } else {
+        console.warn('No icon selected');
+      }
+
+      if (data.file) {
+        const file = data.file;
         updatedDocument.append('file', file);
       } else {
-        console.log('No file selected');
+        console.warn('No file selected');
       }
 
       // Append other form data
@@ -102,6 +110,7 @@ export default function PackageDocumentCreateUpdate({
       updatedDocument.append('session_no', data.session_no || '');
       updatedDocument.append('type', data.type || '');
       updatedDocument.append('status', data.status || '');
+      updatedDocument.append('description', data.description || '');
 
       // Call the API to create/update the document
       const response = await createOrUpdatePackageDocument(updatedDocument);
@@ -158,7 +167,9 @@ export default function PackageDocumentCreateUpdate({
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFTextField name="title" label="Title" fullWidth />
               </Grid>
-
+              <Grid item xs={6} sx={{ mb: 1 }}>
+                <RHFTextField name="description" label="Description" fullWidth />
+              </Grid>
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFSelect name="type" label="Type" fullWidth>
                   {typeOptions.map((option) => (
@@ -179,14 +190,31 @@ export default function PackageDocumentCreateUpdate({
                 </RHFSelect>
               </Grid>
 
+              <Grid item xs={12}>
+                <Box sx={{ fontWeight: 'bold', fontSize: '1rem', mb: 1, color: 'primary.main' }}>
+                  Package Document Upload
+                </Box>
+              </Grid>
+
               <Grid item xs={12} sx={{ mb: 1 }}>
-                <input
-                  type="file"
-                  accept={acceptedFileTypes}
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    setValue('file', files);
-                  }}
+                <RHFFileUpload
+                  name="file"
+                  label="Upload Package Document"
+                  helperText="Please upload a package document"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Box sx={{ fontWeight: 'bold', fontSize: '1rem', mb: 1, color: 'primary.main' }}>
+                  Package Icon Upload
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sx={{ mb: 1 }}>
+                <RHFFileUpload
+                  name="icon"
+                  label="Upload Icon"
+                  helperText="Upload an icon image (optional)"
                 />
               </Grid>
             </Grid>

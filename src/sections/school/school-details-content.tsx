@@ -27,6 +27,8 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
+import { useGetAllCities, useGetAllCity } from 'src/api/city';
+import { useGetStateList } from 'src/api/state';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -48,6 +50,7 @@ import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { InfoOutlined } from '@mui/icons-material';
+import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 
 // ----------------------------------------------------------------------
 
@@ -56,18 +59,19 @@ type Props = {
   loading?: any;
   reload: VoidFunction;
 };
-
 export default function SchoolDetailsContent({ details, loading, reload }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+    details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;
+  const [selectedState, setSelectedState] = useState('');
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
   const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1);
+
   const currentVendorName = details?.user?.name;
 
   const schoolAdmins = {
@@ -100,17 +104,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           value: item?.language_culture,
         }));
       }
-      // const newLocales = details?.vendor_translations
-      //   ?.map((category: any) => category?.locale)
-      //   ?.filter(
-      //     (locale: any) => !initialLocaleOptions?.some((option: any) => option?.value === locale)
-      //   )
-      //   .map((locale: any) => ({ label: locale, value: locale }));
-      // if (newLocales) {
-      //   setLocaleOptions([...initialLocaleOptions, ...newLocales]);
-      // } else {
+
       setLocaleOptions([...initialLocaleOptions]);
-      // }
     }
   }, [language, details]);
 
@@ -152,11 +147,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   });
   const defaultVendorValues = useMemo(
     () => ({
-      locale: selectedLocaleObject?.locale || '',
+      locale: selectedLocaleObject?.locale || 'En',
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
-      commission_in_percentage: details?.commission_in_percentage || '',
+      commission_in_percentage: details?.commission_in_percentage || '0',
       license_expiry: details?.license_expiry || '',
       license_file: null,
       website: details?.website || '',
@@ -170,6 +165,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,
   });
+  const [selectedCity, setSelectedCity] = useState(''); // Initial state from defaultValues
+
   const {
     reset: schoolReset,
     watch: schoolWatch,
@@ -179,6 +176,30 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     formState: schoolFormState,
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
+  const { city, isLoading: cityLoading } = useGetAllCity({
+    limit: 1000,
+    page: 0,
+  });
+
+  const { states, isLoading: stateLoading } = useGetStateList({
+    city_id: selectedCity,
+    limit: 1000,
+    page: 0,
+  });
+  const cityOptions =
+    city?.map((cityItem) => ({
+      value: cityItem.id,
+      label: cityItem.city_translations?.[0]?.name || 'Unnamed City',
+    })) || [];
+  console.log('cityOptions', cityOptions);
+  console.log('states', states);
+  const stateOptions =
+    states?.map((stateItem) => ({
+      value: stateItem.id,
+      label: stateItem.translations?.[0]?.name || 'Unknown State',
+      cityName: stateItem.city?.city_translations?.[0]?.name || 'Unknown City',
+    })) || [];
+
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
   useEffect(() => {
     if (details?.license_file) {
@@ -198,6 +219,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       schoolSetValue('name', '');
     }
   };
+
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -205,7 +227,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         name: selectedLocaleObject?.name || '',
         contact_email: details?.email || '',
         phone_number: details?.phone_number || '',
-        commission_in_percentage: details?.commission_in_percentage || '',
+        commission_in_percentage: details?.commission_in_percentage || '0',
         license_expiry: details?.license_expiry || '',
         license_file: null,
         website: details?.website || '',
@@ -216,6 +238,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
+
   const onSubmitBasicInfo = schoolSubmit(async (data) => {
     try {
       let payload = {
@@ -229,7 +252,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         contact_phone_number: data?.phone_number,
         status: data?.status,
         is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage: data?.commission_in_percentage,
+        commission_in_percentage: data?.commission_in_percentage || 0,
         create_new_user: 0,
         license_expiry: data?.license_expiry,
         license_file: data?.license_file,
@@ -244,7 +267,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       formData.append('contact_phone_number', payload.contact_phone_number || '');
       formData.append('status', payload.status || '');
       formData.append('is_active', payload.is_active);
-      formData.append('commission_in_percentage', payload.commission_in_percentage || '');
+      formData.append('commission_in_percentage', payload.commission_in_percentage || '0');
       formData.append('create_new_user', payload.create_new_user.toString());
       formData.append('license_expiry', payload.license_expiry || '');
       formData.append('user_id', payload.user_id || '');
@@ -293,6 +316,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
       {!editMode && (
@@ -323,7 +347,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Email', value: details?.email ?? 'NA' },
               { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
+              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? '0' },
 
               { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
               {
@@ -481,14 +505,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Commission in (%)"
+                      label="Certificate Commission in (%)"
                       {...field}
                       error={!!errors.commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Commission is for certificate" placement="top">
+                            <Tooltip title="Commission for drivys from certificate" placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -540,13 +564,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             }}
                             disabled
                             fullWidth
-                            // variant="outlined"
-                            // margin="normal"
                           />
-                          {/* Optional: Show the uploaded file as a clickable link */}
-                          {/* <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer">
-                            View Uploaded File
-                          </a> */}
                         </Box>
                       )}
                     </>
@@ -577,9 +595,29 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="is_active"
                   control={schoolControl}
                   render={({ field }) => (
-                    <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Is Active</Typography>
+                      <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    </Box>
                   )}
                 />
+                {/*  */}
+                {/* <Grid item xs={6} mt={2} mb={2}> */}
+                {/* <Typography variant="body1" sx={{ fontWeight: '600' }}>
+                  Choose a School Admin: Create New or Select Existing
+                </Typography>
+                <Controller
+                  name="create_new_user"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Create New School Admin</Typography>
+                      <Switch {...field} error={!!errors.create_new_user} checked={field.value} />
+                    </Box>
+                  )}
+                /> */}
+                {/* </Grid> */}
+                {/* {!values?.create_new_user ? ( */}
                 <Controller
                   className="editor"
                   control={schoolControl}
@@ -604,7 +642,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             <MenuItem
                               key={option.id}
                               value={option.id}
-                              disabled={option.id === details?.vendor_user.user?.id} // Disable the current admin
+                              disabled={
+                                details?.vendor_user?.user?.id === option.id // Ensure safe access
+                              }
                             >
                               {option.name}
                             </MenuItem>
@@ -627,28 +667,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           </Box>
         )}
       </Scrollbar>
-      {/* <SchoolCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={reload}
-        currentSchool={details}
-      /> */}
-      {/* {editMode && (
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="outlined" color="error" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained">
-            Save
-          </Button>
-        </Stack>
-      )} */}
     </Stack>
   );
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
-  });
+  const { isLoaded } = useGoogleMaps();
   const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
   const defaultCenter = {
     lat: parseFloat(details?.latitude) || 0,
@@ -678,7 +700,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     () => ({
       street_address:
         editingIndex !== null ? details?.vendor_addresses[editingIndex]?.street_address : '',
-      city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city : '',
+      city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city || '' : '', // ensure city is set correctly
       country: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.country : '',
       state: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.state : '',
       latitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.latitude : '',
@@ -692,7 +714,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     defaultValues,
   });
   // const { control, handleSubmit, setValue, reset } = useForm();
-
+  useEffect(() => {
+    if (defaultValues.city) {
+      setSelectedCity(defaultValues.city);
+    }
+  }, [defaultValues]);
   const {
     reset,
     watch,
@@ -712,13 +738,15 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     reset(defaultValues);
     setLoad(true);
   }, [defaultValues, reset]);
+
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
+    console.log('data', data);
     try {
       let payload = {
         street_address: data?.street_address,
-        city: data?.city,
-        state: data?.state,
+        city: selectedCity.toString(),
+        state: selectedState.toString(),
         country: data?.country,
         latitude: data?.latitude,
         longitude: data?.longitude,
@@ -823,7 +851,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         {[
                           { label: 'Street Address', value: details?.street_address ?? 'N/A' },
                           { label: 'City', value: details?.city ?? 'N/A' },
-                          { label: 'State', value: details?.state ?? 'N/A' },
+                          { label: 'Area', value: details?.state ?? 'N/A' },
                           { label: 'Country', value: details?.country ?? 'N/A' },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
@@ -873,8 +901,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               <Grid item xs={12} md={6}>
                 {[
                   { label: 'Street Address', name: 'street_address' },
-                  { label: 'City', name: 'city' },
-                  { label: 'State', name: 'state' },
+                  { label: 'City', name: 'city', isDropdown: true, options: cityOptions },
+                  { label: 'Area', name: 'state', isDropdown: true, options: stateOptions },
                   { label: 'Country', name: 'country' },
                   { label: 'Latitude', name: 'latitude' },
                   { label: 'Longitude', name: 'longitude' },
@@ -883,19 +911,55 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     key={idx}
                     name={item.name}
                     control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label={item.label}
-                        variant="outlined"
-                        sx={{ my: 1, width: '100%' }}
-                      />
-                    )}
+                    render={({ field }) =>
+                      item.isDropdown ? (
+                        <TextField
+                          {...field}
+                          select
+                          label={item.label}
+                          variant="outlined"
+                          sx={{ my: 1, width: '100%' }}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (item.name === 'city') {
+                              setSelectedCity(e.target.value);
+                            } else if (item.name === 'state') {
+                              setSelectedState(e.target.value);
+                            }
+                          }}
+                          value={item.name === 'city' ? selectedCity : selectedState}
+                        >
+                          {item.name === 'city' && cityLoading ? (
+                            <MenuItem value="">
+                              <CircularProgress size={24} />
+                              Loading Cities...
+                            </MenuItem>
+                          ) : item.name === 'state' && stateLoading ? (
+                            <MenuItem value="">
+                              <CircularProgress size={24} />
+                              Loading Areas...
+                            </MenuItem>
+                          ) : (
+                            (item.name === 'city' ? cityOptions : stateOptions).map(
+                              (option, idx) => (
+                                <MenuItem key={idx} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              )
+                            )
+                          )}
+                        </TextField>
+                      ) : (
+                        <TextField
+                          {...field}
+                          label={item.label}
+                          variant="outlined"
+                          sx={{ my: 1, width: '100%' }}
+                        />
+                      )
+                    }
                   />
                 ))}
-
-                {/* Map Component for Selecting Location */}
-
                 <Box sx={{ mt: 2 }}>
                   <Button variant="contained" type="submit" sx={{ mr: 1 }}>
                     Save
@@ -903,9 +967,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      setEditingIndex(null);
-                      setNewAddress(null);
                       reset(defaultValues);
+                      setSelectedCity('');
                     }}
                   >
                     Cancel
@@ -934,7 +997,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                               marker && typeof marker === 'string'
                                 ? marker
                                 : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                            scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
                       )}
@@ -943,10 +1006,10 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           position={{
                             lat: Number.isNaN(Number(defaultValues?.latitude))
                               ? 0
-                              : Number(defaultValues?.latitude), // Convert to number
+                              : Number(defaultValues?.latitude),
                             lng: Number.isNaN(Number(defaultValues?.longitude))
                               ? 0
-                              : Number(defaultValues?.longitude), // Convert to number
+                              : Number(defaultValues?.longitude),
                           }}
                           icon={{
                             url:
@@ -989,8 +1052,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         borderRadius: 2,
         cursor: 'pointer',
         display: 'flex',
-
         width: '100%',
+        position: 'relative',
       }}
       height={350}
       onClick={() =>
@@ -999,6 +1062,20 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           : ''
       }
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 16, // Adjust spacing from top
+          right: 16, // Adjust spacing from right
+          width: 12, // Small round indicator
+          height: 12,
+          borderRadius: '50%',
+          backgroundColor: details?.vendor_user?.user?.is_active ? '#22C55E' : '#B71D18',
+          border: '1px solid #fff', // Optional: Add a border for better visibility
+          boxShadow: '0 0 2px rgba(0, 0, 0, 0.2)', // Optional: Add a shadow for better emphasis
+        }}
+      />
+
       <Avatar
         alt={details?.vendor_user?.user?.name}
         src={details?.vendor_user?.name?.user?.photo_url}
@@ -1034,7 +1111,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
-            WAllet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
+            Wallet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_points !== 0 && (

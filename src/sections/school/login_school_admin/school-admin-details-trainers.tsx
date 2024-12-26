@@ -10,7 +10,11 @@ import { IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 // components
 import Iconify from 'src/components/iconify';
-import { RemoveTrainerFromSchool, useGetSchoolTrainers } from 'src/api/school';
+import {
+  RemoveTrainerFromSchool,
+  useGetSchoolTrainerList,
+  useGetSchoolTrainers,
+} from 'src/api/school';
 import { useTable } from 'src/components/table';
 import { Button, CircularProgress, MenuItem, Typography, Grid } from '@mui/material';
 
@@ -64,19 +68,46 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     schoolTrainersError,
     totalPages,
     revalidateTrainers,
-  } = useGetSchoolTrainers({
+  } = useGetSchoolTrainerList({
     page: table?.page + 1,
     limit: table?.rowsPerPage,
-    vendor_id: vendor_id,
   });
 
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
-    cash_clearance_date: Yup.string(),
     vendor_commission_in_percentage: Yup.string().required(),
     vehicle_number: Yup.string().nullable(), // not required
-    phone: Yup.string(),
+    phone: Yup.string().matches(
+      /^5\d{0,8}$/,
+      'Phone number should start with 5 and not exceed 9 digits'
+    ),
+    dob: Yup.string()
+      .required('Date of birth is required for students and trainers.')
+      .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
+        if (!value) return true;
+        const isValidDate = !isNaN(Date.parse(value));
+        return isValidDate;
+      })
+      .test('is-before-today', 'The dob field must be a date before today.', function (value) {
+        if (!value) return true;
+        const today = new Date();
+        const dob = new Date(value);
+        return dob < today;
+      })
+      .test('is-18-or-older', 'User must be 18 or older.', function (value) {
+        if (!value) return true;
+        const today = new Date();
+        const birthDate = new Date(value);
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+        return (
+          age > 18 ||
+          (age === 18 &&
+            (monthDifference > 0 ||
+              (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
+        );
+      }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -84,13 +115,10 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       email: editDetails?.user?.email || '',
       password: '',
 
-      cash_clearance_date: editDetails?.cash_clearance_date || '',
-      cash_in_hand: editDetails?.cash_in_hand || '',
       vendor_commission_in_percentage: editDetails?.vendor_commission_in_percentage || '',
-      last_booking_was: editDetails?.last_booking_was || '',
-
       vehicle_number: editDetails?.vehicle_number || '',
       phone: '',
+      dob: editDetails?.user?.dob?.split('T')[0] || '',
     }),
     [candidates, editDetails]
   );
@@ -140,11 +168,11 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       name: data?.name,
       email: data?.email,
       password: data?.password,
-      cash_clearance_date: data?.cash_clearance_date,
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
       vehicle_number: data?.vehicle_number,
       phone: data?.phone,
       country_code: '971',
+      dob: moment(data?.dob).format('YYYY-MM-DD'),
     };
 
     // Add vendor_id for new trainer, or update if edit
@@ -243,17 +271,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       }}
                     />
                     <RHFTextField name="phone" label="Phone Number" type="number" prefix="+971" />
-
-                    <RHFTextField
-                      name="cash_clearance_date"
-                      label="Cash Clearance Date"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-
                     <RHFTextField name="vehicle_number" label="Vehicle Number" fullWidth />
 
                     <RHFTextField
@@ -261,6 +278,13 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       label="Vendor Commision"
                       fullWidth
                       suffix="%"
+                    />
+                    <RHFTextField
+                      name="dob"
+                      label="Date of Birth"
+                      fullWidth
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
                     />
                   </Box>
 
@@ -489,15 +513,15 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         <ConfirmDialog
           open={confirm.value}
           onClose={confirm.onFalse}
-          title="Delete"
-          content="Are you sure want to delete?"
+          title="Remove"
+          content="Are you sure want to remove this trainer?"
           onConfirm={() => {
             confirm.onFalse();
             handleRemove();
           }}
           action={
             <Button variant="contained" color="error">
-              Delete
+              Remove
             </Button>
           }
         />

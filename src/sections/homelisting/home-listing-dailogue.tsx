@@ -123,17 +123,10 @@ export default function HomeListingDialog({
     () => ({
       title: updateValue?.title || '',
       display_order: updateValue?.display_order || '',
-      // type: updateValue?.type || '',
       sliders: updateValue?.sliders[0] || [],
-      // published: updateValue?.is_active === 1,
-
       display_type: updateValue?.display_type || '',
       is_active: updateValue?.is_active === 1,
       catalogue_type: updateValue?.catalogue_type || '',
-      // trainers: users ? updateValue?.trainers?.map((trainer: { id: any; display_order: any; trainer: any; }) => ({
-      //   id: users?.length > 0 ? users?.find((option: { id: any; }) => option?.id === trainer?.trainer?.id) : '',
-      //   display_order: trainer?.display_order || ''
-      // })) : [],
       trainers: users
         ? updateValue?.trainers?.map((trainer) => {
             const user = users.find((option) => option.id === trainer?.trainer?.id);
@@ -142,10 +135,6 @@ export default function HomeListingDialog({
             };
           })
         : [],
-      //  updateValue?.trainers
-      // Category: updateValue?.categories || [],
-      // Product:
-      //   updateValue?.products?.map((product: any) => product?.product_translations[0]?.name) || [],
     }),
     [updateValue, today, users]
   );
@@ -223,7 +212,9 @@ export default function HomeListingDialog({
   const handleRemove = (index: number) => {
     remove(index);
   };
-
+  if (errors?.trainers) {
+    enqueueSnackbar(errors?.trainers?.message, { variant: 'error' });
+  }
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -280,7 +271,7 @@ export default function HomeListingDialog({
             variant: 'success',
           });
         }
-
+        reset();
         onClose();
         onReload();
       }
@@ -291,7 +282,16 @@ export default function HomeListingDialog({
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
       } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
+        if (data?.trainers?.length) {
+          data?.trainers?.map((items) => {
+            if (!items?.user_id)
+              return enqueueSnackbar('Please select a trainer', {
+                variant: 'error',
+              });
+          });
+        } else {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
       }
     }
   });
@@ -385,22 +385,6 @@ export default function HomeListingDialog({
                 Add Trainer
               </Button>
             </Grid>
-            {/* <h5>Images:</h5> */}
-            {/* <Box> */}
-            {/* Button to open the image selection dialog */}
-            {/* <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
-                Select Images
-              </Button> */}
-
-            {/* Image Preview Component */}
-            {/* <ImagePreview
-                selectedImageIds={selectedImageIds}
-                setSelectedImageIds={setSelectedImageIds}
-                isUpdate
-                selectedImageArray={selectedImageArray}
-                reload={onReload}
-              /> */}
-            {/* </Box> */}
 
             <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

@@ -11,6 +11,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { formatDate } from 'src/utils/format-date';
 import { Typography } from '@mui/material';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
 // ----------------------------------------------------------------------
@@ -18,7 +20,7 @@ import { Typography } from '@mui/material';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IBookingItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
@@ -37,37 +39,86 @@ export default function BookingSchoolAdminTableRow({
   const popover = usePopover();
   const zerothIndex = 0;
 
-  const { user, driver, booking_method, payment_status, total, created_at, sessions } = row;
+  const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
+    row;
 
   console.log('rowrow', row);
   const handleRowClick = (bookingId: number) => {
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
-
+  const router = useRouter();
+  const handleClickDetails = (id) => {
+    router.push(paths.dashboard.school.detailsadmin(id));
+  };
   return (
     <>
-      <TableRow hover selected={selected}>
-        <TableCell onClick={() => handleRowClick(row.id)}>{user?.name}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{driver?.name}</TableCell>
+      <TableRow
+        hover
+        selected={selected}
+        onClick={() => handleRowClick(row.id)}
+        sx={{
+          cursor: 'pointer',
+        }}
+      >
+        <TableCell>{user?.name ?? 'NA'}</TableCell>
+        <TableCell
+          sx={{
+            cursor: 'pointer',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' },
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            if (row.driver) {
+              handleClickDetails(driver_id);
+            }
+          }}
+        >
+          {driver?.name}
+        </TableCell>
 
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row?.booking_status === 'PENDING' ? 'warning' : 'success'}>
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              row?.booking_status === 'PENDING'
+                ? 'info'
+                : row?.booking_status === 'CANCELLED'
+                ? 'error'
+                : row?.booking_status === 'IN PROGRESS'
+                ? 'warning'
+                : row?.booking_status === 'CONFIRMED'
+                ? 'secondary'
+                : 'success'
+            }
+          >
             {row?.booking_status}
           </Label>
         </TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          <Label variant="soft" color={row.payment_status === 'PENDING' ? 'warning' : 'success'}>
-            {row.payment_status}
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              row.payment_status === 'PENDING'
+                ? 'info'
+                : row.payment_status === 'REFUNDED'
+                ? 'warning'
+                : row.payment_status === 'PARTIALLY PAID'
+                ? 'default'
+                : row.payment_status === 'FAILED'
+                ? 'error'
+                : 'success'
+            }
+          >
+            {row?.payment_status}
           </Label>
         </TableCell>
 
-        <TableCell onClick={() => handleRowClick(row.id)}>{row?.sub_total}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>{row?.payment_method}</TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
-          {row.coupon_code ? row.coupon_code : 'No Coupon'}
-        </TableCell>
-        <TableCell onClick={() => handleRowClick(row.id)}>
+        <TableCell>{row?.sub_total}</TableCell>
+        <TableCell>{row?.payment_method}</TableCell>
+        <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
+        <TableCell>
           {formatDate(row?.created_at)}
           <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
             Updated {formatDate(row?.updated_at)}

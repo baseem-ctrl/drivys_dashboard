@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -51,6 +51,7 @@ import {
   InputAdornment,
   MenuItem,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -62,7 +63,9 @@ import { useGetAllDialect } from 'src/api/dialect';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetSchool } from 'src/api/school';
 import moment from 'moment';
+import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
+import { InfoOutlined } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 
@@ -151,24 +154,30 @@ export default function UserNewEditForm({
         ? Yup.string() // No requirements if `currentUser.id` exists
         : Yup.string(); // Required if `currentUser.id` is not present
     }),
-    phone: Yup.string()
-      .required('Phone Number is Required')
-      .matches(/^\d{1,9}$/, 'Phone number should not exceed 9 digits '),
+    phone: Yup.string().matches(
+      /^5\d{0,8}$/,
+      'Phone number should start with 5 and not exceed 9 digits'
+    ),
     dob: Yup.string()
       .nullable()
+      .when('user_type', {
+        is: (value) => ['STUDENT', 'TRAINER'].includes(value?.toUpperCase()),
+        then: (schema) => schema.required('Date of birth is required for students and trainers.'),
+        otherwise: (schema) => schema,
+      })
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
         if (!value) return true;
         const isValidDate = !isNaN(Date.parse(value));
         return isValidDate;
       })
       .test('is-before-today', 'The dob field must be a date before today.', function (value) {
-        if (!value) return true; // Skip if value is missing
+        if (!value) return true;
         const today = new Date();
         const dob = new Date(value);
-        return dob < today; // Check if dob is before today
+        return dob < today;
       })
       .test('is-18-or-older', 'User must be 18 or older.', function (value) {
-        if (!value) return true; // Ensure value is provided
+        if (!value) return true;
         const today = new Date();
         const birthDate = new Date(value);
         const age = today.getFullYear() - birthDate.getFullYear();
@@ -180,7 +189,6 @@ export default function UserNewEditForm({
               (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
         );
       }),
-
     locale: Yup.mixed().nullable(), // not required
     user_type: Yup.string().required('User Type is required'),
     photo_url: Yup.mixed(),
@@ -198,6 +206,7 @@ export default function UserNewEditForm({
     vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
+    area_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
         id: Yup.mixed().required('Language is required'), // Validate court add-on
@@ -226,6 +235,8 @@ export default function UserNewEditForm({
         doc_side: Yup.mixed(), // Validate the number of add-ons
       })
     ),
+    cash_in_hand: Yup.string(),
+    max_cash_in_hand_allowed: Yup.string(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -237,7 +248,10 @@ export default function UserNewEditForm({
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
-        ? language?.find((option) => option?.language_culture === currentUser?.locale)
+        ? language?.find(
+            (option) =>
+              option?.language_culture?.toLowerCase() === currentUser?.locale?.toLowerCase()
+          )
         : '',
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
@@ -263,7 +277,8 @@ export default function UserNewEditForm({
           ?.category_translations.map((translation: any) => translation.name) // Extract all names
           .join(' - ') || '',
       vendor_id: currentUser?.vendor?.id
-        ? schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
+        ? schoolList?.length > 0 &&
+          schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
             ?.name
         : [{ label: 'Other', value: null }],
       gender:
@@ -273,14 +288,26 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
             )?.value
           : '',
-      city_id: currentUser?.user_preference?.city_id || '',
+      city_id: currentUser?.user_preference?.city_id
+        ? {
+            value: currentUser?.user_preference?.city_id,
+            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || 'Unknown',
+          }
+        : '',
+      area_id: currentUser?.user_preference?.state_province
+        ? {
+            value: currentUser?.user_preference?.state_province_id,
+            label:
+              currentUser?.user_preference?.state_province?.translations?.[0]?.name || 'Unknown',
+          }
+        : '',
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage || '',
       price_per_km: currentUser?.user_preference?.price_per_km || '',
       doc_side: currentUser?.user_preference?.doc_side || '',
       min_price: currentUser?.user_preference?.min_price || '',
       max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
-      is_pickup_enabled: currentUser?.user_preference?.is_pickup_enabled ? 1 : 0,
+      is_pickup_enabled: !!currentUser?.user_preference?.is_pickup_enabled,
       certificate_commission_in_percentage:
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
@@ -291,10 +318,11 @@ export default function UserNewEditForm({
         license_file: doc?.doc_file ?? [],
         doc_side: doc?.doc_side || '',
       })),
+      cash_in_hand: currentUser?.cash_in_hand || 0,
+      max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
     }),
     [currentUser?.locale, dialect, language, schoolList]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -308,7 +336,12 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  const selectedCity = watch('city_id');
+  const { states, isLoading: stateLoading } = useGetStateList({
+    city_id: selectedCity.value,
+    limit: 1000,
+    page: 0,
+  });
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'languages',
@@ -322,16 +355,18 @@ export default function UserNewEditForm({
     name: 'license',
   });
   const values = watch();
+  console.log(values);
+
   useEffect(() => {
     if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
       setDefaultOption({ label: 'OTHER', value: null });
     } else {
       // Otherwise, retain the selected value
-      const selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
+      const selectedOption = schoolList?.find((school) => school.id === values.vendor_id.value);
       if (selectedOption) {
         setDefaultOption({
-          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption.id,
+          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption?.id,
         });
       }
     }
@@ -340,11 +375,11 @@ export default function UserNewEditForm({
   useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
-      const selectedOption = schoolList.find((school) => school.id === currentUser?.vendor?.id);
+      const selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
       if (selectedOption) {
         setDefaultOption({
-          label: `${selectedOption.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption.id,
+          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+          value: selectedOption?.id,
         });
       }
     }
@@ -417,8 +452,9 @@ export default function UserNewEditForm({
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.city_id) body.append('city_id', data?.city_id);
-      body.append('country_code', '971');
+      if (data?.city_id) body.append('city_id', data?.city_id.value);
+      if (data?.area_id) body.append('area_id', data?.area_id?.value);
+      if (data?.phone) body.append('country_code', data?.country_code ?? '971');
       if (data?.dob) body.append('dob', moment(data?.dob).format('YYYY-MM-DD'));
       body.append('user_type', data?.user_type);
 
@@ -438,7 +474,7 @@ export default function UserNewEditForm({
         if (data?.bio) body.append('bio', data?.bio);
       }
 
-      body.append('locale', data?.locale?.language_culture);
+      if (data?.locale) body.append('locale', data?.locale?.language_culture);
       if (data?.photo_url && data?.photo_url instanceof File) {
         body.append('photo_url', data?.photo_url);
       }
@@ -461,6 +497,10 @@ export default function UserNewEditForm({
           body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
         });
       }
+      if (data?.max_cash_in_hand_allowed)
+        body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
+      if (data?.cash_in_hand) body.append('cash_in_hand', data?.cash_in_hand);
+
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
         body.append('user_id', currentUser?.id);
@@ -560,9 +600,11 @@ export default function UserNewEditForm({
               {currentUser && (
                 <Label
                   color={
-                    (values.is_active === true && 'success') ||
-                    (values.is_active === false && 'error') ||
-                    'warning'
+                    values.is_active === true || values.is_active === 1
+                      ? 'success'
+                      : values.is_active === false || values.is_active === 0
+                      ? 'error'
+                      : 'warning'
                   }
                   sx={{ position: 'absolute', top: 24, right: 24 }}
                 >
@@ -644,13 +686,13 @@ export default function UserNewEditForm({
               {values.user_type === 'TRAINER' && (
                 <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
               )}
-              {values.user_type === 'TRAINER' && values?.is_pickup_enabled === true && (
+              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled && (
                 <RHFTextField name="min_price" label="Minimum Price" type="number" />
               )}
               {values.user_type === 'TRAINER' && (
@@ -659,16 +701,23 @@ export default function UserNewEditForm({
                   label="Select School"
                   placeholder="Search School..."
                   options={
-                    [
-                      ...schoolList?.map((item: any) => ({
-                        label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
-                        value: item.id,
-                      })),
-                      {
-                        label: 'OTHER', // Add the "Other" option
-                        value: null, // Value for the "Other" option
-                      },
-                    ] ?? []
+                    schoolList && schoolList.length > 0
+                      ? [
+                          ...schoolList.map((item: any) => ({
+                            label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                            value: item.id,
+                          })),
+                          {
+                            label: 'OTHER', // Add the "Other" option
+                            value: null, // Value for the "Other" option
+                          },
+                        ]
+                      : [
+                          {
+                            label: 'OTHER', // Add the "Other" option
+                            value: null, // Value for the "Other" option
+                          },
+                        ]
                   }
                   setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                   disableClearable={false}
@@ -693,19 +742,26 @@ export default function UserNewEditForm({
                   name="certificate_commission_in_percentage"
                   label="Certificate Commission (%)"
                   type="number"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Tooltip title="Commission for trainer from certificate" placement="top">
+                          <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                        </Tooltip>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               )}
               <RHFAutocomplete
                 name="locale"
                 label="Locale"
                 options={language ?? []}
-                getOptionLabel={(option) => {
-                  return option ? `${option?.name}` : '';
-                }}
+                getOptionLabel={(option) => (option ? `${option?.name ?? ''}` : '')}
                 renderOption={(props, option: any) => {
                   return (
                     <li {...props} key={option?.id}>
-                      {option?.name}
+                      {option?.name ?? 'Unknown'}
                     </li>
                   );
                 }}
@@ -724,7 +780,15 @@ export default function UserNewEditForm({
                 <RHFTextField name="bio" label="Bio" multiline rows={4} />
               )}
               {values.user_type === 'TRAINER' && (
-                <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                <>
+                  <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                  <RHFTextField
+                    name="max_cash_in_hand_allowed"
+                    label="Max cash in hand allowded"
+                    type="number"
+                  />
+                  <RHFTextField name="cash_in_hand" label="Cash in hand" type="number" />
+                </>
               )}
             </Box>
 
@@ -747,25 +811,48 @@ export default function UserNewEditForm({
                     placeholder="Search Category..."
                     options={
                       category?.map((item: any) => ({
-                        label: item.category_translations
-                          .map((translation: any) => translation.name) // Extract all names
+                        label: item?.category_translations
+                          ?.map((translation: any) => translation?.name ?? 'Unknown') // Extract all names
                           .join(' - '), // Display full name
-                        value: item.id,
+                        value: item?.id ?? 'Unknown',
                       })) ?? []
                     }
                     setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
                     disableClearable={true}
                     loading={categoryLoading}
                   />
-
-                  <RHFSelect name="city_id" label="City">
-                    {city?.length > 0 &&
-                      city?.map((option: any) => (
-                        <MenuItem key={option?.id} value={option?.id}>
-                          {option?.city_translations[0]?.name ?? 'Unknown'}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
+                  <RHFAutocompleteSearch
+                    name="city_id"
+                    label="City"
+                    options={
+                      city?.map((option: any) => ({
+                        value: option?.id ?? 'Unknown',
+                        label: option?.city_translations?.[0]?.name ?? 'Unknown',
+                      })) ?? []
+                    }
+                    getOptionLabel={(option) => option?.label ?? ''}
+                    renderOption={(props, option: any) => (
+                      <li {...props} key={option?.value}>
+                        {option?.label ?? 'Unknown'}
+                      </li>
+                    )}
+                  />
+                  <RHFAutocompleteSearch
+                    name="area_id"
+                    label="Area"
+                    options={
+                      states?.map((option: any) => ({
+                        value: option?.id ?? 'Unknown',
+                        label: option?.translations?.[0]?.name ?? 'Unknown',
+                      })) ?? []
+                    }
+                    getOptionLabel={(option) => option?.label ?? ''}
+                    renderOption={(props, option: any) => (
+                      <li {...props} key={option?.value}>
+                        {option?.label ?? 'Unknown'}
+                      </li>
+                    )}
+                  />
                   {values.user_type === 'TRAINER' && (
                     <RHFSelect name="gender" label="Gender">
                       {genderData?.length > 0 &&
@@ -785,6 +872,7 @@ export default function UserNewEditForm({
                       ))}
                   </RHFSelect>
                 </Box>
+
                 {fields.map((languageItem, index) => (
                   <Grid
                     container
@@ -795,7 +883,7 @@ export default function UserNewEditForm({
                   >
                     <Grid item xs={12} md={5}>
                       <RHFAutocomplete
-                        name={`languages[${index}].id`} // Dynamic name for react-hook-form
+                        name={`languages[${index}].id`}
                         label={`Language ${index + 1}`}
                         getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
                         options={dialect ?? []}

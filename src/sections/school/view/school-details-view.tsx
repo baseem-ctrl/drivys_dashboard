@@ -20,7 +20,7 @@ import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import Iconify from 'src/components/iconify';
-import { Button } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolPackageDetails from './school-package-details';
 
@@ -80,6 +80,7 @@ export default function SchoolDetailsView({ id }: Props) {
       quickCreate.onTrue();
     }
   };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -115,24 +116,41 @@ export default function SchoolDetailsView({ id }: Props) {
         onChangePublish={handleChangePublish}
         publishOptions={JOB_PUBLISH_OPTIONS}
       /> */}
-      {renderTabs}
+      {!detailsLoading ? (
+        <>
+          {renderTabs}
 
-      {currentTab === 'details' && (
-        <SchoolDetailsContent
-          details={currentJob}
-          loading={detailsLoading}
-          reload={revalidateDetails}
-        />
-      )}
+          {currentTab === 'details' && (
+            <SchoolDetailsContent
+              details={currentJob}
+              loading={detailsLoading}
+              reload={revalidateDetails}
+            />
+          )}
 
-      {currentTab === 'trainers' && (
-        <SchoolTrainers
-          candidates={details}
-          create={quickCreate.value}
-          onCreate={handleAddTrainer}
-        />
+          {currentTab === 'trainers' && (
+            <SchoolTrainers
+              candidates={details}
+              create={quickCreate.value}
+              onCreate={handleAddTrainer}
+            />
+          )}
+          {currentTab === 'package' && <SchoolPackageDetails id={id} />}
+        </>
+      ) : !details ? (
+        <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
+      ) : (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // height: '100vh', // Full viewport height
+          }}
+        >
+          <CircularProgress />
+        </Box>
       )}
-      {currentTab === 'package' && <SchoolPackageDetails id={id} />}
     </Container>
   );
 }

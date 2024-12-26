@@ -11,6 +11,9 @@ import {
   Grid,
   Typography,
   Box,
+  Stack,
+  Card,
+  Skeleton,
 } from '@mui/material';
 import { useGetBookingByStudentId } from 'src/api/school';
 
@@ -36,20 +39,31 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
     useGetBookingByStudentId(id);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Card}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Email</TableCell>
+            <TableCell>Trainer Name</TableCell>
+            <TableCell>Trainer Email</TableCell>
             <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Sessions</TableCell>
+            <TableCell align="center">Total Sessions</TableCell>
+            <TableCell align="center">Total Sessions Booked</TableCell>
+            <TableCell align="center">Completed Sessions</TableCell>
             <TableCell align="center">Booking Status</TableCell>
             <TableCell align="center">Payment Status</TableCell>
+            <TableCell align="center">Payment Method</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {bookingDetails && bookingDetails.length > 0 ? (
+          {bookingLoading ? (
+            Array.from(new Array(5)).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton animation="wave" height={40} />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : bookingDetails && bookingDetails.length > 0 ? (
             bookingDetails.map((booking) => (
               <TableRow
                 key={booking.id}
@@ -67,33 +81,50 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 <TableCell>
                   <Grid container alignItems="center" spacing={1}>
                     <Grid item>
-                      <Typography>{booking?.user?.name || 'N/A'}</Typography>
+                      <Typography>{booking?.driver?.name || 'N/A'}</Typography>
                     </Grid>
                   </Grid>
                 </TableCell>
-                <TableCell>{booking.user.email}</TableCell>
-                <TableCell align="center">${booking.total}</TableCell>
-                <TableCell>
-                  {booking.sessions.map((session) => (
-                    <Typography key={session.id} align="center">
-                      {session.id}
-                    </Typography>
-                  ))}
-                </TableCell>
+                <TableCell>{booking?.driver?.email ?? 'NA'}</TableCell>
+                <TableCell align="center">{booking.total} AED</TableCell>
+                <TableCell align="center">{booking?.package?.number_of_sessions ?? 'NA'}</TableCell>
+                <TableCell>{booking?.no_of_sessions}</TableCell>
+                <TableCell>{booking?.no_of_sessions_completed}</TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.booking_status}
-                    color={booking.booking_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking?.booking_status === 'PENDING'
+                        ? 'info'
+                        : booking?.booking_status === 'CANCELLED'
+                        ? 'error'
+                        : booking?.booking_status === 'IN PROGRESS'
+                        ? 'warning'
+                        : booking?.booking_status === 'CONFIRMED'
+                        ? 'secondary'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
                 <TableCell align="center">
                   <Chip
                     label={booking.payment_status}
-                    color={booking.payment_status === 'CANCELLED' ? 'error' : 'success'}
-                    variant="outlined"
+                    color={
+                      booking?.payment_status === 'PENDING'
+                        ? 'info'
+                        : booking?.payment_status === 'FAILED'
+                        ? 'error'
+                        : booking?.payment_status === 'REFUNDED'
+                        ? 'warning'
+                        : booking?.payment_status === 'PARTIALLY PAID'
+                        ? 'primary'
+                        : 'success'
+                    }
+                    variant="soft"
                   />
                 </TableCell>
+                <TableCell align="center">{booking?.payment_method ?? 'NA'}</TableCell>
               </TableRow>
             ))
           ) : (

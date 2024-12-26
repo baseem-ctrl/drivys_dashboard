@@ -26,6 +26,8 @@ import {
   Chip,
   Switch,
   Container,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
@@ -65,7 +67,7 @@ const BookingDetailsComponent = () => {
     const selectedStatus = event;
     const formData = new FormData();
     formData.append('booking_status', selectedStatus);
-    formData.append('id', id);
+    formData.append('booking_id', id);
 
     try {
       const response = await updatePaymentBookingStatus(formData);
@@ -95,7 +97,7 @@ const BookingDetailsComponent = () => {
     const selectedStatus = event;
     const formData = new FormData();
     formData.append('payment_status', selectedStatus);
-    formData.append('id', id);
+    formData.append('booking_id', id);
     try {
       const response = await updatePaymentBookingStatus(formData);
       enqueueSnackbar(response.message ?? 'Status Updated successfully', {
@@ -634,7 +636,7 @@ const BookingDetailsComponent = () => {
                       (bookingDetails.payment_status === 'PENDING' && 'info') ||
                       (bookingDetails.payment_status === 'PAID' && 'success') ||
                       (bookingDetails.payment_status === 'REFUNDED' && 'warning') ||
-                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'primary') ||
+                      (bookingDetails.payment_status === 'PARTIALLY PAID' && 'default') ||
                       (bookingDetails.payment_status === 'FAILED' && 'error') ||
                       'inherit'
                     }
@@ -651,14 +653,14 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Method:
+                        Payment Method:
                       </Typography>
-                      <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
+                      <Typography>{bookingDetails?.payment_method || 'N/A'}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Booking Amount:
+                        Payment Amount:
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>
@@ -751,14 +753,15 @@ const BookingDetailsComponent = () => {
                   Total Amount:
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.total ? `$${bookingDetails.sub_total}` : 'N/A'}
+                  {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
                 </Typography>
+
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Booking ID</TableCell>
-                        <TableCell>Session No</TableCell>
+                        <TableCell>Sessions</TableCell>
                         <TableCell>Session Status</TableCell>
                         <TableCell>Rating</TableCell>
                         <TableCell>Start Time</TableCell>
@@ -770,9 +773,44 @@ const BookingDetailsComponent = () => {
                       {sessions.map((session) => (
                         <TableRow key={session?.id || 'N/A'}>
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
+                          <TableCell>
+                            <ListItemText
+                              primary={`Total Sessions Booked:${session?.no_of_sessions}`}
+                              secondary={
+                                <div>
+                                  <p>Session No:{session?.session_no}</p>
+                                  <p>
+                                    Completed Sessions:
+                                    {bookingDetails.no_of_sessions_completed}
+                                  </p>
+                                </div>
+                              }
+                              secondaryTypographyProps={{
+                                mt: 0.5,
+                                component: 'span',
+                                typography: 'caption',
+                                color: 'text.disabled',
+                              }}
+                            />
+                          </TableCell>
 
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          {/* <TableCell>{session?.session_no || 'N/A'}</TableCell> */}
+
+                          <TableCell>
+                            <Chip
+                              label={session?.session_status}
+                              color={
+                                session?.session_status === 'PENDING'
+                                  ? 'info'
+                                  : session?.session_status === 'CANCELLED'
+                                  ? 'error'
+                                  : session?.session_status === 'CONFIRMED'
+                                  ? 'default'
+                                  : 'success'
+                              }
+                              variant="soft"
+                            />
+                          </TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>

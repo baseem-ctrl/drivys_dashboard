@@ -25,10 +25,11 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip } from '@mui/material';
+import { IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { InfoOutlined } from '@mui/icons-material';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 type Props = {
   open: boolean;
@@ -124,13 +125,17 @@ export default function SchoolCreateForm({
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test('Maximum 9 digit', 'Maximum 9 digit', function (value) {
-      const { create_new_user } = this.parent;
-      if (create_new_user) {
-        return value && value.length <= 9; // Ensures password is filled if create_new_user is true
+    phone: Yup.string().test(
+      'Maximum 9 digit',
+      'Maximum 9 digit and start with 5',
+      function (value) {
+        const { create_new_user } = this.parent;
+        if (create_new_user) {
+          return value && value.length === 9 && /^5\d{0,8}$/.test(value); // Ensures password is filled if create_new_user is true
+        }
+        return true; // No validation if create_new_user is false
       }
-      return true; // No validation if create_new_user is false
-    }),
+    ),
     country_code: Yup.string(),
   });
 
@@ -266,6 +271,7 @@ export default function SchoolCreateForm({
     setSelectedLocale('en');
     setTranslations({});
   };
+  const password = useBoolean();
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
@@ -340,12 +346,12 @@ export default function SchoolCreateForm({
             <Grid item xs={6} mt={2}>
               <RHFTextField
                 name="commission_in_percentage"
-                label="Commission in (%)"
+                label="Certificate Commission in (%)"
                 type="number"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title="Commission is for certificate" placement="top">
+                      <Tooltip title="Commission for drivys from certificate" placement="top">
                         <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                       </Tooltip>
                     </InputAdornment>
@@ -357,15 +363,17 @@ export default function SchoolCreateForm({
             <Grid item xs={6} mt={2} mb={2}>
               <RHFCheckbox name="is_active" label="Active" />
             </Grid>
-
-            <Grid item xs={6} mt={2} mb={2}>
-              <RHFCheckbox name="create_new_user" label="Create New User" />
-            </Grid>
           </Box>
+          <Grid item xs={6} mt={2} mb={2}>
+            <Typography variant="body1" sx={{ fontWeight: '600' }}>
+              Choose a School Admin: Create New or Select Existing
+            </Typography>
+            <RHFCheckbox name="create_new_user" label="Create New School Admin" />
+          </Grid>
           {!values?.create_new_user ? (
             <RHFAutocomplete
               name="user_id"
-              label="Select Owner"
+              label="Select School Admin"
               options={schoolAdminList.map(({ name, email, id }) => ({
                 label: `${name}[${email}]`,
                 value: id,
@@ -386,7 +394,22 @@ export default function SchoolCreateForm({
               >
                 <RHFTextField name="user_name" label="User Name" />
                 <RHFTextField name="user_email" label="User Email" />
-                <RHFTextField name="password" label="Password" type="password" />
+                <RHFTextField
+                  name="password"
+                  label="Password"
+                  type={password.value ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={password.onToggle} edge="end">
+                          <Iconify
+                            icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                          />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
                 {/* <RHFAutocomplete
                   name="country_code"
                   label="Country Code"

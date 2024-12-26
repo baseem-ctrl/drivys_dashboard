@@ -16,7 +16,7 @@ import { paths } from 'src/routes/paths';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: IBookingItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
@@ -96,6 +96,10 @@ export default function BookingTableRow({
               ? 'info'
               : row?.booking_status === 'CANCELLED'
               ? 'error'
+              : row?.booking_status === 'IN PROGRESS'
+              ? 'warning'
+              : row?.booking_status === 'CONFIRMED'
+              ? 'secondary'
               : 'success'
           }
         >
@@ -107,7 +111,11 @@ export default function BookingTableRow({
           variant="soft"
           color={
             row.payment_status === 'PENDING'
+              ? 'info'
+              : row.payment_status === 'REFUNDED'
               ? 'warning'
+              : row.payment_status === 'PARTIALLY PAID'
+              ? 'default'
               : row.payment_status === 'FAILED'
               ? 'error'
               : 'success'

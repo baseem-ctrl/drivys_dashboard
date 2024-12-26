@@ -83,10 +83,7 @@ export default function PackageCreateForm({
   ]);
 
   const handleAddCity = () => {
-    setCityFields((prevFields) => [
-      ...prevFields,
-      { id: null, min_price: '', max_price: '', commision: '' },
-    ]);
+    setCityFields((prevFields) => [...prevFields, { id: null, min_price: '', max_price: '' }]);
   };
 
   const handleCityFieldChange = (index: number, field: string, value: any) => {
@@ -130,27 +127,24 @@ export default function PackageCreateForm({
     category_id: Yup.mixed(),
     vendor_id: Yup.mixed().nullable(),
     drivys_commision: Yup.number(),
-    min_price: Yup.number(),
-    max_price: Yup.number(),
-    is_percentage: Yup.boolean(),
+    min_price: Yup.string(),
+    max_price: Yup.string(),
+    is_drivys_commision_percentage: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
     () => ({
-      // contact_email: '',
-      // contact_phone_number: 0,
-      // commission_in_percentage: '',
-      // status: '',
-      // name: '',
-      // locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
-      // is_published: true,
-      // create_new_user: false,
-      // user_id: '',
-      // user_name: '',
-      // user_email: '',
-      // password: '',
-      // phone: '',
-      // country_code: '',
+      name: '',
+      locale: '',
+      session_inclusions: '',
+      is_published: false,
+      number_of_sessions: '',
+      category_id: '',
+      vendor_id: '',
+      drivys_commision: '',
+      min_price: '',
+      max_price: '',
+      is_drivys_commision_percentage: false,
     }),
     []
   );
@@ -172,9 +166,10 @@ export default function PackageCreateForm({
   const currentSessionInclusions = watch('session_inclusions');
   const values = watch();
   const handleToggle = () => {
-    setValue('is_percentage', !values?.is_percentage);
+    setValue('is_drivys_commision_percentage', !values?.is_drivys_commision_percentage);
   };
   const previousLocaleRef = useRef(selectedLocale);
+  console.log(errors);
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
@@ -226,8 +221,11 @@ export default function PackageCreateForm({
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
-    if (data.is_percentage !== undefined) {
-      formData.append('is_percentage', data.is_percentage === true ? 1 : 0);
+    if (data.is_drivys_commision_percentage !== undefined) {
+      formData.append(
+        'is_drivys_commision_percentage',
+        data.is_drivys_commision_percentage === true ? 1 : 0
+      );
     }
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
@@ -242,9 +240,6 @@ export default function PackageCreateForm({
         if (city?.max_price !== undefined) {
           formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
         }
-        if (city?.commision !== undefined) {
-          formData.append(`cities_ids[${index}][commision]`, String(city.commision));
-        }
         if (!city?.id && !city?.min_price && !city?.max_price) {
         }
       });
@@ -257,14 +252,19 @@ export default function PackageCreateForm({
       if (response) {
         reset();
         onClose();
+        setCityFields([{ id: null, min_price: '', max_price: '' }]);
         revalidateDeliverey();
         enqueueSnackbar(response?.message, { variant: 'success' });
       }
     } catch (error) {
       if (error?.errors) {
-        Object.values(error?.errors).forEach((errorMessage: any) => {
-          enqueueSnackbar(errorMessage[0], { variant: 'error' });
-        });
+        if (typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors).forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.errors, { variant: 'error' });
+        }
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
@@ -276,9 +276,11 @@ export default function PackageCreateForm({
   const handleClose = () => {
     reset(defaultValues);
     onClose();
+    setCityFields([{ id: null, min_price: '', max_price: '' }]);
+    setSelectedLocale('');
   };
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
+    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>Create Package</DialogTitle>
 
@@ -304,6 +306,7 @@ export default function PackageCreateForm({
                   </MenuItem>
                 ))}
               </RHFSelect>
+
               <RHFTextField name="name" label="Name" />
             </Box>
             {/* <RHFTextField name="description" label="Description" /> */}
@@ -347,13 +350,13 @@ export default function PackageCreateForm({
               <RHFTextField
                 name="drivys_commision"
                 label="Drivy's Commission"
-                type={values?.is_percentage ? 'number' : 'text'}
+                type={values?.is_drivys_commision_percentage ? 'number' : 'text'}
                 inputProps={{ min: 0 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
-                        {values?.is_percentage ? '%' : 'AED'}
+                        {values?.is_drivys_commision_percentage ? '%' : 'AED'}
                       </div>
                     </InputAdornment>
                   ),
@@ -378,21 +381,17 @@ export default function PackageCreateForm({
               />
             </Grid>
             <Box sx={{ mt: 2 }}>
-              {cityFields.map((cityField, index) => (
+              {cityFields?.map((cityField, index) => (
                 <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
                   <Grid item xs={12}>
                     <RHFAutocompleteSearch
                       name={`cities_ids[${index}][id]`}
                       label={`Select City ${index + 1}`}
                       multiple={false}
-                      options={city
-                        ?.map((city) =>
-                          city.city_translations.map((translation) => ({
-                            label: `${translation.name} (${translation.locale.toUpperCase()})`,
-                            value: city.id,
-                          }))
-                        )
-                        .flat()}
+                      options={city?.map((option: any) => ({
+                        value: option?.id,
+                        label: option?.city_translations[0]?.name ?? 'Unknown',
+                      }))}
                       onChange={(event, value) => {
                         handleCityFieldChange(index, 'id', value?.value || null);
                       }}
@@ -440,7 +439,7 @@ export default function PackageCreateForm({
                     </Grid>
                   )}
                 </Grid>
-              ))}
+              )) || []}
 
               <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
                 Add City

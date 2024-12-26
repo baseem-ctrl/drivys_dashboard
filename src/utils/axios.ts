@@ -139,6 +139,11 @@ export const endpoints = {
     delete: 'admin/discount/delete-discount/',
     createUpdate: 'admin/discount/create-discount',
   },
+  review: {
+    getStudentReview: 'admin/reviews/get-students-reviews',
+    getTrainerReview: 'admin/reviews/get-trainers-reviews',
+    deleteReview: 'admin/reviews/delete-review?',
+  },
   school: {
     list: 'admin/vendor/get-vendor-list',
     details: 'admin/vendor/get-vendor/',
@@ -158,15 +163,20 @@ export const endpoints = {
     bulk: {
       addCommision: 'admin/vendor/bulk/update-commision',
     },
+    schoolTrainers: 'admin/trainers/get-school-trainer-list',
+    messageToTrainer: 'admin/message/message-to-trainer',
+    createRewardTrainer: 'admin/reward/reward-to-trainer',
   },
   schoolAdmin: {
     verify: 'admin/trainerBySchoolAdmin/update-trainer-status',
+    locations: 'admin/studentTrainerRadius/get-student-trainer-under-radius',
   },
   homeListing: {
     list: 'admin/home-listing/get-home-listing-list',
     createUpdate: 'admin/home-listing/create-home-listing',
     details: 'admin/home-listing/get-home-listing/',
     delete: 'admin/home-listing/delete-home-listing/',
+    deleteTrainer: 'admin/home-listing/remove-trainer-by-trainer-id',
   },
   package: {
     list: 'admin/package/get-packge-list',
@@ -186,6 +196,8 @@ export const endpoints = {
     delete: 'admin/user/delete-user-by-id',
     update: 'admin/user/user-update-by-id',
     addressList: 'admin/user/address/get-user-address-list',
+    getTrainerAddress: 'admin/user/address/get-trainer-address',
+    getTrainerNearestAddress: 'admin/trainers/get-nearest-trainers-list',
     deleteAddressFromList: 'admin/user/address/delete-user-address',
     createNewAdressForUser: 'admin/user/address/create-update-user-address',
     userDocument: {
@@ -203,7 +215,7 @@ export const endpoints = {
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
     createTrainer: 'admin/trainers/school/create-trainer',
     workingHours: {
-      createUpdate: 'admin/trainer-working-hours/create-update',
+      createUpdate: 'admin/trainer-working-hours/create',
       deleteById: 'admin/trainer-working-hours/delete-by-id',
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
@@ -286,6 +298,19 @@ export const endpoints = {
   pendingRequest: {
     trainerPendingRequest: 'admin/trainerPendingRequest/get-list',
     rejectAcceptPendingRequest: 'admin/trainerPendingRequest/update-trainer-status',
-    schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-lis',
+    updateVerificationStatus: 'admin/trainerBySchoolAdmin/update-trainer-status',
+    schoolAdminTrainerPendingRequest: 'admin/trainerBySchoolAdmin/get-trainer-request-list',
+  },
+  pickup: {
+    list: 'admin/cityPickupExclusion/get-list',
+    createUpdate: 'admin/cityPickupExclusion/create-update',
+    getById: 'admin/cityPickupExclusion/get-by-id',
+    delete: 'admin/cityPickupExclusion/delete-by-id',
+  },
+  analytics: {
+    admin: 'admin/analytics/get-admin-analytics',
+    schoolAdmin: 'admin/analytics/get-school-analytics',
+    schoolAdminRevenue: 'admin/analytics/get-school-revenue',
+    adminRevenue: 'admin/analytics/get-admin-revenue',
   },
 };

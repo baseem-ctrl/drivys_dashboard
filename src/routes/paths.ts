@@ -15,7 +15,6 @@ const ROOTS = {
 };
 
 // ----------------------------------------------------------------------
-
 export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
@@ -141,6 +140,7 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/invoice/${MOCK_ID}/edit`,
       },
     },
+
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,
@@ -191,6 +191,11 @@ export const paths = {
       refundDetails: (id: string) => `${ROOTS.DASHBOARD}/booking/refund/${id}`,
     },
 
+    review: {
+      root: `${ROOTS.DASHBOARD}/review/student-review`,
+      studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
+      trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
+    },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,
@@ -200,6 +205,10 @@ export const paths = {
       admin: (id: string) => `${ROOTS.DASHBOARD}/school/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
       account: `${ROOTS.DASHBOARD}/school/account`,
+      trainer: `${ROOTS.DASHBOARD}/school/trainers-list`,
+      trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
+      trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
+      package: `${ROOTS.DASHBOARD}/school/package-list`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,
@@ -229,6 +238,7 @@ export const paths = {
       state: `${ROOTS.DASHBOARD}/system/state`,
       dialect: `${ROOTS.DASHBOARD}/system/dialect`,
       cityList: `${ROOTS.DASHBOARD}/system/city/list`,
+      pickup: `${ROOTS.DASHBOARD}/system/pickup`,
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,

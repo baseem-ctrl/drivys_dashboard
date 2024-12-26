@@ -145,6 +145,7 @@ export function useGetPublicPackage({
   vendor_id,
   city_id,
   is_public,
+  category_id,
 }: useGetDelivereyParams = {}) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
@@ -161,6 +162,7 @@ export function useGetPublicPackage({
     if (vendor_id) params.vendor_id = vendor_id;
     if (city_id) params.city_id = city_id;
     if (is_public) params.is_public = is_public;
+    if (category_id) params.category_id = category_id;
 
     return params;
   }, [

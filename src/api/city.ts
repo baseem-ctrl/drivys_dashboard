@@ -115,8 +115,10 @@ export function useGetCityById(cityId: number | string) {
     }),
     [data?.data, error, isLoading, isValidating]
   );
-
-  return memoizedValue;
+  const revalidate = () => {
+    mutate(getCityUrl);
+  };
+  return { ...memoizedValue, revalidate };
 }
 // Delete a city by ID :to do
 export function deleteCity(id: any) {
@@ -162,15 +164,19 @@ export function deletePackageCityById(packageId: number | string) {
 // Get the full list of package-city mappings
 interface UseGetPackageCityListParams {
   city_id?: string;
+  page?: any;
+  limit?: any;
 }
 
-export function useGetPackageCityList({ city_id }: UseGetPackageCityListParams = {}) {
+export function useGetPackageCityList({ city_id, page, limit }: UseGetPackageCityListParams = {}) {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (city_id) params.city_id = city_id;
+    if (page) params.page = page + 1;
+    if (limit) params.limit = limit;
 
     return params;
-  }, [city_id]);
+  }, [city_id, page, limit]);
 
   const fullUrl = useMemo(
     () => `${endpoints.city.getPackageList}?${new URLSearchParams(queryParams)}`,
@@ -193,6 +199,7 @@ export function useGetPackageCityList({ city_id }: UseGetPackageCityListParams =
       packageCityListError: error,
       packageCityListValidating: isValidating,
       packageCityListEmpty: packageCityList.length === 0,
+      totalPages: data?.total || 0,
     };
   }, [data?.data, error, isLoading, isValidating]);
 

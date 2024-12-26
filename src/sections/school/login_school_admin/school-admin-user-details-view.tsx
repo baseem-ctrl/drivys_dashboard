@@ -18,7 +18,7 @@ import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { Button } from '@mui/base';
-import { useGetUserDetails } from 'src/api/users';
+import { useGetAddressList, useGetUserDetails } from 'src/api/users';
 import UserDetailsContentAdmin from './school-admin-user-details-content';
 
 // ----------------------------------------------------------------------
@@ -43,7 +43,12 @@ export default function UserDetailsViewAdmin({ id }: Props) {
   const handleChangePublish = useCallback((newValue: string) => {
     setPublish(newValue);
   }, []);
-
+  const { addresses, addressesLoading, addressesError, revalidateAddresses } = useGetAddressList({
+    userId: id, // Add userId here
+    page: 0, // First page
+    limit: 10, // Limit to 10 addresses
+    search: '', // Optional search string
+  });
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -75,14 +80,22 @@ export default function UserDetailsViewAdmin({ id }: Props) {
       <CustomBreadcrumbs
         heading="User Details"
         links={[
-          {}
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Trainers', href: paths.dashboard.school.trainer },
+          { name: 'Details' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <UserDetailsContentAdmin details={details} loading={detailsLoading} />
+      <UserDetailsContentAdmin
+        addresses={addresses || []}
+        details={details}
+        loading={detailsLoading}
+        reload={revalidateDetails}
+        addressesLoading={addressesLoading}
+      />
     </Container>
   );
 }

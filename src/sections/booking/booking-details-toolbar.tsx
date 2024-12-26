@@ -67,9 +67,10 @@ export default function BookingDetailsToolbar({
                 variant="soft"
                 color={
                   (status === 'PENDING' && 'info') ||
-                  (statusId === 'CONFIRMED' && 'success') ||
-                  (statusId === 'CANCELLED' && 'error') ||
-                  'default'
+                  (status === 'IN PROGRESS' && 'warning') ||
+                  (status === 'CANCELLED' && 'error') ||
+                  (status === 'CONFIRMED' && 'secondary') ||
+                  'success'
                 }
               >
                 {status}

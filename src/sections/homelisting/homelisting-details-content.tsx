@@ -212,11 +212,11 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
             zIndex: '10',
           }}
         >
-          <Iconify
+          {/* <Iconify
             icon="solar:pen-bold"
             onClick={() => setEditMode(true)}
             sx={{ cursor: 'pointer' }}
-          />
+          /> */}
         </Stack>
       )}
       <Scrollbar>

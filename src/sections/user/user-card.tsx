@@ -32,12 +32,21 @@ type Props = {
 export default function UserCard({ user }: Props) {
   const theme = useTheme();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const { id, name, photo_url, dob, country_code, email, gender, is_active, user_preference, phone, locale,
+  const {
+    id,
+    name,
+    photo_url,
+    dob,
+    country_code,
+    email,
+    gender,
+    is_active,
+    user_preference,
+    phone,
+    locale,
   } = user;
-
-
 
   return (
     <Card sx={{ textAlign: 'center' }}>
@@ -76,7 +85,6 @@ export default function UserCard({ user }: Props) {
         />
       </Box>
       <Stack>
-
         <Link
           color="inherit"
           sx={{ cursor: 'pointer' }}
@@ -89,15 +97,12 @@ export default function UserCard({ user }: Props) {
             primaryTypographyProps={{ typography: 'subtitle1' }}
             secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
           />
-
         </Link>
 
-        {locale !== "undefined" && locale && (
-          <Label color="info">{((locale === "undefined" ? '' : locale) ?? "N/A")}</Label>
+        {locale !== 'undefined' && locale && (
+          <Label color="info">{(locale === 'undefined' ? '' : locale) ?? 'N/A'}</Label>
         )}
-
       </Stack>
-
 
       {/* <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2.5 }}>
         {_socials.map((social) => (
@@ -126,30 +131,39 @@ export default function UserCard({ user }: Props) {
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
             Date of birth
           </Typography>
-          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
-            {dob.split('T')[0]}
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ mb: 0.5, color: 'text.secondary', fontWeight: '700' }}
+          >
+            {dob?.split('T')[0]}
           </Typography>
-
         </div>
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
             Phone
           </Typography>
-          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ mb: 0.5, color: 'text.secondary', fontWeight: '700' }}
+          >
             {country_code + '-' + phone}
           </Typography>
-
         </div>
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
             Gender
           </Typography>
-          <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary', fontWeight: "700" }}>
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ mb: 0.5, color: 'text.secondary', fontWeight: '700' }}
+          >
             {gender}
           </Typography>
-
         </div>
       </Box>
     </Card>

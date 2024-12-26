@@ -15,7 +15,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import { useGetSchoolByIdAdmin } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
-import { Button, Stack } from '@mui/material';
+import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolAdminDetailsContent from './school-admin-details-content';
 import SchoolAdminTrainers from './school-admin-details-trainers';
@@ -32,8 +32,6 @@ export default function SchoolAdminDetailsView({ id }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetSchoolByIdAdmin(id);
 
   const currentSchool = details[0]?.vendor;
-
-  console.log(details, 'currentSchool');
 
   const [currentTab, setCurrentTab] = useState('details');
 
@@ -74,6 +72,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
       quickCreate.onTrue();
     }
   };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
@@ -90,7 +89,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
           )
         }
       />
-      {details?.length > 0 ? (
+      {!detailsLoading ? (
         <>
           {renderTabs}
 
@@ -111,9 +110,21 @@ export default function SchoolAdminDetailsView({ id }: Props) {
             />
           )}
           {currentTab === 'package' && <SchoolAdminPackageDetails id={currentSchool?.id} />}
+          {!details && (
+            <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
+          )}
         </>
       ) : (
-        <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh', // Full viewport height
+          }}
+        >
+          <CircularProgress />
+        </Box>
       )}
     </Container>
   );
