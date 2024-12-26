@@ -158,6 +158,35 @@ export default function OverviewEcommerceView() {
               total={analytics?.refundReqs ?? '0'}
             />
           </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              title="Issued Certificates"
+              icon="mdi:file-certificate"
+              bgcolor="rgba(40, 167, 69, 0.1)"
+              textColor="rgba(40, 167, 69, 0.9)"
+              total={analytics?.issuedCertificates ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              title="Pending Certificates"
+              icon="mdi:seal"
+              // percent={2.6}
+              total={analytics?.pendingCertificates ?? '0'}
+              bgcolor="rgba(0, 123, 255, 0.1)"
+              textColor="rgba(0, 123, 255, 0.9)"
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
+              icon="mdi:calendar-check"
+              bgcolor="rgba(255, 193, 7, 0.1)"
+              textColor="rgba(220, 53, 69, 0.9)"
+              title="Rescheduled Booking Count"
+              total={analytics?.rescheduledBookingsCount ?? '0'}
+              percent={analytics?.rescheduledPercentage ?? 0}
+            />
+          </Grid>
           {/* <Grid xs={12} md={6} lg={6}>
             <TrainerMap />
           </Grid> */}
