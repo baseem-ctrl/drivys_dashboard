@@ -25,6 +25,8 @@ import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin
 import NotificationsListingListPage from 'src/pages/dashboard/notifications/notifications';
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 import CityDetailsView from 'src/sections/city/view/city-details-view';
+import RefundListView from 'src/sections/refund/view/refund-list-view';
+import RefundDetailsComponent from 'src/sections/refund/view/refund-details-view';
 import PickupListPage from 'src/pages/pickup/pickup';
 import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
 import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
@@ -239,8 +241,9 @@ const allroutes = [
     path: 'booking',
     children: [
       { element: <BookingListView />, index: true },
+      { path: 'refund', element: <RefundListView /> },
+      { path: 'refund/:id', element: <RefundDetailsComponent /> },
       { path: ':id', element: <BookingDetailsComponent /> },
-      // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },
 ];

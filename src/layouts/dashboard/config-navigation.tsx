@@ -93,11 +93,11 @@ export function useNavData() {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
-      // children: [
-      //   { title: t('booking'), path: paths.dashboard.booking.root },
-      //   { title: t('list'), path: paths.dashboard.booking.list },
-      //   { title: t('create'), path: paths.dashboard.booking.new },
-      // ],
+
+      children: [
+        { title: t('booking'), path: paths.dashboard.booking.root },
+        { title: t('Refund'), path: paths.dashboard.booking.refund },
+      ],
     },
 
     // JOB
