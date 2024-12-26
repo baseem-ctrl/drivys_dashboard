@@ -575,7 +575,8 @@ export default function UserNewEditForm({
     languageLoading ||
     enumLoading ||
     genderLoading ||
-    gearLoading
+    gearLoading ||
+    categoryLoading
   ) {
     return (
       <Box
