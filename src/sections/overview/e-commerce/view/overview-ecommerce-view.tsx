@@ -70,6 +70,15 @@ export default function OverviewEcommerceView() {
         </Grid> */}
           <Grid xs={12} md={3}>
             <EcommerceWidgetSummary
+              bgcolor="rgba(0, 204, 204, 0.1)"
+              textColor="rgba(0, 123, 255, 0.9)"
+              title="Total Revenue"
+              icon="mdi:account-cash"
+              total={analytics?.revenueGenerated ?? '0'}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <EcommerceWidgetSummary
               title="Total Trainers"
               icon="eva:person-done-outline"
               // percent={2.6}
