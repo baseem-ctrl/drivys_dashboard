@@ -35,8 +35,14 @@ export default function EcommerceWidgetSummary({
   textColor = 'text.primary',
   ...other
 }: Props) {
+  console.log('percent', percent);
   const theme = useTheme();
-  const percentageBgColor = percent < 0 ? 'rgba(255, 99, 71, 0.2)' : 'rgba(144, 238, 144, 0.2)';
+  const percentageBgColor =
+    percent === 0
+      ? 'rgba(169, 169, 169, 0.2)'
+      : percent < 0
+      ? 'rgba(255, 99, 71, 0.2)'
+      : 'rgba(144, 238, 144, 0.2)';
   // const chartOptions = useChart({
   //   colors: [colors[1]],
   //   fill: {
@@ -148,16 +154,7 @@ export default function EcommerceWidgetSummary({
         >
           {title}
         </Typography>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-          }}
-        ></Box>
+
         <Typography
           variant="h4"
           sx={{
@@ -182,7 +179,7 @@ export default function EcommerceWidgetSummary({
               px: 1,
             }}
           >
-            {fPercent(percent)}
+            {percent === 0 ? '0%' : fPercent(percent)}
           </Typography>
         </Typography>
       </Box>
