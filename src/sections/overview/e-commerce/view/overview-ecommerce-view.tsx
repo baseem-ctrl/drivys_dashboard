@@ -37,6 +37,7 @@ import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import { useState } from 'react';
+import AnalyticsActiveUsers from '../analytics-active-users';
 
 // ----------------------------------------------------------------------
 
@@ -70,6 +71,28 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+
+  const trainerChartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
+  const studentChartData = {
+    colors: ['#FF6F61', '#6B5B95'],
+
+    series: [
+      { label: 'Active Trainers', value: analytics.activeStudents },
+      { label: 'Inactive Trainers', value: analytics.inactiveStudents },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -253,6 +276,13 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Trainer Analytics"
+              subheader={`Total Trainers: ${analytics.trainerCount}`}
+              chart={trainerChartData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
               total={analytics?.trainerCount ?? 0}
@@ -269,6 +299,13 @@ export default function OverviewEcommerceView() {
                   },
                 ],
               }}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Student Analytics"
+              subheader={`Total Students: ${analytics?.studentCount}`}
+              chart={studentChartData}
             />
           </Grid>
           <Grid xs={12} md={6} lg={8}>
