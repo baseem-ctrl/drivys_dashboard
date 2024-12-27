@@ -54,6 +54,7 @@ export default function PackageCreateForm({
   const [searchValue, setSearchValue] = useState('');
   const [searchValueCat, setSearchValueCat] = useState('');
   const [searchValueCity, setSearchValueCity] = useState('');
+  const [numberOfSlots, setNumberOfSlots] = useState(0);
 
   const { language } = useGetAllLanguage(0, 1000);
   // const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
@@ -162,6 +163,13 @@ export default function PackageCreateForm({
     watch,
     formState: { isSubmitting, errors },
   } = methods;
+  const numOfSession = watch('number_of_sessions');
+
+  useEffect(() => {
+    if (numOfSession) {
+      setNumberOfSlots(Math.floor(numOfSession / 2));
+    }
+  }, [numOfSession]);
   const currentName = watch('name');
   const currentSessionInclusions = watch('session_inclusions');
   const values = watch();
@@ -227,6 +235,26 @@ export default function PackageCreateForm({
         data.is_drivys_commision_percentage === true ? 1 : 0
       );
     }
+
+    const sessionTitles = [];
+    if (data?.locale && data?.session_titles) {
+      const selectedLocale = data.locale.toLowerCase();
+
+      const titles = data.session_titles.filter((title: string) => title);
+
+      sessionTitles.push({
+        locale: selectedLocale,
+        titles: titles,
+      });
+    }
+
+    sessionTitles.forEach((session, index) => {
+      formData.append(`session_titles[${index}][locale]`, session.locale);
+      session.titles.forEach((title, titleIndex) => {
+        formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+      });
+    });
+
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
         if (city?.id !== undefined) {
@@ -315,7 +343,7 @@ export default function PackageCreateForm({
           <Divider sx={{ my: 2 }} />
 
           <Grid spacing={2} container>
-            <Grid item xs={6}>
+            <Grid item xs={13}>
               <RHFTextField
                 name="number_of_sessions"
                 label="Number of sessions"
@@ -329,6 +357,20 @@ export default function PackageCreateForm({
                   ),
                 }}
               />
+            </Grid>
+
+            <Grid item xs={10}>
+              <Grid container spacing={2}>
+                {Array.from({ length: numberOfSlots }).map((_, index) => (
+                  <Grid item xs={12} key={index}>
+                    <RHFTextField
+                      fullWidth
+                      name={`session_titles[${index}]`}
+                      label={`session_titles ${index + 1}`}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
 
             <Grid item xs={6}>
