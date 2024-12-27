@@ -3,6 +3,8 @@ import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
+import { DatePicker } from '@mui/x-date-pickers';
+
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -28,16 +30,17 @@ import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue } from 'src/api/anlytics';
-import { Box, CircularProgress } from '@mui/material';
+import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
-import { useState } from 'react';
 import PaymentMethodRevenue from '../ecommerce-payment-method';
+import { useMemo, useState } from 'react';
+import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 
 // ----------------------------------------------------------------------
 
@@ -48,9 +51,21 @@ export default function OverviewEcommerceView() {
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods } = useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
-
+  const {
+    studentInsights,
+    studentInsightsError,
+    studentInsightsLoading,
+    revalidateStudentInsights,
+  } = useGetStudentInsights();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const settings = useSettingsContext();
-  const { analytics, analyticsLoading } = useGetAnalytics();
+  const [applyClicked, setApplyClicked] = useState(false);
+  const { analytics, analyticsLoading } = useGetAnalytics({
+    startDate: applyClicked ? startDate : undefined,
+    endDate: applyClicked ? endDate : undefined,
+  });
+
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
   const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
   const weeklyIssuedCertificates = analytics?.weeklyIssuedCertificates || [];
@@ -64,7 +79,6 @@ export default function OverviewEcommerceView() {
     weeklyIssuedCertificates,
     issuedCerificateSeriesData
   );
-  console.log('yearlyCompletedSessions', yearlyCompletedSessions);
   const chartCompletedSessionData = transformData(
     monthlyCompletedSessions,
     yearlyCompletedSessions,
@@ -80,6 +94,35 @@ export default function OverviewEcommerceView() {
     series: transformedRevenueByPaymentMethodData,
     options: {},
   };
+  const enrollmentChart = {
+    colors: ['#ffab00', '#0da670'],
+    categories: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    // options: {
+    //   chart: {
+    //     type: 'area',
+    //   },
+  };
+  const handleApply = () => {
+    setApplyClicked(true);
+  };
+  const handleClear = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setApplyClicked(true);
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -92,149 +135,211 @@ export default function OverviewEcommerceView() {
                   ? 'Let’s start as school and manage your drivers.'
                   : 'Effortlessly manage users, schools, and operations with full control.'
               }
-              // img={<MotivationIllustration />}
-              // action={
-              //   <Button variant="contained" color="primary">
-              //     Go Now
-              //   </Button>
-              // }
             />
           </Grid>
-          {/* <Grid xs={12} md={4}>
-          <EcommerceNewProducts list={_ecommerceNewProducts} />
-        </Grid> */}
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(0, 204, 204, 0.1)"
-              textColor="rgba(0, 123, 255, 0.9)"
-              title="Total Revenue"
-              percent={revenue?.earningsPercentChange}
-              icon="mdi:account-cash"
-              total={analytics?.revenueGenerated ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              title="Total Trainers"
-              icon="eva:person-done-outline"
-              // percent={2.6}
-              total={analytics?.trainerCount ?? '0'}
-              bgcolor="rgba(0, 123, 255, 0.1)"
-              textColor="rgba(0, 123, 255, 0.9)"
-              chart={{
-                colors: [theme.palette.info.light, theme.palette.info.main],
-              }}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              title="Total Students"
-              icon="eva:person-fill"
-              bgcolor="rgba(40, 167, 69, 0.1)"
-              textColor="rgba(40, 167, 69, 0.9)"
-              // percent={-0.1}
-              total={analytics?.studentCount ?? '0'}
-              chart={{
-                colors: [theme.palette.info.light, theme.palette.info.main],
-                series: [56, 47, 40, 62, 73, 30, 23, 54, 67, 68],
-              }}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              icon="mdi:steering"
-              bgcolor="rgba(255, 193, 7, 0.1)"
-              textColor="rgba(220, 53, 69, 0.9)"
-              title="Total School"
-              total={analytics?.schoolCount ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(220, 53, 69, 0.1)"
-              title="Total Bookings"
-              icon="mdi:ticket"
-              textColor="rgba(255, 165, 0, 0.9)"
-              total={analytics?.bookingsCount ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(155, 89, 182, 0.1)"
-              textColor="rgba(138, 43, 226, 0.9)"
-              title="Confirmed Bookings"
-              icon="mdi:check-circle"
-              total={analytics?.confirmedBookingsCount ?? '0'}
-            />
-          </Grid>{' '}
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(108, 117, 125, 0.1)"
-              textColor="rgba(108, 117, 125, 0.9)"
-              title="Cancelled Bookings"
-              icon="mdi:cancel-circle"
-              total={analytics?.canceledBookingsCount ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(0, 123, 255, 0.1)"
-              title="Pending Bookings"
-              icon="material-symbols:pending"
-              textColor="rgba(0, 123, 255, 0.9)"
-              total={analytics?.pendingBookingsCount ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(255, 165, 0, 0.1)"
-              textColor="rgba(255, 193, 7, 0.9)"
-              title="Completed Bookings"
-              icon="mdi:check-circle"
-              total={analytics?.completedBookingsCount ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              bgcolor="rgba(0, 204, 204, 0.1)"
-              textColor="rgba(0, 123, 255, 0.9)"
-              title="Refund Requests"
-              icon="mdi:cash-refund"
-              total={analytics?.refundReqs ?? '0'}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
+          <Box
+            sx={{
+              padding: 4,
+              borderRadius: 2,
+            }}
+          >
+            {' '}
+            <Typography variant="h6" align="center" gutterBottom>
+              Analytics Filter
+            </Typography>
+            <Grid container spacing={3} justifyContent="center" alignItems="center">
+              <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                alignItems="center"
+                md={10}
+                marginTop={1}
+                marginBottom={2}
+              >
+                <Grid item>
+                  <Box display="flex" justifyContent="flex-start">
+                    <DatePicker
+                      label="Start Date"
+                      value={startDate}
+                      onChange={(newValue) => {
+                        setStartDate(newValue);
+                        setApplyClicked(false);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Box display="flex" justifyContent="flex-start">
+                    <DatePicker
+                      label="End Date"
+                      value={endDate}
+                      onChange={(newValue) => {
+                        setEndDate(newValue);
+                        setApplyClicked(false);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </Box>
+                </Grid>
+                <Grid>
+                  <Box display="flex" justifyContent="flex-start" gap={1}>
+                    <Button variant="contained" color="primary" onClick={handleApply}>
+                      Apply
+                    </Button>
+                    <Button variant="outlined" color="primary" onClick={handleClear}>
+                      Clear
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              {/* EcommerceWidgetSummary components in the next line */}
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(0, 204, 204, 0.1)"
+                  textColor="rgba(0, 123, 255, 0.9)"
+                  title="Total Revenue"
+                  icon="mdi:account-cash"
+                  total={analytics?.revenueGenerated ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  title="Total Trainers"
+                  icon="eva:person-done-outline"
+                  total={analytics?.trainerCount ?? '0'}
+                  bgcolor="rgba(0, 123, 255, 0.1)"
+                  textColor="rgba(0, 123, 255, 0.9)"
+                  chart={{
+                    colors: [theme.palette.info.light, theme.palette.info.main],
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  title="Total Students"
+                  icon="eva:person-fill"
+                  bgcolor="rgba(40, 167, 69, 0.1)"
+                  textColor="rgba(40, 167, 69, 0.9)"
+                  total={analytics?.studentCount ?? '0'}
+                  chart={{
+                    colors: [theme.palette.info.light, theme.palette.info.main],
+                    series: [56, 47, 40, 62, 73, 30, 23, 54, 67, 68],
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  icon="mdi:steering"
+                  bgcolor="rgba(255, 193, 7, 0.1)"
+                  textColor="rgba(220, 53, 69, 0.9)"
+                  title="Total School"
+                  total={analytics?.schoolCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(220, 53, 69, 0.1)"
+                  title="Total Bookings"
+                  icon="mdi:ticket"
+                  textColor="rgba(255, 165, 0, 0.9)"
+                  total={analytics?.bookingsCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(155, 89, 182, 0.1)"
+                  textColor="rgba(138, 43, 226, 0.9)"
+                  title="Confirmed Bookings"
+                  icon="mdi:check-circle"
+                  total={analytics?.confirmedBookingsCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(108, 117, 125, 0.1)"
+                  textColor="rgba(108, 117, 125, 0.9)"
+                  title="Cancelled Bookings"
+                  icon="mdi:cancel-circle"
+                  total={analytics?.canceledBookingsCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(0, 123, 255, 0.1)"
+                  title="Pending Bookings"
+                  icon="material-symbols:pending"
+                  textColor="rgba(0, 123, 255, 0.9)"
+                  total={analytics?.pendingBookingsCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(255, 165, 0, 0.1)"
+                  textColor="rgba(255, 193, 7, 0.9)"
+                  title="Completed Bookings"
+                  icon="mdi:check-circle"
+                  total={analytics?.completedBookingsCount ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  bgcolor="rgba(0, 204, 204, 0.1)"
+                  textColor="rgba(0, 123, 255, 0.9)"
+                  title="Refund Requests"
+                  icon="mdi:cash-refund"
+                  total={analytics?.refundReqs ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  title="Issued Certificates"
+                  icon="mdi:file-certificate"
+                  bgcolor="rgba(40, 167, 69, 0.1)"
+                  textColor="rgba(40, 167, 69, 0.9)"
+                  total={analytics?.issuedCertificates ?? '0'}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  title="Pending Certificates"
+                  icon="mdi:seal"
+                  total={analytics?.pendingCertificates ?? '0'}
+                  bgcolor="rgba(0, 123, 255, 0.1)"
+                  textColor="rgba(0, 123, 255, 0.9)"
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
+                  icon="mdi:calendar-check"
+                  bgcolor="rgba(255, 193, 7, 0.1)"
+                  textColor="rgba(220, 53, 69, 0.9)"
+                  title="Rescheduled Booking Count"
+                  total={analytics?.rescheduledBookingsCount ?? '0'}
+                  percent={analytics?.rescheduledPercentage ?? 0}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Grid item xs={12} md={6} lg={6}>
+            <BookingStatistics
               title="Issued Certificates"
-              icon="mdi:file-certificate"
-              bgcolor="rgba(40, 167, 69, 0.1)"
-              textColor="rgba(40, 167, 69, 0.9)"
-              total={analytics?.issuedCertificates ?? '0'}
+              chart={chartCertificateIssuedData}
+              seriesData={issuedCerificateSeriesData}
+              setSeriesData={setIssuedCertificateSeriesData}
             />
           </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              title="Pending Certificates"
-              icon="mdi:seal"
-              // percent={2.6}
-              total={analytics?.pendingCertificates ?? '0'}
-              bgcolor="rgba(0, 123, 255, 0.1)"
-              textColor="rgba(0, 123, 255, 0.9)"
+          <Grid item xs={12} md={6} lg={6}>
+            <BookingStatistics
+              title="Completed Session"
+              chart={chartCompletedSessionData}
+              seriesData={sessionSeriesData}
+              setSeriesData={setSessionSeriesData}
             />
           </Grid>
-          <Grid xs={12} md={3}>
-            <EcommerceWidgetSummary
-              icon="mdi:calendar-check"
-              bgcolor="rgba(255, 193, 7, 0.1)"
-              textColor="rgba(220, 53, 69, 0.9)"
-              title="Rescheduled Booking Count"
-              total={analytics?.rescheduledBookingsCount ?? '0'}
-              percent={analytics?.rescheduledPercentage ?? 0}
-            />
-          </Grid>
-          {/* <Grid xs={12} md={6} lg={6}>
-            <TrainerMap />
-          </Grid> */}
           {user?.user?.user_type !== 'SCHOOL_ADMIN' ? (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
@@ -244,24 +349,6 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
-          <Grid xs={12} md={6} lg={6}>
-            {' '}
-            <BookingStatistics
-              title="Issued Certificates"
-              chart={chartCertificateIssuedData}
-              seriesData={issuedCerificateSeriesData}
-              setSeriesData={setIssuedCertificateSeriesData}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={6}>
-            {' '}
-            <BookingStatistics
-              title="Completed Session"
-              chart={chartCompletedSessionData}
-              seriesData={sessionSeriesData}
-              setSeriesData={setSessionSeriesData}
-            />
-          </Grid>
           <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
@@ -281,9 +368,28 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={8}>
+            {' '}
+            <EnrollmentTrendsChart
+              title="Enrollment Trends"
+              subheader="Overview of student enrollment trends"
+              chart={enrollmentChart}
+              enrollmentTrends={studentInsights.enrollmentTrends}
+              enrollmentTrendsRegisteredStudents={
+                studentInsights.enrollmentTrendsRegisteredStudents
+              }
+              enrollmentTrendsLoading={studentInsightsLoading}
+              // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
+              revalidateEnrollmentTrends={revalidateStudentInsights}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
+              revenue={revenue}
+              revenueLoading={revenueLoading}
+              revalidateAnalytics={revalidateAnalytics}
               // subheader="(+43%) than last year"
               chart={{
                 categories: [
@@ -329,7 +435,7 @@ export default function OverviewEcommerceView() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100vh', // Full viewport height
+            height: '100vh',
           }}
         >
           <CircularProgress />
