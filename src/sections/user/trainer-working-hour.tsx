@@ -22,7 +22,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Table from '@mui/material/Table';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { enqueueSnackbar } from 'src/components/snackbar';
-import { deleteWorkingHoursById, useGetWorkingHoursByUserId } from 'src/api/trainer-working-hours';
+import {
+  deleteWorkingHoursById,
+  useGetLeaveDatesByTrainerId,
+  useGetWorkingHoursByUserId,
+} from 'src/api/trainer-working-hours';
 import Iconify from 'src/components/iconify';
 import { useState } from 'react';
 import WorkingHoursCreateEditForm from './trainer-working-hours-create-edit-form';
@@ -36,6 +40,8 @@ type Props = {
 export default function TrainerWorkingHour({ userId }: Props) {
   const { workingHours, workingHoursLoading, workingHoursError, revalidateWorkingHours } =
     useGetWorkingHoursByUserId(userId);
+  const { leaveDates, leaveDatesLoading, leaveDatesError, revalidateLeaveDates } =
+    useGetLeaveDatesByTrainerId(userId);
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');
 
@@ -96,6 +102,21 @@ export default function TrainerWorkingHour({ userId }: Props) {
     },
     {} as Record<string, typeof workingHours>
   );
+  const formattedLeaveDates = leaveDates?.map((leave) => {
+    if (leave.is_full_day_off) {
+      return {
+        label: 'Full Day Leave',
+        date: moment(leave.date).format('MMMM Do, YYYY'),
+      };
+    }
+    return {
+      label: 'Partial Leave',
+      date: moment(leave.date).format('MMMM Do, YYYY'),
+      time: `${moment(leave.start_time).utc().format('h:mm A')} - ${moment(leave.end_time)
+        .utc()
+        .format('h:mm A')}`,
+    };
+  });
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -160,6 +181,45 @@ export default function TrainerWorkingHour({ userId }: Props) {
                             </Box>
                           ))
                         )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
+        )}
+        {leaveDates && leaveDates.length > 0 && (
+          <Card sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ p: 2, borderBottom: '1px solid #ddd' }}>
+              Leave Dates
+            </Typography>
+            <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <Typography>Date</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Type</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Time</Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {formattedLeaveDates.map((leave, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Typography variant="body2">{leave.date}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{leave.label}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{leave.time || 'Full Day'}</Typography>
                       </TableCell>
                     </TableRow>
                   ))}
