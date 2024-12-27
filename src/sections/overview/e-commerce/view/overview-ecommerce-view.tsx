@@ -40,6 +40,7 @@ import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
+import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, revenueByPackage } = useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -84,6 +85,16 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+  const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
+    label: item.package_name,
+    value: parseFloat(item.total_revenue),
+  }));
+
+  const chartConfig = {
+    colors: ['#008FFB', '#FF4560'],
+    series: transformedDataRevenueByPackage,
+    options: {},
+  };
 
   const enrollmentChart = {
     colors: ['#ffab00', '#0da670'],
@@ -399,6 +410,18 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            {' '}
+            <RevenueByPackagePieChart
+              title="Revenue by Package"
+              subheader="Overview of revenue distribution by package"
+              chart={chartConfig}
+            />
+          </Grid>
+          {/* <Grid xs={12} md={6} lg={8}>
+          <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
+        </Grid> */}
+
           <Grid xs={12} md={6} lg={12}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
