@@ -22,20 +22,26 @@ interface Props extends CardProps {
     colors?: string[];
     options?: ApexOptions;
   };
+  enrollmentTrends: any[];
+  enrollmentTrendsRegisteredStudents: any[];
+  enrollmentTrendsLoading: boolean;
+  enrollmentTrendsRegisteredStudentsLoading: boolean;
+  revalidateEnrollmentTrends: () => void;
 }
-export default function EcommerceYearlySales({
+
+export default function EnrollmentTrendsChart({
   title,
   subheader,
   chart,
-  revenue,
-  revenueLoading,
-  revalidateAnalytics,
+  enrollmentTrends,
+  enrollmentTrendsRegisteredStudents,
+  enrollmentTrendsLoading,
+  enrollmentTrendsRegisteredStudentsLoading,
+  revalidateEnrollmentTrends,
   ...other
 }: Props) {
   const { colors, categories, options } = chart;
-  console.log('revenue', revenue);
   const popover = usePopover();
-
   const [seriesData, setSeriesData] = useState('2024');
   const [chartData, setChartData] = useState({
     series: [],
@@ -48,7 +54,7 @@ export default function EcommerceYearlySales({
       horizontalAlign: 'right',
     },
     xaxis: {
-      categories: [
+      categories: categories || [
         'Jan',
         'Feb',
         'Mar',
@@ -63,40 +69,56 @@ export default function EcommerceYearlySales({
         'Dec',
       ],
     },
-    // ...options,
+    chart: {
+      type: 'bar',
+    },
+    ...options,
   });
-  useEffect(() => {
-    if (revenue && !revenueLoading) {
-      const transformedData = transformRevenueData(revenue, seriesData);
-      setChartData({ series: transformedData });
-    }
-  }, [revenue, revenueLoading, seriesData]);
-  function transformRevenueData(revenue, seriesData) {
-    const currentYearData =
-      revenue && Array.isArray(revenue.currentYear)
-        ? revenue.currentYear.map((item) => Object.values(item)[0])
-        : [];
 
-    const lastYear = (parseInt(seriesData) - 1).toString();
-    const lastYearData =
-      revenue && Array.isArray(revenue.lastYear)
-        ? revenue.lastYear.map((item) => Object.values(item)[0])
-        : [];
-    return [
-      {
-        year: seriesData,
-        data: [
+  useEffect(() => {
+    if (
+      enrollmentTrends &&
+      enrollmentTrendsRegisteredStudents &&
+      !enrollmentTrendsLoading &&
+      !enrollmentTrendsRegisteredStudentsLoading
+    ) {
+      const enrollmentData = transformEnrollmentData(enrollmentTrends, seriesData);
+      const registeredStudentsData = transformEnrollmentData(
+        enrollmentTrendsRegisteredStudents,
+        seriesData
+      );
+      setChartData({
+        series: [
           {
-            name: 'Current Year Revenue',
-            data: currentYearData,
+            name: 'Total Enrollment',
+            data: enrollmentData,
           },
           {
-            name: 'Last Revenue',
-            data: lastYearData.map(() => 0), // Placeholder for expenses
+            name: 'Registered Students Enrollment',
+            data: registeredStudentsData,
           },
         ],
-      },
-    ];
+      });
+    }
+  }, [
+    enrollmentTrends,
+    enrollmentTrendsRegisteredStudents,
+    enrollmentTrendsLoading,
+    enrollmentTrendsRegisteredStudentsLoading,
+    seriesData,
+  ]);
+
+  function transformEnrollmentData(data, seriesData) {
+    const currentYearData = Array(12).fill(0);
+
+    data.forEach((item) => {
+      if (item.year.toString() === seriesData) {
+        const monthIndex = item.month - 1;
+        currentYearData[monthIndex] = item.total_students;
+      }
+    });
+
+    return currentYearData;
   }
 
   const handleYearChange = useCallback(
@@ -105,7 +127,7 @@ export default function EcommerceYearlySales({
       if (selectedYear) {
         setSeriesData(selectedYear);
         popover.onClose();
-        revalidateAnalytics(selectedYear);
+        revalidateEnrollmentTrends();
       }
     },
     [popover]
@@ -140,22 +162,18 @@ export default function EcommerceYearlySales({
           }
         />
 
-        {chartData?.series ? (
-          chartData?.series.map((item) => (
-            <Box key={item?.year} sx={{ mt: 3, mx: 3 }}>
-              {item?.year === seriesData && (
-                <Chart
-                  dir="ltr"
-                  type="area"
-                  series={item.data}
-                  options={chartOptions}
-                  height={364}
-                />
-              )}
-            </Box>
-          ))
+        {chartData?.series.length > 0 ? (
+          <Box sx={{ mt: 3, mx: 3 }}>
+            <Chart
+              dir="ltr"
+              type="area"
+              series={chartData.series}
+              options={chartOptions}
+              height={364}
+            />
+          </Box>
         ) : (
-          <Box>No revenue data found</Box>
+          <Box>No enrollment data found</Box>
         )}
       </Card>
 

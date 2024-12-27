@@ -28,7 +28,7 @@ import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue } from 'src/api/anlytics';
+import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
 import { Box, CircularProgress } from '@mui/material';
 import HeatMap from '../ecommerce-heat-map';
 import TrainerMap from '../ecommerce-school-admin-map';
@@ -36,7 +36,8 @@ import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,12 @@ export default function OverviewEcommerceView() {
   const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
-
+  const {
+    studentInsights,
+    studentInsightsError,
+    studentInsightsLoading,
+    revalidateStudentInsights,
+  } = useGetStudentInsights();
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
@@ -63,13 +69,35 @@ export default function OverviewEcommerceView() {
     weeklyIssuedCertificates,
     issuedCerificateSeriesData
   );
-  console.log('yearlyCompletedSessions', yearlyCompletedSessions);
   const chartCompletedSessionData = transformData(
     monthlyCompletedSessions,
     yearlyCompletedSessions,
     weeklyCompletedSessions,
     sessionSeriesData
   );
+
+  const enrollmentChart = {
+    colors: ['#ffab00', '#0da670'],
+    categories: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    // options: {
+    //   chart: {
+    //     type: 'area',
+    //   },
+    // },
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -272,8 +300,26 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           <Grid xs={12} md={6} lg={8}>
+            {' '}
+            <EnrollmentTrendsChart
+              title="Enrollment Trends"
+              subheader="Overview of student enrollment trends"
+              chart={enrollmentChart}
+              enrollmentTrends={studentInsights.enrollmentTrends}
+              enrollmentTrendsRegisteredStudents={
+                studentInsights.enrollmentTrendsRegisteredStudents
+              }
+              enrollmentTrendsLoading={studentInsightsLoading}
+              // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
+              revalidateEnrollmentTrends={revalidateStudentInsights}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={8}>
             <EcommerceYearlySales
               title="Yearly Revenue"
+              revenue={revenue}
+              revenueLoading={revenueLoading}
+              revalidateAnalytics={revalidateAnalytics}
               // subheader="(+43%) than last year"
               chart={{
                 categories: [
