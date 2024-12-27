@@ -29,6 +29,7 @@ import moment from 'moment';
 import { useTable, TablePaginationCustom } from 'src/components/table';
 import { useAuthContext } from 'src/auth/hooks';
 import { updateUserVerification } from 'src/api/school-admin';
+import Scrollbar from 'src/components/scrollbar';
 
 // Type Definitions
 type ItemProps = {
@@ -43,10 +44,10 @@ type ItemProps = {
   requested_time: string;
 };
 
-export default function PendingRequests() {
+export default function PendingRequests({ height }: any) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const table = useTable({ defaultRowsPerPage: 2, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { user } = useAuthContext();
   const {
     pendingRequests,
@@ -135,109 +136,121 @@ export default function PendingRequests() {
     <Card>
       {' '}
       <Container maxWidth="lg">
-        <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+        <Typography variant="h6" gutterBottom sx={{ mb: 2, mt: 2 }}>
           Pending Verification Requests
         </Typography>
-        <Stack spacing={3}>
-          {pendingRequests.map((request) => (
-            <Card
-              key={request.id}
-              sx={{
-                mb: 1,
-                p: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                boxShadow: 3,
-                borderRadius: 2,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <Avatar
-                  alt={request?.user?.name}
-                  src={
-                    request?.user?.photo_url || `${ASSETS_API}/assets/images/avatar/avatar_1.jpg`
-                  }
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
-                <Stack spacing={1} sx={{ flex: 1 }}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        textDecoration: 'underline',
-                      },
-                    }}
-                    onClick={() => handleClickUserDetails(request?.user?.id)}
-                  >
-                    {request?.user?.name || 'N/A'}
-                  </Typography>
-                  <Tooltip title={`School name`} arrow>
-                    {' '}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'text.secondary',
-
-                        cursor: 'pointer',
-                        '&:hover': {
-                          textDecoration: 'underline',
-                        },
-                      }}
-                      onClick={() =>
-                        request?.vendor?.vendor_translations[0]?.vendor_id
-                          ? handleClickSchoolDetails(
-                              request?.vendor?.vendor_translations[0]?.vendor_id
-                            )
-                          : ''
+        <Scrollbar>
+          <Stack
+            spacing={3}
+            // sx={{ p: 3, minWidth: 360 }}
+            height={height ? height : ''}
+            overflow={'auto'}
+          >
+            <Stack spacing={3}>
+              {pendingRequests.map((request) => (
+                <Card
+                  key={request.id}
+                  sx={{
+                    mb: 1,
+                    p: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    boxShadow: 3,
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <Avatar
+                      alt={request?.user?.name}
+                      src={
+                        request?.user?.photo_url ||
+                        `${ASSETS_API}/assets/images/avatar/avatar_1.jpg`
                       }
+                      sx={{ width: 48, height: 48, mr: 2 }}
+                    />
+                    <Stack spacing={1} sx={{ flex: 1 }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                        onClick={() =>
+                          request?.user?.id ? handleClickUserDetails(request?.user?.id) : ''
+                        }
+                      >
+                        {request?.user?.name || 'N/A'}
+                      </Typography>
+                      <Tooltip title={`School name`} arrow>
+                        {' '}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+
+                            cursor: 'pointer',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                          onClick={() =>
+                            request?.vendor?.vendor_translations[0]?.vendor_id
+                              ? handleClickSchoolDetails(
+                                  request?.vendor?.vendor_translations[0]?.vendor_id
+                                )
+                              : ''
+                          }
+                        >
+                          {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                        </Typography>
+                      </Tooltip>
+
+                      <Tooltip title={`Requested Time`} arrow>
+                        <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
+                          {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
+                        </Typography>
+                      </Tooltip>
+                    </Stack>
+                  </Box>
+                  <Box sx={{ display: 'flex', width: '90%', mt: 2 }}>
+                    <Button
+                      fullWidth
+                      sx={{ flex: 1, mr: 1 }}
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleVerifyRequest(request, 0)}
                     >
-                      {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
-                    </Typography>
-                  </Tooltip>
+                      Reject
+                    </Button>
+                    <Button
+                      fullWidth
+                      sx={{ flex: 1, ml: 1 }}
+                      variant="contained"
+                      color="success"
+                      onClick={() => handleVerifyRequest(request, 1)}
+                    >
+                      Accept
+                    </Button>
+                  </Box>
+                </Card>
+              ))}
+            </Stack>
 
-                  <Tooltip title={`Requested Time`} arrow>
-                    <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
-                      {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
-                    </Typography>
-                  </Tooltip>
-                </Stack>
-              </Box>
-              <Box sx={{ display: 'flex', width: '90%', mt: 2 }}>
-                <Button
-                  fullWidth
-                  sx={{ flex: 1, mr: 1 }}
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleVerifyRequest(request, 0)}
-                >
-                  Reject
-                </Button>
-                <Button
-                  fullWidth
-                  sx={{ flex: 1, ml: 1 }}
-                  variant="contained"
-                  color="success"
-                  onClick={() => handleVerifyRequest(request, 1)}
-                >
-                  Accept
-                </Button>
-              </Box>
-            </Card>
-          ))}
-        </Stack>
-
-        <TablePaginationCustom
-          count={totalPages}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          rowsPerPageOptions={[]}
-        />
+            <TablePaginationCustom
+              count={totalPages}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              dense={table.dense}
+              // rowsPerPageOptions={[]}
+            />
+          </Stack>
+        </Scrollbar>
       </Container>
     </Card>
   );

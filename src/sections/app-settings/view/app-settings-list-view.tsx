@@ -47,6 +47,7 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import LanguageCreateEditForm from '../app-settings-update';
 import { useGetAllAppSettings } from 'src/api/app-settings';
 import { width } from '@mui/system';
+import { Skeleton, TableCell, TableRow } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -110,7 +111,7 @@ export default function AppSettingsListView() {
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <Container maxWidth="xl">
         <CustomBreadcrumbs
           heading="List"
           links={[
@@ -145,7 +146,7 @@ export default function AppSettingsListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table size={table.dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -162,17 +163,22 @@ export default function AppSettingsListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
+                  {appSettingsLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD.length}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  {!appSettingsLoading &&
+                    tableData.length > 0 &&
+                    tableData.map((row) => (
                       <AppSettingTableRow key={row.id} row={row} reload={revalidateLanguage} />
                     ))}
 
                   <TableEmptyRows
-                    height={denseHeight}
+                    // height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
