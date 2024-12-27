@@ -37,6 +37,7 @@ import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import { useState } from 'react';
+import PaymentMethodRevenue from '../ecommerce-payment-method';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +45,7 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods } = useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
 
@@ -70,6 +71,15 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+  const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
+    label: item.payment_method,
+    value: parseFloat(item.total_amount),
+  }));
+  const chartConfigRevenueByPaymentMethodData = {
+    colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
+    series: transformedRevenueByPaymentMethodData,
+    options: {},
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -291,6 +301,13 @@ export default function OverviewEcommerceView() {
                   'Dec',
                 ],
               }}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            <PaymentMethodRevenue
+              title="Payment Methods Revenue"
+              subheader="Overview of payment method usage"
+              chart={chartConfigRevenueByPaymentMethodData}
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
