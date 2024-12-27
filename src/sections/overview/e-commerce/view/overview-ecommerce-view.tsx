@@ -37,6 +37,7 @@ import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import { useState } from 'react';
+import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 
 // ----------------------------------------------------------------------
 
@@ -44,10 +45,9 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, revenueByPackage } = useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
-
   const settings = useSettingsContext();
   const { analytics, analyticsLoading } = useGetAnalytics();
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
@@ -63,13 +63,23 @@ export default function OverviewEcommerceView() {
     weeklyIssuedCertificates,
     issuedCerificateSeriesData
   );
-  console.log('yearlyCompletedSessions', yearlyCompletedSessions);
   const chartCompletedSessionData = transformData(
     monthlyCompletedSessions,
     yearlyCompletedSessions,
     weeklyCompletedSessions,
     sessionSeriesData
   );
+  const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
+    label: item.package_name,
+    value: parseFloat(item.total_revenue),
+  }));
+
+  const chartConfig = {
+    colors: ['#008FFB', '#FF4560'],
+    series: transformedDataRevenueByPackage,
+    options: {},
+  };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -291,6 +301,14 @@ export default function OverviewEcommerceView() {
                   'Dec',
                 ],
               }}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            {' '}
+            <RevenueByPackagePieChart
+              title="Revenue by Package"
+              subheader="Overview of revenue distribution by package"
+              chart={chartConfig}
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={8}>

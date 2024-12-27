@@ -69,6 +69,7 @@ export function useGetRevenue() {
 
   const memoizedValue = useMemo(
     () => ({
+      revenueByPackage: data?.data?.revenueByPackage || [],
       revenue: data?.data?.revenue || [],
       revenueError: error,
       revenueLoading: isLoading,
