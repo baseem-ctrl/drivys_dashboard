@@ -220,6 +220,7 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    leaveDates: 'admin/leave/get-leave-list',
     noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {
