@@ -220,6 +220,7 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    leaveDates: 'admin/leave/get-leave-list',
     noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {
@@ -312,5 +313,6 @@ export const endpoints = {
     schoolAdmin: 'admin/analytics/get-school-analytics',
     schoolAdminRevenue: 'admin/analytics/get-school-revenue',
     adminRevenue: 'admin/analytics/get-admin-revenue',
+    getStudentInsights: 'admin/analytics/get-students-insights',
   },
 };

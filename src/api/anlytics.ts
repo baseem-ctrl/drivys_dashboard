@@ -6,6 +6,7 @@ import {
   drivysSmasher,
   drivysCreatorPut,
 } from 'src/utils/axios';
+import moment from 'moment';
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -14,20 +15,34 @@ import { useAuthContext } from 'src/auth/hooks';
 interface UseGetPendingVerificationRequestProps {
   year?: any;
 }
-
-export function useGetAnalytics() {
+export function useGetAnalytics({ startDate, endDate }) {
   const { user } = useAuthContext();
+
   const getTheFullUrl = useMemo(() => {
+    let url = '';
+
     if (user?.user?.user_type) {
       if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-        return `${endpoints.analytics.schoolAdmin}`;
+        url = `${endpoints.analytics.schoolAdmin}`;
       } else {
-        return `${endpoints.analytics.admin}`;
+        url = `${endpoints.analytics.admin}`;
       }
-    } else {
-      window.location.reload();
+
+      const params = new URLSearchParams();
+      if (startDate) params.append('start_date', moment(startDate).format('YYYY-MM-DD'));
+      if (endDate) params.append('end_date', moment(endDate).format('YYYY-MM-DD'));
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
     }
-  }, []);
+
+    // else {
+    //   window.location.reload();
+    // }
+
+    return url;
+  }, [user?.user?.user_type, startDate, endDate]);
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
@@ -48,6 +63,7 @@ export function useGetAnalytics() {
 
   return { ...memoizedValue, revalidateAnalytics };
 }
+
 // ----------------------------------------------------------------------
 
 export function useGetRevenue() {
@@ -88,4 +104,39 @@ export function useGetRevenue() {
 
   return { ...memoizedValue, revalidateAnalytics };
 }
+
 // ----------------------------------------------------------------------
+interface UseGetStudentInsightsProps {
+  start_date?: string;
+  end_date?: string;
+}
+export function useGetStudentInsights({ start_date, end_date }: UseGetStudentInsightsProps = {}) {
+  const getTheFullUrl = useMemo(() => {
+    const baseUrl = endpoints.analytics.getStudentInsights;
+    const params = new URLSearchParams();
+
+    if (start_date) params.append('start_date', start_date);
+    if (end_date) params.append('end_date', end_date);
+
+    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+  }, [start_date, end_date]);
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      studentInsights: data?.data || [],
+      studentInsightsError: error,
+      studentInsightsLoading: isLoading,
+      studentInsightsValidating: isValidating,
+      totalPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating, data?.total]
+  );
+
+  const revalidateStudentInsights = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateStudentInsights };
+}
