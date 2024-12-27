@@ -90,11 +90,11 @@ export default function EnrollmentTrendsChart({
       setChartData({
         series: [
           {
-            name: 'Total Enrollment',
+            name: 'Students with Bookings',
             data: enrollmentData,
           },
           {
-            name: 'Registered Students Enrollment',
+            name: 'Registered Students ',
             data: registeredStudentsData,
           },
         ],
