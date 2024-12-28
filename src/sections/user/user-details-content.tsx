@@ -554,36 +554,38 @@ export default function UserDetailsContent({
                   </Box>
                 </Box>
               ))}
-              {trainerReviews && trainerReviews[0]?.avg_rating && (
-                <Grid item xs={12} sm={12} md={6}>
-                  <Box sx={{ display: 'flex', width: '100%' }}>
-                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                      Average Review
-                    </Box>
-                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
-                      :
-                    </Box>
-                    <Box component="span" sx={{ flex: 1 }}>
-                      {/* Display stars based on avg_rating */}
-                      <Box display="flex" alignItems="center">
-                        {Array.from({ length: 5 }).map((_, index) =>
-                          index < trainerReviews[0].avg_rating ? (
-                            <StarIcon
-                              key={index}
-                              style={{ color: '#CF5A0D', marginRight: '4px' }}
-                            />
-                          ) : (
-                            <StarBorderIcon
-                              key={index}
-                              style={{ color: '#CF5A0D', marginRight: '4px' }}
-                            />
-                          )
-                        )}
+              {(details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
+                trainerReviews &&
+                trainerReviews[0]?.avg_rating && (
+                  <Grid item xs={12} sm={12} md={6}>
+                    <Box sx={{ display: 'flex', width: '100%' }}>
+                      <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                        Average Review
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {/* Display stars based on avg_rating */}
+                        <Box display="flex" alignItems="center">
+                          {Array.from({ length: 5 }).map((_, index) =>
+                            index < trainerReviews[0].avg_rating ? (
+                              <StarIcon
+                                key={index}
+                                style={{ color: '#CF5A0D', marginRight: '4px' }}
+                              />
+                            ) : (
+                              <StarBorderIcon
+                                key={index}
+                                style={{ color: '#CF5A0D', marginRight: '4px' }}
+                              />
+                            )
+                          )}
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                </Grid>
-              )}
+                  </Grid>
+                )}
             </Stack>
           </Scrollbar>
         </Grid>
@@ -1696,6 +1698,13 @@ export default function UserDetailsContent({
 
               {/*<----- For trainer user type with 3 tabs ----> */}
             </Grid>
+            <Grid xs={12}>
+              {currentTab === 'details' &&
+                studentTab === 'details' &&
+                details?.user_preference?.id &&
+                (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
+                renderUserPreferences}
+            </Grid>
             <Grid xs={12} md={12}>
               {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
             </Grid>
@@ -1741,13 +1750,6 @@ export default function UserDetailsContent({
               )}
             </Grid>
             {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
-            <Grid xs={12}>
-              {currentTab === 'details' &&
-                studentTab === 'details' &&
-                details?.user_preference?.id &&
-                (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
-                renderUserPreferences}
-            </Grid>
 
             <Grid xs={12}>
               {details?.user_type === 'SCHOOL_ADMIN' && details?.school && renderSchool}

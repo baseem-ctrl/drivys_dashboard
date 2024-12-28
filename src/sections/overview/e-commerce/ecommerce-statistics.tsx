@@ -39,10 +39,9 @@ export default function BookingStatistics({
   ...other
 }: Props) {
   const { categories, colors, series, options } = chart;
+
   const popover = usePopover();
-  console.log('chart', chart);
   const chartOptions = useChart({
-    type: 'line',
     colors,
     stroke: {
       show: true,
@@ -51,11 +50,7 @@ export default function BookingStatistics({
     xaxis: {
       categories: chart.categories,
     },
-    tooltip: {
-      y: {
-        formatter: (value: number) => `$${value}`,
-      },
-    },
+
     plotOptions: {
       bar: {
         horizontal: false,
@@ -107,7 +102,12 @@ export default function BookingStatistics({
               <Chart
                 dir="ltr"
                 type="bar"
-                series={[{ data: item.data }]}
+                series={[
+                  {
+                    name: item.type,
+                    data: item.data,
+                  },
+                ]}
                 options={chartOptions}
                 height={400}
               />
