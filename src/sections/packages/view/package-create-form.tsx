@@ -224,9 +224,10 @@ export default function PackageCreateForm({
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? 1 : 0);
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
-    formData.append(`package_translation[0][name]`, data?.name);
-    formData.append(`package_translation[0][locale]`, data?.locale);
-    formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
+    if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
+    if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
+    if (data?.session_inclusions)
+      formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
     if (data.is_drivys_commision_percentage !== undefined) {
