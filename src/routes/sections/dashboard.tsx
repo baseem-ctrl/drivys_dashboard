@@ -25,6 +25,8 @@ import BookingSchoolAdminDetailsComponent from 'src/sections/bookin-school-admin
 import NotificationsListingListPage from 'src/pages/dashboard/notifications/notifications';
 import NotificationDetails from 'src/sections/notifications/view/notifications-details';
 import CityDetailsView from 'src/sections/city/view/city-details-view';
+import RefundListView from 'src/sections/refund/view/refund-list-view';
+import RefundDetailsComponent from 'src/sections/refund/view/refund-details-view';
 import PickupListPage from 'src/pages/pickup/pickup';
 import SchoolTrainersListView from 'src/sections/school/login_school_admin/school-trainers-list-view';
 import SchoolPackageListView from 'src/sections/school/login_school_admin/school-packages-list-view';
@@ -32,6 +34,8 @@ import RewardDetailsPage from 'src/sections/school/trainer-reward/reward-details
 import TrainerNotificationForm from 'src/sections/school/trainer-reward/create-trainer-notification';
 import StudentReviewListView from 'src/sections/student-review/view/review-list-view';
 import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-view';
+import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-verification';
+import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 
 // ----------------------------------------------------------------------
 
@@ -102,7 +106,7 @@ const allroutes = [
   {
     path: 'user',
     children: [
-      { element: <UserProfilePage />, index: true },
+      { element: <UserListPage />, index: true },
       { path: 'profile', element: <UserProfilePage /> },
       { path: 'cards', element: <UserCardsPage /> },
       { path: 'list', element: <UserListPage /> },
@@ -195,7 +199,7 @@ const allroutes = [
   // to do
   {
     path: 'coupon',
-    children: [{ path: 'list', element: <CouponListPage />, index: true }],
+    children: [{ element: <CouponListPage />, index: true }],
   },
   {
     path: 'review',
@@ -204,7 +208,14 @@ const allroutes = [
       { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
     ],
   },
-
+  {
+    path: 'todo',
+    children: [
+      { element: <ToDoListViewVerification />, index: true },
+      { path: 'pending-verification', element: <ToDoListViewVerification /> },
+      { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+    ],
+  },
   {
     path: 'system',
     children: [
@@ -239,8 +250,9 @@ const allroutes = [
     path: 'booking',
     children: [
       { element: <BookingListView />, index: true },
+      { path: 'refund', element: <RefundListView /> },
+      { path: 'refund/:id', element: <RefundDetailsComponent /> },
       { path: ':id', element: <BookingDetailsComponent /> },
-      // { path: 'new', element: <HomeSliderCreatePage /> },
     ],
   },
 ];

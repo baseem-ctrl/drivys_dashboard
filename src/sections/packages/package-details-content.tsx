@@ -148,6 +148,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const values = schoolWatch();
   const handleChange = (event: { target: { value: any } }) => {
     setSelectedLanguage(event.target.value);
+
     const selectedLocaleObject = details?.package_translations.find(
       (item: { locale: string }) => item.locale === event.target.value
     );
@@ -187,7 +188,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     setEditMode(false);
   };
   const onSubmit = packageSubmit(async (data) => {
-    console.log('data', data);
     try {
       let payload = {
         package_translations: [
@@ -226,6 +226,49 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           payload.package_translations[0].session_inclusions || ''
         );
       }
+      const sessionTitles = [];
+      let sessionDetails = [];
+
+      if (data?.locale && data?.session_titles && data.session_titles.length > 0) {
+        const selectedLocale = data.locale.toLowerCase();
+
+        sessionDetails = details.session_details.map((session: any, index: number) => ({
+          locale: selectedLocale,
+          title: session?.translations[0]?.title || '',
+        }));
+
+        data.session_titles.forEach((newTitle: string, index: number) => {
+          if (newTitle) {
+            sessionDetails[index].title = newTitle;
+          }
+        });
+
+        sessionTitles.push({
+          locale: selectedLocale,
+          titles: sessionDetails.map((session) => session.title),
+        });
+      } else if (details?.session_details) {
+        const selectedLocale =
+          data?.locale?.toLowerCase() || selectedLocaleObject?.locale?.toLowerCase();
+
+        sessionDetails = details.session_details.map((session: any, index: number) => {
+          return {
+            locale: selectedLocale || selectedLanguage,
+            title: session?.translations[0]?.title || '',
+          };
+        });
+        sessionTitles.push({
+          locale: selectedLocale || selectedLanguage,
+          titles: sessionDetails.map((session) => session.title),
+        });
+      }
+
+      sessionTitles.forEach((session, index) => {
+        formData.append(`session_titles[${index}][locale]`, session.locale);
+        session.titles.forEach((title, titleIndex) => {
+          formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+        });
+      });
 
       // Handle City Edits
       if (details?.package_city && details.package_city.length > 0) {
@@ -350,6 +393,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     <Iconify color="red" icon="bi:x-square-fill" />
                   ),
               },
+
+              ...(details?.session_details?.map((sessionItem: any) => ({
+                label: `Slot ${sessionItem.slot_number} Title`,
+                value: sessionItem.translations?.[0]?.title ?? 'N/A',
+              })) || []),
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -361,7 +409,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 <Box component="span" sx={{ flex: 1 }}>
                   {item.value ?? 'N/A'}
                 </Box>
-                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
               </Box>
             ))}
           </Stack>
@@ -458,6 +505,25 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_published" label="Publish" />
                   </Stack>
+                </Box>
+                <Box mt={2}>
+                  <Typography variant="subtitle2" mb={3}>
+                    Session Details
+                  </Typography>
+                  <Grid item xs={10}>
+                    <Grid container spacing={2}>
+                      {details?.session_details?.map((sessionItem: any, index: number) => (
+                        <Grid item xs={12} key={index}>
+                          <RHFTextField
+                            fullWidth
+                            name={`session_titles[${index}]`}
+                            label={`Session Title ${index + 1}`}
+                            defaultValue={sessionItem.translations?.[0]?.title ?? ''}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
                 </Box>
                 <Stack spacing={1.5}>
                   <Typography variant="subtitle2">Session Inclusion</Typography>

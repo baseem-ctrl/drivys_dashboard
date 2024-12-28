@@ -220,6 +220,7 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    leaveDates: 'admin/leave/get-leave-list',
     noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {
@@ -270,6 +271,11 @@ export const endpoints = {
     getBookingStatus: 'public/enum/get-booking-status-enum',
     getBookingById: 'admin/booking/get-bookings-by-student-id',
     getPaymentStatus: 'public/enum/get-payment-status-type-enum',
+    refund: {
+      list: 'admin/booking/refund/get-request-list',
+      update: 'admin/booking/refund/update-status-by-booking-id',
+      refundedList: 'admin/booking/refund/get-refunded-list',
+    },
   },
   packageTrainer: {
     list: 'admin/package-trainer/get-trainer-packages',
@@ -307,5 +313,6 @@ export const endpoints = {
     schoolAdmin: 'admin/analytics/get-school-analytics',
     schoolAdminRevenue: 'admin/analytics/get-school-revenue',
     adminRevenue: 'admin/analytics/get-admin-revenue',
+    getStudentInsights: 'admin/analytics/get-students-insights',
   },
 };

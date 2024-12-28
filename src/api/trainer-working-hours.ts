@@ -83,3 +83,27 @@ export function useGetAllWorkingHours({
 
   return { ...memoizedValue, revalidateWorkingHours };
 }
+export function useGetLeaveDatesByTrainerId(userId: number | string) {
+  const getLeaveDatesUrl = () => `${endpoints.trainer.leaveDates}?trainer_id=${userId}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    userId ? getLeaveDatesUrl() : null,
+    drivysFetcher
+  );
+
+  const memoizedValue = useMemo(
+    () => ({
+      leaveDates: data?.data as any,
+      leaveDatesLoading: isLoading,
+      leaveDatesError: error,
+      leaveDatesValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateLeaveDates = () => {
+    mutate(getLeaveDatesUrl);
+  };
+
+  return { ...memoizedValue, revalidateLeaveDates };
+}

@@ -44,6 +44,7 @@ import {
 } from 'src/api/users';
 import {
   CircularProgress,
+  Divider,
   FormControl,
   FormLabel,
   IconButton,
@@ -321,7 +322,7 @@ export default function UserNewEditForm({
       cash_in_hand: currentUser?.cash_in_hand || 0,
       max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
     }),
-    [currentUser?.locale, dialect, language, schoolList]
+    [currentUser?.locale, dialect, language, schoolList, currentUser?.user_preference]
   );
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -575,7 +576,9 @@ export default function UserNewEditForm({
     languageLoading ||
     enumLoading ||
     genderLoading ||
-    gearLoading
+    gearLoading ||
+    categoryLoading ||
+    schoolLoading
   ) {
     return (
       <Box
@@ -596,7 +599,7 @@ export default function UserNewEditForm({
       <Grid container spacing={3}>
         {currentUser?.id && (
           <Grid xs={12} md={4}>
-            <Card sx={{ pt: 10, pb: 5, px: 3 }}>
+            <Card sx={{ p: 5, mx: 2 }}>
               {currentUser && (
                 <Label
                   color={
@@ -643,6 +646,25 @@ export default function UserNewEditForm({
                 </Stack>
               )}
             </Card>
+            {values.user_type === 'TRAINER' && (
+              <Card sx={{ mt: 3, mx: 2 }}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(1, 1fr)',
+                  }}
+                  m={3}
+                  // mb={3}
+                >
+                  {values.user_type === 'TRAINER' && (
+                    <RHFTextField name="bio" label="Bio" multiline rows={4} type="text" />
+                  )}
+                </Box>
+              </Card>
+            )}
           </Grid>
         )}
 
@@ -683,9 +705,33 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} prefix="+971" />
+              </Stack>{' '}
+              <RHFTextField
+                name="dob"
+                label="Date of Birth"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+              />
               {values.user_type === 'TRAINER' && (
                 <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
               )}
+              {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
+            </Box>
+
+            <Divider />
+
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+              mt={3}
+            >
               {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
@@ -738,22 +784,36 @@ export default function UserNewEditForm({
                 />
               )}
               {values.user_type === 'TRAINER' && (
-                <RHFTextField
-                  name="certificate_commission_in_percentage"
-                  label="Certificate Commission (%)"
-                  type="number"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Tooltip title="Commission for trainer from certificate" placement="top">
-                          <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <>
+                  <RHFTextField
+                    name="certificate_commission_in_percentage"
+                    label="Certificate Commission (%)"
+                    type="number"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Tooltip title="Commission for trainer from certificate" placement="top">
+                            <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                          </Tooltip>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                </>
               )}
-              <RHFAutocomplete
+            </Box>
+            <Box
+              rowGap={3}
+              columnGap={2}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(2, 1fr)',
+              }}
+              mt={3}
+            >
+              {/* <RHFAutocomplete
                 name="locale"
                 label="Locale"
                 options={language ?? []}
@@ -765,23 +825,10 @@ export default function UserNewEditForm({
                     </li>
                   );
                 }}
-              />
-              <Stack direction="row" spacing={1} alignItems="center">
-                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} prefix="+971" />
-              </Stack>{' '}
-              <RHFTextField
-                name="dob"
-                label="Date of Birth"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-              />
-              {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
-              {values.user_type === 'TRAINER' && (
-                <RHFTextField name="bio" label="Bio" multiline rows={4} />
-              )}
+              /> */}
+
               {values.user_type === 'TRAINER' && (
                 <>
-                  <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
                   <RHFTextField
                     name="max_cash_in_hand_allowed"
                     label="Max cash in hand allowded"
@@ -792,202 +839,238 @@ export default function UserNewEditForm({
               )}
             </Box>
 
-            {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
-              <>
-                <Typography sx={{ fontWeight: '700', m: 2 }}> User Preferences:</Typography>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display="grid"
-                  sx={{ mt: 2 }}
-                  gridTemplateColumns={{
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  }}
-                >
-                  <RHFAutocompleteSearch
-                    name="vehicle_type_id"
-                    label="Select Category"
-                    placeholder="Search Category..."
-                    options={
-                      category?.map((item: any) => ({
-                        label: item?.category_translations
-                          ?.map((translation: any) => translation?.name ?? 'Unknown') // Extract all names
-                          .join(' - '), // Display full name
-                        value: item?.id ?? 'Unknown',
-                      })) ?? []
-                    }
-                    setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
-                    disableClearable={true}
-                    loading={categoryLoading}
-                  />
-                  <RHFAutocompleteSearch
-                    name="city_id"
-                    label="City"
-                    options={
-                      city?.map((option: any) => ({
-                        value: option?.id ?? 'Unknown',
-                        label: option?.city_translations?.[0]?.name ?? 'Unknown',
-                      })) ?? []
-                    }
-                    getOptionLabel={(option) => option?.label ?? ''}
-                    renderOption={(props, option: any) => (
-                      <li {...props} key={option?.value}>
-                        {option?.label ?? 'Unknown'}
-                      </li>
-                    )}
-                  />
-                  <RHFAutocompleteSearch
-                    name="area_id"
-                    label="Area"
-                    options={
-                      states?.map((option: any) => ({
-                        value: option?.id ?? 'Unknown',
-                        label: option?.translations?.[0]?.name ?? 'Unknown',
-                      })) ?? []
-                    }
-                    getOptionLabel={(option) => option?.label ?? ''}
-                    renderOption={(props, option: any) => (
-                      <li {...props} key={option?.value}>
-                        {option?.label ?? 'Unknown'}
-                      </li>
-                    )}
-                  />
-                  {values.user_type === 'TRAINER' && (
-                    <RHFSelect name="gender" label="Gender">
-                      {genderData?.length > 0 &&
-                        genderData?.map((option: any) => (
+            {values.user_type !== 'TRAINER' && values.user_type !== 'STUDENT' && (
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="center"
+                spacing={2}
+                sx={{ mt: 3 }}
+              >
+                <Button variant="outlined" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  {!currentUser ? 'Create User' : 'Save Changes'}
+                </LoadingButton>
+              </Stack>
+            )}
+          </Card>
+        </Grid>
+        {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
+          <Grid xs={12} md={12}>
+            <Card sx={{ p: 5, m: 2 }}>
+              {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
+                <>
+                  <Typography sx={{ fontWeight: '700' }}> User Preferences:</Typography>
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display="grid"
+                    sx={{ mt: 2 }}
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(2, 1fr)',
+                    }}
+                  >
+                    <RHFAutocompleteSearch
+                      name="city_id"
+                      label="City"
+                      options={
+                        city?.map((option: any) => ({
+                          value: option?.id ?? 'Unknown',
+                          label: option?.city_translations?.[0]?.name ?? 'Unknown',
+                        })) ?? []
+                      }
+                      getOptionLabel={(option) => option?.label ?? ''}
+                      renderOption={(props, option: any) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label ?? 'Unknown'}
+                        </li>
+                      )}
+                    />
+                    <RHFAutocompleteSearch
+                      name="area_id"
+                      label="Area"
+                      options={
+                        states?.map((option: any) => ({
+                          value: option?.id ?? 'Unknown',
+                          label: option?.translations?.[0]?.name ?? 'Unknown',
+                        })) ?? []
+                      }
+                      getOptionLabel={(option) => option?.label ?? ''}
+                      renderOption={(props, option: any) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label ?? 'Unknown'}
+                        </li>
+                      )}
+                    />
+
+                    <RHFSelect name="gear" label="Gear">
+                      {gearData?.length > 0 &&
+                        gearData?.map((option: any) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.name}
                           </MenuItem>
                         ))}
                     </RHFSelect>
-                  )}
-                  <RHFSelect name="gear" label="Gear">
-                    {gearData?.length > 0 &&
-                      gearData?.map((option: any) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                  </RHFSelect>
-                </Box>
-
-                {fields.map((languageItem, index) => (
-                  <Grid
-                    container
-                    item
-                    spacing={2}
-                    sx={{ mt: 2, mb: 2 }}
-                    key={languageItem.id || index}
-                  >
-                    <Grid item xs={12} md={5}>
-                      <RHFAutocomplete
-                        name={`languages[${index}].id`}
-                        label={`Language ${index + 1}`}
-                        getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
-                        options={dialect ?? []}
-                        renderOption={(props, option: any) => (
-                          <li {...props} key={option?.id}>
-                            {option?.dialect_name ?? 'Unknown'}
-                          </li>
-                        )}
-                        defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
-                      />
-                    </Grid>
-
-                    {/* Value Field */}
-                    <Grid item xs={12} md={5}>
-                      <RHFSelect
-                        name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
-                        label="Fluency level"
-                        defaultValue={languageItem.fluency_level}
-                      >
-                        {fluencyOptions.map((option: any) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.name}
-                          </MenuItem>
-                        ))}
+                    {values.user_type === 'TRAINER' && (
+                      <RHFSelect name="gender" label="Gender">
+                        {genderData?.length > 0 &&
+                          genderData?.map((option: any) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.name}
+                            </MenuItem>
+                          ))}
                       </RHFSelect>
-                    </Grid>
+                    )}
+                  </Box>
+                  <Box
+                    rowGap={3}
+                    columnGap={2}
+                    display="grid"
+                    sx={{ mt: 2 }}
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(1, 1fr)',
+                    }}
+                  >
+                    <RHFAutocompleteSearch
+                      name="vehicle_type_id"
+                      label="Select Category"
+                      placeholder="Search Category..."
+                      options={
+                        category?.map((item: any) => ({
+                          label: item?.category_translations
+                            ?.map((translation: any) => translation?.name ?? 'Unknown') // Extract all names
+                            .join(' - '), // Display full name
+                          value: item?.id ?? 'Unknown',
+                        })) ?? []
+                      }
+                      setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
+                      disableClearable={true}
+                      loading={categoryLoading}
+                    />
+                  </Box>
+                  {values.user_type === 'TRAINER' && (
+                    <>
+                      {fields.map((languageItem, index) => (
+                        <Grid
+                          container
+                          item
+                          spacing={1}
+                          sx={{ mt: 2, mb: 2 }}
+                          key={languageItem.id || index}
+                        >
+                          <Grid item xs={12} md={5}>
+                            <RHFAutocomplete
+                              name={`languages[${index}].id`}
+                              label={`Language ${index + 1}`}
+                              getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
+                              options={dialect ?? []}
+                              renderOption={(props, option: any) => (
+                                <li {...props} key={option?.id}>
+                                  {option?.dialect_name ?? 'Unknown'}
+                                </li>
+                              )}
+                              defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
+                            />
+                          </Grid>
 
-                    {/* Delete Button */}
-                    <Grid item xs={12} md={2}>
-                      <IconButton onClick={() => handleRemove(index)}>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                ))}
+                          {/* Value Field */}
+                          <Grid item xs={12} md={5}>
+                            <RHFSelect
+                              name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
+                              label="Fluency level"
+                              defaultValue={languageItem.fluency_level}
+                            >
+                              {fluencyOptions.map((option: any) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.name}
+                                </MenuItem>
+                              ))}
+                            </RHFSelect>
+                          </Grid>
 
-                <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Button variant="contained" onClick={handleAddMore}>
-                    Add Language
-                  </Button>
-                </Grid>
-                {values.user_type === 'TRAINER' && !currentUser?.id && (
-                  <>
-                    {licenseFields.map((docItem, index) => (
-                      <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
-                        <Grid item xs={12} md={5}>
-                          <RHFFileUpload
-                            label="License File"
-                            name={`license[${index}].license_file`}
-                            helperText="Please upload a file (PDF, DOCX, etc.)"
-                          />
+                          {/* Delete Button */}
+                          <Grid item xs={12} md={1}>
+                            <IconButton onClick={() => handleRemove(index)}>
+                              <Iconify icon="solar:trash-bin-trash-bold" />
+                            </IconButton>
+                          </Grid>
                         </Grid>
+                      ))}
 
-                        {/* Value Field */}
-                        <Grid item xs={12} md={5}>
-                          <RHFSelect
-                            name={`license[${index}].doc_side`} // Dynamic name for react-hook-form
-                            label="Document Side"
-                            defaultValue={docItem.doc_side}
-                          >
-                            {docSideOptions.map((option: any) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.name}
-                              </MenuItem>
-                            ))}
-                          </RHFSelect>
-                        </Grid>
-
-                        {/* Delete Button */}
-                        <Grid item xs={12} md={2}>
-                          <IconButton onClick={() => handleRemoveFile(index)}>
-                            <Iconify icon="solar:trash-bin-trash-bold" />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    ))}
-                    {licenseFields?.length < 2 && (
                       <Grid item xs={12} sx={{ mt: 2 }}>
-                        <Button variant="contained" onClick={handleAddMoreFile}>
-                          Add Documnet
+                        <Button variant="contained" onClick={handleAddMore}>
+                          Add Language
                         </Button>
                       </Grid>
-                    )}
-                  </>
-                )}
-              </>
-            )}
+                    </>
+                  )}
+                  {values.user_type === 'TRAINER' && !currentUser?.id && (
+                    <>
+                      {licenseFields.map((docItem, index) => (
+                        <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
+                          <Grid item xs={12} md={5}>
+                            <RHFFileUpload
+                              label="License File"
+                              name={`license[${index}].license_file`}
+                              helperText="Please upload a file (PDF, DOCX, etc.)"
+                            />
+                          </Grid>
 
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              spacing={2}
-              sx={{ mt: 3 }}
-            >
-              <Button variant="outlined" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Create User' : 'Save Changes'}
-              </LoadingButton>
-            </Stack>
-          </Card>
-        </Grid>
+                          {/* Value Field */}
+                          <Grid item xs={12} md={5}>
+                            <RHFSelect
+                              name={`license[${index}].doc_side`} // Dynamic name for react-hook-form
+                              label="Document Side"
+                              defaultValue={docItem.doc_side}
+                            >
+                              {docSideOptions.map((option: any) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.name}
+                                </MenuItem>
+                              ))}
+                            </RHFSelect>
+                          </Grid>
+
+                          {/* Delete Button */}
+                          <Grid item xs={12} md={2}>
+                            <IconButton onClick={() => handleRemoveFile(index)}>
+                              <Iconify icon="solar:trash-bin-trash-bold" />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      ))}
+                      {licenseFields?.length < 2 && (
+                        <Grid item xs={12} sx={{ mt: 2 }}>
+                          <Button variant="contained" onClick={handleAddMoreFile}>
+                            Add Documnet
+                          </Button>
+                        </Grid>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="center"
+                spacing={2}
+                sx={{ mt: 3 }}
+              >
+                <Button variant="outlined" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  {!currentUser ? 'Create User' : 'Save Changes'}
+                </LoadingButton>
+              </Stack>
+            </Card>
+          </Grid>
+        )}
       </Grid>
       <ConfirmDialog
         open={confirm.value}

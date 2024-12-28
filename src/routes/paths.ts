@@ -186,13 +186,20 @@ export const paths = {
     booking: {
       root: `${ROOTS.DASHBOARD}/booking`,
       new: `${ROOTS.DASHBOARD}/booking/new`,
-      // list: `${ROOTS.DASHBOARD}/booking/list`,
+      refund: `${ROOTS.DASHBOARD}/booking/refund`,
       details: (id: string) => `${ROOTS.DASHBOARD}/booking/${id}`,
+      refundDetails: (id: string) => `${ROOTS.DASHBOARD}/booking/refund/${id}`,
     },
+
     review: {
       root: `${ROOTS.DASHBOARD}/review/student-review`,
       studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
       trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
+    },
+    todo: {
+      root: `${ROOTS.DASHBOARD}/todo/pending-verification`,
+      pendingVerification: `${ROOTS.DASHBOARD}/todo/pending-verification`,
+      pendingRefund: `${ROOTS.DASHBOARD}/todo/pending-refund`,
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,

@@ -55,6 +55,17 @@ const ICONS = {
 export function useNavData() {
   const { t } = useLocales();
   const allroutes = [
+    //TO DO list
+
+    {
+      title: t('To Do'),
+      path: paths.dashboard.todo.root,
+      icon: ICONS.tour,
+      children: [
+        { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
+        { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+      ],
+    },
     // USER
     {
       title: t('user'),
@@ -89,16 +100,6 @@ export function useNavData() {
     // },
 
     // BOOKING
-    {
-      title: t('booking'),
-      path: paths.dashboard.booking.root,
-      icon: ICONS.booking,
-      // children: [
-      //   { title: t('booking'), path: paths.dashboard.booking.root },
-      //   { title: t('list'), path: paths.dashboard.booking.list },
-      //   { title: t('create'), path: paths.dashboard.booking.new },
-      // ],
-    },
 
     // JOB
     // {
@@ -168,6 +169,16 @@ export function useNavData() {
       title: t('slider'),
       path: paths.dashboard.slider.root,
       icon: ICONS.external,
+    },
+    {
+      title: t('booking'),
+      path: paths.dashboard.booking.root,
+      icon: ICONS.booking,
+
+      children: [
+        { title: t('booking'), path: paths.dashboard.booking.root },
+        { title: t('Refund'), path: paths.dashboard.booking.refund },
+      ],
     },
     {
       title: t('Reviews'),
