@@ -108,9 +108,6 @@ export default function AccountGeneral() {
   // Function to submit the user profile for updating the user profile
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Form submitted');
-      console.log('Original form data:', data);
-
       // Map the data to the required structure for your API
       const updatedData = {
         name: data.displayName,

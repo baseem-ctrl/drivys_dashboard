@@ -86,7 +86,6 @@ export default function PackageDocumentCreateUpdate({
 
   const onSubmit = async (data: any) => {
     try {
-      console.log('data', data);
       // Create a new FormData object
       const updatedDocument = new FormData();
 

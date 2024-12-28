@@ -77,7 +77,6 @@ const BookingDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       console.error('Failed to update payment status:', error);
       revalidateBooking();
@@ -95,7 +94,6 @@ const BookingDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {

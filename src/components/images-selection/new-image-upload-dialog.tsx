@@ -62,8 +62,6 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
   } = methods;
 
   const onSubmitInner = handleSubmit(async (data) => {
-    console.log('calling inner');
-
     try {
       const formData = new FormData();
 

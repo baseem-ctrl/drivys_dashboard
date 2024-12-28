@@ -76,7 +76,6 @@ const BookingDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
@@ -105,7 +104,6 @@ const BookingDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {

@@ -33,7 +33,6 @@ export default function EcommerceYearlySales({
   ...other
 }: Props) {
   const { colors, categories, options } = chart;
-  console.log('revenue', revenue);
   const popover = usePopover();
 
   const [seriesData, setSeriesData] = useState('2024');

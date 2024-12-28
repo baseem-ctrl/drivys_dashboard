@@ -35,7 +35,6 @@ export default function EcommerceWidgetSummary({
   textColor = 'text.primary',
   ...other
 }: Props) {
-  console.log('percent', percent);
   const theme = useTheme();
   const percentageBgColor =
     percent === 0

@@ -177,7 +177,6 @@ export default function SchoolCreateForm({
   const currentDescription = watch('description');
   const values = watch();
   const previousLocaleRef = useRef(selectedLocale);
-  console.log(errors, 'errors');
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
@@ -220,7 +219,6 @@ export default function SchoolCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
-    console.log(data, 'data');
 
     const formData = new FormData();
 

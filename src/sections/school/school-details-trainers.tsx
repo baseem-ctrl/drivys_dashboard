@@ -117,7 +117,6 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
     }
   }, [candidates, reset]);
   const onSubmit = async (data: any) => {
-    console.log(data, 'data');
     const body = {
       trainer_id: data?.trainer_id?.id,
       vendor_id: candidates?.id,

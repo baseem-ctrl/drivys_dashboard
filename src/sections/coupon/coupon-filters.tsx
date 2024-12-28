@@ -97,8 +97,6 @@ export default function CouponFilters({
 
   const handleFilterDiscount = useCallback(
     (newValue: Date | null) => {
-      console.log(newValue, 'discount_type_id');
-
       onFilters('discount_type_id', newValue);
     },
     [onFilters]

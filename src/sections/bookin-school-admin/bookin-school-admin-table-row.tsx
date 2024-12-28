@@ -42,7 +42,6 @@ export default function BookingSchoolAdminTableRow({
   const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
     row;
 
-  console.log('rowrow', row);
   const handleRowClick = (bookingId: number) => {
     onSelectRow();
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed

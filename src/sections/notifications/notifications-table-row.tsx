@@ -31,7 +31,6 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
   const { enqueueSnackbar } = useSnackbar();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log('row', row);
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();

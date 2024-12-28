@@ -6,7 +6,6 @@ const paymentMethodOptions = ['ONLINE', 'OFFLINE'];
 export default function BookingSchoolAdminTableToolbar({ filters, onFilters }) {
   const handleChange = (name) => (event) => {
     onFilters(name, event.target.value);
-    console.log('name, event.target.value', name, event.target.value);
   };
 
   const handleClear = (name) => () => {
