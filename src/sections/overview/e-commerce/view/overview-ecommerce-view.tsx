@@ -69,6 +69,7 @@ export default function OverviewEcommerceView() {
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
     useGetRevenue();
+
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
@@ -398,22 +399,32 @@ export default function OverviewEcommerceView() {
               </Grid>
             </Grid>
           </Box>
-          <Grid item xs={12} md={6} lg={6}>
-            <BookingStatistics
-              title="Issued Certificates"
-              chart={chartCertificateIssuedData}
-              seriesData={issuedCerificateSeriesData}
-              setSeriesData={setIssuedCertificateSeriesData}
-            />
-          </Grid>
-          <Grid item xs={12} md={6} lg={6}>
-            <BookingStatistics
-              title="Completed Session"
-              chart={chartCompletedSessionData}
-              seriesData={sessionSeriesData}
-              setSeriesData={setSessionSeriesData}
-            />
-          </Grid>
+          {(monthlyIssuedCertificates?.length > 0 ||
+            weeklyIssuedCertificates?.length > 0 ||
+            yearlyIssuedCertificates?.length > 0) && (
+            <Grid item xs={12} md={6} lg={6}>
+              <BookingStatistics
+                title="Issued Certificates"
+                chart={chartCertificateIssuedData}
+                seriesData={issuedCerificateSeriesData}
+                setSeriesData={setIssuedCertificateSeriesData}
+              />
+            </Grid>
+          )}
+
+          {(monthlyCompletedSessions?.length > 0 ||
+            weeklyCompletedSessions?.length > 0 ||
+            yearlyCompletedSessions?.length > 0) && (
+            <Grid item xs={12} md={6} lg={6}>
+              <BookingStatistics
+                title="Completed Session"
+                chart={chartCompletedSessionData}
+                seriesData={sessionSeriesData}
+                setSeriesData={setSessionSeriesData}
+              />
+            </Grid>
+          )}
+
           {user?.user?.user_type !== 'SCHOOL_ADMIN' ? (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
@@ -423,61 +434,72 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
-          <Grid xs={12} md={6} lg={4}>
-            <AnalyticsActiveUsers
-              title="Trainer Analytics"
-              subheader={`Total Trainers: ${analytics.trainerCount}`}
-              chart={trainerChartData}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={4}>
-            <EcommerceSaleByGender
-              title="Trainers By Gender"
-              total={analytics?.trainerCount ?? 0}
-              chart={{
-                series: [
-                  { label: 'Mens', value: analytics?.maleTrainers?.length ?? 0 },
-                  { label: 'Womens', value: analytics?.femaleTrainers?.length ?? 0 },
-                  {
-                    label: 'Other',
-                    value:
-                      Number(analytics?.trainerCount) -
-                        (Number(analytics?.femaleTrainers?.length) +
-                          Number(analytics?.maleTrainers?.length)) ?? 0,
-                  },
-                ],
-              }}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={4}>
-            <AnalyticsActiveUsers
-              title="Student Analytics"
-              subheader={`Total Students: ${analytics?.studentCount}`}
-              chart={studentChartData}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={8}>
-            {' '}
-            <EnrollmentTrendsChart
-              title="Enrollment Trends"
-              subheader="Overview of student enrollment trends"
-              chart={enrollmentChart}
-              enrollmentTrends={studentInsights.enrollmentTrends}
-              enrollmentTrendsRegisteredStudents={
-                studentInsights.enrollmentTrendsRegisteredStudents
-              }
-              enrollmentTrendsLoading={studentInsightsLoading}
-              // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
-              revalidateEnrollmentTrends={revalidateStudentInsights}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={4}>
-            <ReviewedTrainer
-              title="Trainer Feedback"
-              subheader="Student reviews for the trainers"
-              feedbackList={trainerInsights?.sessionFeedback}
-            />
-          </Grid>
+          {analytics.trainerCount?.length > 0 && (
+            <Grid xs={12} md={6} lg={4}>
+              <AnalyticsActiveUsers
+                title="Trainer Analytics"
+                subheader={`Total Trainers: ${analytics.trainerCount}`}
+                chart={trainerChartData}
+              />
+            </Grid>
+          )}
+          {analytics?.maleTrainers?.length > 0 && analytics?.femaleTrainers?.length > 0 && (
+            <Grid xs={12} md={6} lg={4}>
+              <EcommerceSaleByGender
+                title="Trainers By Gender"
+                total={analytics?.trainerCount ?? 0}
+                chart={{
+                  series: [
+                    { label: 'Mens', value: analytics?.maleTrainers?.length ?? 0 },
+                    { label: 'Womens', value: analytics?.femaleTrainers?.length ?? 0 },
+                    {
+                      label: 'Other',
+                      value:
+                        Number(analytics?.trainerCount) -
+                          (Number(analytics?.femaleTrainers?.length) +
+                            Number(analytics?.maleTrainers?.length)) ?? 0,
+                    },
+                  ],
+                }}
+              />
+            </Grid>
+          )}
+          {analytics?.studentCount?.length > 0 && (
+            <Grid xs={12} md={6} lg={4}>
+              <AnalyticsActiveUsers
+                title="Student Analytics"
+                subheader={`Total Students: ${analytics?.studentCount}`}
+                chart={studentChartData}
+              />
+            </Grid>
+          )}
+          {studentInsights.enrollmentTrends &&
+            studentInsights.enrollmentTrendsRegisteredStudents && (
+              <Grid xs={12} md={6} lg={8}>
+                {' '}
+                <EnrollmentTrendsChart
+                  title="Enrollment Trends"
+                  subheader="Overview of student enrollment trends"
+                  chart={enrollmentChart}
+                  enrollmentTrends={studentInsights.enrollmentTrends}
+                  enrollmentTrendsRegisteredStudents={
+                    studentInsights.enrollmentTrendsRegisteredStudents
+                  }
+                  enrollmentTrendsLoading={studentInsightsLoading}
+                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
+                  revalidateEnrollmentTrends={revalidateStudentInsights}
+                />
+              </Grid>
+            )}
+          {trainerInsights?.sessionFeedback?.length > 0 && (
+            <Grid xs={12} md={6} lg={4}>
+              <ReviewedTrainer
+                title="Trainer Feedback"
+                subheader="Student reviews for the trainers"
+                feedbackList={trainerInsights?.sessionFeedback}
+              />
+            </Grid>
+          )}
           <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
@@ -531,8 +553,8 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
-          <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
-        </Grid> */}
+            <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
+          </Grid> */}
 
           <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
