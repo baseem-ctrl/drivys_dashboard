@@ -48,6 +48,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useGetBookingSchoolAdminById } from 'src/api/booking-school-admin';
 import BookingAdminDetailsToolbar from '../booking-admin-details-tool-bar';
+import moment from 'moment';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
@@ -802,12 +803,18 @@ const BookingDetailsComponent = () => {
                           </TableCell>
 
                           <TableCell>
-                            {session.start_time
-                              ? new Date(session.start_time).toLocaleString()
+                            {session?.start_time
+                              ? moment(session?.start_time)
+                                  .utc()
+                                  .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            {session.end_time ? new Date(session.end_time).toLocaleString() : 'N/A'}
+                            {session?.end_time
+                              ? moment(session?.end_time)
+                                  .utc()
+                                  .format('DD/MM/YY h:mm A')
+                              : 'N/A'}
                           </TableCell>
                           <TableCell>{session?.session_type || 'N/A'}</TableCell>
                         </TableRow>

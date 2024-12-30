@@ -48,6 +48,7 @@ import BookingDetailsToolbar from '../booking-details-toolbar';
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import moment from 'moment';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
@@ -831,11 +832,13 @@ const BookingDetailsComponent = () => {
 
                           <TableCell>
                             {session.start_time
-                              ? new Date(session.start_time).toLocaleString()
+                              ? moment(session.start_time).utc().format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            {session.end_time ? new Date(session.end_time).toLocaleString() : 'N/A'}
+                            {session.end_time
+                              ? moment(session.end_time).utc().format('DD/MM/YY h:mm A')
+                              : 'N/A'}
                           </TableCell>
                           <TableCell>{session?.session_type || 'N/A'}</TableCell>
                         </TableRow>
