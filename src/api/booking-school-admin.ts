@@ -10,7 +10,7 @@ export function useGetBookingsSchoolAdmin(filters = {}) {
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
   if (driver_id) queryParams.append('driver_id', driver_id);
-  if (booking_status) queryParams.append('booking_status', booking_status);
+  if (booking_status !== 'all') queryParams.append('booking_status', booking_status);
   if (payment_status !== undefined) queryParams.append('booking_status', payment_status);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (page !== undefined) queryParams.append('page', page);
