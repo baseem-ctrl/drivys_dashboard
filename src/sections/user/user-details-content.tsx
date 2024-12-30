@@ -553,7 +553,7 @@ export default function UserDetailsContent({
                   </Box>
                 </Box>
               ))}
-              {(details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
+              {details?.user_type === 'TRAINER' &&
                 trainerReviews &&
                 trainerReviews[0]?.avg_rating && (
                   <Grid item xs={12} sm={12} md={6}>

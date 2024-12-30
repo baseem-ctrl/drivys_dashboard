@@ -56,7 +56,10 @@ import { useGoogleMaps } from 'src/sections/overview/e-commerce/GoogleMapsProvid
 import TrainerWorkingHour from 'src/sections/user/trainer-working-hour';
 import UserDocumentDetails from 'src/sections/user/user-document/user-document-details';
 import BookingTrainerTable from 'src/sections/user/booking-details/trainer-booking-details';
-
+import TrainerReviewsTable from 'src/sections/user/trainer-review-table';
+import { useGetTrainerReview } from 'src/api/review';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -122,6 +125,10 @@ export default function UserDetailsContentAdmin({
       }
     }
   };
+  const { trainerReviews, trainerReviewsLoading, revalidateTrainerReviews } = useGetTrainerReview({
+    trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
+    student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
+  });
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Stack
@@ -201,6 +208,38 @@ export default function UserDetailsContentAdmin({
                   {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>
               ))}
+              {details?.user_type === 'TRAINER' &&
+                trainerReviews &&
+                trainerReviews[0]?.avg_rating && (
+                  <Grid item xs={12} sm={12} md={6}>
+                    <Box sx={{ display: 'flex', width: '100%' }}>
+                      <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                        Average Review
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {/* Display stars based on avg_rating */}
+                        <Box display="flex" alignItems="center">
+                          {Array.from({ length: 5 }).map((_, index) =>
+                            index < trainerReviews[0].avg_rating ? (
+                              <StarIcon
+                                key={index}
+                                style={{ color: '#CF5A0D', marginRight: '4px' }}
+                              />
+                            ) : (
+                              <StarBorderIcon
+                                key={index}
+                                style={{ color: '#CF5A0D', marginRight: '4px' }}
+                              />
+                            )
+                          )}
+                        </Box>
+                      </Box>
+                    </Box>
+                  </Grid>
+                )}
             </Stack>
           </Scrollbar>
         </Grid>
@@ -528,6 +567,7 @@ export default function UserDetailsContentAdmin({
       </Scrollbar>
     </Stack>
   );
+
   return (
     <>
       {loading ? (
@@ -554,6 +594,11 @@ export default function UserDetailsContentAdmin({
               {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
                 <SchoolAdminTrainerDetailsContent trainerDetails={details} />
               )}
+              <Grid xs={12} md={12}>
+                {details?.user_type === 'TRAINER' && currentTab === 'review' && (
+                  <TrainerReviewsTable trainers={trainerReviews} />
+                )}
+              </Grid>
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
                 <StudentDetailsContent id={details?.id} />
               )}
@@ -583,7 +628,9 @@ export default function UserDetailsContentAdmin({
             </Grid>
 
             <Grid xs={12} md={12}>
-              {renderUserPreferences}
+              {details?.user_type === 'TRAINER' &&
+                currentTab === 'details' &&
+                renderUserPreferences}
             </Grid>
           </Grid>
         </>
