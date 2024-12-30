@@ -36,6 +36,7 @@ import PendingRequests from '../ecommerce-pending-trainer-request';
 import HeatMap from '../ecommerce-heat-map';
 // import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
+// import PieChartComponent from '../ecommerce-pie-chart';
 import AnalyticsActiveUsers from '../analytics-active-users';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
@@ -81,6 +82,17 @@ export default function OverviewEcommerceView() {
       labels: ['Active Trainers', 'Inactive Trainers'],
     },
   };
+  const chartBookingData = {
+    colors: ['#A8DADC', '#457B9D'],
+    series: [
+      { label: 'Completed', value: analytics.completedBookingsCount },
+      { label: 'Pending', value: analytics.pendingBookingsCount },
+      { label: 'Canceled', value: analytics.canceledBookingsCount },
+    ],
+    options: {
+      labels: ['Completed', 'Pending', 'Canceled'],
+    },
+  };
 
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
   const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
@@ -101,6 +113,10 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+  const transformedDataBooking = revenueByPackage.map((item) => ({
+    label: item.package_name,
+    value: parseFloat(item.total_revenue),
+  }));
   const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
     label: item.payment_method,
     value: parseFloat(item.total_amount),
@@ -124,18 +140,22 @@ export default function OverviewEcommerceView() {
     colors: ['#FF6F61', '#6B5B95'],
 
     series: [
-      { label: 'Active Trainers', value: analytics.activeStudents },
-      { label: 'Inactive Trainers', value: analytics.inactiveStudents },
+      { label: 'Active Students', value: analytics.activeStudents },
+      { label: 'Inactive Students', value: analytics.inactiveStudents },
     ],
     options: {
-      labels: ['Active Trainers', 'Inactive Trainers'],
+      labels: ['Active Students', 'Inactive Students'],
     },
   };
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
     value: parseFloat(item.total_revenue),
   }));
-
+  const chartConfigBooking = {
+    colors: ['#008FFB', '#FF4560'],
+    series: transformedDataBooking,
+    options: {},
+  };
   const chartConfig = {
     colors: ['#008FFB', '#FF4560'],
     series: transformedDataRevenueByPackage,
@@ -488,9 +508,17 @@ export default function OverviewEcommerceView() {
               chart={chartConfig}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Booking Analytics"
+              subheader={`Total Booking: ${analytics.trainerCount}`}
+              chart={chartBookingData}
+            />
+          </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
+
           <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
