@@ -314,5 +314,6 @@ export const endpoints = {
     schoolAdminRevenue: 'admin/analytics/get-school-revenue',
     adminRevenue: 'admin/analytics/get-admin-revenue',
     getStudentInsights: 'admin/analytics/get-students-insights',
+    getTrainerInsights: 'admin/analytics/get-trainers-analytics',
   },
 };

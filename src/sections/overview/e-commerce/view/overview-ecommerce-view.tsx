@@ -40,9 +40,11 @@ import AnalyticsActiveUsers from '../analytics-active-users';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
+import PaymentMethodRevenue from '../ecommerce-payment-method';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
+import TotalTrainersSession from '../ecommerce-total-session';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +61,8 @@ export default function OverviewEcommerceView() {
     endDate: applyClicked ? endDate : undefined,
   });
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics, revenueByPackage } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
+    useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -114,6 +117,36 @@ export default function OverviewEcommerceView() {
     label: item.package_name,
     value: parseFloat(item.total_revenue),
   }));
+  const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
+    label: item.payment_method,
+    value: parseFloat(item.total_amount),
+  }));
+  const chartConfigRevenueByPaymentMethodData = {
+    colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
+    series: transformedRevenueByPaymentMethodData,
+    options: {},
+  };
+  const trainerChartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
+  const studentChartData = {
+    colors: ['#FF6F61', '#6B5B95'],
+
+    series: [
+      { label: 'Active Students', value: analytics.activeStudents },
+      { label: 'Inactive Students', value: analytics.inactiveStudents },
+    ],
+    options: {
+      labels: ['Active Students', 'Inactive Students'],
+    },
+  };
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
     value: parseFloat(item.total_revenue),
@@ -358,7 +391,6 @@ export default function OverviewEcommerceView() {
               </Grid>
             </Grid>
           </Box>
-
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
               title="Issued Certificates"
@@ -388,7 +420,7 @@ export default function OverviewEcommerceView() {
             <AnalyticsActiveUsers
               title="Trainer Analytics"
               subheader={`Total Trainers: ${analytics.trainerCount}`}
-              chart={chartData}
+              chart={trainerChartData}
             />
           </Grid>
           <Grid xs={12} md={6} lg={4}>
@@ -410,6 +442,13 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Student Analytics"
+              subheader={`Total Students: ${analytics?.studentCount}`}
+              chart={studentChartData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={8}>
             {' '}
             <EnrollmentTrendsChart
@@ -425,7 +464,7 @@ export default function OverviewEcommerceView() {
               revalidateEnrollmentTrends={revalidateStudentInsights}
             />
           </Grid>
-          <Grid xs={12} md={6} lg={8}>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
               revenue={revenue}
@@ -450,6 +489,17 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            <PaymentMethodRevenue
+              title="Payment Methods Revenue"
+              subheader="Overview of payment method usage"
+              chart={chartConfigRevenueByPaymentMethodData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={8}>
+            <TotalTrainersSession />
+          </Grid>
+
           <Grid xs={12} md={6} lg={4}>
             {' '}
             <RevenueByPackagePieChart
@@ -469,6 +519,9 @@ export default function OverviewEcommerceView() {
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
 
+          <Grid xs={12} md={6} lg={6}>
+            <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
+          </Grid>
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
