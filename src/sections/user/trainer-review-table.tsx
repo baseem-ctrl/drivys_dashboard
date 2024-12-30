@@ -84,7 +84,6 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                 <TableCell sx={{ borderTopLeftRadius: '12px' }}>Session ID</TableCell>
                 <TableCell>Student Name</TableCell>
                 <TableCell>Booking ID</TableCell>
-                <TableCell>Trainer Name</TableCell>
                 <TableCell>Rating</TableCell>
                 <TableCell>Comments</TableCell>
                 <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
@@ -92,8 +91,8 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
             </TableHead>
             <TableBody>
               {student.reviews.map((review) => (
-                <TableRow key={review.session_id}>
-                  <TableCell>{review.session_id}</TableCell>
+                <TableRow key={review?.session_id}>
+                  <TableCell>{review?.session_id ?? 'NA'}</TableCell>
                   <TableCell>
                     <Typography
                       variant="body2"
@@ -104,9 +103,11 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                           textDecoration: 'underline',
                         },
                       }}
-                      onClick={() => handleUserDetails(review?.student_id)}
+                      onClick={() =>
+                        review?.student_id ? handleUserDetails(review?.student_id) : ''
+                      }
                     >
-                      {review.student_name}
+                      {review?.student_name ?? 'NA'}
                     </Typography>
                   </TableCell>
 
@@ -125,12 +126,11 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                       {review.booking_id}
                     </Typography>
                   </TableCell>
-                  <TableCell>{student.trainer_name}</TableCell>
                   <TableCell>
-                    {review.driver_rating ? (
+                    {review?.user_rating ? (
                       <Box display="flex" alignItems="center">
                         {Array.from({ length: 5 }).map((_, index) =>
-                          index < review.driver_rating ? (
+                          index < review.user_rating ? (
                             <StarIcon
                               key={index}
                               style={{ color: '#CF5A0D', marginRight: '4px' }}
@@ -147,9 +147,9 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                       'N/A'
                     )}
                   </TableCell>
-                  <TableCell>{review.driver_comments || 'No Comments'}</TableCell>
+                  <TableCell>{review?.user_comments || 'No Comments'}</TableCell>
                   <TableCell>
-                    <Tooltip title={review.driver_comments ? '' : 'No comments to delete'} arrow>
+                    <Tooltip title={review?.user_comments ? '' : 'No comments to delete'} arrow>
                       <span>
                         <Button
                           variant="contained"
@@ -157,8 +157,8 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                           sx={{
                             backgroundColor: '#CF5A0D',
                           }}
-                          onClick={() => handleDeleteComment(review.session_id)}
-                          disabled={!review.driver_comments}
+                          onClick={() => handleDeleteComment(review?.session_id)}
+                          disabled={!review.user_comments}
                         >
                           Delete
                         </Button>

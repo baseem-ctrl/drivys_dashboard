@@ -43,6 +43,7 @@ type Props = {
 const StudentReviewsTable: React.FC<Props> = ({ students }) => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  console.log(students, 'students');
 
   const handleBookingClick = (booking_id) => {
     router.push(paths.dashboard.booking.details(booking_id));
@@ -77,12 +78,11 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
   return (
     <div>
       {students.map((student) => (
-        <div key={student.student_id}>
+        <div key={student?.student_id}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ borderTopLeftRadius: '12px' }}>Session ID</TableCell>
-                <TableCell>Student Name</TableCell>
                 <TableCell>Booking ID</TableCell>
                 <TableCell>Trainer Name</TableCell>
                 <TableCell>Rating</TableCell>
@@ -91,10 +91,9 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {student.reviews.map((review) => (
-                <TableRow key={review.session_id}>
-                  <TableCell>{review.session_id}</TableCell>
-                  <TableCell>{student.student_name}</TableCell>
+              {student?.reviews.map((review) => (
+                <TableRow key={review?.session_id}>
+                  <TableCell>{review?.session_id ?? 'NA'}</TableCell>
                   <TableCell>
                     <Typography
                       variant="body2"
@@ -105,9 +104,11 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                           textDecoration: 'underline',
                         },
                       }}
-                      onClick={() => handleBookingClick(review.booking_id)}
+                      onClick={() =>
+                        review?.booking_id ? handleBookingClick(review.booking_id) : ''
+                      }
                     >
-                      {review.booking_id}
+                      {review?.booking_id}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -120,16 +121,18 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                           textDecoration: 'underline',
                         },
                       }}
-                      onClick={() => handleUserDetails(review?.trainer_id)}
+                      onClick={() =>
+                        review?.trainer_id ? handleUserDetails(review?.trainer_id) : ''
+                      }
                     >
-                      {review.trainer_name}
+                      {review?.trainer_name ?? 'NA'}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {review.driver_rating ? (
+                    {review?.driver_rating ? (
                       <Box display="flex" alignItems="center">
                         {Array.from({ length: 5 }).map((_, index) =>
-                          index < review.driver_rating ? (
+                          index < review?.driver_rating ? (
                             <StarIcon
                               key={index}
                               style={{ color: '#CF5A0D', marginRight: '4px' }}
@@ -146,9 +149,9 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                       'N/A'
                     )}
                   </TableCell>
-                  <TableCell>{review.driver_comments || 'No Comments'}</TableCell>
+                  <TableCell>{review?.driver_comments || 'No Comments'}</TableCell>
                   <TableCell>
-                    <Tooltip title={review.driver_comments ? '' : 'No comments to delete'} arrow>
+                    <Tooltip title={review?.driver_comments ? '' : 'No comments to delete'} arrow>
                       <span>
                         <Button
                           variant="contained"
@@ -156,8 +159,8 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                           sx={{
                             backgroundColor: '#CF5A0D',
                           }}
-                          onClick={() => handleDeleteComment(review.session_id)}
-                          disabled={!review.driver_comments}
+                          onClick={() => handleDeleteComment(review?.session_id)}
+                          disabled={!review?.driver_comments}
                         >
                           Delete
                         </Button>
