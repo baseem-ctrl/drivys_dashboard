@@ -226,10 +226,11 @@ export default function OverviewEcommerceView() {
             <Typography
               variant="h4"
               sx={{
-                mb: { xs: 3, md: 5 },
+                mb: { xs: 2, md: 1 },
               }}
             >
-              Hi, Welcome back 👋 {user?.user?.name}
+              Hi, Welcome back 👋
+              {/* {user?.user?.name} */}
             </Typography>
           </Grid>
 
@@ -238,7 +239,7 @@ export default function OverviewEcommerceView() {
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
                 title="Total Revenue"
-                color="secondary"
+                color="success"
                 percentageChange={revenue?.earningsPercentChange}
                 total={analytics?.revenueGenerated}
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
@@ -263,7 +264,7 @@ export default function OverviewEcommerceView() {
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
                 title="Certificates"
-                total={analytics?.issuedCertificates}
+                total={0}
                 color="error"
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
               />
