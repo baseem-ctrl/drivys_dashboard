@@ -199,7 +199,10 @@ const allroutes = [
   // to do
   {
     path: 'coupon',
-    children: [{ element: <CouponListPage />, index: true }],
+    children: [
+      { element: <CouponListPage />, index: true },
+      { path: 'list', element: <CouponListPage /> },
+    ],
   },
   {
     path: 'review',
