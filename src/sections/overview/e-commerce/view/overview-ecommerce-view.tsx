@@ -41,6 +41,7 @@ import { transformData } from '../helper-functions/transform-certificate-date';
 import PaymentMethodRevenue from '../ecommerce-payment-method';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
+import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 
 // ----------------------------------------------------------------------
 
@@ -48,7 +49,8 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
+    useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -94,6 +96,17 @@ export default function OverviewEcommerceView() {
     series: transformedRevenueByPaymentMethodData,
     options: {},
   };
+  const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
+    label: item.package_name,
+    value: parseFloat(item.total_revenue),
+  }));
+
+  const chartConfig = {
+    colors: ['#008FFB', '#FF4560'],
+    series: transformedDataRevenueByPackage,
+    options: {},
+  };
+
   const enrollmentChart = {
     colors: ['#ffab00', '#0da670'],
     categories: [
@@ -414,6 +427,14 @@ export default function OverviewEcommerceView() {
               title="Payment Methods Revenue"
               subheader="Overview of payment method usage"
               chart={chartConfigRevenueByPaymentMethodData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            {' '}
+            <RevenueByPackagePieChart
+              title="Revenue by Package"
+              subheader="Overview of revenue distribution by package"
+              chart={chartConfig}
             />
           </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
