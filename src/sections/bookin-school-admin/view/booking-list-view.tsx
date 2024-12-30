@@ -33,7 +33,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
-import { useGetBookings } from 'src/api/booking';
+import { useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import BookingSchoolAdminTableRow from '../bookin-school-admin-table-row';
@@ -115,31 +115,15 @@ export default function BookingSchoolAdminListView() {
     CANCELLED: 2,
   };
 
-  const paymentStatusCode = statusMap[filters.paymentStatus] ?? undefined;
-
-  const bookingTypeMapping = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
-  };
-
-  // Retrieve the mapped value, or use undefined if no match
-  const bookingTypeValue = filters.bookingType
-    ? bookingTypeMapping[filters.bookingType]
-    : undefined;
+  const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
 
   const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookingsSchoolAdmin({
     page: table.page + 1,
     limit: table.rowsPerPage,
-    booking_type: bookingTypeValue,
-    payment_status: paymentStatusCode,
+    // payment_status: paymentStatusCode,
     driver_id: filters.vendor,
+    booking_status: filters.bookingType,
   });
-  // const { users, usersLoading } = useGetUsers({
-  //   page: 0,
-  //   limit: 1000,
-  //   user_types: 'TRAINER',
-  // });
   const [bookingCounts, setBookingCounts] = useState({
     all: 0,
     pending: 0,
@@ -148,52 +132,50 @@ export default function BookingSchoolAdminListView() {
   });
 
   useEffect(() => {
-    if (bookings?.length > 0) {
-      const counts = bookings.reduce(
-        (acc, booking) => {
-          const status = booking.booking_status.toLowerCase();
-          acc.all += 1;
+    if (bookings.booking_status_counts) {
+      const initialCounts = { all: 0 };
+      bookingStatusEnum.forEach((status) => {
+        initialCounts[status.value] = 0;
+      });
 
-          if (acc[status] !== undefined) {
-            acc[status] += 1;
-          }
+      Object.keys(bookings.booking_status_counts).forEach((status) => {
+        const statusCount = bookings.booking_status_counts[status] || 0;
 
-          return acc;
-        },
-        { all: 0, pending: 0, confirmed: 0, cancelled: 0 }
-      );
+        initialCounts[status] = statusCount;
+        initialCounts.all += statusCount;
+      });
 
-      setBookingCounts(counts);
+      setBookingCounts(initialCounts);
     }
-  }, [bookings, filters.bookingType]);
+  }, [bookings.booking_status_counts, bookingStatusEnum]);
 
-  // const vendorOptions = usersLoading
-  //   ? [{ label: 'Loading...', value: '' }]
-  //   : users.map((user) => ({
-  //       label: user.name,
-  //       value: user.id,
-  //     }));
   useEffect(() => {
-    if (bookings?.length > 0) {
-      setTableData(bookings);
+    if (bookings?.bookings?.length > 0) {
+      setTableData(bookings?.bookings);
     } else {
       setTableData([]);
     }
   }, [bookings]);
   useEffect(() => {
-    if (bookings?.length > 0) {
-      const filteredBookings =
-        filters.bookingType === 'all'
-          ? bookings
-          : bookings.filter((booking) => {
-              const isMatch = booking.booking_status === filters.bookingType.toUpperCase();
-
-              return isMatch;
-            });
-
+    if (bookings?.bookings?.length > 0) {
+      const filteredBookings = bookings?.bookings.filter((booking) => {
+        switch (filters.bookingType) {
+          case 1:
+            return booking.booking_status === 'CONFIRMED';
+          case 2:
+            return booking.booking_status === 'CANCELLED';
+          case 0:
+            return booking.booking_status === 'PENDING';
+          case 3:
+            return booking.booking_status === 'COMPLETED';
+          case 4:
+            return booking.booking_status === 'IN PROGRESS';
+          default:
+            return true;
+        }
+      });
       setTableData(filteredBookings);
     } else {
-      console.log('No bookings available. Setting table data to empty.');
       setTableData([]);
     }
   }, [bookings, filters.bookingType]);
@@ -269,19 +251,38 @@ export default function BookingSchoolAdminListView() {
           value={filters.bookingType}
           onChange={handleTabChange}
           sx={{
-            px: 2.5,
-            marginBottom: 4,
-            boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            '& .MuiTabs-scroller': {
-              overflow: 'hidden',
-            },
-            '& .MuiTabs-scrollButtons': {
-              display: 'none',
-            },
+            borderBottom: 1,
+            borderColor: 'divider',
           }}
         >
-          {bookingTypeOptions.map((tab) => {
-            const count = bookingCounts[tab.value] || 0;
+          <Tab
+            value="all"
+            label={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span>All</span>
+                <Typography
+                  sx={{
+                    backgroundColor: '#f0f0f0',
+                    display: 'inline-block',
+                    padding: '4px 9px',
+                    borderRadius: '4px',
+                    marginLeft: '8px',
+                    color: '#000',
+                  }}
+                >
+                  {bookingCounts.all || 0}
+                </Typography>
+              </div>
+            }
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px',
+              borderRadius: '4px',
+            }}
+          />
+          {bookingStatusEnum.map((tab) => {
+            const count = bookingCounts[tab.name] || 0;
             const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
             const textColor = tabTextColors[tab.value] || '#000';
 
@@ -297,7 +298,7 @@ export default function BookingSchoolAdminListView() {
                 }}
                 label={
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{tab.label}</span>
+                    <span>{tab.name}</span>
                     <Typography
                       sx={{
                         backgroundColor: backgroundColor,
