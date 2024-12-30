@@ -4,7 +4,10 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
-
+import { useMemo, useState } from 'react';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
+import { Box, CircularProgress, Typography } from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -22,26 +25,23 @@ import { MotivationIllustration } from 'src/assets/illustrations';
 import EcommerceWelcome from '../ecommerce-welcome';
 import EcommerceNewProducts from '../ecommerce-new-products';
 import EcommerceYearlySales from '../ecommerce-yearly-sales';
-import EcommerceBestSalesman from '../ecommerce-best-salesman';
+// import EcommerceBestSalesman from '../ecommerce-best-salesman';
 import EcommerceSaleByGender from '../ecommerce-sale-by-gender';
 import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
-import { Box, CircularProgress, Typography } from '@mui/material';
+
 import HeatMap from '../ecommerce-heat-map';
-import TrainerMap from '../ecommerce-school-admin-map';
+// import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
-import PieChartComponent from '../ecommerce-pie-chart';
+// import PieChartComponent from '../ecommerce-pie-chart';
 import AnalyticsActiveUsers from '../analytics-active-users';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import PaymentMethodRevenue from '../ecommerce-payment-method';
-import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 import TotalTrainersSession from '../ecommerce-total-session';
