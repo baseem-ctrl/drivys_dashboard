@@ -52,7 +52,7 @@ export default function EcommerceLatestProducts({ title, subheader, list, ...oth
       <CardHeader title={title} subheader={subheader} />
 
       <Scrollbar>
-        <Stack spacing={3} sx={{ p: 3, minWidth: 360 }} height={'400px'} overflow={'auto'}>
+        <Stack spacing={3} sx={{ p: 3, minWidth: 360 }} height={'402px'} overflow={'auto'}>
           {list?.map((product) => <ProductItem key={product?.id} product={product} />)}
         </Stack>
       </Scrollbar>

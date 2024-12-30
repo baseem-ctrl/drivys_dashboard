@@ -10,7 +10,7 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 340;
+const CHART_HEIGHT = 367;
 
 const LEGEND_HEIGHT = 72;
 

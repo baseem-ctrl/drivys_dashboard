@@ -91,7 +91,7 @@ export default function OverviewEcommerceView() {
     },
   };
   const chartBookingData = {
-    colors: ['#A8DADC', '#457B9D'],
+    colors: ['#28a745', '#fd7e14', '#dc3545'],
     series: [
       { label: 'Completed', value: analytics.completedBookingsCount },
       { label: 'Pending', value: analytics.pendingBookingsCount },
