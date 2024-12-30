@@ -93,7 +93,7 @@ export default function PaymentMethodRevenue({ title, subheader, chart, ...other
           type="polarArea"
           series={chartSeries}
           options={chartOptions}
-          height={smUp ? 240 : 520}
+          height={smUp ? 300 : 590}
         />
       </Box>
 
