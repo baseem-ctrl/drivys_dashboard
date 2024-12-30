@@ -5,6 +5,8 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useMemo, useState } from 'react';
+import Iconify from 'src/components/iconify';
+
 import { useAuthContext } from 'src/auth/hooks';
 import {
   useGetAnalytics,
@@ -51,6 +53,7 @@ import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 import TotalTrainersSession from '../ecommerce-total-session';
 import ReviewedTrainer from '../ecomerce-reviewed-trainers';
+import AnalyticsWidgetSummary from '../ecommerce-analytics-widget_summary';
 
 // ----------------------------------------------------------------------
 
@@ -66,9 +69,11 @@ export default function OverviewEcommerceView() {
     startDate: applyClicked ? startDate : undefined,
     endDate: applyClicked ? endDate : undefined,
   });
+  console.log('analytics', analytics);
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
     useGetRevenue();
+  console.log('revenue', revenue);
 
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
@@ -204,17 +209,67 @@ export default function OverviewEcommerceView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
+        // <Grid container spacing={3}>
+
         <Grid container spacing={3}>
-          <Grid xs={12} md={12}>
-            <EcommerceWelcome
+          {/* <EcommerceWelcome
               title={`Congratulations! \n ${user?.user?.name}`}
               description={
                 user?.user?.user_type === 'SCHOOL_ADMIN'
                   ? 'Let’s start as school and manage your drivers.'
                   : 'Effortlessly manage users, schools, and operations with full control.'
               }
-            />
+            /> */}
+          {/* </Grid> */}
+          <Grid item xs={12} sm={6} md={12}>
+            {' '}
+            <Typography
+              variant="h4"
+              sx={{
+                mb: { xs: 3, md: 5 },
+              }}
+            >
+              Hi, Welcome back 👋 {user?.user?.name}
+            </Typography>
           </Grid>
+
+          <Grid container item xs={12} sm={6} md={12}>
+            {' '}
+            <Grid item xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Total Revenue"
+                color="secondary"
+                percentageChange={revenue?.earningsPercentChange}
+                total={analytics?.revenueGenerated}
+                icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Total Booking"
+                total={analytics?.bookingsCount}
+                color="info"
+                icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="In Progress Booking"
+                total={analytics?.pendingBookingsCount}
+                color="warning"
+                icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <AnalyticsWidgetSummary
+                title="Certificates"
+                total={analytics?.issuedCertificates}
+                color="error"
+                icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+              />
+            </Grid>
+          </Grid>
+
           <Box
             sx={{
               padding: 4,
@@ -274,15 +329,7 @@ export default function OverviewEcommerceView() {
               </Grid>
 
               {/* EcommerceWidgetSummary components in the next line */}
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  bgcolor="rgba(0, 204, 204, 0.1)"
-                  textColor="rgba(0, 123, 255, 0.9)"
-                  title="Total Revenue"
-                  icon="mdi:account-cash"
-                  total={analytics?.revenueGenerated ?? '0'}
-                />
-              </Grid>
+
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   title="Total Trainers"
@@ -317,15 +364,7 @@ export default function OverviewEcommerceView() {
                   total={analytics?.schoolCount ?? '0'}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  bgcolor="rgba(220, 53, 69, 0.1)"
-                  title="Total Bookings"
-                  icon="mdi:ticket"
-                  textColor="rgba(255, 165, 0, 0.9)"
-                  total={analytics?.bookingsCount ?? '0'}
-                />
-              </Grid>
+
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   bgcolor="rgba(155, 89, 182, 0.1)"
@@ -344,15 +383,7 @@ export default function OverviewEcommerceView() {
                   total={analytics?.canceledBookingsCount ?? '0'}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  bgcolor="rgba(0, 123, 255, 0.1)"
-                  title="Pending Bookings"
-                  icon="material-symbols:pending"
-                  textColor="rgba(0, 123, 255, 0.9)"
-                  total={analytics?.pendingBookingsCount ?? '0'}
-                />
-              </Grid>
+
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   bgcolor="rgba(255, 165, 0, 0.1)"
@@ -371,15 +402,7 @@ export default function OverviewEcommerceView() {
                   total={analytics?.refundReqs ?? '0'}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  title="Issued Certificates"
-                  icon="mdi:file-certificate"
-                  bgcolor="rgba(40, 167, 69, 0.1)"
-                  textColor="rgba(40, 167, 69, 0.9)"
-                  total={analytics?.issuedCertificates ?? '0'}
-                />
-              </Grid>
+
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   title="Pending Certificates"
