@@ -38,6 +38,7 @@ import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
+import AnalyticsActiveUsers from '../analytics-active-users';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
@@ -85,6 +86,28 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+
+  const trainerChartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
+  const studentChartData = {
+    colors: ['#FF6F61', '#6B5B95'],
+
+    series: [
+      { label: 'Active Trainers', value: analytics.activeStudents },
+      { label: 'Inactive Trainers', value: analytics.inactiveStudents },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
     value: parseFloat(item.total_revenue),
@@ -352,6 +375,13 @@ export default function OverviewEcommerceView() {
             </Grid>
           )}
           <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Trainer Analytics"
+              subheader={`Total Trainers: ${analytics.trainerCount}`}
+              chart={trainerChartData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
               total={analytics?.trainerCount ?? 0}
@@ -368,6 +398,13 @@ export default function OverviewEcommerceView() {
                   },
                 ],
               }}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Student Analytics"
+              subheader={`Total Students: ${analytics?.studentCount}`}
+              chart={studentChartData}
             />
           </Grid>
           <Grid xs={12} md={6} lg={8}>
