@@ -148,7 +148,7 @@ export default function EcommerceYearlySales({
                   type="area"
                   series={item.data}
                   options={chartOptions}
-                  height={364}
+                  height={368}
                 />
               )}
             </Box>
