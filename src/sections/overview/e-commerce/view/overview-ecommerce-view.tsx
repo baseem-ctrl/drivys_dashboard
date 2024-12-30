@@ -79,6 +79,17 @@ export default function OverviewEcommerceView() {
       labels: ['Active Trainers', 'Inactive Trainers'],
     },
   };
+  const chartBookingData = {
+    colors: ['#A8DADC', '#457B9D'],
+    series: [
+      { label: 'Completed', value: analytics.completedBookingsCount },
+      { label: 'Pending', value: analytics.pendingBookingsCount },
+      { label: 'Canceled', value: analytics.canceledBookingsCount },
+    ],
+    options: {
+      labels: ['Completed', 'Pending', 'Canceled'],
+    },
+  };
 
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
   const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];
@@ -99,11 +110,19 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
+  const transformedDataBooking = revenueByPackage.map((item) => ({
+    label: item.package_name,
+    value: parseFloat(item.total_revenue),
+  }));
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
     value: parseFloat(item.total_revenue),
   }));
-
+  const chartConfigBooking = {
+    colors: ['#008FFB', '#FF4560'],
+    series: transformedDataBooking,
+    options: {},
+  };
   const chartConfig = {
     colors: ['#008FFB', '#FF4560'],
     series: transformedDataRevenueByPackage,
@@ -439,13 +458,17 @@ export default function OverviewEcommerceView() {
               chart={chartConfig}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Booking Analytics"
+              subheader={`Total Booking: ${analytics.trainerCount}`}
+              chart={chartBookingData}
+            />
+          </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
 
-          <Grid xs={12} md={6} lg={12}>
-            <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
-          </Grid>
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
