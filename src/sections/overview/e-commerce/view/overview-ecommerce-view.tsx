@@ -469,7 +469,7 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           )}
-          {user?.user?.user_type === 'SCHOOL_ADMIN' &&
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
               <Grid xs={12} md={6} lg={8}>
