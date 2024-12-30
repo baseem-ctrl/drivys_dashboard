@@ -109,7 +109,6 @@ export default function LanguageCreateEditForm({
       // Submit the form data
       const response = await createImageSingle(formData);
       setImageId(response?.data?.id);
-      console.log(response?.data?.id, 'response');
       // revalidateAllImages()
       enqueueSnackbar(response.message);
     } catch (error) {

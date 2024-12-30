@@ -41,8 +41,6 @@ export default function Auth0LoginView() {
   }, [loginWithPopup]);
 
   const handleLoginWithRedirect = useCallback(async () => {
-    console.log('hiihihih');
-
     try {
       await loginWithRedirect?.({
         appState: {

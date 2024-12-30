@@ -83,8 +83,6 @@ export default function ProductCard({
   }));
 
   const handleChange = (event: { target: { value: SetStateAction<string> } }) => {
-    console.log(event.target.value);
-
     setSelectedLanguage(event.target.value);
   };
 
@@ -111,8 +109,6 @@ export default function ProductCard({
         (item: { locale: string }) => item?.locale === selectedLanguage
       )
     : undefined;
-
-  console.log('selectedLocaleObject', selectedLocaleObject);
 
   const ImageChangeApiCall = async () => {
     setIsSubmitting(true);

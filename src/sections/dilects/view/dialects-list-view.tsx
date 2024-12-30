@@ -69,7 +69,6 @@ export default function DialectListView() {
   const [dialectName, setDialectName] = useState('');
   const [keyword, setKeyword] = useState('');
   const [isPublished, setIsPublished] = useState('');
-  console.log('table.page', table.page);
   const { dialect, revalidateCategory, totalpages, dialectLoading } = useGetAllDialect({
     page: table.page + 1,
     limit: table.rowsPerPage,

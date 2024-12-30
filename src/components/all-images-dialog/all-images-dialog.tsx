@@ -102,8 +102,6 @@ export default function AllImagesForm({
   }, [allImages]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('calling outer');
-
     try {
       apiCall();
       setSelectedImageIds([]);

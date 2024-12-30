@@ -91,7 +91,6 @@ export default function CityListView() {
     localeFilter
   );
   const { language } = useGetAllLanguage(0, 1000);
-  console.log('cities', cities);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,

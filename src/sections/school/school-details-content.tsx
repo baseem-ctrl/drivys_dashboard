@@ -191,8 +191,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       value: cityItem.id,
       label: cityItem.city_translations?.[0]?.name || 'Unnamed City',
     })) || [];
-  console.log('cityOptions', cityOptions);
-  console.log('states', states);
   const stateOptions =
     states?.map((stateItem) => ({
       value: stateItem.id,
@@ -741,7 +739,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
 
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data', data);
     try {
       let payload = {
         street_address: data?.street_address,

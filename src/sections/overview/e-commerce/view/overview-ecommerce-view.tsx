@@ -4,7 +4,10 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
-
+import { useMemo, useState } from 'react';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
+import { Box, CircularProgress, Typography } from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -22,25 +25,22 @@ import { MotivationIllustration } from 'src/assets/illustrations';
 import EcommerceWelcome from '../ecommerce-welcome';
 import EcommerceNewProducts from '../ecommerce-new-products';
 import EcommerceYearlySales from '../ecommerce-yearly-sales';
-import EcommerceBestSalesman from '../ecommerce-best-salesman';
+// import EcommerceBestSalesman from '../ecommerce-best-salesman';
 import EcommerceSaleByGender from '../ecommerce-sale-by-gender';
 import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
-import { Box, CircularProgress, Typography } from '@mui/material';
+
 import HeatMap from '../ecommerce-heat-map';
-import TrainerMap from '../ecommerce-school-admin-map';
+// import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
+import AnalyticsActiveUsers from '../analytics-active-users';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import PaymentMethodRevenue from '../ecommerce-payment-method';
-import AnalyticsActiveUsers from '../analytics-active-users';
-import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 import TotalTrainersSession from '../ecommerce-total-session';
@@ -49,7 +49,16 @@ import TotalTrainersSession from '../ecommerce-total-session';
 
 export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
+  const settings = useSettingsContext();
 
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [applyClicked, setApplyClicked] = useState(false);
+
+  const { analytics, analyticsLoading } = useGetAnalytics({
+    startDate: applyClicked ? startDate : undefined,
+    endDate: applyClicked ? endDate : undefined,
+  });
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
     useGetRevenue();
@@ -61,14 +70,17 @@ export default function OverviewEcommerceView() {
     studentInsightsLoading,
     revalidateStudentInsights,
   } = useGetStudentInsights();
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const settings = useSettingsContext();
-  const [applyClicked, setApplyClicked] = useState(false);
-  const { analytics, analyticsLoading } = useGetAnalytics({
-    startDate: applyClicked ? startDate : undefined,
-    endDate: applyClicked ? endDate : undefined,
-  });
+
+  const chartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
 
   const monthlyIssuedCertificates = analytics?.monthlyIssuedCertificates || [];
   const yearlyIssuedCertificates = analytics?.yearlyIssuedCertificates || [];

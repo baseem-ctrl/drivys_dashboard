@@ -82,7 +82,6 @@ export default function SendNotificationForm({
 
   // Watch the sendAll field to conditionally disable user_id
   const sendAll = watch('sendAll');
-  console.log(watch('sendAll'));
   // Use the custom hook to get user types
   const { users, usersLoading, revalidateUsers } = useGetUsers({
     page: 0,

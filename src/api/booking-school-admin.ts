@@ -6,7 +6,6 @@ import { endpoints, drivysFetcher } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 export function useGetBookingsSchoolAdmin(filters = {}) {
-  console.log('filters from api', filters);
   const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);

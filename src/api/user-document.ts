@@ -34,8 +34,6 @@ export function useGetUserDocumentList({
   searchTerm?: string;
   userId?: string;
 } = {}) {
-  console.log('userId', userId); // Log the userId for debugging
-
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 

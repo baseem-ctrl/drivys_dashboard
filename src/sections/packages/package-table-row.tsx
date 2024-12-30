@@ -215,7 +215,6 @@ export default function PackageTableRow({
     }
   });
   const router = useRouter();
-  console.log(errors, 'asdsfdb');
 
   return (
     <>

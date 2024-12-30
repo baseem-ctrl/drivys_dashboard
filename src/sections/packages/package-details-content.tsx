@@ -265,7 +265,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       };
 
       let formData = new FormData();
-      console.log('payload', payload);
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
       formData.append('number_of_sessions', payload.number_of_sessions);

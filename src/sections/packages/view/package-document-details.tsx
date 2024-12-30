@@ -143,7 +143,6 @@ export default function PackageDocumentDetails({
       if (uploadedFile) {
         updatedDocument.append('icon', uploadedFile);
       }
-      console.log('formData', formData);
       updatedDocument.append('doc_id', document.id);
       updatedDocument.append('title', formData.title || document.title);
       updatedDocument.append('session_no', formData.session || document.session_no);

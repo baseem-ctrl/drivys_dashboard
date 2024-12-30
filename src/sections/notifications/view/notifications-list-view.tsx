@@ -92,7 +92,6 @@ export default function NotificationlistingListView() {
   } = useGetNotificationList({ page: table?.page, limit: table?.rowsPerPage });
 
   const { language } = useGetAllLanguage(0, 1000);
-  console.log('notifications', notifications);
   useEffect(() => {
     if (notifications?.length) {
       setTableData(notifications);

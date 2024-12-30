@@ -124,7 +124,6 @@ export default function UserDetailsContent({
     trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
     student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
   });
-  console.log('studentReviews', studentReviews);
   const toggleShowAll = () => setShowAll((prev) => !prev);
   const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
   const currentTrainer = details;
@@ -1657,7 +1656,6 @@ export default function UserDetailsContent({
       </Scrollbar>
     </Stack>
   );
-  console.log('currentTab', currentTab);
   return (
     <>
       {loading || !details.id ? (

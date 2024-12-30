@@ -13,8 +13,13 @@ import DialogContent from '@mui/material/DialogContent';
 import { ImageItem } from 'src/types/user';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete, RHFUpload } from 'src/components/hook-form';
-import { createImageMultiple, createImageSingle, useGetAllImages } from "src/api/all-image"
+import FormProvider, {
+  RHFSelect,
+  RHFTextField,
+  RHFAutocomplete,
+  RHFUpload,
+} from 'src/components/hook-form';
+import { createImageMultiple, createImageSingle, useGetAllImages } from 'src/api/all-image';
 import { useTable } from '../table';
 import { Grid, Typography } from '@mui/material';
 
@@ -33,16 +38,14 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
   const NewUserSchema = Yup.object().shape({
     picture: Yup.mixed<any>().nullable().required('Cover is required'),
     picture_large: Yup.mixed<any>().nullable(),
-    description: Yup.string()
-
+    description: Yup.string(),
   });
-
 
   const defaultValues = useMemo(
     () => ({
-      picture: currentImage?.virtual_path || "",
-      picture_large: currentImage?.virtual_large_path || "",
-      description: currentImage?.description || ""
+      picture: currentImage?.virtual_path || '',
+      picture_large: currentImage?.virtual_large_path || '',
+      description: currentImage?.description || '',
     }),
     [currentImage]
   );
@@ -53,9 +56,8 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
   });
 
   useEffect(() => {
-    reset(defaultValues)
-  }, [currentImage])
-
+    reset(defaultValues);
+  }, [currentImage]);
 
   const {
     reset,
@@ -65,12 +67,9 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
     watch,
   } = methods;
 
-
   const onSubmitInner = handleSubmit(async (data) => {
-    console.log('calling inner');
-
     try {
-      const formData = new FormData()
+      const formData = new FormData();
 
       if (data.picture instanceof File) {
         formData.append('picture', data.picture);
@@ -85,16 +84,15 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
 
       formData.append('description', data.description);
 
-      const response = await createImageSingle(formData)
+      const response = await createImageSingle(formData);
 
-      reload()
+      reload();
       reset();
       onClose();
       enqueueSnackbar(response.message);
       console.info('DATA', data);
     } catch (error) {
       if (error.errors) {
-
         Object.values(error.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
@@ -122,7 +120,6 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
   const handleRemoveFile = useCallback(() => {
     setValue('picture', null);
   }, [setValue]);
-
 
   const handleDrop2 = useCallback(
     (acceptedFiles: File[]) => {
@@ -155,15 +152,13 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
         },
       }}
     >
-      <FormProvider methods={methods} >
+      <FormProvider methods={methods}>
         <DialogTitle>Update images</DialogTitle>
 
         <DialogContent>
-
-
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} >
-              <Typography sx={{ fontWeight: "700" }}> Normal Image:</Typography>
+            <Grid item xs={12}>
+              <Typography sx={{ fontWeight: '700' }}> Normal Image:</Typography>
               <RHFUpload
                 name="picture"
                 maxSize={3145728}
@@ -171,8 +166,8 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
                 onDelete={handleRemoveFile}
               />
             </Grid>
-            <Grid item xs={12} >
-              <Typography sx={{ fontWeight: "700" }}> Large Image:</Typography>
+            <Grid item xs={12}>
+              <Typography sx={{ fontWeight: '700' }}> Large Image:</Typography>
               <RHFUpload
                 name="picture_large"
                 maxSize={3145728}
@@ -180,14 +175,11 @@ export default function NewImagesForm({ currentImage, open, onClose, reload }: P
                 onDelete={handleRemoveFile2}
               />
             </Grid>
-            <Grid item xs={12} >
-              <Typography sx={{ fontWeight: "700", mb: 2 }}> Description:</Typography>
+            <Grid item xs={12}>
+              <Typography sx={{ fontWeight: '700', mb: 2 }}> Description:</Typography>
               <RHFTextField name="description" label="Description" fullWidth />
             </Grid>
           </Grid>
-
-
-
         </DialogContent>
 
         <DialogActions>

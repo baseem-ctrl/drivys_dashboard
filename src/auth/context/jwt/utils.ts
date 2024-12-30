@@ -22,8 +22,6 @@ function jwtDecode(token: string) {
 // ----------------------------------------------------------------------
 
 export const isValidToken = (accessToken: string) => {
-  console.log(accessToken, 'accessToken');
-
   if (!accessToken) {
     return false;
   }
@@ -75,7 +73,6 @@ export const setSession = (accessToken: string | null) => {
     localStorage.removeItem('token');
 
     localStorage.removeItem('user_type');
-
 
     delete axios.defaults.headers.common.Authorization;
   }

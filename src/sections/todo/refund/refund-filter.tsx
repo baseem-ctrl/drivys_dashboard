@@ -47,7 +47,6 @@ export default function RefundFilters({
   canReset,
   onResetFilters,
 }: Props) {
-  console.log('filters', filters);
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,

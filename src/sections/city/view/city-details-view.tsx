@@ -47,7 +47,6 @@ export default function CityDetailsView() {
   const handleEditClick = () => {
     setOpenEditPopup(true);
   };
-  console.log(table?.page, 'table?.page');
 
   const handleClosePopup = () => {
     setOpenEditPopup(false);
