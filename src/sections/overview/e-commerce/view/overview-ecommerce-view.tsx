@@ -38,6 +38,7 @@ import SchoolAdminMap from '../ecommerce-school-admin-map';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
+import PaymentMethodRevenue from '../ecommerce-payment-method';
 import AnalyticsActiveUsers from '../analytics-active-users';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
@@ -50,7 +51,8 @@ export default function OverviewEcommerceView() {
   const { user } = useAuthContext();
 
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics, revenueByPackage } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
+    useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -87,7 +89,15 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
-
+  const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
+    label: item.payment_method,
+    value: parseFloat(item.total_amount),
+  }));
+  const chartConfigRevenueByPaymentMethodData = {
+    colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
+    series: transformedRevenueByPaymentMethodData,
+    options: {},
+  };
   const trainerChartData = {
     colors: ['#34C38F', '#FF7D1E'],
     series: [
@@ -422,7 +432,7 @@ export default function OverviewEcommerceView() {
               revalidateEnrollmentTrends={revalidateStudentInsights}
             />
           </Grid>
-          <Grid xs={12} md={6} lg={8}>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
               revenue={revenue}
@@ -447,6 +457,13 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            <PaymentMethodRevenue
+              title="Payment Methods Revenue"
+              subheader="Overview of payment method usage"
+              chart={chartConfigRevenueByPaymentMethodData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession />
           </Grid>
@@ -462,7 +479,6 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
-
           <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>

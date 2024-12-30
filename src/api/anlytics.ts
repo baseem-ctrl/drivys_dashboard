@@ -87,6 +87,7 @@ export function useGetRevenue() {
     () => ({
       revenueByPackage: data?.data?.revenueByPackage || [],
       revenue: data?.data?.revenue || [],
+      paymentMethods: data?.data?.paymentMethods || [],
       revenueError: error,
       revenueLoading: isLoading,
       revenueValidating: isValidating,
