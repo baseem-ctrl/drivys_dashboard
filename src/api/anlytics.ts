@@ -141,3 +141,38 @@ export function useGetStudentInsights({ start_date, end_date }: UseGetStudentIns
 
   return { ...memoizedValue, revalidateStudentInsights };
 }
+interface UseGetTrainerInsightsProps {
+  start_date?: string;
+  end_date?: string;
+}
+
+export function useGetTrainerInsights({ start_date, end_date }: UseGetTrainerInsightsProps = {}) {
+  const getTheFullUrl = useMemo(() => {
+    const baseUrl = endpoints.analytics.getTrainerInsights;
+    const params = new URLSearchParams();
+
+    if (start_date) params.append('start_date', start_date);
+    if (end_date) params.append('end_date', end_date);
+
+    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+  }, [start_date, end_date]);
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      trainerInsights: data?.data || [],
+      trainerInsightsError: error,
+      trainerInsightsLoading: isLoading,
+      trainerInsightsValidating: isValidating,
+      totalPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating, data?.total]
+  );
+
+  const revalidateTrainerInsights = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateTrainerInsights };
+}

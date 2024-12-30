@@ -39,9 +39,11 @@ import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
 import PaymentMethodRevenue from '../ecommerce-payment-method';
+import AnalyticsActiveUsers from '../analytics-active-users';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
+import TotalTrainersSession from '../ecommerce-total-session';
 
 // ----------------------------------------------------------------------
 
@@ -95,6 +97,27 @@ export default function OverviewEcommerceView() {
     colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
     series: transformedRevenueByPaymentMethodData,
     options: {},
+  };
+  const trainerChartData = {
+    colors: ['#34C38F', '#FF7D1E'],
+    series: [
+      { label: 'Active Trainers', value: analytics.activeTrainers },
+      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
+  };
+  const studentChartData = {
+    colors: ['#FF6F61', '#6B5B95'],
+
+    series: [
+      { label: 'Active Trainers', value: analytics.activeStudents },
+      { label: 'Inactive Trainers', value: analytics.inactiveStudents },
+    ],
+    options: {
+      labels: ['Active Trainers', 'Inactive Trainers'],
+    },
   };
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
@@ -336,7 +359,6 @@ export default function OverviewEcommerceView() {
               </Grid>
             </Grid>
           </Box>
-
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
               title="Issued Certificates"
@@ -363,6 +385,13 @@ export default function OverviewEcommerceView() {
             </Grid>
           )}
           <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Trainer Analytics"
+              subheader={`Total Trainers: ${analytics.trainerCount}`}
+              chart={trainerChartData}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={4}>
             <EcommerceSaleByGender
               title="Trainers By Gender"
               total={analytics?.trainerCount ?? 0}
@@ -381,7 +410,13 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
+          <Grid xs={12} md={6} lg={4}>
+            <AnalyticsActiveUsers
+              title="Student Analytics"
+              subheader={`Total Students: ${analytics?.studentCount}`}
+              chart={studentChartData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={8}>
             {' '}
             <EnrollmentTrendsChart
@@ -429,6 +464,10 @@ export default function OverviewEcommerceView() {
               chart={chartConfigRevenueByPaymentMethodData}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={8}>
+            <TotalTrainersSession />
+          </Grid>
+
           <Grid xs={12} md={6} lg={4}>
             {' '}
             <RevenueByPackagePieChart
