@@ -41,6 +41,7 @@ import { transformData } from '../helper-functions/transform-certificate-date';
 import { useMemo, useState } from 'react';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
+import TotalTrainersSession from '../ecommerce-total-session';
 
 // ----------------------------------------------------------------------
 
@@ -325,7 +326,6 @@ export default function OverviewEcommerceView() {
               </Grid>
             </Grid>
           </Box>
-
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
               title="Issued Certificates"
@@ -410,6 +410,10 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={8}>
+            <TotalTrainersSession />
+          </Grid>
+
           <Grid xs={12} md={6} lg={4}>
             {' '}
             <RevenueByPackagePieChart
@@ -422,7 +426,7 @@ export default function OverviewEcommerceView() {
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
 
-          <Grid xs={12} md={6} lg={12}>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
