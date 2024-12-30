@@ -4,7 +4,10 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
-
+import { useMemo, useState } from 'react';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
+import { Box, CircularProgress, Typography } from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -22,24 +25,22 @@ import { MotivationIllustration } from 'src/assets/illustrations';
 import EcommerceWelcome from '../ecommerce-welcome';
 import EcommerceNewProducts from '../ecommerce-new-products';
 import EcommerceYearlySales from '../ecommerce-yearly-sales';
-import EcommerceBestSalesman from '../ecommerce-best-salesman';
+// import EcommerceBestSalesman from '../ecommerce-best-salesman';
 import EcommerceSaleByGender from '../ecommerce-sale-by-gender';
 import EcommerceSalesOverview from '../ecommerce-sales-overview';
 import EcommerceWidgetSummary from '../ecommerce-widget-summary';
 import EcommerceLatestProducts from '../ecommerce-latest-products';
 import EcommerceCurrentBalance from '../ecommerce-current-balance';
 import PendingRequests from '../ecommerce-pending-trainer-request';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
-import { Box, CircularProgress, Typography } from '@mui/material';
+
 import HeatMap from '../ecommerce-heat-map';
-import TrainerMap from '../ecommerce-school-admin-map';
+// import TrainerMap from '../ecommerce-school-admin-map';
 import SchoolAdminMap from '../ecommerce-school-admin-map';
 import AnalyticsActiveUsers from '../analytics-active-users';
 import EcommerceBestTrainer from '../ecommerce-best-salesman';
 import BookingStatistics from '../ecommerce-statistics';
 import { transformData } from '../helper-functions/transform-certificate-date';
-import { useMemo, useState } from 'react';
+import PaymentMethodRevenue from '../ecommerce-payment-method';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 import TotalTrainersSession from '../ecommerce-total-session';
@@ -59,7 +60,8 @@ export default function OverviewEcommerceView() {
     endDate: applyClicked ? endDate : undefined,
   });
   const theme = useTheme();
-  const { revenue, revenueLoading, revalidateAnalytics, revenueByPackage } = useGetRevenue();
+  const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
+    useGetRevenue();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -99,7 +101,15 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
-
+  const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
+    label: item.payment_method,
+    value: parseFloat(item.total_amount),
+  }));
+  const chartConfigRevenueByPaymentMethodData = {
+    colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
+    series: transformedRevenueByPaymentMethodData,
+    options: {},
+  };
   const trainerChartData = {
     colors: ['#34C38F', '#FF7D1E'],
     series: [
@@ -434,7 +444,7 @@ export default function OverviewEcommerceView() {
               revalidateEnrollmentTrends={revalidateStudentInsights}
             />
           </Grid>
-          <Grid xs={12} md={6} lg={8}>
+          <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
               revenue={revenue}
@@ -459,6 +469,13 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={6}>
+            <PaymentMethodRevenue
+              title="Payment Methods Revenue"
+              subheader="Overview of payment method usage"
+              chart={chartConfigRevenueByPaymentMethodData}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession />
           </Grid>
@@ -474,7 +491,6 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={8}>
           <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
         </Grid> */}
-
           <Grid xs={12} md={6} lg={6}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
