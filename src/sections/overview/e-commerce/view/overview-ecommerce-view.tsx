@@ -6,7 +6,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useMemo, useState } from 'react';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAnalytics, useGetRevenue, useGetStudentInsights } from 'src/api/anlytics';
+import {
+  useGetAnalytics,
+  useGetRevenue,
+  useGetStudentInsights,
+  useGetTrainerInsights,
+} from 'src/api/anlytics';
 import { Box, CircularProgress, Typography } from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
@@ -45,6 +50,7 @@ import PaymentMethodRevenue from '../ecommerce-payment-method';
 import EnrollmentTrendsChart from '../ecommerce-enrollment-trend';
 import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart';
 import TotalTrainersSession from '../ecommerce-total-session';
+import ReviewedTrainer from '../ecomerce-reviewed-trainers';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +69,7 @@ export default function OverviewEcommerceView() {
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
     useGetRevenue();
+  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -464,6 +471,13 @@ export default function OverviewEcommerceView() {
               revalidateEnrollmentTrends={revalidateStudentInsights}
             />
           </Grid>
+          <Grid xs={12} md={6} lg={4}>
+            <ReviewedTrainer
+              title="Trainer Feedback"
+              subheader="Student reviews for the trainers"
+              feedbackList={trainerInsights?.sessionFeedback}
+            />
+          </Grid>
           <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
@@ -496,6 +510,7 @@ export default function OverviewEcommerceView() {
               chart={chartConfigRevenueByPaymentMethodData}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession />
           </Grid>
