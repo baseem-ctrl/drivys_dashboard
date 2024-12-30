@@ -147,19 +147,45 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const { isSubmitting, errors } = schoolFormState;
   const values = schoolWatch();
   const handleChange = (event: { target: { value: any } }) => {
-    setSelectedLanguage(event.target.value);
+    const selectedLocale = event.target.value;
+    setSelectedLanguage(selectedLocale);
 
     const selectedLocaleObject = details?.package_translations.find(
-      (item: { locale: string }) => item.locale === event.target.value
+      (item: { locale: string }) => item.locale.toLowerCase() === selectedLocale.toLowerCase()
     );
-
-    // Update the form values to reflect the selected locale
     if (selectedLocaleObject) {
       schoolSetValue('name', selectedLocaleObject.name); // Update name to match the locale
-      schoolSetValue('session_inclusions', selectedLocaleObject.session_inclusions); // Update name to match the locale
+      schoolSetValue('session_inclusions', selectedLocaleObject.session_inclusions); // Update session inclusions to match the locale
+
+      const updatedSessionTitles = details?.session_details.map((session: any) => {
+        const translation = session.translations.find(
+          (t: { locale: string }) => t.locale.toLowerCase() === selectedLocale.toLowerCase()
+        );
+        return { title: translation?.title || '' };
+      });
+
+      const sessionCount = details?.number_of_sessions / 2 || 0;
+      console.log('sessionCount', sessionCount);
+      const filledSessionTitles = Array.from({ length: sessionCount }, (_, index) => ({
+        title: updatedSessionTitles[index]?.title || '',
+      }));
+
+      setSessionTitles(filledSessionTitles);
+      filledSessionTitles.forEach((session, index) => {
+        schoolSetValue(`session_titles[${index}]`, session.title);
+      });
     } else {
+      console.log('inside else');
       schoolSetValue('name', '');
-      schoolSetValue('session_inclusions', ''); // Update name to match the locale
+      schoolSetValue('session_inclusions', '');
+
+      const sessionCount = details?.number_of_sessions / 2 || 0;
+      const emptySessionTitles = Array.from({ length: sessionCount }, () => ({ title: '' }));
+
+      setSessionTitles(emptySessionTitles);
+      emptySessionTitles.forEach((session, index) => {
+        schoolSetValue(`session_titles[${index}]`, session.title);
+      });
     }
   };
 
@@ -187,6 +213,40 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     setEditCityIndex(null);
     setEditMode(false);
   };
+  const [sessionTitles, setSessionTitles] = useState(details?.session_details || []);
+  const numberOfSessions = schoolWatch('number_of_sessions', sessionTitles.length);
+
+  useEffect(() => {
+    if (details?.session_details) {
+      const initialTitles = details.session_details.map((session) => ({
+        title: session.translations?.[0]?.title || '',
+      }));
+      setSessionTitles(initialTitles);
+    }
+  }, [details]);
+
+  useEffect(() => {
+    const halfSessions = Math.floor(numberOfSessions / 2);
+    const updatedTitles = Array.from({ length: halfSessions }, (_, index) => ({
+      title:
+        details?.session_details?.[index]?.translations?.[0]?.title ||
+        sessionTitles[index]?.title ||
+        '',
+    }));
+    setSessionTitles(updatedTitles);
+
+    updatedTitles.forEach((title, index) => {
+      schoolSetValue(`session_titles[${index}]`, title.title);
+    });
+  }, [numberOfSessions, details, schoolSetValue]);
+
+  const handleSessionTitleChange = (index, value) => {
+    const updatedTitles = [...sessionTitles];
+    updatedTitles[index].title = value;
+    setSessionTitles(updatedTitles);
+    schoolSetValue(`session_titles[${index}]`, value);
+  };
+
   const onSubmit = packageSubmit(async (data) => {
     try {
       let payload = {
@@ -225,42 +285,20 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           payload.package_translations[0].session_inclusions || ''
         );
       }
+
       const sessionTitles = [];
-      let sessionDetails = [];
+      const selectedLocale = data?.locale?.toLowerCase() || selectedLanguage.toLowerCase();
 
-      if (data?.locale && data?.session_titles && data.session_titles.length > 0) {
-        const selectedLocale = data.locale.toLowerCase();
+      const filteredSessionTitles = data.session_titles.filter((title) => title);
+      const sessionDetails = filteredSessionTitles.map((newTitle: string) => ({
+        locale: selectedLocale || selectedLanguage,
+        title: newTitle,
+      }));
 
-        sessionDetails = details.session_details.map((session: any, index: number) => ({
-          locale: selectedLocale,
-          title: session?.translations[0]?.title || '',
-        }));
-
-        data.session_titles.forEach((newTitle: string, index: number) => {
-          if (newTitle) {
-            sessionDetails[index].title = newTitle;
-          }
-        });
-
-        sessionTitles.push({
-          locale: selectedLocale,
-          titles: sessionDetails.map((session) => session.title),
-        });
-      } else if (details?.session_details) {
-        const selectedLocale =
-          data?.locale?.toLowerCase() || selectedLocaleObject?.locale?.toLowerCase();
-
-        sessionDetails = details.session_details.map((session: any, index: number) => {
-          return {
-            locale: selectedLocale || selectedLanguage,
-            title: session?.translations[0]?.title || '',
-          };
-        });
-        sessionTitles.push({
-          locale: selectedLocale || selectedLanguage,
-          titles: sessionDetails.map((session) => session.title),
-        });
-      }
+      sessionTitles.push({
+        locale: selectedLocale || selectedLanguage,
+        titles: sessionDetails.map((session) => session.title),
+      });
 
       sessionTitles.forEach((session, index) => {
         formData.append(`session_titles[${index}][locale]`, session.locale);
@@ -393,10 +431,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
 
-              ...(details?.session_details?.map((sessionItem: any) => ({
-                label: `Slot ${sessionItem.slot_number} Title`,
-                value: sessionItem.translations?.[0]?.title ?? 'N/A',
-              })) || []),
+              ...(details?.session_details
+                ?.slice(0, Math.floor(numberOfSessions / 2))
+                .map((sessionItem: any) => ({
+                  label: `Slot ${sessionItem.slot_number} Title`,
+                  value: sessionItem.translations?.[0]?.title ?? 'N/A',
+                })) || []),
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -506,18 +546,21 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   </Stack>
                 </Box>
                 <Box mt={2}>
-                  <Typography variant="subtitle2" mb={3}>
-                    Session Details
-                  </Typography>
+                  {sessionTitles && sessionTitles.length > 0 && (
+                    <Typography variant="subtitle2" mb={3}>
+                      Session Details
+                    </Typography>
+                  )}
                   <Grid item xs={10}>
                     <Grid container spacing={2}>
-                      {details?.session_details?.map((sessionItem: any, index: number) => (
+                      {sessionTitles.map((session, index) => (
                         <Grid item xs={12} key={index}>
                           <RHFTextField
                             fullWidth
                             name={`session_titles[${index}]`}
                             label={`Session Title ${index + 1}`}
-                            defaultValue={sessionItem.translations?.[0]?.title ?? ''}
+                            value={session.title}
+                            onChange={(e) => handleSessionTitleChange(index, e.target.value)}
                           />
                         </Grid>
                       ))}
