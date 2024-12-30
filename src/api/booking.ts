@@ -2,6 +2,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -125,7 +126,35 @@ export function useGetPaymentStatusEnum() {
 }
 // function to fetch booking details by a student's ID
 export function useGetBookingByTrainerId(trainer_id: string) {
-  const URL = `${endpoints.booking.getList}?driver_id=${trainer_id}`;
+  const { user } = useAuthContext();
+  let URL;
+  if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+    URL = `${endpoints.booking.schoolAdmin.getList}?driver_id=${trainer_id}`;
+  } else {
+    URL = `${endpoints.booking.getList}?driver_id=${trainer_id}`;
+  }
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      bookingTrainerDetails: (data?.data as any) || {},
+      bookingError: error,
+      bookingLoading: isLoading,
+      bookingValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateBookingDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateBookingDetails };
+}
+export function useGetSchoolBookingByTrainerId(trainer_id: string) {
+  const URL = `${endpoints.booking.schoolAdmin.getList}?driver_id=${trainer_id}`;
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
   });
