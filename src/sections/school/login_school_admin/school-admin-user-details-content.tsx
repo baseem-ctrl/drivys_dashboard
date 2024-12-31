@@ -258,7 +258,6 @@ export default function UserDetailsContentAdmin({
       >
         <Grid item xs={12} sm={12} md={6}>
           <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
-          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
 
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
@@ -344,15 +343,21 @@ export default function UserDetailsContentAdmin({
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
                     <Tooltip title={item?.tooltip || ''} arrow>
                       <span>{item.label}</span>
                     </Tooltip>
                   </Box>
-                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                  <Box
+                    component="span"
+                    sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
+                  >
                     :
                   </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
+                  <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
                     {item.value ?? 'N/A'}
                   </Box>
                 </Box>
@@ -379,18 +384,26 @@ export default function UserDetailsContentAdmin({
                   },
                   {
                     label: 'Last Booking At',
-                    value: details?.last_booking_was ?? 'N/A',
+                    value: details?.last_booking_was
+                      ? moment.utc(details?.last_booking_was).format('lll')
+                      : 'N/A',
                   },
                   ,
                 ].map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    <Box
+                      component="span"
+                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
+                    >
                       {item.label}
                     </Box>
-                    <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    <Box
+                      component="span"
+                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
+                    >
                       :
                     </Box>
-                    <Box component="span" sx={{ flex: 1 }}>
+                    <Box component="span" sx={{ flex: 1, marginTop: '15px' }}>
                       {item.value ?? 'N/A'}
                     </Box>
                   </Box>
@@ -417,56 +430,124 @@ export default function UserDetailsContentAdmin({
     </Tabs>
   );
   const renderUserPreferences = (
-    <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Typography sx={{ fontWeight: '700' }}>User Preferences:</Typography>
-      <Stack
-        spacing={1}
-        alignItems={{ xs: 'center', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{}}
-      >
-        <Grid item xs={12} sm={8} md={8}>
-          <Scrollbar>
-            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
-              {[
-                {
-                  label: 'City',
-                  value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
-                },
-                {
-                  label: 'Area',
-                  value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
-                },
-                { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
+    <Stack
+      component={Card}
+      spacing={4}
+      sx={{ p: 4 }}
+      direction={{
+        xs: 'column',
+        md: 'row',
+      }}
+    >
+      <Grid item xs={12} sm={12} md={6}>
+        <Typography sx={{ fontWeight: '800' }}>User Preferences:</Typography>
 
-                { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+        <Scrollbar>
+          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
+            {[
+              {
+                label: 'City',
+                value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+              },
+              {
+                label: 'Area',
+                value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
+              },
+              { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
-                {
-                  label: 'Vehicle type',
-                  value:
-                    details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
-                },
-              ].map((item, index) => (
-                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {item.label}
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1 }}>
-                    {item.value ?? 'N/A'}
-                  </Box>
-                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+              { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+
+              {
+                label: 'Vehicle type',
+                value:
+                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
+              },
+            ].map((item, index) => (
+              <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                <Box
+                  component="span"
+                  sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '10px' }}
+                >
+                  {item.label}
                 </Box>
-              ))}
-            </Stack>
-          </Scrollbar>
-        </Grid>
-      </Stack>
+                <Box
+                  component="span"
+                  sx={{ minWidth: '100px', fontWeight: 'bold', marginTop: '10px' }}
+                >
+                  :
+                </Box>
+                <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
+                  {item.value ?? 'N/A'}
+                </Box>
+                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+              </Box>
+            ))}
+          </Stack>
+        </Scrollbar>
+      </Grid>
+      {currentTab === 'details' &&
+        details?.bank_detail?.length > 0 &&
+        details?.user_type === 'TRAINER' && (
+          <Grid item xs={12} sm={12} md={6}>
+            <Typography sx={{ fontWeight: '800' }}>Bank Details:</Typography>
+
+            <Scrollbar>
+              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
+                {[
+                  {
+                    label: 'Account Holder Name',
+                    value: details?.bank_detail[0]?.account_holder_name ?? 'N/A',
+                  },
+                  {
+                    label: 'Account Number',
+                    value: details?.bank_detail[0]?.account_number ?? 'N/A',
+                  },
+                  { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? 'NA' },
+
+                  { label: 'IBAN', value: details?.bank_detail[0]?.iban_number ?? 'NA' },
+
+                  {
+                    label: 'Active',
+                    value: (
+                      <Chip
+                        label={details?.bank_detail[0]?.is_active ? 'Yes' : 'No'}
+                        color={details?.bank_detail[0]?.is_active ? 'success' : 'error'}
+                        variant="soft"
+                      />
+                    ),
+                  },
+                  ...(details?.user_type === 'STUDENT'
+                    ? [
+                        {
+                          label: 'Trainer Language',
+                          value: details?.preferred_trainer_lang?.language_name ?? 'NA',
+                        },
+                      ]
+                    : []),
+                ].map((item, index) => (
+                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                    <Box
+                      component="span"
+                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '10px' }}
+                    >
+                      {item.label}
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '10px' }}
+                    >
+                      :
+                    </Box>
+                    <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
+                      {item.value ?? 'N/A'}
+                    </Box>
+                    {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
+                  </Box>
+                ))}
+              </Stack>
+            </Scrollbar>
+          </Grid>
+        )}
     </Stack>
   );
   const [showMapIndex, setShowMapIndex] = useState(null);
@@ -621,16 +702,15 @@ export default function UserDetailsContentAdmin({
               </Grid>
             </Grid>
             <Grid xs={12} md={12}>
+              {details?.user_type === 'TRAINER' &&
+                currentTab === 'details' &&
+                renderUserPreferences}
+            </Grid>
+            <Grid xs={12} md={12}>
               {addresses?.length > 0 &&
                 details?.user_type === 'TRAINER' &&
                 currentTab === 'details' &&
                 renderAddress}
-            </Grid>
-
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' &&
-                currentTab === 'details' &&
-                renderUserPreferences}
             </Grid>
           </Grid>
         </>
