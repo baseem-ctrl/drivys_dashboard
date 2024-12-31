@@ -54,6 +54,7 @@ import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart'
 import TotalTrainersSession from '../ecommerce-total-session';
 import ReviewedTrainer from '../ecomerce-reviewed-trainers';
 import AnalyticsWidgetSummary from '../ecommerce-analytics-widget_summary';
+import { AnalyticsConversionRates } from '../ecommerce-student-demographics';
 import SessionOverview from '../ecommerce-session-overview';
 
 // ----------------------------------------------------------------------
@@ -189,6 +190,33 @@ export default function OverviewEcommerceView() {
     label: item.package_name,
     value: parseFloat(item.total_revenue),
   }));
+  const categories = studentInsights?.studentsDemographics
+    ? Object.keys(studentInsights.studentsDemographics)
+    : [];
+
+  const series = categories.map((category) => {
+    const dataWithLabels = Object.entries(studentInsights.studentsDemographics[category]).map(
+      ([label, value]) => ({
+        label,
+        data: value,
+      })
+    );
+
+    return {
+      name: category,
+      data: dataWithLabels,
+    };
+  });
+  const alignedSeries = categories.map((category, index) => {
+    return {
+      name: category,
+      data: series.map((item) => {
+        const labelData = item.data[index] || { label: 'N/A', data: 0 };
+        return labelData;
+      }),
+    };
+  });
+
   const chartConfigBooking = {
     colors: ['#008FFB', '#FF4560'],
     series: transformedDataBooking,
@@ -229,8 +257,6 @@ export default function OverviewEcommerceView() {
     setEndDate(null);
     setApplyClicked(true);
   };
-  console.log('analytics?.maleTrainers', analytics);
-  console.log('analytics.activeTrainers', analytics.activeTrainers);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -507,14 +533,54 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           )}
-          <Grid xs={12} md={12} lg={12}>
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
+            studentInsights.enrollmentTrends &&
+            studentInsights.enrollmentTrendsRegisteredStudents && (
+              <Grid xs={12} md={6} lg={12}>
+                {' '}
+                <EnrollmentTrendsChart
+                  title="Enrollment Trends"
+                  subheader="Overview of student enrollment trends"
+                  chart={enrollmentChart}
+                  enrollmentTrends={studentInsights.enrollmentTrends}
+                  enrollmentTrendsRegisteredStudents={
+                    studentInsights.enrollmentTrendsRegisteredStudents
+                  }
+                  enrollmentTrendsLoading={studentInsightsLoading}
+                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
+                  revalidateEnrollmentTrends={revalidateStudentInsights}
+                />
+              </Grid>
+            )}
+          <Grid item xs={12} md={12} lg={7}>
+            {' '}
+            <AnalyticsConversionRates
+              title="Student Categories and Preferences"
+              subheader="Demographics Breakdown"
+              chart={{
+                categories: categories,
+                series: alignedSeries,
+                colors: ['#067b6c', '#9dc4be', '#067b6c'],
+              }}
+            />
+          </Grid>
+          {trainerInsights?.sessionFeedback?.length > 0 && (
+            <Grid xs={12} md={6} lg={5}>
+              <ReviewedTrainer
+                title="Trainer Feedback"
+                subheader="Student reviews for the trainers"
+                feedbackList={trainerInsights?.sessionFeedback}
+              />
+            </Grid>
+          )}
+          {/* <Grid xs={12} md={12} lg={12}>
             {' '}
             <SessionOverview
               title="Trainer Sessions Overview"
               subheader="Session distribution"
               data={formattedSessionData}
             />
-          </Grid>
+          </Grid> */}
           <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
@@ -562,13 +628,13 @@ export default function OverviewEcommerceView() {
               title="Booking Analytics"
               subheader={`Total Booking: ${analytics?.bookingsCount ?? 0}`}
               chart={chartBookingData}
-              // sx={{ height: 440 }}
+              sx={{ height: 488 }}
             />
           </Grid>
           {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
-              <Grid xs={12} md={6} lg={8}>
+              <Grid xs={12} md={6} lg={12}>
                 {' '}
                 <EnrollmentTrendsChart
                   title="Enrollment Trends"
@@ -586,13 +652,7 @@ export default function OverviewEcommerceView() {
             )}
 
           {/* {trainerInsights?.sessionFeedback?.length > 0 && ( */}
-          <Grid xs={12} md={6} lg={4}>
-            <ReviewedTrainer
-              title="Trainer Feedback"
-              subheader="Student reviews for the trainers"
-              feedbackList={trainerInsights?.sessionFeedback}
-            />
-          </Grid>
+
           {/* )} */}
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession

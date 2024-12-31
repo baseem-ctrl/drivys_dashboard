@@ -53,7 +53,7 @@ export default function EcommerceBestTrainer({ title, subheader, list, ...other 
       <CardHeader title={title} subheader={subheader} />
 
       <Scrollbar>
-        <Stack spacing={3} sx={{ p: 3, minWidth: 360 }} height={'440px'} overflow={'auto'}>
+        <Stack spacing={3} sx={{ p: 3, minWidth: 360 }} height={'458px'} overflow={'auto'}>
           {list?.map((product) => <ProductItem key={product?.id} product={product} />)}
         </Stack>
       </Scrollbar>
