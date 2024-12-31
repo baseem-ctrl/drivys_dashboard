@@ -969,6 +969,31 @@ export default function UserDetailsContent({
     },
     [addressForm, editingIndex] // Include editingIndex in the dependency array
   );
+  const handleSetDeafult = async (addressId: any) => {
+    try {
+      const body = {
+        id: addressId,
+        is_default: 1,
+      };
+      const response = await createNewAddressForUser(body);
+      if (response) {
+        enqueueSnackbar('Address set to default');
+        reload();
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
       <Scrollbar>
@@ -1364,6 +1389,11 @@ export default function UserDetailsContent({
                 >
                   Delete
                 </Button>
+                {!address?.is_default && (
+                  <Button variant="outlined" onClick={() => handleSetDeafult(address.id)}>
+                    SetDefault
+                  </Button>
+                )}
               </Box>
               {showMapIndex === index && (
                 <Box sx={{ pt: 2, pb: 2 }}>

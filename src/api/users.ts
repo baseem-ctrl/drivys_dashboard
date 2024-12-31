@@ -212,7 +212,7 @@ export function createNewAddressForUser(body: any) {
   return response;
 }
 // Function to update the user address
-export function updateExistingUserAddress(body: any, id, user_id) {
+export function updateExistingUserAddress(body: any, id?: any, user_id?: any) {
   const updatedBody = {
     ...body,
     id,
