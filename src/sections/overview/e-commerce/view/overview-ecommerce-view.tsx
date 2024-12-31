@@ -54,6 +54,7 @@ import RevenueByPackagePieChart from '../ecommerce-revenue-by-package-pie-chart'
 import TotalTrainersSession from '../ecommerce-total-session';
 import ReviewedTrainer from '../ecomerce-reviewed-trainers';
 import AnalyticsWidgetSummary from '../ecommerce-analytics-widget_summary';
+import SessionOverview from '../ecommerce-session-overview';
 
 // ----------------------------------------------------------------------
 
@@ -69,13 +70,32 @@ export default function OverviewEcommerceView() {
     startDate: applyClicked ? startDate : undefined,
     endDate: applyClicked ? endDate : undefined,
   });
-  console.log('analytics', analytics);
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
     useGetRevenue();
-  console.log('revenue', revenue);
 
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
+  const sessionsData = trainerInsights.sessionsPerTrainer;
+  const totalSessions = sessionsData.reduce(
+    (sum, trainer) =>
+      sum + trainer.sessions.reduce((trainerSum, session) => trainerSum + session.session_count, 0),
+    0
+  );
+
+  const formattedSessionData = sessionsData.map((trainer) => {
+    const trainerTotalSessions = trainer.sessions.reduce(
+      (trainerSum, session) => trainerSum + session.session_count,
+      0
+    );
+
+    return {
+      label: trainer.trainer_name,
+      value: (trainerTotalSessions / totalSessions) * 100,
+      totalAmount: trainerTotalSessions,
+    };
+  });
+
+  console.log('sessionsData', sessionsData);
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -489,6 +509,14 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           )}
+          <Grid xs={12} md={12} lg={12}>
+            {' '}
+            <SessionOverview
+              title="Trainer Sessions Overview"
+              subheader="Session distribution"
+              data={formattedSessionData}
+            />
+          </Grid>
           {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
