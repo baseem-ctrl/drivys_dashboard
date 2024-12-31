@@ -409,11 +409,11 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             >
                               :
                             </Typography>
-                            <Tooltip title={doc?.file ?? 'N/A'} arrow>
+                            <Tooltip title={doc?.approved_by_user?.user_type ?? 'N/A'} arrow>
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
                               >
-                                {doc?.approved_by ?? 'N/A'}
+                                {doc?.approved_by_user?.name ?? 'N/A'}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -437,15 +437,13 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             >
                               :
                             </Typography>
-                            <Tooltip title={doc?.file ?? 'N/A'} arrow>
-                              <Typography
-                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
-                              >
-                                {doc?.created_at
-                                  ? moment(doc.created_at).format('YYYY-MM-DD HH:mm:ss')
-                                  : 'N/A'}
-                              </Typography>
-                            </Tooltip>
+                            <Typography
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                            >
+                              {doc?.created_at
+                                ? moment(doc.created_at).format('YYYY-MM-DD HH:mm:ss')
+                                : 'N/A'}
+                            </Typography>
                           </Box>
 
                           <Box

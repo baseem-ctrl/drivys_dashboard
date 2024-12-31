@@ -22,9 +22,7 @@ export default function UserCardList({ users }: Props) {
         md: 'repeat(3, 1fr)',
       }}
     >
-      {users?.map((user) => (
-        <UserCard key={user.id} user={user} />
-      ))}
+      {users?.map((user) => <UserCard key={user.id} student={user} />)}
     </Box>
   );
 }
