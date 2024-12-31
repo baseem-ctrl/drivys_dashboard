@@ -272,21 +272,21 @@ export function useNavData() {
     () => [
       // OVERVIEW
       // ----------------------------------------------------------------------
-      // {
-      //   subheader: t('overview'),
-      //   items: [
-      //     {
-      //       title: t('ecommerce'),
-      //       path: paths.dashboard.general.ecommerce,
-      //       icon: ICONS.ecommerce,
-      //     },
-      //   ],
-      // },
+      {
+        subheader: t('overview'),
+        items: [
+          {
+            title: t('analytics'),
+            path: paths.dashboard.root,
+            icon: ICONS.analytics,
+          },
+        ],
+      },
 
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        subheader: t(userType === 'SCHOOL_ADMIN' ? '' : 'management'),
+        subheader: t(userType === 'SCHOOL_ADMIN' ? 'management' : 'management'),
         items: routes,
       },
 

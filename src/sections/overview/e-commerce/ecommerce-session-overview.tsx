@@ -36,9 +36,7 @@ export default function SessionOverview({ title, subheader, data, ...other }: Pr
           overflowY: 'auto',
         }}
       >
-        {data.map((progress) => (
-          <ProgressItem key={progress.label} progress={progress} />
-        ))}
+        {data?.map((progress) => <ProgressItem key={progress.label} progress={progress} />)}
       </Stack>
     </Card>
   );

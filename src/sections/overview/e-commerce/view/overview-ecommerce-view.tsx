@@ -75,15 +75,14 @@ export default function OverviewEcommerceView() {
     useGetRevenue();
 
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
-  const sessionsData = trainerInsights.sessionsPerTrainer;
-  const totalSessions = sessionsData.reduce(
+  const sessionsData = trainerInsights?.sessionsPerTrainer;
+  const totalSessions = sessionsData?.reduce(
     (sum, trainer) =>
       sum + trainer.sessions.reduce((trainerSum, session) => trainerSum + session.session_count, 0),
     0
   );
-
-  const formattedSessionData = sessionsData.map((trainer) => {
-    const trainerTotalSessions = trainer.sessions.reduce(
+  const formattedSessionData = sessionsData?.map((trainer) => {
+    const trainerTotalSessions = trainer?.sessions?.reduce(
       (trainerSum, session) => trainerSum + session.session_count,
       0
     );
@@ -150,9 +149,9 @@ export default function OverviewEcommerceView() {
     label: item.package_name,
     value: parseFloat(item.total_revenue),
   }));
-  const transformedRevenueByPaymentMethodData = paymentMethods.map((item) => ({
-    label: item.payment_method,
-    value: parseFloat(item.total_amount),
+  const transformedRevenueByPaymentMethodData = paymentMethods?.map((item) => ({
+    label: item?.payment_method,
+    value: parseFloat(item?.total_amount),
   }));
   const chartConfigRevenueByPaymentMethodData = {
     colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
@@ -464,18 +463,17 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
-          {(analytics.trainerCount > 0 && analytics.activeTrainers && analytics.inactiveTrainers) ||
-            (analytics.trainerCount > 0 &&
-              trainerInsights.activeTrainers &&
-              trainerInsights.inactiveTrainers && (
-                <Grid xs={12} md={6} lg={4}>
-                  <AnalyticsActiveUsers
-                    title="Trainer Analytics"
-                    subheader={`Total Trainers: ${analytics.trainerCount || 0}`}
-                    chart={trainerChartData}
-                  />
-                </Grid>
-              ))}
+          {analytics?.trainerCount > 0 &&
+            trainerInsights?.activeTrainers &&
+            trainerInsights.inactiveTrainers && (
+              <Grid xs={12} md={6} lg={4}>
+                <AnalyticsActiveUsers
+                  title="Trainer Analytics"
+                  subheader={`Total Trainers: ${analytics.trainerCount || 0}`}
+                  chart={trainerChartData}
+                />
+              </Grid>
+            )}
 
           {trainerInsights?.maleTrainers &&
             trainerInsights?.femaleTrainers &&
