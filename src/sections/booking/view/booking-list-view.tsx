@@ -43,8 +43,8 @@ import BookingDetailsComponent from './booking-details-view';
 
 const TABLE_HEAD = {
   all: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'customerName', label: 'Student Name', width: 180 },
+    { id: 'vendorName', label: 'Trainer Name', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
     { id: 'price', label: 'Price', width: 120 },
@@ -53,8 +53,8 @@ const TABLE_HEAD = {
     { id: 'created', label: 'Created', width: 200 },
   ],
   confirmed: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'customerName', label: 'Student Name', width: 180 },
+    { id: 'vendorName', label: 'Trainer Name', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
     { id: 'price', label: 'Price', width: 120 },
@@ -63,8 +63,8 @@ const TABLE_HEAD = {
     { id: 'created', label: 'Created', width: 200 },
   ],
   cancelled: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'customerName', label: 'Student Name', width: 180 },
+    { id: 'vendorName', label: 'Trainer Name', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
     { id: 'price', label: 'Price', width: 120 },
@@ -73,8 +73,8 @@ const TABLE_HEAD = {
     { id: 'created', label: 'Created', width: 200 },
   ],
   pending: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'customerName', label: 'Student Name', width: 180 },
+    { id: 'vendorName', label: 'Trainer Name', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
     { id: 'price', label: 'Price', width: 120 },
