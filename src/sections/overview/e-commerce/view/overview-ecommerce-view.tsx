@@ -515,34 +515,6 @@ export default function OverviewEcommerceView() {
               data={formattedSessionData}
             />
           </Grid>
-          {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
-            studentInsights.enrollmentTrends &&
-            studentInsights.enrollmentTrendsRegisteredStudents && (
-              <Grid xs={12} md={6} lg={8}>
-                {' '}
-                <EnrollmentTrendsChart
-                  title="Enrollment Trends"
-                  subheader="Overview of student enrollment trends"
-                  chart={enrollmentChart}
-                  enrollmentTrends={studentInsights.enrollmentTrends}
-                  enrollmentTrendsRegisteredStudents={
-                    studentInsights.enrollmentTrendsRegisteredStudents
-                  }
-                  enrollmentTrendsLoading={studentInsightsLoading}
-                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
-                  revalidateEnrollmentTrends={revalidateStudentInsights}
-                />
-              </Grid>
-            )}
-          {trainerInsights?.sessionFeedback?.length > 0 && (
-            <Grid xs={12} md={6} lg={4}>
-              <ReviewedTrainer
-                title="Trainer Feedback"
-                subheader="Student reviews for the trainers"
-                feedbackList={trainerInsights?.sessionFeedback}
-              />
-            </Grid>
-          )}
           <Grid xs={12} md={6} lg={6}>
             <EcommerceYearlySales
               title="Yearly Revenue"
@@ -569,6 +541,14 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
+            {' '}
+            <RevenueByPackagePieChart
+              title="Revenue by Package"
+              subheader="Overview of revenue distribution by package"
+              chart={chartConfig}
+            />
+          </Grid>
+          <Grid xs={12} md={6} lg={6}>
             <PaymentMethodRevenue
               title="Payment Methods Revenue"
               subheader="Overview of payment method usage"
@@ -577,33 +557,54 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
 
+          <Grid xs={12} md={6} lg={6}>
+            <AnalyticsActiveUsers
+              title="Booking Analytics"
+              subheader={`Total Booking: ${analytics?.bookingsCount ?? 0}`}
+              chart={chartBookingData}
+              // sx={{ height: 440 }}
+            />
+          </Grid>
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
+            studentInsights.enrollmentTrends &&
+            studentInsights.enrollmentTrendsRegisteredStudents && (
+              <Grid xs={12} md={6} lg={8}>
+                {' '}
+                <EnrollmentTrendsChart
+                  title="Enrollment Trends"
+                  subheader="Overview of student enrollment trends"
+                  chart={enrollmentChart}
+                  enrollmentTrends={studentInsights.enrollmentTrends}
+                  enrollmentTrendsRegisteredStudents={
+                    studentInsights.enrollmentTrendsRegisteredStudents
+                  }
+                  enrollmentTrendsLoading={studentInsightsLoading}
+                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
+                  revalidateEnrollmentTrends={revalidateStudentInsights}
+                />
+              </Grid>
+            )}
+
+          {trainerInsights?.sessionFeedback?.length > 0 && (
+            <Grid xs={12} md={6} lg={4}>
+              <ReviewedTrainer
+                title="Trainer Feedback"
+                subheader="Student reviews for the trainers"
+                feedbackList={trainerInsights?.sessionFeedback}
+              />
+            </Grid>
+          )}
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession
               title="Trainer Session"
               subheader="Tariners completed at least one sessions"
             />
           </Grid>
-
-          <Grid xs={12} md={6} lg={4}>
-            {' '}
-            <RevenueByPackagePieChart
-              title="Revenue by Package"
-              subheader="Overview of revenue distribution by package"
-              chart={chartConfig}
-            />
-          </Grid>
-          <Grid xs={12} md={6} lg={5}>
-            <AnalyticsActiveUsers
-              title="Booking Analytics"
-              subheader={`Total Booking: ${analytics?.bookingsCount ?? 0}`}
-              chart={chartBookingData}
-            />
-          </Grid>
           {/* <Grid xs={12} md={6} lg={8}>
             <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
           </Grid> */}
 
-          <Grid xs={12} md={6} lg={7}>
+          <Grid xs={12} md={6} lg={4}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
           <Grid xs={12} md={6} lg={6}>

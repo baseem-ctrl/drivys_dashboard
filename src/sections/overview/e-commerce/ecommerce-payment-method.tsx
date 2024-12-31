@@ -86,6 +86,7 @@ export default function PaymentMethodRevenue({ title, subheader, chart, ...other
           '& .apexcharts-datalabels-group': {
             display: 'none',
           },
+          height: 330,
         }}
       >
         <Chart

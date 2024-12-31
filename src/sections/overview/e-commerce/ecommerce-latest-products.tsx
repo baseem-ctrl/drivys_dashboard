@@ -67,7 +67,7 @@ type ProductItemProps = {
 };
 
 function ProductItem({ product }: ProductItemProps) {
-  const { package_name, id } = product;
+  const { package_name, id, bookings_count, number_of_sessions } = product;
   return (
     <Stack direction="row" spacing={2}>
       <Avatar
@@ -87,19 +87,19 @@ function ProductItem({ product }: ProductItemProps) {
             {package_name ?? 'NA'}
           </Link>
         }
-        // secondary={
-        //   <>
-        //     {!!category && (
-        //       <Box component="span" sx={{ textDecoration: 'line-through', mr: 0.5 }}>
-        //         {category}
-        //       </Box>
-        //     )}
+        secondary={
+          <>
+            {/* {!!category && ( */}
+            <Box component="span" sx={{ mr: 5 }}>
+              Bookings: {bookings_count}
+            </Box>
+            {/* )} */}
 
-        //     <Box component="span" sx={{ color: priceSale ? 'error.main' : 'text.secondary' }}>
-        //       {fCurrency(price)}
-        //     </Box>
-        //   </>
-        // }
+            <Box component="span" sx={{ color: 'text.secondary' }}>
+              Sessions: {number_of_sessions}
+            </Box>
+          </>
+        }
         primaryTypographyProps={{
           noWrap: true,
         }}
