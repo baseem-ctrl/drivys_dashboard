@@ -67,12 +67,12 @@ type ProductItemProps = {
 };
 
 function ProductItem({ product }: ProductItemProps) {
-  const { package_translations, id } = product;
+  const { package_name, id } = product;
   return (
     <Stack direction="row" spacing={2}>
       <Avatar
         variant="rounded"
-        alt={package_translations?.[0]?.name ?? 'Un Known  '}
+        alt={package_name ?? 'Un Known  '}
         src={Package}
         sx={{ width: 48, height: 48, flexShrink: 0 }}
       />
@@ -84,7 +84,7 @@ function ProductItem({ product }: ProductItemProps) {
             component={RouterLink}
             href={paths.dashboard.package.details(id)}
           >
-            {package_translations?.[0]?.name ?? 'NA'}
+            {package_name ?? 'NA'}
           </Link>
         }
         // secondary={

@@ -147,7 +147,7 @@ const SchoolAdminMap: React.FC = () => {
           onChange={(e) => setSelectedHeatmap(e.target.value as 'trainers' | 'students')}
         >
           <FormControlLabel value="trainers" control={<Radio />} label="Trainers" />
-          <FormControlLabel value="students" control={<Radio />} label="Students" />
+          {/* <FormControlLabel value="students" control={<Radio />} label="Students" /> */}
         </RadioGroup>
       </Box>
 

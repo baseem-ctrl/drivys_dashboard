@@ -97,7 +97,7 @@ export default function PaymentMethodRevenue({ title, subheader, chart, ...other
         />
       </Box>
 
-      <Divider sx={{ borderStyle: 'dashed' }} />
+      {/* <Divider sx={{ borderStyle: 'dashed' }} /> */}
     </Card>
   );
 }

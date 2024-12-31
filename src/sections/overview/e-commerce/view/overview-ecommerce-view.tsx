@@ -142,8 +142,14 @@ export default function OverviewEcommerceView() {
   const trainerChartData = {
     colors: ['#34C38F', '#FF7D1E'],
     series: [
-      { label: 'Active Trainers', value: analytics.activeTrainers },
-      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+      {
+        label: 'Active Trainers',
+        value: analytics?.activeTrainers || trainerInsights?.activeTrainers,
+      },
+      {
+        label: 'Inactive Trainers',
+        value: analytics?.inactiveTrainers || trainerInsights?.inactiveTrainers,
+      },
     ],
     options: {
       labels: ['Active Trainers', 'Inactive Trainers'],
@@ -356,16 +362,17 @@ export default function OverviewEcommerceView() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  icon="mdi:steering"
-                  bgcolor="rgba(255, 193, 7, 0.1)"
-                  textColor="rgba(220, 53, 69, 0.9)"
-                  title="Total School"
-                  total={analytics?.schoolCount ?? '0'}
-                />
-              </Grid>
-
+              {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
+                <Grid item xs={12} md={3}>
+                  <EcommerceWidgetSummary
+                    icon="mdi:steering"
+                    bgcolor="rgba(255, 193, 7, 0.1)"
+                    textColor="rgba(220, 53, 69, 0.9)"
+                    title="Total School"
+                    total={analytics?.schoolCount ?? '0'}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   bgcolor="rgba(155, 89, 182, 0.1)"
@@ -394,15 +401,17 @@ export default function OverviewEcommerceView() {
                   total={analytics?.completedBookingsCount ?? '0'}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <EcommerceWidgetSummary
-                  bgcolor="rgba(0, 204, 204, 0.1)"
-                  textColor="rgba(0, 123, 255, 0.9)"
-                  title="Refund Requests"
-                  icon="mdi:cash-refund"
-                  total={analytics?.refundReqs ?? '0'}
-                />
-              </Grid>
+              {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
+                <Grid item xs={12} md={3}>
+                  <EcommerceWidgetSummary
+                    bgcolor="rgba(0, 204, 204, 0.1)"
+                    textColor="rgba(0, 123, 255, 0.9)"
+                    title="Refund Requests"
+                    icon="mdi:cash-refund"
+                    total={analytics?.refundReqs ?? '0'}
+                  />
+                </Grid>
+              )}
 
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
@@ -426,24 +435,6 @@ export default function OverviewEcommerceView() {
             </Grid>
           </Box>
 
-          <Grid item xs={12} md={6} lg={6}>
-            <BookingStatistics
-              title="Issued Certificates"
-              chart={chartCertificateIssuedData}
-              seriesData={issuedCerificateSeriesData}
-              setSeriesData={setIssuedCertificateSeriesData}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6}>
-            <BookingStatistics
-              title="Completed Session"
-              chart={chartCompletedSessionData}
-              seriesData={sessionSeriesData}
-              setSeriesData={setSessionSeriesData}
-            />
-          </Grid>
-
           {user?.user?.user_type !== 'SCHOOL_ADMIN' ? (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
@@ -453,37 +444,42 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
             </Grid>
           )}
-          {analytics.trainerCount > 0 && analytics.activeTrainers && analytics.inactiveTrainers && (
-            <Grid xs={12} md={6} lg={4}>
-              <AnalyticsActiveUsers
-                title="Trainer Analytics"
-                subheader={`Total Trainers: ${analytics.trainerCount || 0}`}
-                chart={trainerChartData}
-              />
-            </Grid>
-          )}
+          {(analytics.trainerCount > 0 && analytics.activeTrainers && analytics.inactiveTrainers) ||
+            (analytics.trainerCount > 0 &&
+              trainerInsights.activeTrainers &&
+              trainerInsights.inactiveTrainers && (
+                <Grid xs={12} md={6} lg={4}>
+                  <AnalyticsActiveUsers
+                    title="Trainer Analytics"
+                    subheader={`Total Trainers: ${analytics.trainerCount || 0}`}
+                    chart={trainerChartData}
+                  />
+                </Grid>
+              ))}
 
-          {analytics?.maleTrainers && analytics?.femaleTrainers && (
-            <Grid xs={12} md={6} lg={4}>
-              <EcommerceSaleByGender
-                title="Trainers By Gender"
-                total={analytics?.trainerCount ?? 0}
-                chart={{
-                  series: [
-                    { label: 'Mens', value: analytics?.maleTrainers?.length ?? 0 },
-                    { label: 'Womens', value: analytics?.femaleTrainers?.length ?? 0 },
-                    {
-                      label: 'Other',
-                      value:
-                        Number(analytics?.trainerCount) -
-                          (Number(analytics?.femaleTrainers?.length) +
-                            Number(analytics?.maleTrainers?.length)) ?? 0,
-                    },
-                  ],
-                }}
-              />
-            </Grid>
-          )}
+          {trainerInsights?.maleTrainers &&
+            trainerInsights?.femaleTrainers &&
+            analytics?.trainerCount && (
+              <Grid xs={12} md={6} lg={4}>
+                <EcommerceSaleByGender
+                  title="Trainers By Gender"
+                  total={analytics?.trainerCount ?? 0}
+                  chart={{
+                    series: [
+                      { label: 'Mens', value: trainerInsights?.maleTrainers?.length ?? 0 },
+                      { label: 'Womens', value: trainerInsights?.femaleTrainers?.length ?? 0 },
+                      {
+                        label: 'Gender Not Specified',
+                        value:
+                          Number(analytics?.trainerCount) -
+                            (Number(trainerInsights?.femaleTrainers?.length) +
+                              Number(trainerInsights?.maleTrainers?.length)) ?? 0,
+                      },
+                    ],
+                  }}
+                />
+              </Grid>
+            )}
           {analytics?.studentCount > 0 && analytics.activeStudents && analytics.activeStudents && (
             <Grid xs={12} md={6} lg={4}>
               <AnalyticsActiveUsers
@@ -551,11 +547,15 @@ export default function OverviewEcommerceView() {
               title="Payment Methods Revenue"
               subheader="Overview of payment method usage"
               chart={chartConfigRevenueByPaymentMethodData}
+              // sx={{ height: 460 }}
             />
           </Grid>
 
           <Grid xs={12} md={6} lg={8}>
-            <TotalTrainersSession title="Trainer Session" />
+            <TotalTrainersSession
+              title="Trainer Session"
+              subheader="Tariners completed at least one sessions"
+            />
           </Grid>
 
           <Grid xs={12} md={6} lg={4}>
@@ -585,6 +585,23 @@ export default function OverviewEcommerceView() {
           </Grid>
           <Grid xs={12} md={12} lg={6}>
             <PendingRequests height={'394px'} />
+          </Grid>
+          <Grid item xs={12} md={6} lg={6}>
+            <BookingStatistics
+              title="Issued Certificates"
+              chart={chartCertificateIssuedData}
+              seriesData={issuedCerificateSeriesData}
+              setSeriesData={setIssuedCertificateSeriesData}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6} lg={6}>
+            <BookingStatistics
+              title="Completed Session"
+              chart={chartCompletedSessionData}
+              seriesData={sessionSeriesData}
+              setSeriesData={setSessionSeriesData}
+            />
           </Grid>
         </Grid>
       ) : (
