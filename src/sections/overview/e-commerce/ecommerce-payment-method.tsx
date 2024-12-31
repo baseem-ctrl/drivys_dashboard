@@ -86,6 +86,7 @@ export default function PaymentMethodRevenue({ title, subheader, chart, ...other
           '& .apexcharts-datalabels-group': {
             display: 'none',
           },
+          height: 330,
         }}
       >
         <Chart
@@ -97,7 +98,7 @@ export default function PaymentMethodRevenue({ title, subheader, chart, ...other
         />
       </Box>
 
-      <Divider sx={{ borderStyle: 'dashed' }} />
+      {/* <Divider sx={{ borderStyle: 'dashed' }} /> */}
     </Card>
   );
 }

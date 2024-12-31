@@ -41,6 +41,7 @@ const PRIMARY = {
   dark: '#b52338',
   darker: '#941c2e',
   contrastText: '#FFFFFF',
+  lighterChannel: '200 250 214',
 };
 
 const SECONDARY = {

@@ -23,15 +23,16 @@ import Label from 'src/components/label';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { Link } from '@mui/material';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 type Props = {
-  user: any;
+  student: any;
 };
 
-export default function UserCard({ user }: Props) {
+export default function UserCard({ student }: Props) {
   const theme = useTheme();
-
+  const { user } = useAuthContext();
   const router = useRouter();
 
   const {
@@ -46,7 +47,7 @@ export default function UserCard({ user }: Props) {
     user_preference,
     phone,
     locale,
-  } = user;
+  } = student;
 
   return (
     <Card sx={{ textAlign: 'center' }}>
@@ -88,7 +89,11 @@ export default function UserCard({ user }: Props) {
         <Link
           color="inherit"
           sx={{ cursor: 'pointer' }}
-          onClick={() => router.push(paths.dashboard.user.details(id))}
+          onClick={() =>
+            user?.user?.user_type !== 'SCHOOL_ADMIN'
+              ? router.push(paths.dashboard.user.details(id))
+              : ''
+          }
         >
           <ListItemText
             sx={{ mt: 7, mb: 1, cursor: 'pointer' }}

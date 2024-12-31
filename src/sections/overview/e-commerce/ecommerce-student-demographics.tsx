@@ -123,6 +123,8 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
           pl: 2.1,
           py: 2.1,
           pr: 1.8,
+          maxHeight: '400px', // Set max height
+          overflowY: 'auto',
         }}
       />
     </Card>

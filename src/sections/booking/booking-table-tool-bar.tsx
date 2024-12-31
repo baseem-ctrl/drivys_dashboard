@@ -43,7 +43,7 @@ export default function BookingTableToolbar({
         }
         renderInput={(params) => (
           <TextField
-            placeholder="Select School"
+            placeholder="Select Trainer"
             {...params}
             onChange={(e) => setSearch(e.target.value)}
           />
