@@ -35,8 +35,8 @@ export default function ReviewedTrainer({ title, subheader, feedbackList, ...oth
           spacing={3}
           sx={{
             p: 3,
-            minWidth: 360,
-            height: '403px',
+            minWidth: 390,
+            height: '574px',
             overflowY: 'auto',
           }}
         >
