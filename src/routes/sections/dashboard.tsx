@@ -36,6 +36,7 @@ import StudentReviewListView from 'src/sections/student-review/view/review-list-
 import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-view';
 import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-verification';
 import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
+import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
 
 // ----------------------------------------------------------------------
 
@@ -279,12 +280,21 @@ const schooladminRoutes = [
       { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
+
   {
     path: 'booking',
     children: [
       { element: <BookingSchoolAdminListView />, index: true },
       { path: ':id', element: <BookingSchoolAdminDetailsComponent /> },
       // { path: 'new', element: <HomeSliderCreatePage /> },
+    ],
+  },
+  {
+    path: 'todo',
+    children: [
+      { element: <ToDoListSchoolAdminViewVerification />, index: true },
+      { path: 'pending-verification', element: <ToDoListSchoolAdminViewVerification /> },
+      { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
     ],
   },
 ];
