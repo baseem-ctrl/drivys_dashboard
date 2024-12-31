@@ -597,7 +597,7 @@ export default function OverviewEcommerceView() {
           <Grid xs={12} md={6} lg={5}>
             <AnalyticsActiveUsers
               title="Booking Analytics"
-              subheader={`Total Booking: ${analytics.trainerCount}`}
+              subheader={`Total Booking: ${analytics?.bookingsCount ?? 0}`}
               chart={chartBookingData}
             />
           </Grid>
