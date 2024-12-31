@@ -611,7 +611,7 @@ export default function OverviewEcommerceView() {
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
           </Grid>
-          <Grid xs={12} md={12} lg={6}>
+          <Grid xs={12} md={6} lg={6}>
             <PendingRequests height={'394px'} />
           </Grid>
           <Grid item xs={12} md={6} lg={6}>
