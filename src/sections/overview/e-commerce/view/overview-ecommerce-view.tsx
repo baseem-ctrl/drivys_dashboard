@@ -585,15 +585,15 @@ export default function OverviewEcommerceView() {
               </Grid>
             )}
 
-          {trainerInsights?.sessionFeedback?.length > 0 && (
-            <Grid xs={12} md={6} lg={4}>
-              <ReviewedTrainer
-                title="Trainer Feedback"
-                subheader="Student reviews for the trainers"
-                feedbackList={trainerInsights?.sessionFeedback}
-              />
-            </Grid>
-          )}
+          {/* {trainerInsights?.sessionFeedback?.length > 0 && ( */}
+          <Grid xs={12} md={6} lg={4}>
+            <ReviewedTrainer
+              title="Trainer Feedback"
+              subheader="Student reviews for the trainers"
+              feedbackList={trainerInsights?.sessionFeedback}
+            />
+          </Grid>
+          {/* )} */}
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession
               title="Trainer Session"

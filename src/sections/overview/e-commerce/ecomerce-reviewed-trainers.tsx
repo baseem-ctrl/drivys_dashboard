@@ -40,9 +40,15 @@ export default function ReviewedTrainer({ title, subheader, feedbackList, ...oth
             overflowY: 'auto',
           }}
         >
-          {feedbackList.map((feedback) => (
-            <FeedbackItem key={feedback.trainer_id} feedback={feedback} />
-          ))}
+          {feedbackList?.length > 0 ? (
+            feedbackList?.map((feedback) => (
+              <FeedbackItem key={feedback?.trainer_id} feedback={feedback} />
+            ))
+          ) : (
+            <Typography variant="body1" color="text.secondary">
+              No {title}
+            </Typography>
+          )}
         </Stack>
       </Scrollbar>
     </Card>
