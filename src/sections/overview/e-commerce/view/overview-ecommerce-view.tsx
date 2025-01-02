@@ -57,6 +57,8 @@ import AnalyticsWidgetSummary from '../ecommerce-analytics-widget_summary';
 import { AnalyticsConversionRates } from '../ecommerce-student-demographics';
 import SessionOverview from '../ecommerce-session-overview';
 
+import SchoolPerformanceDetails from '../ecommerce-school-performance';
+
 // ----------------------------------------------------------------------
 
 export default function OverviewEcommerceView() {
@@ -95,7 +97,6 @@ export default function OverviewEcommerceView() {
     };
   });
 
-  console.log('sessionsData', sessionsData);
   const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
   const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
   const {
@@ -257,6 +258,13 @@ export default function OverviewEcommerceView() {
     setEndDate(null);
     setApplyClicked(true);
   };
+
+  const tableLabels = [
+    { id: 'school_name', label: 'School Name' },
+    { id: 'revenue', label: 'Revenue' },
+    { id: 'bookings', label: 'Bookings' },
+    { id: 'trainer_ratings', label: 'Trainer Ratings' },
+  ];
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -543,10 +551,22 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           )}
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
+            <Grid xs={12} md={6} lg={6}>
+              {' '}
+              <SchoolPerformanceDetails
+                title="School Performance"
+                subheader="Detailed performance data for schools"
+                tableLabels={tableLabels}
+                tableData={analytics?.schoolsPerformance}
+              />
+            </Grid>
+          )}
+
           {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
-              <Grid xs={12} md={6} lg={12}>
+              <Grid xs={12} md={6} lg={6}>
                 {' '}
                 <EnrollmentTrendsChart
                   title="Enrollment Trends"
@@ -641,25 +661,6 @@ export default function OverviewEcommerceView() {
               sx={{ height: 488 }}
             />
           </Grid>
-          {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
-            studentInsights.enrollmentTrends &&
-            studentInsights.enrollmentTrendsRegisteredStudents && (
-              <Grid xs={12} md={6} lg={12}>
-                {' '}
-                <EnrollmentTrendsChart
-                  title="Enrollment Trends"
-                  subheader="Overview of student enrollment trends"
-                  chart={enrollmentChart}
-                  enrollmentTrends={studentInsights.enrollmentTrends}
-                  enrollmentTrendsRegisteredStudents={
-                    studentInsights.enrollmentTrendsRegisteredStudents
-                  }
-                  enrollmentTrendsLoading={studentInsightsLoading}
-                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
-                  revalidateEnrollmentTrends={revalidateStudentInsights}
-                />
-              </Grid>
-            )}
 
           {/* {trainerInsights?.sessionFeedback?.length > 0 && ( */}
 
