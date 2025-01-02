@@ -29,6 +29,7 @@ export function useGetPendingVerificationRequest({
       is_verified,
     };
     if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+      queryParams.is_school_verified = 0;
       return `${endpoints.pendingRequest.schoolAdminTrainerPendingRequest}?${new URLSearchParams(
         queryParams
       )}`;

@@ -232,6 +232,15 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
+      title: t('To Do'),
+      path: paths.dashboard.todo.root,
+      icon: ICONS.tour,
+      children: [
+        { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
+        { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+      ],
+    },
+    {
       title: t('My School'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
