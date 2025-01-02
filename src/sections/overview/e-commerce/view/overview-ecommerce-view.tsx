@@ -429,6 +429,16 @@ export default function OverviewEcommerceView() {
               </Grid>
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
+                  bgcolor="rgba(255, 0, 0, 0.1)"
+                  textColor="rgba(255, 0, 0, 0.9)"
+                  title="Failed Transactions"
+                  icon="mdi:close-circle"
+                  total={analytics?.failedTransactions ?? '0'}
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <EcommerceWidgetSummary
                   bgcolor="rgba(108, 117, 125, 0.1)"
                   textColor="rgba(108, 117, 125, 0.9)"
                   title="Cancelled Bookings"
