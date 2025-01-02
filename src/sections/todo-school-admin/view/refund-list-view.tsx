@@ -55,7 +55,7 @@ const defaultFilters = {
   driver_id: null,
 };
 
-export default function PendingRefundListView() {
+export default function PendingSchoolAdminRefundListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -79,7 +79,6 @@ export default function PendingRefundListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-  console.log(refundRequests, 'refundRequests');
 
   useEffect(() => {
     if (refundRequests?.length > 0) {

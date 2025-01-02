@@ -3,8 +3,9 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { paths } from 'src/routes/paths';
 import RefundListView from './view/refund-list-view';
 import PendingRequests from 'src/sections/overview/e-commerce/ecommerce-pending-trainer-request';
+import PendingSchoolAdminRefundListView from './view/refund-list-view';
 
-export default function ToDoListViewRefund() {
+export default function ToDoListViewRefundSchoolAdmin() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
@@ -17,7 +18,7 @@ export default function ToDoListViewRefund() {
         sx={{ mb: 3 }}
       />
       <Grid>
-        <RefundListView />
+        <PendingSchoolAdminRefundListView />
       </Grid>
     </Container>
   );

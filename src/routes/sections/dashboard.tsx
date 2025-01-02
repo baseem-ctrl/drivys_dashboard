@@ -37,6 +37,7 @@ import TrainerReviewListView from 'src/sections/trainer-review/view/review-list-
 import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-verification';
 import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
+import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
 
 // ----------------------------------------------------------------------
 
@@ -294,7 +295,7 @@ const schooladminRoutes = [
     children: [
       { element: <ToDoListSchoolAdminViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListSchoolAdminViewVerification /> },
-      { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+      { path: 'pending-refund', element: <ToDoListViewRefundSchoolAdmin />, index: true },
     ],
   },
 ];
