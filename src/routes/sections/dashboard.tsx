@@ -38,6 +38,7 @@ import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-ve
 import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
 import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
+import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -273,6 +274,7 @@ const schooladminRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
       { path: 'rewards', element: <RewardDetailsPage /> },
+      { path: 'certificate', element: <CertificateListView /> },
       { path: 'notifications', element: <TrainerNotificationForm /> },
       {
         path: 'trainers-list',
@@ -298,6 +300,15 @@ const schooladminRoutes = [
       { path: 'pending-refund', element: <ToDoListViewRefundSchoolAdmin />, index: true },
     ],
   },
+  // {
+  //   path: 'certificate',
+  //   children: [
+  //     { element: <CertificateListView />, index: true },
+  //     // { path: 'certificate', element: <CertificateListView /> },
+  //     // { path: 'request/:id', element: <CertificateRequestDetailsComponent /> },
+  //     // { path: ':id', element: <CertificateDetailsComponent /> },
+  //   ],
+  // },
 ];
 
 const userType = localStorage.getItem('user_type');

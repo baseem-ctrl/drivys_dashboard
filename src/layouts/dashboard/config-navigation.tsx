@@ -246,6 +246,11 @@ export function useNavData() {
       icon: ICONS.school,
     },
     {
+      title: t('Certificates'),
+      path: paths.dashboard.school.certificate,
+      icon: ICONS.file,
+    },
+    {
       title: t('trainers'),
       path: paths.dashboard.school.trainer,
       icon: ICONS.user,
