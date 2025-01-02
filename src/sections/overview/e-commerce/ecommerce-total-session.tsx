@@ -6,7 +6,7 @@ import Card, { CardProps } from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Chart, { useChart } from 'src/components/chart';
 import { useGetTrainerInsights } from 'src/api/anlytics';
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, Autocomplete, TextField } from '@mui/material';
 
 interface Props extends CardProps {
   title?: string;
@@ -110,24 +110,15 @@ export default function TotalTrainersSession({ title, subheader, ...other }: Pro
       <Box sx={{ mt: 3, mx: 3 }}>
         <Box sx={{ mt: 3, mx: 3, display: 'flex', justifyContent: 'flex-end' }}>
           {' '}
-          <FormControl sx={{ mb: 2, width: 200 }}>
-            <InputLabel id="trainer-select-label">Select Trainer</InputLabel>
-            <Select
-              labelId="trainer-select-label"
+          <FormControl sx={{ mb: 2, width: 250 }}>
+            <Autocomplete
               value={selectedTrainer}
-              onChange={(e) => setSelectedTrainer(e.target.value)}
-              label="Select Trainer"
-            >
-              <MenuItem value="" disabled>
-                <em>All Trainers</em>
-              </MenuItem>
-
-              {sessionsPerTrainer.map((trainer) => (
-                <MenuItem key={trainer.trainer_name} value={trainer.trainer_name}>
-                  {trainer.trainer_name}
-                </MenuItem>
-              ))}
-            </Select>
+              onChange={(event, newValue) => setSelectedTrainer(newValue || '')}
+              options={sessionsPerTrainer.map((trainer) => trainer.trainer_name)}
+              renderInput={(params) => <TextField {...params} label="Select Trainer" />}
+              isOptionEqualToValue={(option, value) => option === value}
+              disableClearable
+            />
           </FormControl>
         </Box>
 
