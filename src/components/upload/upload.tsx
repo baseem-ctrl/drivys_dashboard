@@ -67,6 +67,9 @@ export default function Upload({
           </Box>
           through your machine
         </Typography>
+        <Typography variant="body2" sx={{ color: 'error.main' }}>
+          Maximum file size: 3MB
+        </Typography>
       </Stack>
     </Stack>
   );
