@@ -315,7 +315,7 @@ export default function SchoolCreateForm({
                 label="Contact Number"
                 placeholder="503445679"
                 type="number"
-                prefix="0"
+                prefix="+971"
               />
             </Grid>
 
