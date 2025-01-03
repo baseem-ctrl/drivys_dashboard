@@ -220,13 +220,7 @@ export default function SendNotificationForm({
 
               <RHFTextField name="title" label="Notification Title" fullWidth />
               <RHFTextField name="description" label="Description" fullWidth />
-              <RHFTextField
-                name="detailMessage"
-                label="Detail Message"
-                fullWidth
-                multiline
-                rows={4}
-              />
+              <RHFTextField name="detailMessage" label="Body" fullWidth multiline rows={4} />
 
               <RHFSwitch name="sendAll" label="Send to all users?" labelPlacement="start" />
             </Box>

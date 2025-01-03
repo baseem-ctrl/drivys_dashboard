@@ -660,7 +660,7 @@ export default function UserNewEditForm({
                   // mb={3}
                 >
                   {values.user_type === 'TRAINER' && (
-                    <RHFTextField name="bio" label="Bio" multiline rows={4} type="text" />
+                    <RHFTextField name="bio" label="About you" multiline rows={4} type="text" />
                   )}
                 </Box>
               </Card>
