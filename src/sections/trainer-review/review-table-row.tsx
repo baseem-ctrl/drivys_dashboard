@@ -24,7 +24,7 @@ import { useSnackbar } from 'src/components/snackbar';
 
 export default function TrainerReviewRow({ row }) {
   const { enqueueSnackbar } = useSnackbar();
-
+  console.log('row', row);
   const { trainer_name, trainer_email, trainer_phone, avg_rating, reviews = [] } = row;
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
@@ -180,10 +180,7 @@ export default function TrainerReviewRow({ row }) {
 
                       <TableCell>{review.user_comments || 'No Comments'}</TableCell>
                       <TableCell>
-                        <Tooltip
-                          title={review.driver_comments ? '' : 'No comments to delete'}
-                          arrow
-                        >
+                        <Tooltip title={review.user_comments ? '' : 'No comments to delete'} arrow>
                           <span>
                             <Button
                               variant="contained"
@@ -192,7 +189,7 @@ export default function TrainerReviewRow({ row }) {
                                 backgroundColor: '#CF5A0D',
                               }}
                               onClick={() => handleDeleteComment(review.session_id)}
-                              disabled={!review.driver_comments}
+                              disabled={!review.user_comments}
                             >
                               Delete
                             </Button>
