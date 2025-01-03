@@ -22,7 +22,7 @@ import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
-export default function TrainerReviewRow({ row }) {
+export default function TrainerReviewRow({ reload, row }) {
   const { enqueueSnackbar } = useSnackbar();
   console.log('row', row);
   const { trainer_name, trainer_email, trainer_phone, avg_rating, reviews = [] } = row;
@@ -48,6 +48,7 @@ export default function TrainerReviewRow({ row }) {
 
       if (response.status === 'success') {
         enqueueSnackbar('Comment deleted successfully.');
+        reload();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {

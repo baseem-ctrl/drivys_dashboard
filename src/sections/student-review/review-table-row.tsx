@@ -14,7 +14,7 @@ import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
-export default function StudentReviewRow({ row }) {
+export default function StudentReviewRow({ reload, row }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { student_name, student_email, student_phone, avg_rating, reviews = [] } = row;
@@ -39,6 +39,7 @@ export default function StudentReviewRow({ row }) {
 
       if (response.status === 'success') {
         enqueueSnackbar('Comment deleted successfully.');
+        reload();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
