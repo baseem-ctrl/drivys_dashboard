@@ -335,9 +335,11 @@ export default function UserNewEditForm({
     control,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = methods;
+  console.log('errors', errors);
   const selectedCity = watch('city_id');
+  const initialCity = useRef(selectedCity);
   const { states, isLoading: stateLoading } = useGetStateList({
     city_id: selectedCity.value,
     limit: 1000,
@@ -356,8 +358,11 @@ export default function UserNewEditForm({
     name: 'license',
   });
   const values = watch();
-  console.log(values);
-
+  useEffect(() => {
+    if (initialCity.current?.value !== selectedCity?.value) {
+      setValue('area_id', ''); // Clear the area_id field
+    }
+  }, [selectedCity, setValue]);
   useEffect(() => {
     if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
       setDefaultOption({ label: 'OTHER', value: null });
@@ -687,8 +692,18 @@ export default function UserNewEditForm({
                     </MenuItem>
                   ))}
               </RHFSelect>
-              <RHFTextField name="name" label="Full Name" />
-              <RHFTextField name="email" label="Email Address" />
+              <RHFTextField
+                name="name"
+                label="Full Name"
+                error={!!errors.name}
+                helperText={errors.name?.message || ''}
+              />
+              <RHFTextField
+                name="email"
+                label="Email Address"
+                error={!!errors.email}
+                helperText={errors.email?.message || ''}
+              />
               <RHFTextField
                 name="password"
                 label="Password"
