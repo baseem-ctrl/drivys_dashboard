@@ -148,6 +148,8 @@ export default function CertificateListView() {
       </Stack>
     </Stack>
   );
+  const approvedRequests = tableData.filter((row) => row.status === 'APPROVED');
+  const otherRequests = tableData.filter((row) => row.status !== 'APPROVED');
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -199,22 +201,57 @@ export default function CertificateListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {certificateLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : certificateRequests?.map((row) => (
+                  {otherRequests.length > 0 && (
+                    <>
+                      <TableRow>
+                        <TableCell
+                          colSpan={TABLE_HEAD.length}
+                          sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                        >
+                          AWAITING APPROVAL
+                        </TableCell>
+                      </TableRow>
+                      {otherRequests.map((row) => (
                         <CertificateRow
+                          key={row.id}
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
                           reload={revalidateCertificateRequests}
                         />
                       ))}
+                    </>
+                  )}
+                  {approvedRequests.length > 0 && (
+                    <>
+                      <TableRow>
+                        <TableCell
+                          colSpan={TABLE_HEAD.length}
+                          sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                        >
+                          APPROVED
+                        </TableCell>
+                      </TableRow>
+                      {approvedRequests.map((row) => (
+                        <CertificateRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          reload={revalidateCertificateRequests}
+                        />
+                      ))}
+                    </>
+                  )}
+                  {/* Skeleton loading state */}
+                  {certificateLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>
