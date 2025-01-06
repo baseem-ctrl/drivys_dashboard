@@ -238,6 +238,7 @@ export function useNavData() {
       children: [
         { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
         { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+        { title: t('pending certificates'), path: paths.dashboard.school.certificate },
       ],
     },
     {
@@ -269,6 +270,15 @@ export function useNavData() {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
+    },
+    {
+      title: t('Reviews'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.chat,
+      children: [
+        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
+        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+      ],
     },
   ];
 
