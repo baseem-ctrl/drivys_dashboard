@@ -498,15 +498,16 @@ export default function OverviewEcommerceView() {
             </Grid>
           </Box>
 
-          {user?.user?.user_type !== 'SCHOOL_ADMIN' ? (
+          {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
             </Grid>
-          ) : (
-            <Grid xs={12} md={12} lg={12}>
-              <SchoolAdminMap />
-            </Grid>
           )}
+
+          {/* <Grid xs={12} md={12} lg={12}>
+              <SchoolAdminMap />
+           </Grid> */}
+
           {analytics?.trainerCount > 0 &&
             trainerInsights?.activeTrainers &&
             trainerInsights.inactiveTrainers && (
