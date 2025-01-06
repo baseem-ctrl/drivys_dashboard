@@ -293,6 +293,13 @@ const schooladminRoutes = [
     ],
   },
   {
+    path: 'review',
+    children: [
+      { path: 'student-review', element: <StudentReviewListView /> },
+      { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
+    ],
+  },
+  {
     path: 'todo',
     children: [
       { element: <ToDoListSchoolAdminViewVerification />, index: true },

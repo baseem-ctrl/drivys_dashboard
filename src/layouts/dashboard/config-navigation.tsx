@@ -271,6 +271,15 @@ export function useNavData() {
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
     },
+    {
+      title: t('Reviews'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.chat,
+      children: [
+        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
+        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+      ],
+    },
   ];
 
   const userType = localStorage.getItem('user_type');
