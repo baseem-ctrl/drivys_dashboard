@@ -30,6 +30,37 @@ interface Props extends CardProps {
   };
 }
 
+const getWeekDateRange = (month, week) => {
+  const currentYear = new Date().getFullYear();
+  const startDate = new Date(currentYear, month - 1, 1);
+
+  const startOfWeek = new Date(startDate);
+  startOfWeek.setDate(startDate.getDate() + (week - 1) * 7);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+  const startDateString = `${startOfWeek.getDate()}/${
+    startOfWeek.getMonth() + 1
+  }/${currentYear.toString()}`;
+  const endDateString = `${endOfWeek.getDate()}/${
+    endOfWeek.getMonth() + 1
+  }/${currentYear.toString()}`;
+
+  return `${startDateString} to ${endDateString}`;
+};
+
+const getFilteredCategories = (categories, seriesData) => {
+  if (seriesData === 'Weekly') {
+    return categories.map((category) => {
+      const weekNumber = parseInt(category.replace('Week ', ''), 10);
+
+      return getWeekDateRange(1, weekNumber);
+    });
+  }
+  return categories;
+};
+
 export default function BookingStatistics({
   title,
   subheader,
@@ -39,7 +70,6 @@ export default function BookingStatistics({
   ...other
 }: Props) {
   const { categories, colors, series, options } = chart;
-
   const popover = usePopover();
   const chartOptions = useChart({
     colors,
@@ -48,9 +78,8 @@ export default function BookingStatistics({
       width: 2,
     },
     xaxis: {
-      categories: chart.categories,
+      categories: getFilteredCategories(chart.categories, seriesData),
     },
-
     plotOptions: {
       bar: {
         horizontal: false,

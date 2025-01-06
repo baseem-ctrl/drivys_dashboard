@@ -32,11 +32,11 @@ export const transformData = (monthlyData = [], yearlyData = [], weeklyData = []
     const minWeek = Math.min(...weeks);
     const maxWeek = Math.max(...weeks);
     categories = [
-      `Week ${minWeek - 2}`,
+      // `Week ${minWeek - 2}`,
       `Week ${minWeek - 1}`,
       ...categories,
       `Week ${maxWeek + 1}`,
-      `Week ${maxWeek + 2}`,
+      // `Week ${maxWeek + 2}`,
     ];
   }
 
