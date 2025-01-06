@@ -47,7 +47,7 @@ const getWeekDateRange = (month, week) => {
     endOfWeek.getMonth() + 1
   }/${currentYear.toString()}`;
 
-  return `${startDateString} to ${endDateString}`;
+  return `${startDateString} `;
 };
 
 const getFilteredCategories = (categories, seriesData) => {
