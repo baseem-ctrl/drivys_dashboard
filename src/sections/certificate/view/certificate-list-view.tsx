@@ -24,13 +24,13 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { useGetAllCertificateRequests } from 'src/api/certificate';
+
 // types
 
 import { useGetAllLanguage } from 'src/api/language';
-import { useGetStudentReview, useGetTrainerReview } from 'src/api/review';
 import CertificateFilters from '../certificate-filters';
 import CertificateRow from '../certificate-table-row';
-import { useGetAllCertificateRequests } from 'src/api/certificate';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ const TABLE_HEAD = [
   { id: 'user', label: 'User', width: 180 },
   { id: 'vehicle_type', label: 'Vehicle Type', width: 180 },
   { id: 'comments', label: 'Comments', width: 180 },
+  { id: 'actions', label: '', width: 180 },
 ];
 
 // ----------------------------------------------------------------------
@@ -60,11 +61,8 @@ export default function CertificateListView() {
   const [filters, setFilters] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(undefined);
 
-  const { studentReviews, studentReviewsLoading, totalpages, revalidateStudentReviews } =
-    useGetStudentReview();
-  const { certificateRequests, certificateLoading, totalPages, revalidateCertificates } =
-    useGetAllCertificateRequests(0, 10);
-  console.log('certificates', certificateRequests);
+  const { certificateRequests, certificateLoading, totalpages, revalidateCertificateRequests } =
+    useGetAllCertificateRequests(table.page, table.rowsPerPage);
   const { language } = useGetAllLanguage(0, 1000);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
@@ -76,7 +74,7 @@ export default function CertificateListView() {
     } else {
       setTableData([]);
     }
-  }, [studentReviews]);
+  }, [certificateRequests]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -157,13 +155,12 @@ export default function CertificateListView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Review',
-            href: paths.dashboard.review.root,
+            name: 'Certificate',
+            href: paths.dashboard.school.certificate,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Student Review' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -202,7 +199,7 @@ export default function CertificateListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {studentReviewsLoading
+                  {certificateLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
                           <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -210,12 +207,12 @@ export default function CertificateListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
+                    : certificateRequests?.map((row) => (
                         <CertificateRow
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateStudentReviews}
+                          reload={revalidateCertificateRequests}
                         />
                       ))}
                 </TableBody>

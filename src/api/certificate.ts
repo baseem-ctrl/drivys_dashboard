@@ -64,9 +64,8 @@ export function updateCertificateRequestPaymentStatus(requestId: string, status:
 
 // ----------------------------------------------------------------------
 // Update the status of a certificate request
-export function updateCertificateRequestStatus(requestId: string, status: string) {
+export function updateCertificateRequestStatus(body: any) {
   const URL = endpoints.certificate.updateRequestStatus;
-  const body = { requestId, status };
   const response = drivysCreator([URL, body]);
   return response;
 }
