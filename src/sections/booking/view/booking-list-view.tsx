@@ -1,5 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { alpha } from '@mui/material/styles';
+import isEqual from 'lodash/isEqual';
+import { STATUS_OPTIONS } from 'src/_mock/_school';
+import { _roles, ACTIVE_OPTIONS } from 'src/_mock';
+
 import {
   Container,
   Card,
@@ -33,6 +37,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
+import BookingDetailsToolbar from '../booking-details-toolbar';
 import { useGetBookings, useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -40,6 +45,7 @@ import BookingTableRow from '../booking-table-row';
 import BookingTableToolbar from '../booking-table-tool-bar';
 import { useGetUsers } from 'src/api/users';
 import BookingDetailsComponent from './booking-details-view';
+import BookingFilters from '../booking-filter';
 
 const TABLE_HEAD = {
   all: [
@@ -90,18 +96,20 @@ const defaultFilters = {
   bookingType: 'all',
   paymentStatus: '',
   vendor: '',
+  payment_status: '',
+  payment_method: '',
 };
 
 export default function BookingListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
+  const openFilters = useBoolean();
 
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
   const confirm = useBoolean();
-
   const paymentStatusMap = {
     PENDING: 0,
     CONFIRMED: 1,
@@ -112,10 +120,12 @@ export default function BookingListView() {
     page: table.page,
     limit: table.rowsPerPage,
     booking_status: filters.bookingType,
-    // search: filters.customerName,
-    payment_status: paymentStatusCode,
+    search: filters.search,
+    payment_status: filters.payment_status,
+    payment_method: filters.payment_method,
     driver_id: filters.vendor,
   });
+
   const [searchValue, setSearchValue] = useState('');
   const { users, usersLoading } = useGetUsers({
     page: 0,
@@ -237,7 +247,10 @@ export default function BookingListView() {
   const handleRowClick = (row: any) => {
     router.push(paths.dashboard.booking.details(row?.id));
   };
-
+  const canReset = !isEqual(defaultFilters, filters);
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
@@ -249,6 +262,19 @@ export default function BookingListView() {
         ]}
         sx={{ mb: 3 }}
       />
+      <Box display="flex" justifyContent="flex-end" padding={2}>
+        <BookingFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          filters={filters}
+          onFilters={handleFilters}
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          statusOptions={STATUS_OPTIONS}
+          activeOptions={ACTIVE_OPTIONS}
+        />
+      </Box>
 
       <Card>
         <Tabs
@@ -321,6 +347,7 @@ export default function BookingListView() {
             );
           })}
         </Tabs>
+
         <BookingTableToolbar
           filters={filters}
           onFilters={handleFilters}
