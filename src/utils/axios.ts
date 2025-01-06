@@ -316,4 +316,10 @@ export const endpoints = {
     getStudentInsights: 'admin/analytics/get-students-insights',
     getTrainerInsights: 'admin/analytics/get-trainers-analytics',
   },
+  certificate: {
+    list: 'admin/certificate-request/get-requests-list',
+    addRequestByAdmin: 'admin/certificate-request/add-request',
+    updateRequestPaymentStatus: 'admin/certificate-request/update-request-payment-status',
+    updateRequestStatus: 'admin/certificate-request/update-request-status',
+  },
 };

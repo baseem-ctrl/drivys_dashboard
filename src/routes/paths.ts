@@ -214,6 +214,7 @@ export const paths = {
       trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
       trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
       package: `${ROOTS.DASHBOARD}/school/package-list`,
+      certificate: `${ROOTS.DASHBOARD}/school/certificate`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,
