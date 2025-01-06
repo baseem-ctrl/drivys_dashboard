@@ -201,7 +201,7 @@ export default function CertificateListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {otherRequests.length > 0 && (
+                  {otherRequests.length > 0 ? (
                     <>
                       <TableRow>
                         <TableCell
@@ -221,8 +221,18 @@ export default function CertificateListView() {
                         />
                       ))}
                     </>
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={TABLE_HEAD.length}
+                        sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
+                      >
+                        No requests awaiting approval at the moment.
+                      </TableCell>
+                    </TableRow>
                   )}
-                  {approvedRequests.length > 0 && (
+
+                  {approvedRequests.length > 0 ? (
                     <>
                       <TableRow>
                         <TableCell
@@ -242,7 +252,17 @@ export default function CertificateListView() {
                         />
                       ))}
                     </>
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={TABLE_HEAD.length}
+                        sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
+                      >
+                        No certificates have been approved yet
+                      </TableCell>
+                    </TableRow>
                   )}
+
                   {/* Skeleton loading state */}
                   {certificateLoading &&
                     Array.from(new Array(5)).map((_, index) => (

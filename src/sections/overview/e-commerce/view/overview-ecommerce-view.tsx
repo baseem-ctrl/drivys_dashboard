@@ -141,6 +141,7 @@ export default function OverviewEcommerceView() {
     weeklyIssuedCertificates,
     issuedCerificateSeriesData
   );
+
   const chartCompletedSessionData = transformData(
     monthlyCompletedSessions,
     yearlyCompletedSessions,
