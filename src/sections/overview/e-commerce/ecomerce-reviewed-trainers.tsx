@@ -36,7 +36,7 @@ export default function ReviewedTrainer({ title, subheader, feedbackList, ...oth
           sx={{
             p: 3,
             minWidth: 390,
-            height: '510px',
+            height: '431px',
             overflowY: 'auto',
           }}
         >
@@ -45,9 +45,21 @@ export default function ReviewedTrainer({ title, subheader, feedbackList, ...oth
               <FeedbackItem key={feedback?.trainer_id} feedback={feedback} />
             ))
           ) : (
-            <Typography variant="body1" color="text.secondary">
-              No {title}
-            </Typography>
+            <Box
+              sx={{
+                padding: 2,
+                textAlign: 'center',
+
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+              }}
+            >
+              <Typography variant="h6" color="textSecondary">
+                No feedback available for the trainer yet.
+              </Typography>
+            </Box>
           )}
         </Stack>
       </Scrollbar>

@@ -509,7 +509,7 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
            </Grid> */}
 
-          {analytics?.trainerCount > 0 &&
+          {analytics?.trainerCount > 0 ? (
             trainerInsights?.activeTrainers &&
             trainerInsights.inactiveTrainers && (
               <Grid xs={12} md={6} lg={4}>
@@ -519,7 +519,21 @@ export default function OverviewEcommerceView() {
                   chart={trainerChartData}
                 />
               </Grid>
-            )}
+            )
+          ) : (
+            <Grid
+              xs={12}
+              md={6}
+              lg={4}
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+              <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
+                <Typography variant="h6" color="textSecondary">
+                  No trainers available at the moment.
+                </Typography>
+              </Box>
+            </Grid>
+          )}
 
           {trainerInsights?.maleTrainers &&
             trainerInsights?.femaleTrainers &&
@@ -544,7 +558,7 @@ export default function OverviewEcommerceView() {
                 />
               </Grid>
             )}
-          {analytics?.studentCount > 0 && analytics.activeStudents && analytics.activeStudents && (
+          {analytics?.studentCount > 0 && analytics.activeStudents ? (
             <Grid xs={12} md={6} lg={4}>
               <AnalyticsActiveUsers
                 title="Student Analytics"
@@ -552,7 +566,21 @@ export default function OverviewEcommerceView() {
                 chart={studentChartData}
               />
             </Grid>
+          ) : (
+            <Grid
+              xs={12}
+              md={6}
+              lg={4}
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+              <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
+                <Typography variant="h6" color="textSecondary">
+                  No students available at the moment.
+                </Typography>
+              </Box>
+            </Grid>
           )}
+
           {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
             <Grid xs={12} md={6} lg={6}>
               {' '}
@@ -584,7 +612,7 @@ export default function OverviewEcommerceView() {
                 />
               </Grid>
             )}
-          <Grid item xs={12} md={12} lg={7}>
+          <Grid item xs={12} md={12} lg={6}>
             {' '}
             <AnalyticsConversionRates
               title="Student Categories and Preferences"
@@ -596,15 +624,15 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-          {trainerInsights?.sessionFeedback?.length > 0 && (
-            <Grid xs={12} md={6} lg={5}>
-              <ReviewedTrainer
-                title="Trainer Feedback"
-                subheader="Student reviews for the trainers"
-                feedbackList={trainerInsights?.sessionFeedback}
-              />
-            </Grid>
-          )}
+
+          <Grid xs={12} md={6} lg={5}>
+            <ReviewedTrainer
+              title="Trainer Feedback"
+              subheader="Student reviews for the trainers"
+              feedbackList={trainerInsights?.sessionFeedback}
+            />
+          </Grid>
+
           {/* <Grid xs={12} md={12} lg={12}>
             {' '}
             <SessionOverview
