@@ -18,6 +18,7 @@ export function useGetPendingVerificationRequest({
   limit = 10,
   sort_by = 'desc',
   is_verified = 0,
+  search = '',
 }: UseGetPendingVerificationRequestProps) {
   const { user } = useAuthContext();
 
@@ -28,6 +29,9 @@ export function useGetPendingVerificationRequest({
       sort_by,
       is_verified,
     };
+    if (search) {
+      queryParams.search = search;
+    }
     if (user?.user?.user_type === 'SCHOOL_ADMIN') {
       queryParams.is_school_verified = 0;
       return `${endpoints.pendingRequest.schoolAdminTrainerPendingRequest}?${new URLSearchParams(

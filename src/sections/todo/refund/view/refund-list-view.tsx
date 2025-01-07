@@ -55,15 +55,12 @@ const defaultFilters = {
   driver_id: null,
 };
 
-export default function PendingRefundListView() {
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
-  const [filters, setFilters] = useState(defaultFilters);
-
+export default function PendingRefundListView({ table, filters, setFilters, searchValue }) {
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
       page: table.page + 1,
       limit: table.rowsPerPage,
+      search: searchValue,
       // ...(filters?.category_id && { category_id: filters.category_id }),
       // ...(filters?.city_id && { city_id: filters.city_id }),
       // ...(filters?.driver_id && { driver_id: filters.driver_id }),
