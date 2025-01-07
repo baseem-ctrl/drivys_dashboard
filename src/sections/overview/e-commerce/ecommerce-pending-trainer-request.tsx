@@ -54,13 +54,14 @@ const defaultFilters = {
 };
 export default function PendingRequests({
   height,
-  table,
   searchValue,
   setSearchValue,
   filters,
   setFilters,
 }: any) {
   const router = useRouter();
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const {

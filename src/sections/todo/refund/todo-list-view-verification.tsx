@@ -53,12 +53,7 @@ export default function ToDoListViewVerification() {
         />
       </Grid>
       <Grid>
-        <PendingRequests
-          height={''}
-          table={table}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-        />
+        <PendingRequests height={''} searchValue={searchValue} setSearchValue={setSearchValue} />
       </Grid>
     </Container>
   );
