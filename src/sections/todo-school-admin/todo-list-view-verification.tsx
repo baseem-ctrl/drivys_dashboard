@@ -3,8 +3,33 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { paths } from 'src/routes/paths';
 import RefundListView from './view/refund-list-view';
 import PendingRequests from 'src/sections/overview/e-commerce/ecommerce-pending-trainer-request';
+import TodoListSearch from '../todo/todo-pending-request-filter';
+import { useCallback, useState } from 'react';
+import { useTable } from 'src/components/table';
+import { IUserTableFilterValue } from 'src/types/city';
+
+const defaultFilters = {
+  customerName: '',
+  status: '',
+  bookingType: 'all',
+  paymentStatus: '',
+  vendor: '',
+};
 
 export default function ToDoListSchoolAdminViewVerification() {
+  const [filters, setFilters] = useState(defaultFilters);
+  const [searchValue, setSearchValue] = useState('');
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const handleFilters = useCallback(
+    (name: string, value: IUserTableFilterValue) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
@@ -16,8 +41,24 @@ export default function ToDoListSchoolAdminViewVerification() {
         ]}
         sx={{ mb: 3 }}
       />
+      <Grid item sx={{ mb: 3 }}>
+        <TodoListSearch
+          placeholder="Search with trainer name, email, school name..."
+          filters={filters}
+          onFilters={handleFilters}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+        />
+      </Grid>
       <Grid>
-        <PendingRequests height={''} />
+        <PendingRequests
+          height={''}
+          table={table}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          filters={filters}
+          setFilters={setFilters}
+        />
       </Grid>
     </Container>
   );

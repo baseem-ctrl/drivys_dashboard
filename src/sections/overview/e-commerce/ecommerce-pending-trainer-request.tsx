@@ -52,7 +52,14 @@ const defaultFilters = {
   paymentStatus: '',
   vendor: '',
 };
-export default function PendingRequests({ height, table, searchValue }: any) {
+export default function PendingRequests({
+  height,
+  table,
+  searchValue,
+  setSearchValue,
+  filters,
+  setFilters,
+}: any) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();

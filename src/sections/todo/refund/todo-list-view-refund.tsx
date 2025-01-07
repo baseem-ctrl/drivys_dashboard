@@ -45,7 +45,7 @@ export default function ToDoListViewRefund() {
       />
       <Grid item sx={{ mb: 3 }}>
         <TodoListSearch
-          placeholder="Search..."
+          placeholder="Search with student's name, driver's name, city's name, category's name..."
           filters={filters}
           onFilters={handleFilters}
           searchValue={searchValue}
