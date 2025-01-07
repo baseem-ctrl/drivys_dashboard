@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Container,
   Typography,
@@ -30,6 +30,8 @@ import { useTable, TablePaginationCustom } from 'src/components/table';
 import { useAuthContext } from 'src/auth/hooks';
 import { updateUserVerification } from 'src/api/school-admin';
 import Scrollbar from 'src/components/scrollbar';
+import { IUserTableFilterValue } from 'src/types/city';
+import TodoListSearch from 'src/sections/todo/todo-pending-request-filter';
 
 // Type Definitions
 type ItemProps = {
@@ -43,11 +45,16 @@ type ItemProps = {
   verified_at: string | null;
   requested_time: string;
 };
-
-export default function PendingRequests({ height }: any) {
+const defaultFilters = {
+  customerName: '',
+  status: '',
+  bookingType: 'all',
+  paymentStatus: '',
+  vendor: '',
+};
+export default function PendingRequests({ height, table, searchValue }: any) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { user } = useAuthContext();
   const {
     pendingRequests,
@@ -55,7 +62,11 @@ export default function PendingRequests({ height }: any) {
     pendingRequestsLoading,
     totalPages,
     revalidatePendingRequests,
-  } = useGetPendingVerificationRequest({ page: table?.page + 1, limit: table?.rowsPerPage });
+  } = useGetPendingVerificationRequest({
+    page: table?.page + 1,
+    limit: table?.rowsPerPage,
+    search: searchValue,
+  });
 
   const handleClickUserDetails = (userId: string) => {
     router.push(paths.dashboard.user.details(userId));
@@ -132,6 +143,7 @@ export default function PendingRequests({ height }: any) {
       </Container>
     );
   }
+  console.log('serach value', searchValue);
   return (
     <Card>
       {' '}
