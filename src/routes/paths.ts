@@ -250,7 +250,7 @@ export const paths = {
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
     },
     certificate: `${ROOTS.DASHBOARD}/certificate`,
-    createCertificate: `${ROOTS.DASHBOARD}/certificate-create`,
+    // createCertificate: `${ROOTS.DASHBOARD}/certificate-create`,
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
       new: `${ROOTS.DASHBOARD}/tour/new`,

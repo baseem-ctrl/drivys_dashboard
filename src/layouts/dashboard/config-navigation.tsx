@@ -137,10 +137,10 @@ export function useNavData() {
       path: paths.dashboard.certificate,
       icon: ICONS.file,
 
-      children: [
-        { title: t('certificates'), path: paths.dashboard.certificate },
-        { title: t('Generate Certificate'), path: paths.dashboard.createCertificate },
-      ],
+      // children: [
+      //   { title: t('certificates'), path: paths.dashboard.certificate },
+      //   // { title: t('Generate Certificate'), path: paths.dashboard.createCertificate },
+      // ],
     },
     // HOME LISTING
     {

@@ -223,8 +223,8 @@ const allroutes = [
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
     ],
   },
-  { path: 'certificate', element: <CertificateListView /> },
-  { path: 'certificate-create', element: <GenerateCertificateForm /> },
+  { path: 'certificate', element: <CertificateListView />, index: true },
+  // { path: 'certificate-create', element: <GenerateCertificateForm /> },
   {
     path: 'system',
     children: [
