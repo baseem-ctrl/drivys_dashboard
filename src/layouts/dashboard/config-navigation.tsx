@@ -131,6 +131,17 @@ export function useNavData() {
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
     },
+
+    {
+      title: t('Certificates'),
+      path: paths.dashboard.certificate,
+      icon: ICONS.file,
+
+      children: [
+        { title: t('certificates'), path: paths.dashboard.certificate },
+        { title: t('Generate Certificate'), path: paths.dashboard.createCertificate },
+      ],
+    },
     // HOME LISTING
     {
       title: t('home Page listing'),
@@ -165,6 +176,7 @@ export function useNavData() {
       path: paths.dashboard.coupon.root,
       icon: ICONS.file,
     },
+
     {
       title: t('slider'),
       path: paths.dashboard.slider.root,
