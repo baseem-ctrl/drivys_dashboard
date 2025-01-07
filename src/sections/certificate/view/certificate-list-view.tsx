@@ -39,6 +39,7 @@ const TABLE_HEAD = [
 
   { id: 'gear', label: 'Gear', width: 180 },
   { id: 'request_date', label: 'Request Date', width: 180 },
+  { id: 'certificate_url', label: 'Certificate URL', width: 180 },
   { id: 'status', label: 'Status', width: 180 },
   { id: 'trainer', label: 'Trainer', width: 180 },
   { id: 'txn', label: 'Transaction ID', width: 180 },
@@ -239,7 +240,7 @@ export default function CertificateListView() {
                           colSpan={TABLE_HEAD.length}
                           sx={{ fontWeight: 'bold', color: 'primary.main' }}
                         >
-                          APPROVED
+                          GENERATED CERTIFICATES
                         </TableCell>
                       </TableRow>
                       {approvedRequests.map((row) => (
@@ -258,7 +259,7 @@ export default function CertificateListView() {
                         colSpan={TABLE_HEAD.length}
                         sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
                       >
-                        No certificates have been approved yet
+                        No certificates have been generated yet
                       </TableCell>
                     </TableRow>
                   )}

@@ -39,6 +39,7 @@ import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
 import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
 import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
+import GenerateCertificateForm from 'src/sections/certificate/certificate-generate-admin';
 
 // ----------------------------------------------------------------------
 
@@ -222,6 +223,8 @@ const allroutes = [
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
     ],
   },
+  { path: 'certificate', element: <CertificateListView />, index: true },
+  // { path: 'certificate-create', element: <GenerateCertificateForm /> },
   {
     path: 'system',
     children: [

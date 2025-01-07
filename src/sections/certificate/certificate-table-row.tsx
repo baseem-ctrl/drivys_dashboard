@@ -48,6 +48,33 @@ export default function CertificateRow({ row, reload }) {
         <TableCell>{gear || 'N/A'}</TableCell>
 
         <TableCell>{request_date || 'N/A'}</TableCell>
+        <TableCell>
+          {city?.certificate_link ? (
+            <a
+              href={city.certificate_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+            >
+              <span
+                style={{
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  transition: 'text-decoration 0.3s ease',
+                }}
+                onMouseEnter={(e) => (e.target.style.textDecoration = 'underline')}
+                onMouseLeave={(e) => (e.target.style.textDecoration = 'none')}
+              >
+                {city.certificate_link}
+              </span>
+            </a>
+          ) : (
+            'N/A'
+          )}
+        </TableCell>
 
         <TableCell>
           <Label

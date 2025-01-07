@@ -249,6 +249,8 @@ export const paths = {
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
     },
+    certificate: `${ROOTS.DASHBOARD}/certificate`,
+    // createCertificate: `${ROOTS.DASHBOARD}/certificate-create`,
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
       new: `${ROOTS.DASHBOARD}/tour/new`,
