@@ -143,6 +143,7 @@ export const endpoints = {
     getStudentReview: 'admin/reviews/get-students-reviews',
     getTrainerReview: 'admin/reviews/get-trainers-reviews',
     deleteReview: 'admin/reviews/delete-review?',
+    updateReview: 'admin/reviews/update-review',
   },
   school: {
     list: 'admin/vendor/get-vendor-list',
