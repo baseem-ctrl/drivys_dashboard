@@ -157,11 +157,11 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
             }}
             onClick={() => handleUserDetails(row.student_id)}
           >
-            {student_name}
+            {student_name || 'N/A'}
           </Typography>
         </TableCell>
-        <TableCell>{student_email}</TableCell>
-        <TableCell>{student_phone}</TableCell>
+        <TableCell>{student_email || 'N/A'}</TableCell>
+        <TableCell>{student_phone || 'N/A'}</TableCell>
 
         <TableCell>{reviews.length} Reviews</TableCell>
       </TableRow>
@@ -207,7 +207,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                           }}
                           onClick={() => handleBookingClick(review.booking_id)}
                         >
-                          {review.booking_id}
+                          {review.booking_id || 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -223,7 +223,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                           }}
                           onClick={() => handleUserDetails(review.trainer_id)}
                         >
-                          {review.trainer_name}
+                          {review.trainer_name || 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>

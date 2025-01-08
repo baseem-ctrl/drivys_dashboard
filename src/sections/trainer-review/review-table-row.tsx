@@ -132,11 +132,11 @@ export default function TrainerReviewRow({ reload, row, userType }) {
             }}
             onClick={() => handleUserDetails(row.trainer_id)}
           >
-            {trainer_name}
+            {trainer_name || 'N/A'}
           </Typography>
         </TableCell>
-        <TableCell>{trainer_email}</TableCell>
-        <TableCell>{trainer_phone}</TableCell>
+        <TableCell>{trainer_email || 'N/A'}</TableCell>
+        <TableCell>{trainer_phone || 'N/A'}</TableCell>
         <TableCell>
           <Box display="flex" alignItems="center">
             {avg_rating
@@ -192,7 +192,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                           }}
                           onClick={() => handleBookingClick(review.booking_id)}
                         >
-                          {review.booking_id}
+                          {review.booking_id || 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -207,7 +207,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                           }}
                           onClick={() => handleUserDetails(review.student_id)}
                         >
-                          {review.student_name}
+                          {review.student_name || 'N/A'}
                         </Typography>
                       </TableCell>
                       <TableCell>
