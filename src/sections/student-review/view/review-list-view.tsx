@@ -53,11 +53,20 @@ export default function StudentReviewListView() {
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
-  const [filters, setFilters] = useState('');
+  const [filters, setFilters] = useState({
+    student_id: null,
+    trainer_id: null,
+  });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
 
   const { studentReviews, studentReviewsLoading, totalpages, revalidateStudentReviews } =
-    useGetStudentReview();
+    useGetStudentReview({
+      student_id: filters.student_id,
+      trainer_id: filters.trainer_id,
+    });
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
   const { language } = useGetAllLanguage(0, 1000);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
@@ -104,13 +113,6 @@ export default function StudentReviewListView() {
   };
   // const canReset = !isEqual(defaultFilters, filters);
 
-  const handleFiltersChange = (name, value) => {
-    // setFilters((prevFilters) => ({
-    //   ...prevFilters,
-    //   [name]: value,
-    // }));
-  };
-
   const handleResetFilters = useCallback(() => {
     setSelectedOrder(undefined);
 
@@ -134,6 +136,7 @@ export default function StudentReviewListView() {
           handleOrderChange={handleOrderChange}
           selectedOrder={selectedOrder}
           filters={filters}
+          setFilters={setFilters}
           onFilters={handleFiltersChange}
           // canReset={canReset}
           onResetFilters={handleResetFilters}
@@ -162,7 +165,7 @@ export default function StudentReviewListView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {/* {renderFilters} */}
+      {renderFilters}
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
