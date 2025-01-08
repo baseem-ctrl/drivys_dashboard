@@ -265,7 +265,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                           <Box display="flex" alignItems="center">
                             <Tooltip
                               title={
-                                review.user_comments ? 'Delete Comment' : 'No comments to delete'
+                                review.driver_comments ? 'Delete Comment' : 'No comments to delete'
                               }
                               arrow
                             >
@@ -273,7 +273,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                                 <IconButton
                                   color="error"
                                   onClick={() => handleDeleteComment(review.session_id)}
-                                  disabled={!review.user_comments}
+                                  disabled={!review.driver_comments}
                                 >
                                   <DeleteIcon />
                                 </IconButton>
@@ -293,7 +293,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                                     if (editingState[review.session_id]?.isEditing) {
                                       handleSaveClick(review.session_id);
                                     } else {
-                                      handleEditClick(review.session_id, review.user_comments);
+                                      handleEditClick(review.session_id, review.driver_comments);
                                     }
                                   }}
                                 >
