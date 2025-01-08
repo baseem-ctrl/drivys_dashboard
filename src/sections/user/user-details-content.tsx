@@ -186,7 +186,6 @@ export default function UserDetailsContent({
     }),
     [addresses]
   );
-
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
