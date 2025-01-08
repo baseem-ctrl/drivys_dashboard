@@ -102,3 +102,9 @@ export function deleteReview({
   const response = drivysCreator(URL);
   return response;
 }
+// ----------------------------------------------------------------------
+// Function for editing the review of student and trainer
+export function updateReview(body) {
+  const URL = `${endpoints.review.updateReview}`;
+  return drivysCreator([URL, body]);
+}

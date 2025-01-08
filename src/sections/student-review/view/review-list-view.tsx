@@ -31,6 +31,7 @@ import { useGetStudentReview, useGetTrainerReview } from 'src/api/review';
 import TrainerReviewRow from '../review-table-row';
 import ReviewFilters from '../review-filters';
 import StudentReviewRow from '../review-table-row';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function StudentReviewListView() {
+  const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -203,6 +205,7 @@ export default function StudentReviewListView() {
                       ))
                     : tableData?.map((row) => (
                         <StudentReviewRow
+                          userType={user?.user?.user_type}
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
