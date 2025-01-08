@@ -147,7 +147,7 @@ export default function TrainerReviewListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Trainer Review List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {

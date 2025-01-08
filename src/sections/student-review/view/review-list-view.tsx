@@ -146,7 +146,7 @@ export default function StudentReviewListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Student Review List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
