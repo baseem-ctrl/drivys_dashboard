@@ -27,7 +27,7 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import { useGetAllCities, useGetAllCity } from 'src/api/city';
+import { useGetAllCities, useGetAllCity, useGetCityById } from 'src/api/city';
 import { useGetStateList } from 'src/api/state';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useEffect, useMemo, useState } from 'react';
@@ -186,6 +186,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     limit: 1000,
     page: 0,
   });
+  const { states: stateList } = useGetStateList({
+    limit: 1000,
+    page: 0,
+  });
+
   const cityOptions =
     city?.map((cityItem) => ({
       value: cityItem.id,
@@ -706,6 +711,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     }),
     [details?.vendor_addresses, editingIndex]
   );
+  useEffect(() => {
+    if (editingIndex !== null && details?.vendor_addresses) {
+      const address = details.vendor_addresses[editingIndex];
+      setSelectedCity(address.city);
+      setSelectedState(address.state);
+    }
+  }, [editingIndex, details?.vendor_addresses]);
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -736,7 +748,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     reset(defaultValues);
     setLoad(true);
   }, [defaultValues, reset]);
-
   // Function to update address state after form submission
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -817,6 +828,18 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   lng: parseFloat(details?.longitude) || 0,
                 };
 
+                const translatedCityName =
+                  city?.find(
+                    (cityItem) =>
+                      cityItem?.city_translations?.[0]?.city_id?.toString() ===
+                      details?.city?.toString()
+                  )?.city_translations?.[0]?.name || 'N/A';
+                const translatedStateName =
+                  stateList?.find(
+                    (stateItem) =>
+                      stateItem?.translations[0]?.state_province_id.toString() === details?.state
+                  )?.translations?.[0]?.name || 'N/A';
+
                 return (
                   <Box key={details.id} sx={{ width: '100%' }}>
                     {/* Address Section Title */}
@@ -834,7 +857,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         boxShadow: 3,
                         borderRadius: 2,
                         border: '1px solid #ddd',
-
                         display: 'grid',
                         gridTemplateColumns: {
                           sm: '1fr',
@@ -847,8 +869,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       <Box>
                         {[
                           { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                          { label: 'City', value: details?.city ?? 'N/A' },
-                          { label: 'Area', value: details?.state ?? 'N/A' },
+                          { label: 'City', value: translatedCityName },
+                          { label: 'Area', value: translatedStateName ?? 'N/A' },
                           { label: 'Country', value: details?.country ?? 'N/A' },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
@@ -966,6 +988,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     onClick={() => {
                       reset(defaultValues);
                       setSelectedCity('');
+                      setEditingIndex(null);
                     }}
                   >
                     Cancel
