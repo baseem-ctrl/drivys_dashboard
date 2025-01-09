@@ -108,7 +108,7 @@ export default function PackageCreateForm({
   const DeliverySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
-    session_inclusions: Yup.string(),
+    session_inclusions: Yup.string().required('Session Inclusion is required'),
     is_published: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
@@ -226,8 +226,7 @@ export default function PackageCreateForm({
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
     if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
-    if (data?.session_inclusions)
-      formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
+    formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions || '');
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
     if (data.is_drivys_commision_percentage !== undefined) {
@@ -249,27 +248,29 @@ export default function PackageCreateForm({
       });
     }
 
-    sessionTitles.forEach((session, index) => {
-      formData.append(`session_titles[${index}][locale]`, session.locale);
-      session.titles.forEach((title, titleIndex) => {
-        formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+    if (sessionTitles.length === 0) {
+      formData.append('session_titles', '');
+    } else {
+      sessionTitles.forEach((session, index) => {
+        formData.append(`session_titles[${index}][locale]`, session.locale);
+        session.titles.forEach((title, titleIndex) => {
+          formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+        });
       });
-    });
+    }
 
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
-        if (city?.id !== undefined) {
+        if (city?.id !== undefined && city?.id !== '' && city?.id) {
           formData.append(`cities_ids[${index}][id]`, String(city.id));
         }
 
-        if (city?.min_price !== undefined) {
+        if (city?.min_price !== undefined && city?.min_price !== '' && city?.min_price) {
           formData.append(`cities_ids[${index}][min_price]`, String(city.min_price));
         }
 
-        if (city?.max_price !== undefined) {
+        if (city?.max_price !== undefined && city?.max_price !== '' && city?.max_price) {
           formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
-        }
-        if (!city?.id && !city?.min_price && !city?.max_price) {
         }
       });
     } else {
