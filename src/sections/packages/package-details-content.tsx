@@ -22,9 +22,11 @@ import {
   TextField,
   Tooltip,
   TabPanel,
+  Popover,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useGetSchool } from 'src/api/school';
@@ -46,6 +48,7 @@ import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-sea
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFEditor, RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
+import AddCityPackage from './add-city-package';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -55,6 +58,18 @@ type Props = {
 };
 
 export default function PackageDetails({ details, loading, reload }: Props) {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [openAddCityDialog, setOpenAddCityDialog] = useState(false);
+  const handleOpenAddCityDialog = () => {
+    setOpenAddCityDialog(true);
+  };
+
+  const handleCloseAddCityDialog = () => {
+    setOpenAddCityDialog(false);
+  };
+  const handleAddCity = (newCityData: any) => {
+    handleCloseAddCityDialog();
+  };
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.package_translations?.length > 0 ? details?.package_translations[0]?.locale : ''
   );
@@ -107,7 +122,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
-    name: Yup.string().required('Name is required'),
+    name: Yup.string(),
     session_inclusions: Yup.string(),
     number_of_sessions: Yup.string(),
     status: Yup.string(),
@@ -157,7 +172,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       schoolSetValue('name', selectedLocaleObject.name); // Update name to match the locale
       schoolSetValue('session_inclusions', selectedLocaleObject.session_inclusions); // Update session inclusions to match the locale
 
-      const updatedSessionTitles = details?.session_details.map((session: any) => {
+      const updatedSessionTitles = details?.session_details?.map((session: any) => {
         const translation = session.translations.find(
           (t: { locale: string }) => t.locale.toLowerCase() === selectedLocale.toLowerCase()
         );
@@ -183,7 +198,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       const emptySessionTitles = Array.from({ length: sessionCount }, () => ({ title: '' }));
 
       setSessionTitles(emptySessionTitles);
-      emptySessionTitles.forEach((session, index) => {
+      emptySessionTitles?.forEach((session, index) => {
         schoolSetValue(`session_titles[${index}]`, session.title);
       });
     }
@@ -218,7 +233,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   useEffect(() => {
     if (details?.session_details) {
-      const initialTitles = details.session_details.map((session) => ({
+      const initialTitles = details.session_details?.map((session) => ({
         title: session.translations?.[0]?.title || '',
       }));
       setSessionTitles(initialTitles);
@@ -235,7 +250,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }));
     setSessionTitles(updatedTitles);
 
-    updatedTitles.forEach((title, index) => {
+    updatedTitles?.forEach((title, index) => {
       schoolSetValue(`session_titles[${index}]`, title.title);
     });
   }, [numberOfSessions, details, schoolSetValue]);
@@ -246,7 +261,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     setSessionTitles(updatedTitles);
     schoolSetValue(`session_titles[${index}]`, value);
   };
-
+  console.log('details', details);
   const onSubmit = packageSubmit(async (data) => {
     try {
       let payload = {
@@ -268,29 +283,34 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
       formData.append('number_of_sessions', payload.number_of_sessions);
-
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
       formData.append('category_id', payload.category_id || '');
 
       // Handle `package_translations` (assumes only one translation)
-      if (payload.package_translations && payload.package_translations.length > 0) {
-        formData.append('package_translation[0][name]', payload.package_translations[0].name || '');
-        formData.append(
-          'package_translation[0][locale]',
-          payload.package_translations[0].locale || ''
-        );
-        formData.append(
-          'package_translation[0][session_inclusions]',
-          payload.package_translations[0].session_inclusions || ''
-        );
+      if (Array.isArray(payload.package_translations) && payload.package_translations.length > 0) {
+        const translation = payload.package_translations[0];
+        if (translation.name) {
+          formData.append('package_translation[0][name]', translation.name);
+        }
+        if (translation.locale) {
+          formData.append('package_translation[0][locale]', translation.locale);
+        }
+        if (translation.session_inclusions) {
+          formData.append(
+            'package_translation[0][session_inclusions]',
+            translation.session_inclusions
+          );
+        }
       }
 
       const sessionTitles = [];
       const selectedLocale = data?.locale?.toLowerCase() || selectedLanguage.toLowerCase();
 
-      const filteredSessionTitles = data.session_titles.filter((title) => title);
-      const sessionDetails = filteredSessionTitles.map((newTitle: string) => ({
+      const filteredSessionTitles = Array.isArray(data?.session_titles)
+        ? data.session_titles.filter((title) => title)
+        : [];
+      const sessionDetails = filteredSessionTitles.map((newTitle) => ({
         locale: selectedLocale || selectedLanguage,
         title: newTitle,
       }));
@@ -301,14 +321,20 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       });
 
       sessionTitles.forEach((session, index) => {
-        formData.append(`session_titles[${index}][locale]`, session.locale);
-        session.titles.forEach((title, titleIndex) => {
-          formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
-        });
+        if (session.locale) {
+          formData.append(`session_titles[${index}][locale]`, session.locale);
+        }
+        if (Array.isArray(session.titles)) {
+          session.titles.forEach((title, titleIndex) => {
+            if (title) {
+              formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+            }
+          });
+        }
       });
 
       // Handle City Edits
-      if (details?.package_city && details.package_city.length > 0) {
+      if (Array.isArray(details?.package_city) && details.package_city.length > 0) {
         details.package_city.forEach((cityItem, index) => {
           if (editCityIndex === index) {
             const updatedCity = data.cities_ids?.[index];
@@ -357,7 +383,61 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       reload();
     }
   });
+  const citySubmit = packageSubmit(async (data) => {
+    try {
+      let formData = new FormData();
 
+      formData.append('package_id', details.id || '');
+
+      if (details?.package_city && details.package_city.length > 0) {
+        details.package_city?.forEach((cityItem, index) => {
+          if (editCityIndex === index) {
+            const updatedCity = data.cities_ids?.[index];
+
+            formData.append(`cities_ids[${index}][id]`, cityItem?.city_id ?? '');
+            formData.append(
+              `cities_ids[${index}][min_price]`,
+              updatedCity?.min_price ?? cityItem?.min_price ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][max_price]`,
+              updatedCity?.max_price ?? cityItem?.max_price ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][commision]`,
+              updatedCity?.commision ?? cityItem?.commision ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][commision_type]`,
+              updatedCity?.commision_type ?? cityItem?.commision_type ?? ''
+            );
+          }
+        });
+      }
+
+      const response = await createUpdatePackage(formData);
+      if (response) {
+        enqueueSnackbar(response.message, {
+          variant: 'success',
+        });
+        setEditMode(false);
+      }
+    } catch (error) {
+      if (error?.errors) {
+        if (typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+          Object.values(error?.errors)?.forEach((errorMessage) => {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          });
+        } else {
+          enqueueSnackbar(error.errors, { variant: 'error' });
+        }
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
+      reload();
+    }
+  });
   const handleCancel = () => {
     schoolReset(); // Reset to the original values
     setEditMode(false);
@@ -433,11 +513,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
               ...(details?.session_details
                 ?.slice(0, Math.floor(numberOfSessions / 2))
-                .map((sessionItem: any) => ({
+                ?.map((sessionItem: any) => ({
                   label: `Slot ${sessionItem.slot_number} Title`,
                   value: sessionItem.translations?.[0]?.title ?? 'N/A',
                 })) || []),
-            ].map((item, index) => (
+            ]?.map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                   {item.label}
@@ -521,7 +601,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     name="vendor_id"
                     label="Select School"
                     placeholder="Search School..."
-                    options={schoolList.map((item: any) => ({
+                    options={schoolList?.map((item: any) => ({
                       label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
                       value: item.id,
                     }))}
@@ -533,7 +613,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     name="category_id"
                     label="Select Category"
                     placeholder="Search Category..."
-                    options={category.map((item: any) => ({
+                    options={category?.map((item: any) => ({
                       label: `${item.category_translations?.[0]?.name}`, // Display full name
                       value: item.id,
                     }))}
@@ -553,7 +633,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   )}
                   <Grid item xs={10}>
                     <Grid container spacing={2}>
-                      {sessionTitles.map((session, index) => (
+                      {sessionTitles?.map((session, index) => (
                         <Grid item xs={12} key={index}>
                           <RHFTextField
                             fullWidth
@@ -680,7 +760,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   </Box>
                 </Box>
 
-                <Box sx={{ display: 'flex', mb: 1 }}>
+                {/* <Box sx={{ display: 'flex', mb: 1 }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                     Commission
                   </Box>
@@ -690,13 +770,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Box component="span" sx={{ flex: 1 }}>
                     {cityItem?.commision ?? 'N/A'}
                   </Box>
-                </Box>
+                </Box> */}
               </Box>
             ))}
           </Stack>
         ) : (
           <Box rowGap={2} columnGap={2} display="grid" pb={1}>
-            <FormProvider methods={Schoolmethods} onSubmit={onSubmit}>
+            <FormProvider methods={Schoolmethods} onSubmit={citySubmit}>
               <Box
                 mt={2}
                 rowGap={3}
@@ -745,7 +825,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     <>
       <Tabs value={selectedTab} onChange={handleTabChange} aria-label="package details tabs">
         <Tab label="Details" />
-        {details?.package_city?.length > 0 && <Tab label="City" />}
+        <Tab label="City" />
       </Tabs>
       {loading ? (
         <Box
@@ -779,6 +859,19 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               Add package document
             </Button>
           )}
+          {selectedTab === 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Iconify icon="eva:plus-fill" />}
+                sx={{ mt: 7, mb: 5 }}
+                onClick={handleOpenAddCityDialog}
+              >
+                Add City
+              </Button>
+            </Box>
+          )}
           {selectedTab === 1 && details?.package_city?.length > 0 && (
             <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
               <Grid xs={12} md={8}>
@@ -786,13 +879,21 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               </Grid>
             </Grid>
           )}
+          <AddCityPackage
+            open={openAddCityDialog}
+            onClose={handleCloseAddCityDialog}
+            handleAddCity={handleAddCity}
+            currentCityData={details?.package_city || []}
+            id={details?.id}
+            reload={reload}
+          />
           <PackageDocumentCreateUpdate
             open={openDialog}
             onClose={handleCloseDialog}
             reload={revalidateDocuments}
             packageId={details?.id}
             sessionNumber={details?.number_of_sessions}
-          />
+          />{' '}
           {documents && documents.length > 0 && (
             <PackageDocumentDetails
               documents={documents}
