@@ -58,7 +58,7 @@ export default function PackageCreateForm({
 
   const { language } = useGetAllLanguage(0, 1000);
   // const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
-  const { category } = useGetAllCategory({
+  const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 1,
     search: searchValueCat,
@@ -108,7 +108,7 @@ export default function PackageCreateForm({
   const DeliverySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
-    session_inclusions: Yup.string(),
+    session_inclusions: Yup.string().required('Session Inclusion is required'),
     is_published: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
@@ -177,7 +177,6 @@ export default function PackageCreateForm({
     setValue('is_drivys_commision_percentage', !values?.is_drivys_commision_percentage);
   };
   const previousLocaleRef = useRef(selectedLocale);
-  console.log(errors);
 
   // ** 1. Saving current locale's translation before switching **
   const saveCurrentLocaleTranslation = () => {
@@ -226,8 +225,7 @@ export default function PackageCreateForm({
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
     if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
-    if (data?.session_inclusions)
-      formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions);
+    formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions || '');
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
     if (data.is_drivys_commision_percentage !== undefined) {
@@ -249,27 +247,29 @@ export default function PackageCreateForm({
       });
     }
 
-    sessionTitles.forEach((session, index) => {
-      formData.append(`session_titles[${index}][locale]`, session.locale);
-      session.titles.forEach((title, titleIndex) => {
-        formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+    if (sessionTitles.length === 0) {
+      formData.append('session_titles', '');
+    } else {
+      sessionTitles.forEach((session, index) => {
+        formData.append(`session_titles[${index}][locale]`, session.locale);
+        session.titles.forEach((title, titleIndex) => {
+          formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+        });
       });
-    });
+    }
 
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
-        if (city?.id !== undefined) {
+        if (city?.id !== undefined && city?.id !== '' && city?.id) {
           formData.append(`cities_ids[${index}][id]`, String(city.id));
         }
 
-        if (city?.min_price !== undefined) {
+        if (city?.min_price !== undefined && city?.min_price !== '' && city?.min_price) {
           formData.append(`cities_ids[${index}][min_price]`, String(city.min_price));
         }
 
-        if (city?.max_price !== undefined) {
+        if (city?.max_price !== undefined && city?.max_price !== '' && city?.max_price) {
           formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
-        }
-        if (!city?.id && !city?.min_price && !city?.max_price) {
         }
       });
     } else {
@@ -375,19 +375,21 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={6}>
-              <RHFAutocompleteSearch
-                name="vendor_id"
-                label="Select School"
-                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                options={schoolList?.map((item) => ({
-                  label:
-                    item?.vendor_translations.find((item) => item?.locale?.toLowerCase() === 'en')
-                      ?.name || 'Unknown',
-                  value: item?.id,
-                }))}
-                onInputChange={(e: any) => handleSearchChange(e)}
-                loading={schoolLoading}
-              />
+              {!schoolLoading && (
+                <RHFAutocompleteSearch
+                  name="vendor_id"
+                  label="Select School"
+                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                  options={schoolList?.map((item) => ({
+                    label:
+                      item?.vendor_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                        ?.name || 'Unknown',
+                    value: item?.id,
+                  }))}
+                  onInputChange={(e: any) => handleSearchChange(e)}
+                  loading={schoolLoading}
+                />
+              )}
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
@@ -409,80 +411,85 @@ export default function PackageCreateForm({
             {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
-              <RHFAutocompleteSearch
-                name="category_id"
-                label="Select Category"
-                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                options={category?.map((item) => ({
-                  label:
-                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
-                      ?.name || 'Unknown',
-                  value: item?.id,
-                }))}
-                onInputChange={(e: any) => handleSearchChange(e)}
-                loading={schoolLoading}
-              />
+              {!categoryLoading && (
+                <RHFAutocompleteSearch
+                  name="category_id"
+                  label="Select Category"
+                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                  options={category?.map((item) => ({
+                    label:
+                      item?.category_translations.find(
+                        (item) => item?.locale?.toLowerCase() === 'en'
+                      )?.name || 'Unknown',
+                    value: item?.id,
+                  }))}
+                  onInputChange={(e: any) => handleSearchChange(e)}
+                  loading={categoryLoading}
+                />
+              )}
             </Grid>
             <Box sx={{ mt: 2 }}>
-              {cityFields?.map((cityField, index) => (
-                <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={12}>
-                    <RHFAutocompleteSearch
-                      name={`cities_ids[${index}][id]`}
-                      label={`Select City ${index + 1}`}
-                      multiple={false}
-                      options={city?.map((option: any) => ({
-                        value: option?.id,
-                        label: option?.city_translations[0]?.name ?? 'Unknown',
-                      }))}
-                      onChange={(event, value) => {
-                        handleCityFieldChange(index, 'id', value?.value || null);
-                      }}
-                      loading={cityLoading}
-                    />
-                  </Grid>
-
-                  <Grid item xs={6}>
-                    <RHFTextField
-                      name={`cities_ids[${index}][min_price]`}
-                      label="City Min Price"
-                      type="number"
-                      inputProps={{ min: 0 }}
-                      value={cityField.min_price}
-                      onChange={(event) =>
-                        handleCityFieldChange(index, 'min_price', event.target.value)
-                      }
-                      suffix="AED"
-                    />
-                  </Grid>
-
-                  <Grid item xs={6}>
-                    <RHFTextField
-                      name={`cities_ids[${index}][max_price]`}
-                      label="City Max Price"
-                      type="number"
-                      inputProps={{ min: 0 }}
-                      value={cityField.max_price}
-                      onChange={(event) =>
-                        handleCityFieldChange(index, 'max_price', event.target.value)
-                      }
-                      suffix="AED"
-                    />
-                  </Grid>
-
-                  {index > 0 && (
-                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-                      <IconButton
-                        onClick={() => handleRemoveCity(index)}
-                        color="error"
-                        sx={{ color: 'black' }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+              {(!cityLoading &&
+                cityFields?.map((cityField, index) => (
+                  <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={12}>
+                      <RHFAutocompleteSearch
+                        name={`cities_ids[${index}][id]`}
+                        label={`Select City ${index + 1}`}
+                        multiple={false}
+                        options={city?.map((option: any) => ({
+                          value: option?.id,
+                          label: option?.city_translations[0]?.name ?? 'Unknown',
+                        }))}
+                        onChange={(event, value) => {
+                          handleCityFieldChange(index, 'id', value?.value || null);
+                        }}
+                        loading={cityLoading}
+                      />
                     </Grid>
-                  )}
-                </Grid>
-              )) || []}
+
+                    <Grid item xs={6}>
+                      <RHFTextField
+                        name={`cities_ids[${index}][min_price]`}
+                        label="City Min Price"
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        value={cityField.min_price}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'min_price', event.target.value)
+                        }
+                        suffix="AED"
+                      />
+                    </Grid>
+
+                    <Grid item xs={6}>
+                      <RHFTextField
+                        name={`cities_ids[${index}][max_price]`}
+                        label="City Max Price"
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        value={cityField.max_price}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'max_price', event.target.value)
+                        }
+                        suffix="AED"
+                      />
+                    </Grid>
+
+                    {index > 0 && (
+                      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <IconButton
+                          onClick={() => handleRemoveCity(index)}
+                          color="error"
+                          sx={{ color: 'black' }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Grid>
+                    )}
+                  </Grid>
+                ))) ||
+                []}
 
               <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
                 Add City

@@ -346,11 +346,13 @@ export default function PackageListView() {
           />
         </Card>
       </Container>
-      <PackageCreateForm
-        open={quickCreate.value}
-        onClose={quickCreate.onFalse}
-        revalidateDeliverey={revalidatePackage}
-      />
+      {!schoolLoading && (
+        <PackageCreateForm
+          open={quickCreate.value}
+          onClose={quickCreate.onFalse}
+          revalidateDeliverey={revalidatePackage}
+        />
+      )}
     </>
   );
 }
