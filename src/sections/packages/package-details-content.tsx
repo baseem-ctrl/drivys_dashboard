@@ -745,7 +745,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     <>
       <Tabs value={selectedTab} onChange={handleTabChange} aria-label="package details tabs">
         <Tab label="Details" />
-        <Tab label="City" />
+        {details?.package_city?.length > 0 && <Tab label="City" />}
       </Tabs>
       {loading ? (
         <Box
@@ -779,7 +779,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               Add package document
             </Button>
           )}
-          {selectedTab === 1 && (
+          {selectedTab === 1 && details?.package_city?.length > 0 && (
             <Grid container spacing={1} rowGap={1} sx={{ mt: 4 }}>
               <Grid xs={12} md={8}>
                 {renderCityContent}
