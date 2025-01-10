@@ -151,7 +151,6 @@ export default function PendingRequests({
       </Container>
     );
   }
-  console.log('serach value', searchValue);
   return (
     <Card>
       {' '}
@@ -234,6 +233,21 @@ export default function PendingRequests({
                           {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
                         </Typography>
                       </Tooltip>
+                      <Typography
+                        variant="body2"
+                        sx={{ cursor: 'default', color: 'text.secondary' }}
+                      >
+                        Trainer from{' '}
+                        {request?.user?.user_preference?.city?.city_translations[0]?.name ||
+                          'N / A'}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ cursor: 'default', color: 'text.secondary' }}
+                      >
+                        {request?.user?.user_preference?.vehicle_type?.category_translations[0]
+                          ?.name || 'N / A'}
+                      </Typography>
                     </Stack>
                   </Box>
                   <Box sx={{ display: 'flex', width: '90%', mt: 2 }}>
