@@ -323,4 +323,10 @@ export const endpoints = {
     updateRequestPaymentStatus: 'admin/certificate-request/update-request-payment-status',
     updateRequestStatus: 'admin/certificate-request/update-request-status',
   },
+  loyalityProgram: {
+    list: 'admin/trainer-rewards/get-rewards-list',
+    getById: 'admin/trainer-rewards/get-rewards-list',
+    createUpdate: 'admin/trainer-rewards/create-update-reward-translation',
+    delete: 'admin/trainer-rewards/delete-reward-by-id',
+  },
 };
