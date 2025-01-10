@@ -10,9 +10,9 @@ import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo } from 'react';
 
 // Fetch all certificate requests with pagination
-export function useGetAllCertificateRequests(page: number, limit: number) {
+export function useGetAllCertificateRequests(page: number, limit: number, search: string) {
   const getTheFullUrl = () => {
-    let queryPrams = {};
+    let queryPrams: Record<string, any> = {};
     if (page) {
       queryPrams = { ...queryPrams, page: page + 1 };
     } else {
@@ -22,6 +22,9 @@ export function useGetAllCertificateRequests(page: number, limit: number) {
       queryPrams = { ...queryPrams, limit };
     } else {
       queryPrams = { ...queryPrams, limit: 10 };
+    }
+    if (search) {
+      queryPrams = { ...queryPrams, search };
     }
     return `${endpoints.certificate.list}?${new URLSearchParams(queryPrams)}`;
   };
