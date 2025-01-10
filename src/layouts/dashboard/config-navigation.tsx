@@ -183,6 +183,11 @@ export function useNavData() {
       icon: ICONS.external,
     },
     {
+      title: t('loyality'),
+      path: paths.dashboard.loyality,
+      icon: ICONS.order,
+    },
+    {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,

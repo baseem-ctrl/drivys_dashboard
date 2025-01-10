@@ -40,6 +40,7 @@ import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/
 import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
 import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
 import GenerateCertificateForm from 'src/sections/certificate/certificate-generate-admin';
+import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality-program-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -241,6 +242,7 @@ const allroutes = [
       // { path: ':id/edit', element: <JobEditPage /> },
     ],
   },
+  { path: 'loyality', element: <LoyalityProgramListView />, index: true },
 
   {
     path: 'tour',
@@ -302,6 +304,7 @@ const schooladminRoutes = [
       { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
     ],
   },
+
   {
     path: 'todo',
     children: [

@@ -196,6 +196,8 @@ export const paths = {
       studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
       trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
     },
+    loyality: `${ROOTS.DASHBOARD}/loyality`,
+
     todo: {
       root: `${ROOTS.DASHBOARD}/todo/pending-verification`,
       pendingVerification: `${ROOTS.DASHBOARD}/todo/pending-verification`,
