@@ -31,6 +31,8 @@ import { useGetAllCertificateRequests } from 'src/api/certificate';
 import { useGetAllLanguage } from 'src/api/language';
 import CertificateFilters from '../certificate-filters';
 import CertificateRow from '../certificate-table-row';
+import CertificateSearch from '../certificate-search';
+import { ICityTableFilters } from 'src/types/city';
 
 // ----------------------------------------------------------------------
 
@@ -61,9 +63,10 @@ export default function CertificateListView() {
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(undefined);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { certificateRequests, certificateLoading, totalpages, revalidateCertificateRequests } =
-    useGetAllCertificateRequests(table.page, table.rowsPerPage);
+    useGetAllCertificateRequests(table.page, table.rowsPerPage, searchQuery);
   const { language } = useGetAllLanguage(0, 1000);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
@@ -84,13 +87,14 @@ export default function CertificateListView() {
   };
 
   const handleFilters = useCallback(
-    // (name: string) => {
-    //   table.onResetPage();
-    //   setFilters((prevState) => ({
-    //     ...prevState,
-    //     [name]: value,
-    //   }));
-    // },
+    (name: string, value: ICityTableFilters) => {
+      setSearchQuery(value);
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
     [table]
   );
 
@@ -169,8 +173,14 @@ export default function CertificateListView() {
           mb: { xs: 3, md: 5 },
         }}
       />
+      <CertificateSearch query={searchQuery} onSearch={handleFilters} />
+
       {/* {renderFilters} */}
-      <Card>
+      <Card
+        sx={{
+          mt: 2,
+        }}
+      >
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
