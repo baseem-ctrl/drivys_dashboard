@@ -13,12 +13,23 @@ export function useGetBookings({
   limit,
   page,
   booking_status,
+  payment_status,
+  payment_method,
 }: any) {
   // const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
   if (driver_id) queryParams.append('driver_id', driver_id);
   if (booking_status !== 'all') queryParams.append('booking_status', booking_status);
+
+  if (payment_method !== undefined && payment_method !== null && payment_method !== '') {
+    queryParams.append('payment_method', payment_method);
+  }
+
+  if (payment_status !== undefined && payment_status !== null && payment_status !== '') {
+    queryParams.append('payment_status', payment_status);
+  }
+
   // if (payment_status !== undefined) queryParams.append('booking_status', payment_status);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (page !== undefined) queryParams.append('page', page);

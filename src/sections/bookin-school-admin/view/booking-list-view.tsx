@@ -23,6 +23,11 @@ import Iconify from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import isEqual from 'lodash/isEqual';
+import { STATUS_OPTIONS } from 'src/_mock/_school';
+import { _roles, ACTIVE_OPTIONS } from 'src/_mock';
+import BookingAdminDetailsToolbar from '../booking-admin-details-tool-bar';
+import BookingFilters from '../booking-filter';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -91,11 +96,13 @@ const defaultFilters = {
   bookingType: 'all',
   paymentStatus: '',
   vendor: '',
+  payment_status: '',
+  payment_method: '',
 };
 
 export default function BookingSchoolAdminListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
+  const openFilters = useBoolean();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -120,7 +127,9 @@ export default function BookingSchoolAdminListView() {
   const { bookings, bookingsLoading, revalidateBookings, totalCount } = useGetBookingsSchoolAdmin({
     page: table.page + 1,
     limit: table.rowsPerPage,
-    // payment_status: paymentStatusCode,
+    search: filters.search,
+    payment_status: filters.payment_status,
+    payment_method: filters.payment_method,
     driver_id: filters.vendor,
     booking_status: filters.bookingType,
   });
@@ -233,7 +242,10 @@ export default function BookingSchoolAdminListView() {
   const handleRowClick = (row: any) => {
     router.push(paths.dashboard.booking.details(row?.id));
   };
-
+  const canReset = !isEqual(defaultFilters, filters);
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
@@ -245,7 +257,19 @@ export default function BookingSchoolAdminListView() {
         ]}
         sx={{ mb: 3 }}
       />
-
+      <Box display="flex" justifyContent="flex-end" padding={2}>
+        <BookingFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          filters={filters}
+          onFilters={handleFilters}
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+          statusOptions={STATUS_OPTIONS}
+          activeOptions={ACTIVE_OPTIONS}
+        />
+      </Box>
       <Card>
         <Tabs
           value={filters.bookingType}
