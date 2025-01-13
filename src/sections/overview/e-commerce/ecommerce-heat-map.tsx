@@ -132,7 +132,18 @@ const HeatMap: React.FC = () => {
   const studentHeatmapData = students.map(
     (student) => new google.maps.LatLng(student.location.lat, student.location.lng)
   );
-
+  const mapOptions = {
+    styles: [
+      {
+        featureType: 'water',
+        stylers: [{ color: '#D3D3D3' }],
+      },
+      {
+        featureType: 'landscape',
+        stylers: [{ color: '#f2f2f2' }],
+      },
+    ],
+  };
   return (
     <Card>
       <Box
@@ -169,6 +180,7 @@ const HeatMap: React.FC = () => {
         mapContainerStyle={containerStyle}
         center={selectedLocation}
         zoom={zoomLevel}
+        options={mapOptions}
         onLoad={(map) => {
           mapRef.current = map;
         }}

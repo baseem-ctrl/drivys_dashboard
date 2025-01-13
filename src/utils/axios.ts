@@ -329,4 +329,7 @@ export const endpoints = {
     createUpdate: 'admin/trainer-rewards/create-update-reward-translation',
     delete: 'admin/trainer-rewards/delete-reward-by-id',
   },
+  location: {
+    getLiveTrainerLocation: 'admin/trainers/get-live-location-trainers-list',
+  },
 };

@@ -41,6 +41,7 @@ import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-l
 import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
 import GenerateCertificateForm from 'src/sections/certificate/certificate-generate-admin';
 import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality-program-list-view';
+import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
 
 // ----------------------------------------------------------------------
 
@@ -243,6 +244,7 @@ const allroutes = [
     ],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
+  { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
 
   {
     path: 'tour',
@@ -288,7 +290,7 @@ const schooladminRoutes = [
       { path: 'package-list', element: <SchoolPackageListView /> },
     ],
   },
-
+  { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
   {
     path: 'booking',
     children: [
