@@ -252,23 +252,46 @@ export default function TrainerFilters({
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
         City
       </Typography>
-      <Select
-        value={filters.city_id || ''}
-        onChange={(e) => handleFilterChange('city_id', e.target.value)}
-      >
-        {cityLoading ? (
-          <MenuItem disabled>Loading cities...</MenuItem>
-        ) : (
-          city?.map((cityItem: any) => (
-            <MenuItem key={cityItem.id} value={cityItem.id}>
-              {cityItem.city_translations.find((translation: any) => translation.locale === 'en')
-                ?.name || cityItem.city_translations[0]?.name}
-            </MenuItem>
-          ))
+      <Autocomplete
+        options={
+          city?.map((item: any) => ({
+            label: item.city_translations.map((translation: any) => translation.name).join(' - '),
+            value: item.id,
+          })) ?? []
+        }
+        getOptionLabel={(option) => option.label}
+        value={
+          city
+            ?.map((item: any) => ({
+              label: item.city_translations.map((translation: any) => translation.name).join(' - '),
+              value: item.id,
+            }))
+            .find((option: any) => option.value === filters.city_id) || null
+        }
+        onChange={(event, newValue) =>
+          handleFilterChange('city_id', newValue ? newValue.value : null)
+        }
+        renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+        renderOption={(props, option) => (
+          <li {...props} key={option.value}>
+            {option.label}
+          </li>
         )}
-      </Select>
+        renderTags={(selected, getTagProps) =>
+          selected.map((option, index) => (
+            <Chip
+              {...getTagProps({ index })}
+              key={option.value}
+              label={option.label}
+              size="small"
+              variant="soft"
+            />
+          ))
+        }
+      />
     </Stack>
   );
+
   const renderGear = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
