@@ -188,6 +188,11 @@ export function useNavData() {
       icon: ICONS.order,
     },
     {
+      title: t('trainers-location'),
+      path: paths.dashboard.location,
+      icon: ICONS.external,
+    },
+    {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
@@ -262,6 +267,11 @@ export function useNavData() {
       title: t('My School'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
+    },
+    {
+      title: t('trainers-location'),
+      path: paths.dashboard.location,
+      icon: ICONS.external,
     },
     {
       title: t('Certificates'),

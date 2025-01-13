@@ -252,6 +252,8 @@ export const paths = {
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
     },
     certificate: `${ROOTS.DASHBOARD}/certificate`,
+    location: `${ROOTS.DASHBOARD}/trainers-location`,
+
     // createCertificate: `${ROOTS.DASHBOARD}/certificate-create`,
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
