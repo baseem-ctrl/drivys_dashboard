@@ -121,7 +121,7 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
         language?.length > 0
           ? language?.find(
               (option) =>
-                option?.language_culture.toLowerCase() === currentUser?.user?.locale.toLowerCase()
+                option?.language_culture?.toLowerCase() === currentUser?.user?.locale?.toLowerCase()
             )
           : '',
       photo_url: currentUser?.user?.photo_url || '',
