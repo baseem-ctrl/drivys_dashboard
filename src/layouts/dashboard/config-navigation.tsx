@@ -48,6 +48,7 @@ const ICONS = {
   school: icon('ic_school'),
 
   package: icon('ic_package'),
+  map: icon('ic_map'),
 };
 
 // ----------------------------------------------------------------------
@@ -56,6 +57,11 @@ export function useNavData() {
   const { t } = useLocales();
   const allroutes = [
     //TO DO list
+    {
+      title: t('live location'),
+      path: paths.dashboard.location,
+      icon: ICONS.map,
+    },
 
     {
       title: t('To Do'),
@@ -66,6 +72,7 @@ export function useNavData() {
         { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
       ],
     },
+
     // USER
     {
       title: t('user'),
@@ -187,11 +194,7 @@ export function useNavData() {
       path: paths.dashboard.loyality,
       icon: ICONS.order,
     },
-    {
-      title: t('trainers-location'),
-      path: paths.dashboard.location,
-      icon: ICONS.external,
-    },
+
     {
       title: t('booking'),
       path: paths.dashboard.booking.root,
@@ -254,6 +257,11 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
+      title: t('live location'),
+      path: paths.dashboard.location,
+      icon: ICONS.map,
+    },
+    {
       title: t('To Do'),
       path: paths.dashboard.todo.root,
       icon: ICONS.tour,
@@ -268,11 +276,7 @@ export function useNavData() {
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
     },
-    {
-      title: t('trainers-location'),
-      path: paths.dashboard.location,
-      icon: ICONS.external,
-    },
+
     {
       title: t('Certificates'),
       path: paths.dashboard.school.certificate,

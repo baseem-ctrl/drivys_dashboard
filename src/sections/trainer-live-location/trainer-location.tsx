@@ -113,7 +113,7 @@ const TrainerLiveLocation: React.FC = () => {
   return (
     <>
       <CustomBreadcrumbs
-        heading="Trainers Location"
+        heading="Live Location"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
