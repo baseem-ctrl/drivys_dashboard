@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import moment from 'moment';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
@@ -118,9 +119,14 @@ export default function BookingSchoolAdminTableRow({
         <TableCell>{row?.payment_method}</TableCell>
         <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
         <TableCell>
-          {formatDate(row?.created_at)}
+          {moment(row?.created_at)
+            .local()
+            .format('DD/MM/YY h:mm a')}
           <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-            Updated {formatDate(row?.updated_at)}
+            Updated{' '}
+            {moment(row?.updated_at)
+              .local()
+              .format('DD/MM/YY h:mm a')}
           </Typography>
         </TableCell>
       </TableRow>

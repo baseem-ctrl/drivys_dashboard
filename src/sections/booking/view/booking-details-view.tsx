@@ -145,7 +145,7 @@ const BookingDetailsComponent = () => {
       </Box>
     );
   }
-
+  console.log('bookingDetails', bookingDetails?.sessions[0]?.end_time);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <BookingDetailsToolbar
@@ -832,14 +832,20 @@ const BookingDetailsComponent = () => {
 
                           <TableCell>
                             {session.start_time
-                              ? moment(session.start_time).utc().format('DD/MM/YY h:mm A')
+                              ? moment(session.start_time)
+                                  .utcOffset('+04:00')
+                                  .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
+
                           <TableCell>
                             {session.end_time
-                              ? moment(session.end_time).utc().format('DD/MM/YY h:mm A')
+                              ? moment(session.end_time)
+                                  .utcOffset('+04:00')
+                                  .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
+
                           <TableCell>{session?.session_type || 'N/A'}</TableCell>
                         </TableRow>
                       ))}
