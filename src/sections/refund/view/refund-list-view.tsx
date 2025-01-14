@@ -79,6 +79,8 @@ export default function RefundListView() {
       ...(filters?.city_id && { city_id: filters.city_id }),
       ...(filters?.driver_id && { driver_id: filters.driver_id }),
     });
+  console.log('refundedRequests', refundedRequests);
+  console.log('refundRequests', refundRequests);
 
   const openFilters = useBoolean();
 
@@ -92,7 +94,7 @@ export default function RefundListView() {
   }, []);
 
   useEffect(() => {
-    if (refundRequests?.refundRequests?.length > 0) {
+    if (refundRequests && refundRequests?.length > 0) {
       setTableData(refundRequests);
     } else {
       setTableData([]);

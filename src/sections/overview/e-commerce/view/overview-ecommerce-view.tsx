@@ -281,7 +281,7 @@ export default function OverviewEcommerceView() {
               }
             /> */}
           {/* </Grid> */}
-          <Grid item xs={12} sm={6} md={12}>
+          <Grid item xs={12} sm={8} md={12}>
             {' '}
             <Typography
               variant="h4"
@@ -294,7 +294,7 @@ export default function OverviewEcommerceView() {
             </Typography>
           </Grid>
 
-          <Grid container item xs={12} sm={6} md={12}>
+          <Grid container item xs={12} sm={12} md={12}>
             {' '}
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
