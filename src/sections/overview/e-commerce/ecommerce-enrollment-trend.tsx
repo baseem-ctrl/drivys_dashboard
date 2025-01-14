@@ -42,7 +42,8 @@ export default function EnrollmentTrendsChart({
 }: Props) {
   const { colors, categories, options } = chart;
   const popover = usePopover();
-  const [seriesData, setSeriesData] = useState('2024');
+
+  const [seriesData, setSeriesData] = useState(new Date().getFullYear().toString());
   const [chartData, setChartData] = useState({
     series: [],
   });
