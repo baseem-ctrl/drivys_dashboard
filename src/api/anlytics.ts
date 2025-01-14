@@ -67,7 +67,7 @@ export function useGetAnalytics({ startDate, endDate }) {
 // ----------------------------------------------------------------------
 
 export function useGetRevenue() {
-  const [year, setYear] = useState('2024');
+  const [year, setYear] = useState(new Date().getFullYear().toString());
   const { user } = useAuthContext();
   const getTheFullUrl = useMemo(() => {
     if (user?.user?.user_type && year) {
