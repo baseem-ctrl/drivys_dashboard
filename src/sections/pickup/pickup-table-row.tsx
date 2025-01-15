@@ -19,7 +19,7 @@ import { useRouter } from 'src/routes/hooks';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  row: ILanguageItem;
+  row: any;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
@@ -40,10 +40,13 @@ export default function PickupTableRow({
   const router = useRouter();
 
   const formattedStartDate = moment(start_date).format('YYYY-MM-DD');
-  const formattedStartTime = moment.utc(start_time).format('HH:mm A');
   const formattedEndDate = moment(end_date).format('YYYY-MM-DD');
-  const formattedEndTime = moment.utc(end_time).format('HH:mm A');
+  // Assuming you have start_date, start_time, end_date, and end_time in your data
+  const startDateTime =
+    start_date && start_time ? moment(`${start_date} ${start_time}`).format('HH:mm A') : 'NA';
 
+  const endDateTime =
+    end_date && end_time ? moment(`${end_date} ${end_time}`).format('HH:mm A') : 'NA';
   const handleClick = () => {
     router.push(paths.dashboard.system.viewDetails(city_id));
   };
@@ -63,16 +66,16 @@ export default function PickupTableRow({
         </TableCell>
         <TableCell>{formattedStartDate}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>
-        <TableCell>{formattedStartTime}</TableCell>
+        <TableCell>{startDateTime}</TableCell>
 
-        <TableCell>{formattedEndTime}</TableCell>
+        <TableCell>{endDateTime}</TableCell>
         <TableCell>
           <Label
             variant="soft"
-            color={status === true ? 'success' : 'error'}
+            color={!!status ? 'success' : 'error'}
             style={{ cursor: 'pointer' }}
           >
-            {status === true ? 'Active' : 'Inactive'}
+            {!!status ? 'Active' : 'Inactive'}
           </Label>
         </TableCell>
         <TableCell align="right">

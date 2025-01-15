@@ -423,7 +423,6 @@ export default function UserNewEditForm({
       body.append('email', data?.email);
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
-
       // Only append gear if it exists
       if (
         (data?.user_type === 'TRAINER' || data?.user_type === 'STUDENT') &&
