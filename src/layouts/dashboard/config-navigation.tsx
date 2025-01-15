@@ -57,11 +57,6 @@ export function useNavData() {
   const { t } = useLocales();
   const allroutes = [
     //TO DO list
-    {
-      title: t('live location'),
-      path: paths.dashboard.location,
-      icon: ICONS.map,
-    },
 
     {
       title: t('To Do'),
