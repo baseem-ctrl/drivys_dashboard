@@ -257,11 +257,6 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
-      title: t('live location'),
-      path: paths.dashboard.location,
-      icon: ICONS.map,
-    },
-    {
       title: t('To Do'),
       path: paths.dashboard.todo.root,
       icon: ICONS.tour,
@@ -334,6 +329,11 @@ export function useNavData() {
             title: t('analytics'),
             path: paths.dashboard.root,
             icon: ICONS.analytics,
+          },
+          {
+            title: t('live location'),
+            path: paths.dashboard.location,
+            icon: ICONS.map,
           },
         ],
       },
