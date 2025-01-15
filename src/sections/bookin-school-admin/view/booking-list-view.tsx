@@ -134,7 +134,7 @@ export default function BookingSchoolAdminListView() {
     booking_status: filters.bookingType,
   });
   const [bookingCounts, setBookingCounts] = useState({
-    all: 0,
+    all: totalCount ?? 0,
     pending: 0,
     confirmed: 0,
     cancelled: 0,
@@ -151,7 +151,7 @@ export default function BookingSchoolAdminListView() {
         const statusCount = bookings.booking_status_counts[status] || 0;
 
         initialCounts[status] = statusCount;
-        initialCounts.all += statusCount;
+        // initialCounts.all += statusCount;
       });
 
       setBookingCounts(initialCounts);
@@ -246,6 +246,8 @@ export default function BookingSchoolAdminListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  console.log(bookingCounts.all, 'bookingCounts.all');
+
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
