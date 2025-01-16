@@ -20,8 +20,13 @@ export function useGetBookings({
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
   if (driver_id) queryParams.append('driver_id', driver_id);
-  if (booking_status !== 'all') queryParams.append('booking_status', booking_status);
-
+  if (
+    booking_status !== 'all' &&
+    booking_status !== undefined &&
+    booking_status !== null &&
+    booking_status !== ''
+  )
+    queryParams.append('booking_status', booking_status);
   if (payment_method !== undefined && payment_method !== null && payment_method !== '') {
     queryParams.append('payment_method', payment_method);
   }
