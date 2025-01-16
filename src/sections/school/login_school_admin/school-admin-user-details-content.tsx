@@ -190,7 +190,14 @@ export default function UserDetailsContentAdmin({
                   ? [
                       {
                         label: 'Vendor Commission',
-                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                        value:
+                          `${details?.user_preference?.school_commission_in_percentage} %` ?? 'N/A',
+                      },
+                      {
+                        label: 'Certificate Commission',
+                        value:
+                          `${details?.user_preference?.certificate_commission_in_percentage} %` ??
+                          'N/A',
                       },
                     ]
                   : []),
