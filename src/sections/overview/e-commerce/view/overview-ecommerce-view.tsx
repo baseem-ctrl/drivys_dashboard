@@ -615,7 +615,7 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-          <Grid xs={12} md={6} lg={5}>
+          <Grid xs={12} md={6} lg={6}>
             <ReviewedTrainer
               title="Trainer Feedback"
               subheader="Student reviews for the trainers"
