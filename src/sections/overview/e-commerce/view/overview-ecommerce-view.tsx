@@ -293,7 +293,6 @@ export default function OverviewEcommerceView() {
               {/* {user?.user?.name} */}
             </Typography>
           </Grid>
-
           <Grid container item xs={12} sm={12} md={12}>
             {' '}
             <Grid item xs={12} sm={6} md={3}>
@@ -330,7 +329,6 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           </Grid>
-
           <Box
             sx={{
               padding: 4,
@@ -493,33 +491,29 @@ export default function OverviewEcommerceView() {
                   textColor="rgba(220, 53, 69, 0.9)"
                   title="Rescheduled Booking Count"
                   total={analytics?.rescheduledBookingsCount ?? '0'}
-                  percent={analytics?.rescheduledPercentage ?? 0}
+                  percent={analytics?.rescheduledPercentage ?? '0'}
                 />
               </Grid>
             </Grid>
           </Box>
-
           {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
             </Grid>
           )}
-
           {/* <Grid xs={12} md={12} lg={12}>
               <SchoolAdminMap />
            </Grid> */}
-
-          {analytics?.trainerCount > 0 ? (
-            trainerInsights?.activeTrainers &&
-            trainerInsights.inactiveTrainers && (
-              <Grid xs={12} md={6} lg={4}>
-                <AnalyticsActiveUsers
-                  title="Trainer Analytics"
-                  subheader={`Total Trainers: ${analytics.trainerCount || 0}`}
-                  chart={trainerChartData}
-                />
-              </Grid>
-            )
+          {analytics?.trainerCount > 0 &&
+          trainerInsights?.activeTrainers !== null &&
+          trainerInsights.inactiveTrainers !== null ? (
+            <Grid xs={12} md={6} lg={4}>
+              <AnalyticsActiveUsers
+                title="Trainer Analytics"
+                subheader={`Total Trainers: ${analytics?.trainerCount || 0}`}
+                chart={trainerChartData}
+              />
+            </Grid>
           ) : (
             <Grid
               xs={12}
@@ -534,7 +528,6 @@ export default function OverviewEcommerceView() {
               </Box>
             </Grid>
           )}
-
           {trainerInsights?.maleTrainers &&
             trainerInsights?.femaleTrainers &&
             analytics?.trainerCount && (
@@ -580,7 +573,6 @@ export default function OverviewEcommerceView() {
               </Box>
             </Grid>
           )}
-
           {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
             <Grid xs={12} md={6} lg={6}>
               {' '}
@@ -592,7 +584,6 @@ export default function OverviewEcommerceView() {
               />
             </Grid>
           )}
-
           {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
@@ -624,15 +615,13 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
-
-          <Grid xs={12} md={6} lg={5}>
+          <Grid xs={12} md={6} lg={6}>
             <ReviewedTrainer
               title="Trainer Feedback"
               subheader="Student reviews for the trainers"
               feedbackList={trainerInsights?.sessionFeedback}
             />
           </Grid>
-
           {/* <Grid xs={12} md={12} lg={12}>
             {' '}
             <SessionOverview
@@ -682,7 +671,6 @@ export default function OverviewEcommerceView() {
               // sx={{ height: 460 }}
             />
           </Grid>
-
           <Grid xs={12} md={6} lg={6}>
             <AnalyticsActiveUsers
               title="Booking Analytics"
@@ -691,9 +679,7 @@ export default function OverviewEcommerceView() {
               sx={{ height: 488 }}
             />
           </Grid>
-
           {/* {trainerInsights?.sessionFeedback?.length > 0 && ( */}
-
           {/* )} */}
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession
@@ -704,7 +690,6 @@ export default function OverviewEcommerceView() {
           {/* <Grid xs={12} md={6} lg={8}>
             <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
           </Grid> */}
-
           <Grid xs={12} md={6} lg={4}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
           </Grid>
@@ -722,7 +707,6 @@ export default function OverviewEcommerceView() {
               setSeriesData={setIssuedCertificateSeriesData}
             />
           </Grid>
-
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
               title="Completed Session"

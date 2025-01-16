@@ -6,7 +6,7 @@ import { CardProps } from '@mui/material/Card';
 // theme
 import { bgGradient } from 'src/theme/css';
 // utils
-import { fShortenNumber } from 'src/utils/format-number';
+import { fPercent, fShortenNumber } from 'src/utils/format-number';
 // theme
 import { ColorSchema } from 'src/theme/palette';
 
@@ -103,7 +103,7 @@ export default function AnalyticsWidgetSummary({
         >
           {percentageChange > 0 ? upIcon : downIcon}
           {percentageChange > 0 ? '+' : ''}
-          {percentageChange}%
+          {fPercent(percentageChange)}
         </Box>
       )}
 

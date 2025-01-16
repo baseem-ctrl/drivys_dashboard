@@ -247,6 +247,8 @@ export default function BookingSchoolAdminListView() {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  console.log(bookingCounts.all, 'bookingCounts.all');
+
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
