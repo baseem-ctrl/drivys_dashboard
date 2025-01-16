@@ -22,7 +22,7 @@ export function deleteWorkingHoursById(id: number | string) {
 // Function to get working hours by user ID
 export function useGetWorkingHoursByUserId(userId: number | string) {
   const getWorkingHoursUrl = () =>
-    `${endpoints.trainer.workingHours.getByUserId}?user_id=${userId}`;
+    `${endpoints.trainer.workingHours.getByUserId}?user_id=${userId}&limit=10000`;
 
   const { data, isLoading, error, isValidating } = useSWR(
     userId ? getWorkingHoursUrl() : null,
