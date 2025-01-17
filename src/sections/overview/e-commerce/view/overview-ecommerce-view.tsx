@@ -14,7 +14,17 @@ import {
   useGetStudentInsights,
   useGetTrainerInsights,
 } from 'src/api/anlytics';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -58,6 +68,8 @@ import { AnalyticsConversionRates } from '../ecommerce-student-demographics';
 import SessionOverview from '../ecommerce-session-overview';
 
 import SchoolPerformanceDetails from '../ecommerce-school-performance';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useGetAllCity } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
@@ -68,22 +80,41 @@ export default function OverviewEcommerceView() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [applyClicked, setApplyClicked] = useState(false);
-
+  const [filters, setFilters] = useState({ city_id: null });
   const { analytics, analyticsLoading } = useGetAnalytics({
     startDate: applyClicked ? startDate : undefined,
     endDate: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
+  const { city, cityLoading } = useGetAllCity({
+    limit: 1000,
+    page: 0,
   });
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
-    useGetRevenue();
+    useGetRevenue({
+      startDate: applyClicked ? startDate : undefined,
+      endDate: applyClicked ? endDate : undefined,
+      city_id: filters.city_id,
+    });
 
-  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
+  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights({
+    startDate: applyClicked ? startDate : undefined,
+    endDate: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
   const sessionsData = trainerInsights?.sessionsPerTrainer;
   const totalSessions = sessionsData?.reduce(
     (sum, trainer) =>
       sum + trainer.sessions.reduce((trainerSum, session) => trainerSum + session.session_count, 0),
     0
   );
+  const handleFilterChange = (field, value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [field]: value,
+    }));
+  };
   const formattedSessionData = sessionsData?.map((trainer) => {
     const trainerTotalSessions = trainer?.sessions?.reduce(
       (trainerSum, session) => trainerSum + session.session_count,
@@ -104,7 +135,11 @@ export default function OverviewEcommerceView() {
     studentInsightsError,
     studentInsightsLoading,
     revalidateStudentInsights,
-  } = useGetStudentInsights();
+  } = useGetStudentInsights({
+    startDate: applyClicked ? startDate : undefined,
+    endDate: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
 
   const chartData = {
     colors: ['#34C38F', '#FF7D1E'],
@@ -258,6 +293,10 @@ export default function OverviewEcommerceView() {
     setStartDate(null);
     setEndDate(null);
     setApplyClicked(true);
+
+    setFilters({
+      city_id: null,
+    });
   };
 
   const tableLabels = [
@@ -375,6 +414,50 @@ export default function OverviewEcommerceView() {
                     />
                   </Box>
                 </Grid>
+                <Grid item xs={12} md={3}>
+                  <Autocomplete
+                    options={
+                      city?.map((item: any) => ({
+                        label: item.city_translations
+                          .map((translation: any) => translation.name)
+                          .join(' - '),
+                        value: item.id,
+                      })) ?? []
+                    }
+                    getOptionLabel={(option) => option.label}
+                    value={
+                      city
+                        ?.map((item: any) => ({
+                          label: item.city_translations
+                            .map((translation: any) => translation.name)
+                            .join(' - '),
+                          value: item.id,
+                        }))
+                        .find((option: any) => option.value === filters.city_id) || null
+                    }
+                    onChange={(event, newValue) => {
+                      handleFilterChange('city_id', newValue ? newValue.value : null);
+                    }}
+                    renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.value}>
+                        {option.label}
+                      </li>
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={option.value}
+                          label={option.label}
+                          size="small"
+                          variant="soft"
+                        />
+                      ))
+                    }
+                  />
+                </Grid>
+
                 <Grid>
                   <Box display="flex" justifyContent="flex-start" gap={1}>
                     <Button variant="contained" color="primary" onClick={handleApply}>
