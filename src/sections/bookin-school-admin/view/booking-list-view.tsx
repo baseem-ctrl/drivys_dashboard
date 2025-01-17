@@ -110,17 +110,6 @@ export default function BookingSchoolAdminListView() {
   const [filters, setFilters] = useState(defaultFilters);
   // const [bookingTypeOptions, setBookingTypeOptions] = useState([]);
   const confirm = useBoolean();
-  const bookingTypeOptions = [
-    { value: 'all', label: 'ALL' },
-    { value: 'pending', label: 'PENDING' },
-    { value: 'confirmed', label: 'CONFIRMED' },
-    { value: 'cancelled', label: 'CANCELLED' },
-  ];
-  const statusMap = {
-    PENDING: 0,
-    CONFIRMED: 1,
-    CANCELLED: 2,
-  };
 
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
 
@@ -134,24 +123,36 @@ export default function BookingSchoolAdminListView() {
     booking_status: filters.bookingType,
   });
   const [bookingCounts, setBookingCounts] = useState({
-    all: totalCount ?? 0,
-    pending: 0,
-    confirmed: 0,
-    cancelled: 0,
+    all: 0,
+    PENDING: 0,
+    CONFIRMED: 0,
+    CANCELLED: 0,
+    COMPLETED: 0,
+    IN_PROGRESS: 0,
   });
 
   useEffect(() => {
     if (bookings.booking_status_counts) {
       const initialCounts = { all: 0 };
+
+      // Initialize counts for all statuses
       bookingStatusEnum.forEach((status) => {
-        initialCounts[status.value] = 0;
+        initialCounts[status.name] = 0; // Use `status.name` as the key
       });
 
-      Object.keys(bookings.booking_status_counts).forEach((status) => {
-        const statusCount = bookings.booking_status_counts[status] || 0;
+      // Update counts based on booking_status_counts
+      Object.keys(bookings.booking_status_counts).forEach((statusKey) => {
+        const statusCount = bookings.booking_status_counts[statusKey] || 0;
 
-        initialCounts[status] = statusCount;
-        // initialCounts.all += statusCount;
+        // Find the corresponding `status.name` from bookingStatusEnum
+        const matchingStatus = bookingStatusEnum.find(
+          (status) => status.name.replace(/\s+/g, '_').toUpperCase() === statusKey
+        );
+
+        if (matchingStatus) {
+          initialCounts[matchingStatus.name] = statusCount;
+          initialCounts.all += statusCount;
+        }
       });
 
       setBookingCounts(initialCounts);
@@ -165,29 +166,6 @@ export default function BookingSchoolAdminListView() {
       setTableData([]);
     }
   }, [bookings]);
-  useEffect(() => {
-    if (bookings?.bookings?.length > 0) {
-      const filteredBookings = bookings?.bookings.filter((booking) => {
-        switch (filters.bookingType) {
-          case 1:
-            return booking.booking_status === 'CONFIRMED';
-          case 2:
-            return booking.booking_status === 'CANCELLED';
-          case 0:
-            return booking.booking_status === 'PENDING';
-          case 3:
-            return booking.booking_status === 'COMPLETED';
-          case 4:
-            return booking.booking_status === 'IN PROGRESS';
-          default:
-            return true;
-        }
-      });
-      setTableData(filteredBookings);
-    } else {
-      setTableData([]);
-    }
-  }, [bookings, filters.bookingType]);
 
   const handleFilters = useCallback(
     (name, value) => {
