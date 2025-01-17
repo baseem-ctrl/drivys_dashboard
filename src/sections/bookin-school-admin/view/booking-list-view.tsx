@@ -166,29 +166,6 @@ export default function BookingSchoolAdminListView() {
       setTableData([]);
     }
   }, [bookings]);
-  useEffect(() => {
-    if (bookings?.bookings?.length > 0) {
-      const filteredBookings = bookings?.bookings.filter((booking) => {
-        switch (filters.bookingType) {
-          case 1:
-            return booking.booking_status === 'CONFIRMED';
-          case 2:
-            return booking.booking_status === 'CANCELLED';
-          case 0:
-            return booking.booking_status === 'PENDING';
-          case 3:
-            return booking.booking_status === 'COMPLETED';
-          case 4:
-            return booking.booking_status === 'IN PROGRESS';
-          default:
-            return true;
-        }
-      });
-      setTableData(filteredBookings);
-    } else {
-      setTableData([]);
-    }
-  }, [bookings, filters.bookingType]);
 
   const handleFilters = useCallback(
     (name, value) => {
