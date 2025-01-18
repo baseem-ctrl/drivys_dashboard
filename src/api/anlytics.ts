@@ -83,10 +83,10 @@ export function useGetRevenue({ city_id, start_date, end_date }) {
       }
 
       if (start_date) {
-        url += `&start_date=${start_date}`;
+        url += `&start_date=${moment(start_date).format('YYYY-MM-DD')}`;
       }
       if (end_date) {
-        url += `&end_date=${end_date}`;
+        url += `&end_date=${moment(end_date).format('YYYY-MM-DD')}`;
       }
 
       return url;
@@ -134,8 +134,8 @@ export function useGetStudentInsights({
     const baseUrl = endpoints.analytics.getStudentInsights;
     const params = new URLSearchParams();
 
-    if (start_date) params.append('start_date', start_date);
-    if (end_date) params.append('end_date', end_date);
+    if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
+    if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
     if (city_id) params.append('city_id', city_id);
 
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
@@ -175,8 +175,8 @@ export function useGetTrainerInsights({
     const baseUrl = endpoints.analytics.getTrainerInsights;
     const params = new URLSearchParams();
 
-    if (start_date) params.append('start_date', start_date);
-    if (end_date) params.append('end_date', end_date);
+    if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
+    if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
 
     if (city_id) params.append('city_id', city_id);
 
