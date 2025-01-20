@@ -157,6 +157,8 @@ export default function SchoolCreateForm({
       password: '',
       phone: '',
       country_code: '971',
+      min_commision: '',
+      max_commision: '',
     }),
     []
   );
@@ -223,9 +225,12 @@ export default function SchoolCreateForm({
     saveCurrentLocaleTranslation();
 
     const formData = new FormData();
-
+    console.log('data', data);
     formData.append('contact_email', data?.contact_email);
     formData.append('contact_phone_number', data?.contact_phone_number);
+    formData.append('min_commision', data?.min_commision);
+    formData.append('max_commision', data?.max_commision);
+
     formData.append(
       'certificate_commission_in_percentage',
       data?.certificate_commission_in_percentage
@@ -362,11 +367,49 @@ export default function SchoolCreateForm({
                 }}
               />
             </Grid>
+            <RHFTextField
+              name="min_commision"
+              label="Minimum Vendor Commission in (%)"
+              fullWidth
+              sx={{ mt: 2 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Enter the minimum commission rate that the school can assign.">
+                      <IconButton>
+                        <InfoOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.min_commision}
+              helperText={errors.min_commision?.message}
+            />
 
-            <Grid item xs={6} mt={2} mb={2}>
-              <RHFCheckbox name="is_active" label="Active" />
-            </Grid>
+            <RHFTextField
+              name="max_commision"
+              label="Maximum Vendor Commission in (%)"
+              fullWidth
+              sx={{ mt: 2 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Enter the maximum commission rate that the school can assign.">
+                      <IconButton>
+                        <InfoOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.max_commision}
+              helperText={errors.max_commision?.message}
+            />
           </Box>
+          <Grid item xs={6} mt={2} mb={2}>
+            <RHFCheckbox name="is_active" label="Active" />
+          </Grid>
           <Grid item xs={6} mt={2} mb={2}>
             <Typography variant="body1" sx={{ fontWeight: '600' }}>
               Choose a School Admin: Create New or Select Existing
