@@ -6,7 +6,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
-import { IconButton, InputAdornment } from '@mui/material';
+import { FormHelperText, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 // components
 import Iconify from 'src/components/iconify';
@@ -72,16 +72,34 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     page: table?.page + 1,
     limit: table?.rowsPerPage,
   });
-
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
-    vendor_commission_in_percentage: Yup.string().required(),
     vehicle_number: Yup.string().nullable(), // not required
     phone: Yup.string().matches(
       /^5\d{0,8}$/,
       'Phone number should start with 5 and not exceed 9 digits'
     ),
+    vendor_commission_in_percentage: Yup.number()
+      .required('vendor commission is required')
+      .when([], {
+        is: () =>
+          candidates[0]?.vendor?.min_commision >= 0 &&
+          candidates[0]?.vendor?.max_commision >= 0 &&
+          candidates[0]?.vendor?.max_commision &&
+          candidates[0]?.vendor?.min_commision,
+        then: (schema) =>
+          schema
+            .min(
+              candidates[0]?.vendor?.min_commision,
+              `School commission must be greater than or equal to ${candidates[0]?.vendor?.min_commision}%`
+            )
+            .max(
+              candidates[0]?.vendor?.max_commision,
+              `School commission must be less than or equal to ${candidates[0]?.vendor?.max_commision}%`
+            ),
+        otherwise: (schema) => schema,
+      }),
     dob: Yup.string()
       .required('Date of birth is required for students and trainers.')
       .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
@@ -272,13 +290,20 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     />
                     <RHFTextField name="phone" label="Phone Number" type="number" prefix="+971" />
                     <RHFTextField name="vehicle_number" label="Vehicle Number" fullWidth />
+                    <div>
+                      <RHFTextField
+                        name="vendor_commission_in_percentage"
+                        label="Vendor Commision"
+                        fullWidth
+                        suffix="%"
+                      />
+                      <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                        School Commission must be in between{' '}
+                        {candidates[0]?.vendor?.min_commision || '0'}% and{' '}
+                        {candidates[0]?.vendor?.max_commision || '0'}%
+                      </FormHelperText>
+                    </div>
 
-                    <RHFTextField
-                      name="vendor_commission_in_percentage"
-                      label="Vendor Commision"
-                      fullWidth
-                      suffix="%"
-                    />
                     <RHFTextField
                       name="dob"
                       label="Date of Birth"

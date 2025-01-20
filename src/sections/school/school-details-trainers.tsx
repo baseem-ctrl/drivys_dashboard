@@ -17,6 +17,7 @@ import {
   Autocomplete,
   Button,
   CircularProgress,
+  FormHelperText,
   MenuItem,
   TextField,
   Typography,
@@ -52,7 +53,6 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
   const [trainerMappingId, setTrainerMappingId] = useState('');
-
   const [loadingButton, setLoadingButton] = useState(false);
 
   const {
@@ -78,7 +78,27 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
   const NewUserSchema = Yup.object().shape({
     cash_clearance_date: Yup.string(),
     cash_in_hand: Yup.string().nullable(),
-    vendor_commission_in_percentage: Yup.string(),
+
+    vendor_commission_in_percentage: Yup.number()
+      .required('vendor commission is required')
+      .when([], {
+        is: () =>
+          candidates?.min_commision >= 0 &&
+          candidates?.max_commision >= 0 &&
+          candidates?.max_commision &&
+          candidates?.min_commision,
+        then: (schema) =>
+          schema
+            .min(
+              candidates?.min_commision,
+              `School commission must be greater than or equal to ${candidates?.min_commision}%`
+            )
+            .max(
+              candidates?.max_commision,
+              `School commission must be less than or equal to ${candidates?.max_commision}%`
+            ),
+        otherwise: (schema) => schema,
+      }),
     trainer_id: Yup.mixed().required(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
@@ -227,7 +247,16 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                 InputLabelProps={{ shrink: true }}
               />
               <RHFTextField name="cash_in_hand" label="Cash in Hand" />
-              <RHFTextField name="vendor_commission_in_percentage" label="Vendor Commission (%)" />
+              <div>
+                <RHFTextField
+                  name="vendor_commission_in_percentage"
+                  label="Vendor Commission (%)"
+                />
+                <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                  School Commission must be in between {candidates.min_commision || '0'}% and{' '}
+                  {candidates.max_commision || '0'}%
+                </FormHelperText>
+              </div>
               <RHFTextField name="max_cash_in_hand_allowed" label="Max Cash Allowded" />
             </Box>
 
