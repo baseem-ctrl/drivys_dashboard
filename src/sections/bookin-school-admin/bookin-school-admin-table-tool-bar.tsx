@@ -11,7 +11,7 @@ import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from 'date-fns/locale';
-import './CustomDateRangePicker.css';
+import '../overview/e-commerce/view/CustomDateRangePicker.css';
 
 export default function BookingTableToolbar({
   filters,
