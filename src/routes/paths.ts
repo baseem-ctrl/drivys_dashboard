@@ -265,6 +265,16 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
+    payouts: {
+      root: `${ROOTS.DASHBOARD}/payouts`,
+      school: `${ROOTS.DASHBOARD}/payouts/school`,
+      // details: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}`,
+      // edit: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}/edit`,
+      // demo: {
+      //   details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,
+      //   edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
+      // },
+    },
     notification: {
       root: `${ROOTS.DASHBOARD}/notifications`,
       details: (id: string) => `${ROOTS.DASHBOARD}/notifications/${id}`,

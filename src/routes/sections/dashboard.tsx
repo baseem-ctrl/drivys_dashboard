@@ -42,6 +42,8 @@ import CertificateListView from 'src/sections/certificate/view/certificate-list-
 import GenerateCertificateForm from 'src/sections/certificate/certificate-generate-admin';
 import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality-program-list-view';
 import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
+import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view';
+import SchoolPayoutPage from 'src/sections/payouts/school/school-payouts-view';
 
 // ----------------------------------------------------------------------
 
@@ -254,6 +256,16 @@ const allroutes = [
       { path: ':id', element: <TourDetailsPage /> },
       { path: 'new', element: <TourCreatePage /> },
       { path: ':id/edit', element: <TourEditPage /> },
+    ],
+  },
+  {
+    path: 'payouts',
+    children: [
+      { element: <TrainerPayoutPage />, index: true },
+      { path: 'school', element: <SchoolPayoutPage /> },
+      // { path: ':id', element: <TourDetailsPage /> },
+      // { path: 'new', element: <TourCreatePage /> },
+      // { path: ':id/edit', element: <TourEditPage /> },
     ],
   },
   { path: 'kanban', element: <KanbanPage /> },
