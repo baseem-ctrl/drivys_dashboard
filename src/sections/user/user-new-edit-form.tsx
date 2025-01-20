@@ -46,6 +46,7 @@ import {
   CircularProgress,
   Divider,
   FormControl,
+  FormHelperText,
   FormLabel,
   IconButton,
   Input,
@@ -130,6 +131,12 @@ export default function UserNewEditForm({
     page: 0,
     is_published: 'published',
   });
+  const [selectedSchool, setSelectedSchool] = useState(null);
+
+  const handleSchoolChange = (event, newValue) => {
+    const school = schoolList.find((item) => item.id === newValue?.value);
+    setSelectedSchool(school || null);
+  };
 
   useEffect(() => {
     if (enumData?.length > 0) {
@@ -238,6 +245,26 @@ export default function UserNewEditForm({
     ),
     cash_in_hand: Yup.string(),
     max_cash_in_hand_allowed: Yup.string(),
+    school_commission_in_percentage: Yup.number()
+      .required('School commission is required')
+      .when([], {
+        is: () =>
+          selectedSchool?.min_commision >= 0 &&
+          selectedSchool?.max_commision >= 0 &&
+          selectedSchool?.max_commision &&
+          selectedSchool?.max_commision,
+        then: (schema) =>
+          schema
+            .min(
+              selectedSchool?.min_commision,
+              `School commission must be greater than or equal to ${selectedSchool?.min_commision}%`
+            )
+            .max(
+              selectedSchool?.max_commision,
+              `School commission must be less than or equal to ${selectedSchool?.max_commision}%`
+            ),
+        otherwise: (schema) => schema,
+      }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -534,7 +561,6 @@ export default function UserNewEditForm({
   });
 
   // Function to add more pairs
-
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -763,39 +789,49 @@ export default function UserNewEditForm({
                   options={
                     schoolList && schoolList.length > 0
                       ? [
-                          ...schoolList.map((item: any) => ({
-                            label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                          ...schoolList.map((item) => ({
+                            label: `${item.vendor_translations?.[0]?.name} - ${item.email}`,
                             value: item.id,
                           })),
                           {
-                            label: 'OTHER', // Add the "Other" option
-                            value: null, // Value for the "Other" option
+                            label: 'OTHER',
+                            value: null,
                           },
                         ]
                       : [
                           {
-                            label: 'OTHER', // Add the "Other" option
-                            value: null, // Value for the "Other" option
+                            label: 'OTHER',
+                            value: null,
                           },
                         ]
                   }
-                  setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
+                  setSearchOwner={(searchTerm) => setSearchValue(searchTerm)}
                   disableClearable={false}
                   loading={schoolLoading}
                   value={defaultOption}
+                  onChange={handleSchoolChange}
                 />
               )}
+
               {values.user_type === 'TRAINER' &&
                 typeof values.vendor_id === 'object' &&
                 (values.vendor_id?.value === undefined || values.vendor_id?.value === null) && (
                   <RHFTextField name="school_name" label="School Name" />
                 )}
               {values.user_type === 'TRAINER' && (
-                <RHFTextField
-                  name="school_commission_in_percentage"
-                  label="School Commission (%)"
-                  type="number"
-                />
+                <div>
+                  <RHFTextField
+                    name="school_commission_in_percentage"
+                    label="School Commission (%)"
+                    type="number"
+                  />
+                  {selectedSchool && (
+                    <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                      School Commission must be in between {selectedSchool.min_commision || '0'}%
+                      and {selectedSchool.max_commision || '0'}%
+                    </FormHelperText>
+                  )}
+                </div>
               )}
               {values.user_type === 'TRAINER' && (
                 <>
