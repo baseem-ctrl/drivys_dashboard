@@ -98,6 +98,8 @@ const defaultFilters = {
   vendor: '',
   payment_status: '',
   payment_method: '',
+  start_date: null,
+  end_date: null,
 };
 
 export default function BookingSchoolAdminListView() {
@@ -121,6 +123,8 @@ export default function BookingSchoolAdminListView() {
     payment_method: filters.payment_method,
     driver_id: filters.vendor,
     booking_status: filters.bookingType,
+    start_date: filters.start_date,
+    end_date: filters.end_date,
   });
   const [bookingCounts, setBookingCounts] = useState({
     all: 0,

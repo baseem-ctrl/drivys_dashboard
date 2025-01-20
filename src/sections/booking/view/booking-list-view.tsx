@@ -98,6 +98,8 @@ const defaultFilters = {
   vendor: '',
   payment_status: '',
   payment_method: '',
+  start_date: null,
+  end_date: null,
 };
 
 export default function BookingListView() {
@@ -119,6 +121,8 @@ export default function BookingListView() {
     payment_status: filters.payment_status,
     payment_method: filters.payment_method,
     driver_id: filters.vendor,
+    start_date: filters.start_date,
+    end_date: filters.end_date,
   });
 
   const [searchValue, setSearchValue] = useState('');

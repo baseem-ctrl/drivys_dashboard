@@ -1,5 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
+import moment from 'moment';
+
 // utils
 import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
@@ -15,6 +17,8 @@ export function useGetBookings({
   booking_status,
   payment_status,
   payment_method,
+  start_date,
+  end_date,
 }: any) {
   // const { search, driver_id, payment_status, booking_type, limit, page } = filters;
   const queryParams = new URLSearchParams();
@@ -33,6 +37,12 @@ export function useGetBookings({
 
   if (payment_status !== undefined && payment_status !== null && payment_status !== '') {
     queryParams.append('payment_status', payment_status);
+  }
+  if (start_date !== undefined && start_date !== null && start_date !== '') {
+    queryParams.append('start_date', moment(start_date).format('YYYY-MM-DD'));
+  }
+  if (end_date !== undefined && end_date !== null && end_date !== '') {
+    queryParams.append('end_date', moment(end_date).format('YYYY-MM-DD'));
   }
 
   // if (payment_status !== undefined) queryParams.append('booking_status', payment_status);
