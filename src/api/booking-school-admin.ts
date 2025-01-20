@@ -15,6 +15,8 @@ export function useGetBookingsSchoolAdmin(filters = {}) {
     page,
     payment_status,
     payment_method,
+    start_date,
+    end_date,
   } = filters;
   const queryParams = new URLSearchParams();
   if (search !== undefined) queryParams.append('search', search);
@@ -33,6 +35,12 @@ export function useGetBookingsSchoolAdmin(filters = {}) {
   }
   if (payment_status !== undefined && payment_status !== null && payment_status !== '') {
     queryParams.append('payment_status', payment_status);
+  }
+  if (start_date !== undefined && start_date !== null && start_date !== '') {
+    queryParams.append('start_date', start_date);
+  }
+  if (end_date !== undefined && end_date !== null && end_date !== '') {
+    queryParams.append('end_date', end_date);
   }
   const URL = `${endpoints.booking.schoolAdmin.getList}?${queryParams.toString()}`;
 

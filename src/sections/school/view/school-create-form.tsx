@@ -80,7 +80,9 @@ export default function SchoolCreateForm({
         }
         return true; // No validation if the phone number is empty or null
       }),
-    commission_in_percentage: Yup.string().typeError('commission_in_percentage must be a number'),
+    certificate_commission_in_percentage: Yup.string().typeError(
+      'commission_in_percentage must be a number'
+    ),
     status: Yup.string(),
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
@@ -143,7 +145,7 @@ export default function SchoolCreateForm({
     () => ({
       contact_email: '',
       contact_phone_number: '',
-      commission_in_percentage: '',
+      certificate_commission_in_percentage: '',
       status: '',
       name: '',
       locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
@@ -155,6 +157,8 @@ export default function SchoolCreateForm({
       password: '',
       phone: '',
       country_code: '971',
+      min_commision: '',
+      max_commision: '',
     }),
     []
   );
@@ -221,10 +225,16 @@ export default function SchoolCreateForm({
     saveCurrentLocaleTranslation();
 
     const formData = new FormData();
-
+    console.log('data', data);
     formData.append('contact_email', data?.contact_email);
     formData.append('contact_phone_number', data?.contact_phone_number);
-    formData.append('commission_in_percentage', data?.commission_in_percentage);
+    formData.append('min_commision', data?.min_commision);
+    formData.append('max_commision', data?.max_commision);
+
+    formData.append(
+      'certificate_commission_in_percentage',
+      data?.certificate_commission_in_percentage
+    );
     formData.append('status', data?.status);
     formData.append('is_active', data.is_active ? '1' : '0');
     formData.append('create_new_user', data.create_new_user ? '1' : '0');
@@ -343,7 +353,7 @@ export default function SchoolCreateForm({
             </Grid>
             <Grid item xs={6} mt={2}>
               <RHFTextField
-                name="commission_in_percentage"
+                name="certificate_commission_in_percentage"
                 label="Certificate Commission in (%)"
                 type="number"
                 InputProps={{
@@ -357,11 +367,49 @@ export default function SchoolCreateForm({
                 }}
               />
             </Grid>
+            <RHFTextField
+              name="min_commision"
+              label="Minimum Vendor Commission in (%)"
+              fullWidth
+              sx={{ mt: 2 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Enter the minimum commission rate that the school can assign.">
+                      <IconButton>
+                        <InfoOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.min_commision}
+              helperText={errors.min_commision?.message}
+            />
 
-            <Grid item xs={6} mt={2} mb={2}>
-              <RHFCheckbox name="is_active" label="Active" />
-            </Grid>
+            <RHFTextField
+              name="max_commision"
+              label="Maximum Vendor Commission in (%)"
+              fullWidth
+              sx={{ mt: 2 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="Enter the maximum commission rate that the school can assign.">
+                      <IconButton>
+                        <InfoOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.max_commision}
+              helperText={errors.max_commision?.message}
+            />
           </Box>
+          <Grid item xs={6} mt={2} mb={2}>
+            <RHFCheckbox name="is_active" label="Active" />
+          </Grid>
           <Grid item xs={6} mt={2} mb={2}>
             <Typography variant="body1" sx={{ fontWeight: '600' }}>
               Choose a School Admin: Create New or Select Existing

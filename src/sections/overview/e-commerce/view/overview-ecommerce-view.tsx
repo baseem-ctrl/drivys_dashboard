@@ -4,7 +4,14 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
-import { useMemo, useState } from 'react';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
+import { DateRangePicker } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { enUS } from 'date-fns/locale';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import './CustomDateRangePicker.css';
 import Iconify from 'src/components/iconify';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -14,7 +21,17 @@ import {
   useGetStudentInsights,
   useGetTrainerInsights,
 } from 'src/api/anlytics';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 // _mock
@@ -58,6 +75,8 @@ import { AnalyticsConversionRates } from '../ecommerce-student-demographics';
 import SessionOverview from '../ecommerce-session-overview';
 
 import SchoolPerformanceDetails from '../ecommerce-school-performance';
+import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useGetAllCity } from 'src/api/city';
 
 // ----------------------------------------------------------------------
 
@@ -66,24 +85,58 @@ export default function OverviewEcommerceView() {
   const settings = useSettingsContext();
 
   const [startDate, setStartDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectionRange, setSelectionRange] = useState({
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection',
+  });
+
+  const handleSelect = (ranges: any) => {
+    setSelectionRange(ranges.selection);
+  };
+
+  const toggleDatePicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
   const [endDate, setEndDate] = useState(null);
   const [applyClicked, setApplyClicked] = useState(false);
-
+  const [filters, setFilters] = useState({ city_id: null });
   const { analytics, analyticsLoading } = useGetAnalytics({
     startDate: applyClicked ? startDate : undefined,
     endDate: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
+
+  const { city, cityLoading } = useGetAllCity({
+    limit: 1000,
+    page: 0,
   });
   const theme = useTheme();
   const { revenue, revenueLoading, revalidateAnalytics, paymentMethods, revenueByPackage } =
-    useGetRevenue();
+    useGetRevenue({
+      start_date: applyClicked ? startDate : undefined,
+      end_date: applyClicked ? endDate : undefined,
+      city_id: filters.city_id,
+    });
 
-  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
+  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights({
+    start_date: applyClicked ? startDate : undefined,
+    end_date: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
   const sessionsData = trainerInsights?.sessionsPerTrainer;
   const totalSessions = sessionsData?.reduce(
     (sum, trainer) =>
       sum + trainer.sessions.reduce((trainerSum, session) => trainerSum + session.session_count, 0),
     0
   );
+  const handleFilterChange = (field, value) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [field]: value,
+    }));
+  };
   const formattedSessionData = sessionsData?.map((trainer) => {
     const trainerTotalSessions = trainer?.sessions?.reduce(
       (trainerSum, session) => trainerSum + session.session_count,
@@ -104,7 +157,11 @@ export default function OverviewEcommerceView() {
     studentInsightsError,
     studentInsightsLoading,
     revalidateStudentInsights,
-  } = useGetStudentInsights();
+  } = useGetStudentInsights({
+    start_date: applyClicked ? startDate : undefined,
+    end_date: applyClicked ? endDate : undefined,
+    city_id: filters.city_id,
+  });
 
   const chartData = {
     colors: ['#34C38F', '#FF7D1E'],
@@ -252,12 +309,19 @@ export default function OverviewEcommerceView() {
     //   },
   };
   const handleApply = () => {
+    setStartDate(selectionRange?.startDate);
+    setEndDate(selectionRange?.endDate);
+
     setApplyClicked(true);
   };
   const handleClear = () => {
     setStartDate(null);
     setEndDate(null);
     setApplyClicked(true);
+
+    setFilters({
+      city_id: null,
+    });
   };
 
   const tableLabels = [
@@ -266,6 +330,23 @@ export default function OverviewEcommerceView() {
     { id: 'bookings', label: 'Bookings' },
     { id: 'trainer_ratings', label: 'Trainer Ratings' },
   ];
+  const datePickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setShowDatePicker(false);
+      }
+    };
+
+    if (showDatePicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDatePicker]);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {user?.user?.user_type && !analyticsLoading ? (
@@ -349,32 +430,102 @@ export default function OverviewEcommerceView() {
                 marginTop={1}
                 marginBottom={2}
               >
-                <Grid item>
-                  <Box display="flex" justifyContent="flex-start">
-                    <DatePicker
-                      label="Start Date"
-                      value={startDate}
-                      onChange={(newValue) => {
-                        setStartDate(newValue);
-                        setApplyClicked(false);
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
+                {showDatePicker && (
+                  <Box
+                    ref={datePickerRef}
+                    sx={{
+                      position: 'absolute',
+                      top: '500px',
+                      zIndex: 1000,
+                      backgroundColor: '#fff',
+                      borderRadius: '8px',
+                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                      padding: '16px',
+                    }}
+                  >
+                    <DateRangePicker
+                      ranges={[selectionRange]}
+                      onChange={handleSelect}
+                      showSelectionPreview={true}
+                      moveRangeOnFirstSelection={false}
+                      locale={enUS}
+                      months={2} // Show two months side by side
+                      direction="horizontal"
                     />
                   </Box>
+                )}
+                <Grid item xs={12} md={3}>
+                  <Autocomplete
+                    options={
+                      city?.map((item: any) => ({
+                        label: item.city_translations
+                          .map((translation: any) => translation.name)
+                          .join(' - '),
+                        value: item.id,
+                      })) ?? []
+                    }
+                    getOptionLabel={(option) => option.label}
+                    value={
+                      city
+                        ?.map((item: any) => ({
+                          label: item.city_translations
+                            .map((translation: any) => translation.name)
+                            .join(' - '),
+                          value: item.id,
+                        }))
+                        .find((option: any) => option.value === filters.city_id) || null
+                    }
+                    onChange={(event, newValue) => {
+                      handleFilterChange('city_id', newValue ? newValue.value : null);
+                    }}
+                    renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.value}>
+                        {option.label}
+                      </li>
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={option.value}
+                          label={option.label}
+                          size="small"
+                          variant="soft"
+                        />
+                      ))
+                    }
+                  />
                 </Grid>
-                <Grid item>
-                  <Box display="flex" justifyContent="flex-start">
-                    <DatePicker
-                      label="End Date"
-                      value={endDate}
-                      onChange={(newValue) => {
-                        setEndDate(newValue);
-                        setApplyClicked(false);
-                      }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </Box>
+                <Grid
+                  item
+                  xs={12}
+                  md={3}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={toggleDatePicker}
+                    startIcon={<CalendarMonthIcon />}
+                    sx={{
+                      backgroundColor: 'transparent',
+                      color: '#CF5A0D',
+                      border: '1px solid #ccc',
+
+                      textTransform: 'none',
+                      '&:hover': {
+                        backgroundColor: '#e0e0e0',
+                        borderColor: '#aaa',
+                      },
+                    }}
+                  >
+                    Select Date
+                  </Button>
                 </Grid>
+
                 <Grid>
                   <Box display="flex" justifyContent="flex-start" gap={1}>
                     <Button variant="contained" color="primary" onClick={handleApply}>

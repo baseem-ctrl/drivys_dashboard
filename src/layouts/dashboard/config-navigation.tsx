@@ -222,7 +222,19 @@ export function useNavData() {
     //     { title: t('edit'), path: paths.dashboard.tour.demo.edit },
     //   ],
     // },
+    {
+      title: t('payouts'),
+      path: paths.dashboard.payouts.root,
+      icon: ICONS.invoice,
+      children: [
+        { title: t('tariner payouts'), path: paths.dashboard.payouts.root },
+        { title: t('school payouts'), path: paths.dashboard.payouts.school },
 
+        // { title: t('details'), path: paths.dashboard.tour.demo.details },
+        // { title: t('create'), path: paths.dashboard.tour.new },
+        // { title: t('edit'), path: paths.dashboard.tour.demo.edit },
+      ],
+    },
     // KANBAN
     // {
     //   title: t('kanban'),

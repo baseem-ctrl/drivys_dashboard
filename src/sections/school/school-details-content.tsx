@@ -151,7 +151,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       name: selectedLocaleObject?.name || '',
       contact_email: details?.email || '',
       phone_number: details?.phone_number || '',
-      commission_in_percentage: details?.commission_in_percentage || '0',
+      certificate_commission_in_percentage: details?.certificate_commission_in_percentage || '0',
+      min_commision: details?.min_commision || '0',
+      max_commision: details?.max_commision || '0',
       license_expiry: details?.license_expiry || '',
       license_file: null,
       website: details?.website || '',
@@ -230,7 +232,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         name: selectedLocaleObject?.name || '',
         contact_email: details?.email || '',
         phone_number: details?.phone_number || '',
-        commission_in_percentage: details?.commission_in_percentage || '0',
+        certificate_commission_in_percentage: details?.certificate_commission_in_percentage || '0',
+        min_commision: details?.min_commision || '0',
+        max_commision: details?.max_commision || '0',
         license_expiry: details?.license_expiry || '',
         license_file: null,
         website: details?.website || '',
@@ -255,7 +259,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         contact_phone_number: data?.phone_number,
         status: data?.status,
         is_active: data?.is_active ? '1' : '0',
-        commission_in_percentage: data?.commission_in_percentage || 0,
+        certificate_commission_in_percentage: data?.certificate_commission_in_percentage || 0,
+        min_commision: data?.min_commision || 0,
+        max_commision: data?.max_commision || 0,
         create_new_user: 0,
         license_expiry: data?.license_expiry,
         license_file: data?.license_file,
@@ -270,7 +276,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       formData.append('contact_phone_number', payload.contact_phone_number || '');
       formData.append('status', payload.status || '');
       formData.append('is_active', payload.is_active);
-      formData.append('commission_in_percentage', payload.commission_in_percentage || '0');
+      formData.append(
+        'certificate_commission_in_percentage',
+        payload.certificate_commission_in_percentage || '0'
+      );
+      formData.append('min_commision', payload.min_commision || '0');
+      formData.append('max_commision', payload.max_commision || '0');
       formData.append('create_new_user', payload.create_new_user.toString());
       formData.append('license_expiry', payload.license_expiry || '');
       formData.append('user_id', payload.user_id || '');
@@ -350,9 +361,21 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Email', value: details?.email ?? 'NA' },
               { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-              { label: 'Commission in (%)', value: details?.commission_in_percentage ?? '0' },
+              {
+                label: 'Certificate Commission in (%)',
+                value: `${details?.certificate_commission_in_percentage ?? 'NA'}%`,
+              },
 
               { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
+              {
+                label: 'Min. Vendor Commission in (%)',
+                value: `${details?.min_commision ?? 'NA'}%`,
+              },
+              {
+                label: 'Max. Vendor Commission in (%)',
+                value: `${details?.max_commision ?? 'NA'}%`,
+              },
+
               {
                 label: 'License File',
                 value: details?.license_file ? (
@@ -398,7 +421,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               },
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                   {item.label}
                 </Box>
                 <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -504,18 +527,68 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   )}
                 />
                 <Controller
-                  name="commission_in_percentage"
+                  name="certificate_commission_in_percentage"
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
                       label="Certificate Commission in (%)"
                       {...field}
-                      error={!!errors.commission_in_percentage}
+                      error={!!errors.certificate_commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
                             <Tooltip title="Commission for drivys from certificate" placement="top">
+                              <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  name="min_commision"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="Mininum Vendor Commission in (%)"
+                      {...field}
+                      InputLabelProps={{ shrink: true }}
+                      error={!!errors.min_commision}
+                      type="number"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip
+                              title="Enter the minimum commission rate that schools can assign."
+                              placement="top"
+                            >
+                              <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Controller
+                  name="max_commision"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="Maximum Vendor Commission in (%)"
+                      {...field}
+                      error={!!errors.max_commision}
+                      type="number"
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip
+                              title="Enter the maximum commission rate that schools can assign."
+                              placement="top"
+                            >
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>

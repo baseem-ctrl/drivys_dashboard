@@ -1,0 +1,12 @@
+.rdrWeekDay,
+.rdrStaticRangeLabel,
+.rdrDefinedRangesWrapper,
+.rdrDateDisplayItemActive input,
+.rdrDateDisplayItem input {
+  color: #cf5a0d !important;
+}
+.rdrStartEdge,
+.rdrEndEdge,
+.rdrInRange {
+  background-color: #cf5a0d !important;
+}
