@@ -332,4 +332,8 @@ export const endpoints = {
   location: {
     getLiveTrainerLocation: 'admin/trainers/get-live-location-trainers-list',
   },
+  payouts: {
+    trainerPayouts: 'admin/payout/get-by-trainers',
+    schoolPayouts: 'admin/payout/get-by-vendors',
+  },
 };
