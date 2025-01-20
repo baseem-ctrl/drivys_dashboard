@@ -80,7 +80,9 @@ export default function SchoolCreateForm({
         }
         return true; // No validation if the phone number is empty or null
       }),
-    commission_in_percentage: Yup.string().typeError('commission_in_percentage must be a number'),
+    certificate_commission_in_percentage: Yup.string().typeError(
+      'commission_in_percentage must be a number'
+    ),
     status: Yup.string(),
     name: Yup.string().required('Name is required'),
     locale: Yup.string().required('Locale is required'),
@@ -143,7 +145,7 @@ export default function SchoolCreateForm({
     () => ({
       contact_email: '',
       contact_phone_number: '',
-      commission_in_percentage: '',
+      certificate_commission_in_percentage: '',
       status: '',
       name: '',
       locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
@@ -224,7 +226,10 @@ export default function SchoolCreateForm({
 
     formData.append('contact_email', data?.contact_email);
     formData.append('contact_phone_number', data?.contact_phone_number);
-    formData.append('commission_in_percentage', data?.commission_in_percentage);
+    formData.append(
+      'certificate_commission_in_percentage',
+      data?.certificate_commission_in_percentage
+    );
     formData.append('status', data?.status);
     formData.append('is_active', data.is_active ? '1' : '0');
     formData.append('create_new_user', data.create_new_user ? '1' : '0');
@@ -343,7 +348,7 @@ export default function SchoolCreateForm({
             </Grid>
             <Grid item xs={6} mt={2}>
               <RHFTextField
-                name="commission_in_percentage"
+                name="certificate_commission_in_percentage"
                 label="Certificate Commission in (%)"
                 type="number"
                 InputProps={{

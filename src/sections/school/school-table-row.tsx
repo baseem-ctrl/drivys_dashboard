@@ -64,7 +64,7 @@ export default function SchoolTableRow({
     status,
     is_active,
     vendor_user,
-    commission_in_percentage,
+    certificate_commission_in_percentage,
     id,
   } = row;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
@@ -159,7 +159,7 @@ export default function SchoolTableRow({
     status: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
     user_id: Yup.string(),
-    commission_in_percentage: Yup.string(),
+    certificate_commission_in_percentage: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -171,7 +171,7 @@ export default function SchoolTableRow({
       status: status,
       is_active: is_active == true ? '1' : '0' || '1',
       user_id: vendor_user?.user?.id || '',
-      commission_in_percentage: commission_in_percentage || 0,
+      certificate_commission_in_percentage: certificate_commission_in_percentage || 0,
     }),
     [selectedLocaleObject, row]
   );
@@ -220,7 +220,7 @@ export default function SchoolTableRow({
             ? vendor_user.user_id
             : '',
         is_active: data?.is_active ? 1 : 0,
-        commission_in_percentage: data?.commission_in_percentage || 0,
+        certificate_commission_in_percentage: data?.certificate_commission_in_percentage || 0,
         create_new_user: 0,
         vendor_id: row?.id,
       };
@@ -371,15 +371,15 @@ export default function SchoolTableRow({
           {editingRowId === row.id ? (
             <Controller
               className="editor"
-              name="commission_in_percentage"
+              name="certificate_commission_in_percentage"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  error={!!errors.commission_in_percentage}
+                  error={!!errors.certificate_commission_in_percentage}
                   helperText={
-                    errors?.commission_in_percentage
-                      ? errors?.commission_in_percentage?.message
+                    errors?.certificate_commission_in_percentage
+                      ? errors?.certificate_commission_in_percentage?.message
                       : ''
                   }
                   type="number"
@@ -387,7 +387,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            commission_in_percentage || 'N/A'
+            certificate_commission_in_percentage || 'N/A'
           )}
         </TableCell>
 
