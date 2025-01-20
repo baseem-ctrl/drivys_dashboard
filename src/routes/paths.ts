@@ -268,7 +268,9 @@ export const paths = {
     payouts: {
       root: `${ROOTS.DASHBOARD}/payouts`,
       school: `${ROOTS.DASHBOARD}/payouts/school`,
-      // details: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/payouts/${id}`,
+      schoolDetails: (id: string) => `${ROOTS.DASHBOARD}/payouts/school/${id}`,
+      // details: (id: string) => `${ROOTS.DASHBOARD}/payout/${id}`,
       // edit: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}/edit`,
       // demo: {
       //   details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,

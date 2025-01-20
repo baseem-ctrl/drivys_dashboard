@@ -32,6 +32,7 @@ import { Box, Card, CardContent, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetUsers } from 'src/api/users';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -52,6 +53,8 @@ const PAYOUT_SORT_OPTIONS = [
 ];
 export default function TrainerPayoutPage() {
   const settings = useSettingsContext();
+  const router = useRouter();
+
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const openFilters = useBoolean();
@@ -250,6 +253,9 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
+  const handleCardClick = (id) => {
+    router.push(paths.dashboard.payouts.details(id));
+  };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -290,9 +296,9 @@ export default function TrainerPayoutPage() {
               border: '1px solid #ddd',
               borderRadius: 2,
               boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: 'pointer',
+              cursor: tour.paid_bookings > 0 ? 'pointer' : 'not-allowed',
             }}
-            // onClick={() => handleView(tour.id)}
+            onClick={() => tour.paid_bookings > 0 && handleCardClick(tour.trainer_id)}
           >
             {/* Large Screen Content */}
             <CardContent

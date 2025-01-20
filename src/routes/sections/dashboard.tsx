@@ -44,6 +44,8 @@ import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality
 import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
 import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view';
 import SchoolPayoutPage from 'src/sections/payouts/school/school-payouts-view';
+import { BookingDetailsTable } from 'src/sections/payouts/trainer/trainer-booking-details';
+import { SchoolBookingDetailsTable } from 'src/sections/payouts/school/school-booking-details';
 
 // ----------------------------------------------------------------------
 
@@ -258,12 +260,15 @@ const allroutes = [
       { path: ':id/edit', element: <TourEditPage /> },
     ],
   },
+
   {
     path: 'payouts',
     children: [
       { element: <TrainerPayoutPage />, index: true },
+      { path: ':id', element: <BookingDetailsTable /> },
       { path: 'school', element: <SchoolPayoutPage /> },
-      // { path: ':id', element: <TourDetailsPage /> },
+      { path: 'school/:id', element: <SchoolBookingDetailsTable /> },
+
       // { path: 'new', element: <TourCreatePage /> },
       // { path: ':id/edit', element: <TourEditPage /> },
     ],

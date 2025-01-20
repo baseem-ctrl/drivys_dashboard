@@ -1,0 +1,110 @@
+import React from 'react';
+import { useParams } from 'src/routes/hooks';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  TablePagination,
+  Box,
+  Container,
+} from '@mui/material';
+import { useGetPayoutsList } from 'src/api/payouts';
+import { TablePaginationCustom, useTable } from 'src/components/table';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
+import { paths } from 'src/routes/paths';
+import { useSettingsContext } from 'src/components/settings';
+import { useRouter } from 'src/routes/hooks';
+
+export const BookingDetailsTable: React.FC<{}> = () => {
+  const settings = useSettingsContext();
+  const router = useRouter();
+
+  const params = useParams();
+  const { id } = params;
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+
+  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages } = useGetPayoutsList(
+    {
+      page: table?.page + 1,
+      limit: table?.rowsPerPage,
+      trainer_id: id,
+    }
+  );
+  const renderCell = (value: any) => {
+    return value === 0 ? value : value || 'N/A';
+  };
+  const handleBookingClick = (id) => {
+    router.push(paths.dashboard.booking.details(id));
+  };
+  return (
+    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading="Trainer Payout"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          {
+            name: 'Payout',
+            href: paths.dashboard.payouts.root,
+          },
+          { name: 'Trainer Payouts Details' },
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      />
+      <TableContainer component={Paper}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Booking ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                Total Booking Revenue
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                Drivy's Commission
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer Earning</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer Name</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {payoutsList?.map((booking, index) => (
+              <TableRow key={index}>
+                <TableCell
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                  onClick={() => handleBookingClick(booking?.booking_id)}
+                >
+                  {renderCell(booking?.booking_id)}
+                </TableCell>
+
+                <TableCell>{renderCell(booking?.total_booking_revenue)} AED</TableCell>
+                <TableCell>{renderCell(booking?.drivys_commission)} AED</TableCell>
+                <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
+                <TableCell>{renderCell(booking?.trainer_details?.trainer_name)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px' }}>
+        <TablePaginationCustom
+          count={totalPages}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+        />
+      </Box>
+    </Container>
+  );
+};

@@ -31,6 +31,7 @@ import { Box, Card, CardContent, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetSchool } from 'src/api/school';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +52,7 @@ const PAYOUT_SORT_OPTIONS = [
 export default function SchoolPayoutPage() {
   const settings = useSettingsContext();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
+  const router = useRouter();
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('');
@@ -210,7 +211,7 @@ export default function SchoolPayoutPage() {
   const renderSmallScreenContent = (item: any) => {
     const fields = [
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'No of Bookings', value: item?.noOfBookings ?? 0 },
+      { label: 'No of Bookings', value: item?.total_paid_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
@@ -233,6 +234,9 @@ export default function SchoolPayoutPage() {
         ))}
       </Box>
     );
+  };
+  const handleCardClick = (id) => {
+    router.push(paths.dashboard.payouts.schoolDetails(id));
   };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -273,8 +277,10 @@ export default function SchoolPayoutPage() {
               border: '1px solid #ddd',
               borderRadius: 2,
               boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: 'pointer',
+              cursor: tour.total_paid_booking > 0 ? 'pointer' : 'not-allowed',
             }}
+            onClick={() => tour.total_paid_booking > 0 && handleCardClick(tour.vendor_id)}
+
             // onClick={() => handleView(tour.id)}
           >
             <CardContent
