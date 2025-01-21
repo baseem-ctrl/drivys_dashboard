@@ -103,10 +103,8 @@ export default function PickupCreateEditForm({
         formData.append('id', currentPickup.id);
       }
       formData.append('city_id', data?.city_id?.value || currentPickup.city_id);
-      const startDate = data.start_date
-        ? new Date(data.start_date).toISOString().split('T')[0]
-        : '';
-      const endDate = data.end_date ? new Date(data.end_date).toISOString().split('T')[0] : '';
+      const startDate = data.start_date ? moment(data.start_date).format('YYYY-MM-DD') : '';
+      const endDate = data.end_date ? moment(data.end_date).format('YYYY-MM-DD') : '';
 
       const startTime = data.start_time ? moment.utc(data.start_time).format('HH:mm') : '';
 
