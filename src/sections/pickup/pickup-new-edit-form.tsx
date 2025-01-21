@@ -56,7 +56,9 @@ export default function PickupCreateEditForm({
 
   const formattedEndTime = moment.utc(currentPickup?.end_time).format('HH:mm');
   const formattedEndTime12hr = moment.utc(currentPickup?.end_time).format('hh:mm a');
-
+  const parseTime = (time) => {
+    return moment(time, 'HH:mm:ss').isValid() ? moment(time, 'HH:mm:ss').toDate() : new Date();
+  };
   const defaultValues = useMemo(
     () => ({
       city_id: currentPickup?.city
@@ -66,18 +68,15 @@ export default function PickupCreateEditForm({
           }
         : null,
       end_date: currentPickup?.end_date ? moment(currentPickup.end_date).toDate() : new Date(),
-      end_time: currentPickup?.end_time ? moment.utc(currentPickup.end_time).toDate() : new Date(),
+      end_time: currentPickup?.end_time && parseTime(currentPickup?.end_time),
       start_date: currentPickup?.start_date
         ? moment(currentPickup.start_date).toDate()
         : new Date(),
-      start_time: currentPickup?.start_time
-        ? moment.utc(currentPickup.start_time).toDate()
-        : new Date(),
+      start_time: currentPickup?.start_time && parseTime(currentPickup?.start_time),
       status: currentPickup?.status || false,
     }),
     [currentPickup]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -140,6 +139,7 @@ export default function PickupCreateEditForm({
       }
     }
   });
+
   return (
     <Dialog
       fullWidth
