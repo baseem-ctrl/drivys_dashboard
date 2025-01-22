@@ -202,6 +202,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/todo/pending-verification`,
       pendingVerification: `${ROOTS.DASHBOARD}/todo/pending-verification`,
       pendingRefund: `${ROOTS.DASHBOARD}/todo/pending-refund`,
+      trainerProfileUpdates: `${ROOTS.DASHBOARD}/todo/trainer-profile-updates`,
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
