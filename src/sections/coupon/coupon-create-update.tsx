@@ -242,7 +242,7 @@ export default function CouponDialog({
       }
 
       // Append category_ids only if data.Category has values
-      if (data.Category && data.Category.length > 0) {
+      if (data.Category && data.Category.length > 0 && data.discount_type_id === 2) {
         data.Category.forEach((item, index) => {
           if (item.value) {
             formData.append(`category_ids[${index}]`, item.value);
@@ -250,7 +250,7 @@ export default function CouponDialog({
         });
       }
 
-      if (data.Packages && data.Packages.length > 0) {
+      if (data.Packages && data.Packages.length > 0 && data.discount_type_id === 1) {
         data.Packages.forEach((item, index) => {
           if (item.value) {
             formData.append(`package_ids[${index}]`, item.value);
