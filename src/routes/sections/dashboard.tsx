@@ -44,6 +44,7 @@ import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality
 import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
 import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view';
 import SchoolPayoutPage from 'src/sections/payouts/school/school-payouts-view';
+import TrainerProfileUpdatesListView from 'src/sections/trainer-profile-updates/view/trainer-profile-update-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -225,6 +226,7 @@ const allroutes = [
       { element: <ToDoListViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListViewVerification /> },
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+      { path: 'trainer-profile-updates', element: <TrainerProfileUpdatesListView /> },
     ],
   },
   { path: 'certificate', element: <CertificateListView />, index: true },
