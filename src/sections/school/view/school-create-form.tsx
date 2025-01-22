@@ -85,6 +85,7 @@ export default function SchoolCreateForm({
     ),
     status: Yup.string(),
     name: Yup.string().required('Name is required'),
+    about: Yup.string(),
     locale: Yup.string().required('Locale is required'),
     is_active: Yup.boolean(),
     create_new_user: Yup.boolean(),
@@ -148,6 +149,7 @@ export default function SchoolCreateForm({
       certificate_commission_in_percentage: '',
       status: '',
       name: '',
+      about: '',
       locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
       is_active: true,
       create_new_user: false,
@@ -250,6 +252,7 @@ export default function SchoolCreateForm({
     }
     formData.append(`vendor_translations[0][name]`, data?.name);
     formData.append(`vendor_translations[0][locale]`, data?.locale);
+    formData.append(`vendor_translations[0][about]`, data?.about);
 
     try {
       const response = await createSchool(formData);
@@ -369,7 +372,7 @@ export default function SchoolCreateForm({
             </Grid>
             <RHFTextField
               name="min_commision"
-              label="Minimum Vendor Commission in (%)"
+              label="Min Vendor Commission in (%)"
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{
@@ -389,7 +392,7 @@ export default function SchoolCreateForm({
 
             <RHFTextField
               name="max_commision"
-              label="Maximum Vendor Commission in (%)"
+              label="Max Vendor Commission in (%)"
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{
@@ -405,6 +408,16 @@ export default function SchoolCreateForm({
               }}
               error={!!errors.max_commision}
               helperText={errors.max_commision?.message}
+            />
+            <RHFTextField
+              name="about"
+              label="About"
+              fullWidth
+              multiline
+              rows={3}
+              sx={{ mt: 2 }}
+              error={!!errors.about}
+              helperText={errors.about?.message}
             />
           </Box>
           <Grid item xs={6} mt={2} mb={2}>

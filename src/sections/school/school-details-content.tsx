@@ -117,6 +117,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
     name: Yup.string().required('Name is required'),
+    about: Yup.string(),
+
     contact_email: Yup.string().test(
       'valid-email-format',
       'Email must be in the valid format',
@@ -229,6 +231,8 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     if (details) {
       const defaultVendorValues = {
         locale: selectedLocaleObject?.locale || '',
+        about: selectedLocaleObject?.about || '',
+
         name: selectedLocaleObject?.name || '',
         contact_email: details?.email || '',
         phone_number: details?.phone_number || '',
@@ -253,6 +257,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           {
             name: data?.name || selectedLocaleObject?.name,
             locale: selectedLanguage || selectedLocaleObject?.locale,
+            about: data?.about || selectedLocaleObject?.about,
           },
         ],
         contact_email: data?.contact_email,
@@ -291,6 +296,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       // Handle `vendor_translations` (assumes only one translation)
       if (payload.vendor_translations && payload.vendor_translations.length > 0) {
         formData.append('vendor_translations[0][name]', payload.vendor_translations[0].name || '');
+        formData.append(
+          'vendor_translations[0][about]',
+          payload.vendor_translations[0].about || ''
+        );
+
         formData.append(
           'vendor_translations[0][locale]',
           payload.vendor_translations[0].locale || ''
@@ -357,6 +367,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
             {[
               ...(details?.vendor_translations?.flatMap((itm: any) => [
                 { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+                { label: `About (${itm?.locale})`, value: itm?.about ?? 'N/A' },
               ]) || []),
               // { label: 'Name', value: items?.name ?? 'N/A' },
               { label: 'Email', value: details?.email ?? 'NA' },
@@ -667,16 +678,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     </TextField>
                   )}
                 />
-                <Controller
-                  name="is_active"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="body1">Is Active</Typography>
-                      <Switch {...field} error={!!errors.is_active} checked={field.value} />
-                    </Box>
-                  )}
-                />
                 {/*  */}
                 {/* <Grid item xs={6} mt={2} mb={2}> */}
                 {/* <Typography variant="body1" sx={{ fontWeight: '600' }}>
@@ -730,7 +731,31 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     );
                   }}
                 />
+                <Controller
+                  name="is_active"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1">Is Active</Typography>
+                      <Switch {...field} error={!!errors.is_active} checked={field.value} />
+                    </Box>
+                  )}
+                />
               </Box>
+              <Controller
+                name="about"
+                control={schoolControl}
+                render={({ field }) => (
+                  <TextField
+                    label="About"
+                    multiline
+                    rows={3}
+                    {...field}
+                    error={errors?.name?.message}
+                    helperText={errors?.name ? errors?.name?.message : ''}
+                  />
+                )}
+              />
             </Box>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
               <Button variant="outlined" color="error" onClick={handleCancel}>
