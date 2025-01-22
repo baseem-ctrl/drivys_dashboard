@@ -13,6 +13,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 
 interface RewardFormData {
   trainer_id: string;
@@ -52,13 +53,17 @@ export default function CreateRewardForm() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const rewardData = {
-        trainer_id: data.trainer_id?.user_id,
-        reward_amount: data.reward_amount,
-        reward_txn_id: data?.reward_txn_id,
-        tip_message: data?.tip_message,
-      };
-      const response = await createReward(rewardData);
+      const formData = new FormData();
+      formData.append('trainer_id', data.trainer_id?.user_id);
+      formData.append('reward_amount', data.reward_amount);
+      formData.append('reward_txn_id', data?.reward_txn_id || '');
+      formData.append('tip_message', data?.tip_message || '');
+
+      if (data?.document) {
+        formData.append('document', data.document);
+      }
+
+      const response = await createReward(formData);
 
       if (response) {
         enqueueSnackbar('Reward created successfully', { variant: 'success' });
@@ -180,6 +185,14 @@ export default function CreateRewardForm() {
                     variant="outlined"
                   />
                 )}
+              />
+              <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>
+                Upload a document proof for reward
+              </Typography>
+              <RHFFileUpload
+                label="Document Proof"
+                name="document"
+                helperText="Please upload a file (PDF, DOCX, etc.)"
               />
 
               <Controller
