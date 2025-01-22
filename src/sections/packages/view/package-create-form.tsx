@@ -110,6 +110,8 @@ export default function PackageCreateForm({
     locale: Yup.string().required('Locale is required'),
     session_inclusions: Yup.string().required('Session Inclusion is required'),
     is_published: Yup.boolean(),
+    is_certificate_included: Yup.boolean(),
+    is_pickup_fee_included: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
       'Number of sessions must be an even number',
@@ -139,6 +141,8 @@ export default function PackageCreateForm({
       locale: '',
       session_inclusions: '',
       is_published: false,
+      is_pickup_fee_included: false,
+      is_certificate_included: false,
       number_of_sessions: '',
       category_id: '',
       vendor_id: '',
@@ -222,6 +226,9 @@ export default function PackageCreateForm({
     const formData = new FormData();
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', data.is_published ? 1 : 0);
+    formData.append('is_pickup_fee_included', data.is_pickup_fee_included ? 1 : 0);
+    formData.append('is_certificate_included', data.is_certificate_included ? 1 : 0);
+
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
     if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
@@ -495,8 +502,14 @@ export default function PackageCreateForm({
                 Add City
               </Button>
             </Box>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <RHFCheckbox name="is_published" label="Publish" />
+            </Grid>
+            <Grid item xs={4}>
+              <RHFCheckbox name="is_pickup_fee_included" label="Pickup Fee Included" />
+            </Grid>
+            <Grid item xs={5}>
+              <RHFCheckbox name="is_certificate_included" label="Certificate Fee Included" />
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
