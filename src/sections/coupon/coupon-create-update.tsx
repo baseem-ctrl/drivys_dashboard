@@ -116,6 +116,7 @@ export default function CouponDialog({
         .positive(t('Limitation Times must be greater than 0')),
       use_percentage: Yup.boolean(),
       is_active: Yup.boolean().nullable(),
+      is_applicable_to_transport_fee: Yup.boolean().nullable(),
       starting_date: Yup.date().required(t('starting_date is required')),
       ending_date: Yup.date().required(t('ending_date is required')),
       discount_type_id: Yup.mixed().required(t('Discount type is required')),
@@ -145,8 +146,9 @@ export default function CouponDialog({
       value: updateValue?.value || '',
       use_percentage: updateValue?.use_percentage === 1 ? true : false,
       is_active: updateValue?.is_active === 1 ? true : false,
+      is_applicable_to_transport_fee: updateValue?.is_applicable_to_transport_fee,
       discount_type_id:
-        updateValue?.discount_type_id === 0 ? '0' : String(updateValue?.discount_type_id) || '',
+        updateValue?.discount_type_id === 0 ? '0' : updateValue?.discount_type_id || '',
       starting_date:
         moment(updateValue?.starting_date).format('YYYY-MM-DD') ||
         moment.utc().format('YYYY-MM-DD'),
@@ -155,7 +157,7 @@ export default function CouponDialog({
       Category: mapOptions(updateValue?.categories, categoryOptions),
       Packages: mapOptions(updateValue?.package, productOptions),
     }),
-    [updateValue, categoryOptions, productOptions] // Maximize the dependencies to ensure it recalculates when any of them change
+    [updateValue, categoryOptions, productOptions]
   );
   const methods = useForm({
     resolver: yupResolver(NewProductSchema) as any,
@@ -263,8 +265,13 @@ export default function CouponDialog({
       if (data.is_active !== undefined) {
         formData.append('is_active', data.is_active === true ? 1 : 0);
       }
-
-      if (data.discount_type_id) {
+      if (data.is_applicable_to_transport_fee !== undefined) {
+        formData.append(
+          'is_applicable_to_transport_fee',
+          data.is_applicable_to_transport_fee === true ? 1 : 0
+        );
+      }
+      if (data.discount_type_id && data.discount_type_id !== undefined) {
         formData.append('discount_type_id', data.discount_type_id);
       }
 
@@ -337,20 +344,28 @@ export default function CouponDialog({
 
               <>
                 <RHFTextField name="coupon_code" label={t('Coupon Code')} />
+
+                <RHFSwitch name="is_active" label={t('Is active')} />
+                <RHFSwitch
+                  name="is_applicable_to_transport_fee"
+                  label={t('Is Applicable to Pickup')}
+                />
                 <RHFTextField name="limitation_times" label={t('Limitation Times')} />
-                <RHFSelect
-                  label={t('Discount type')}
-                  onChange={(event) => {
-                    handleDiscountTypeChange(event);
-                  }}
-                  name="discount_type_id"
-                >
-                  {discountTypeOptions?.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
+                {!values?.is_applicable_to_transport_fee && (
+                  <RHFSelect
+                    label={t('Discount type')}
+                    onChange={(event) => {
+                      handleDiscountTypeChange(event);
+                    }}
+                    name="discount_type_id"
+                  >
+                    {discountTypeOptions?.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                )}
 
                 {values?.discount_type_id === '1' && (
                   <RHFMultiSelectAuto
@@ -391,6 +406,7 @@ export default function CouponDialog({
                   )}
                 />
                 <RHFSwitch name="use_percentage" label={t('Use Percentage')} />
+
                 <RHFTextField
                   name="starting_date"
                   label={t('Start Date')}
@@ -406,7 +422,6 @@ export default function CouponDialog({
                   // setSearchTerm={setSearchTermCategory}
                   defaultValue={defaultValues.Product}
                 /> */}
-                <RHFSwitch name="is_active" label={t('Is active')} />
               </>
             </Box>
             <Stack
