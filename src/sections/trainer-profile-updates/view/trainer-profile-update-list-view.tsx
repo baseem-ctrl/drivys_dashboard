@@ -28,7 +28,7 @@ import { paths } from 'src/routes/paths';
 import TrainerProfileUpdateRow from '../trainer-profile-update-table-row';
 
 const TABLE_HEAD = [
-  { id: 'userName', label: 'User', width: 180 },
+  { id: 'userName', label: 'Trainer', width: 180 },
   { id: 'Updations Made', label: 'Updation Made', width: 380 },
   { id: 'isVerified', label: 'Verified', width: 150 },
   { id: 'Action', label: '', width: 150 },
