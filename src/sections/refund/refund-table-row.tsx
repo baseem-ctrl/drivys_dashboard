@@ -210,12 +210,12 @@ export default function RefundTableRow({
       </TableCell>
       <TableCell>
         {moment(row?.created_at)
-          .utc()
+          .local()
           .format('DD/MM/YY h:mm a')}
         <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
           Updated{' '}
           {moment(row?.updated_at)
-            .utc()
+            .local()
             .format('DD/MM/YY h:mm a')}
         </Typography>
       </TableCell>

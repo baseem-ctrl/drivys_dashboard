@@ -756,14 +756,14 @@ const RefundDetailsComponent = () => {
                           <TableCell>
                             {session?.start_time
                               ? moment(session?.start_time)
-                                  .utc()
+                                  .local()
                                   .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
                           <TableCell>
                             {session?.end_time
                               ? moment(session?.end_time)
-                                  .utc()
+                                  .local()
                                   .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
