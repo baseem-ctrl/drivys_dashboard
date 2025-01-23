@@ -51,6 +51,17 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   const handleBookingClick = (id) => {
     router.push(paths.dashboard.booking.details(id));
   };
+  const tableCellStyle = { fontWeight: 'bold', fontSize: '1rem' };
+
+  const tableCells = [
+    { label: 'Booking ID', width: '150px' },
+    { label: 'Total Booking Revenue', width: '240px' },
+    { label: "Drivy's Commission", width: '250px' },
+    { label: 'Trainer Earning', width: '250px' },
+    { label: 'Trainer Name', width: '250px' },
+    { label: 'Vendor Name', width: '250px' },
+    { label: 'Vendor Earnings', width: '250px' },
+  ];
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -67,19 +78,16 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
           mb: { xs: 3, md: 5 },
         }}
       />
+
       <TableContainer component={Paper}>
         <Table stickyHeader>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Booking ID</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                Total Booking Revenue
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                Drivy's Commission
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer Earning</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>Trainer Name</TableCell>
+              {tableCells.map((cell, index) => (
+                <TableCell key={index} sx={{ ...tableCellStyle, width: cell.width }}>
+                  {cell.label}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -100,7 +108,9 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
                 <TableCell>{renderCell(booking?.total_booking_revenue)} AED </TableCell>
                 <TableCell>{renderCell(booking?.drivys_commission)} AED</TableCell>
                 <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
-                <TableCell>{renderCell(booking?.trainer_details?.trainer_name)} </TableCell>
+                <TableCell>{booking?.trainer_details?.trainer_name} </TableCell>
+                <TableCell>{booking?.vendor_payout[0]?.vendor_name} </TableCell>
+                <TableCell>{renderCell(booking?.vendor_payout[0]?.earning)} AED</TableCell>
               </TableRow>
             ))}
           </TableBody>

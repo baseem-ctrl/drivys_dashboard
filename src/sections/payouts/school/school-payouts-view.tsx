@@ -164,7 +164,7 @@ export default function SchoolPayoutPage() {
   const renderLargeScreenContent = (item: any) => {
     const fields = [
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'No of Bookings', value: item?.total_paid_booking ?? 0 },
+      { label: 'No of Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
@@ -211,7 +211,7 @@ export default function SchoolPayoutPage() {
   const renderSmallScreenContent = (item: any) => {
     const fields = [
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'No of Bookings', value: item?.total_paid_booking ?? 0 },
+      { label: 'No of Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
@@ -277,9 +277,11 @@ export default function SchoolPayoutPage() {
               border: '1px solid #ddd',
               borderRadius: 2,
               boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: tour.total_paid_booking > 0 ? 'pointer' : 'not-allowed',
+              cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
             }}
-            onClick={() => tour.total_paid_booking > 0 && handleCardClick(tour.vendor_id)}
+            onClick={() =>
+              tour.total_paid_and_completed_booking > 0 && handleCardClick(tour.vendor_id)
+            }
 
             // onClick={() => handleView(tour.id)}
           >
