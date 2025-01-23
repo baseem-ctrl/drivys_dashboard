@@ -57,10 +57,10 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
     { label: 'Booking ID', width: '150px' },
     { label: 'Total Booking Revenue', width: '240px' },
     { label: "Drivy's Commission", width: '250px' },
-    { label: 'Trainer Earning', width: '250px' },
-    { label: 'Trainer Name', width: '250px' },
     { label: 'Vendor Name', width: '250px' },
     { label: 'Vendor Earnings', width: '250px' },
+    { label: 'Trainer Name', width: '250px' },
+    { label: 'Trainer Earning', width: '250px' },
   ];
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -107,10 +107,10 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
 
                 <TableCell>{renderCell(booking?.total_booking_revenue)} AED </TableCell>
                 <TableCell>{renderCell(booking?.drivys_commission)} AED</TableCell>
-                <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
+                <TableCell>{booking?.vendor_payout?.vendor_name} </TableCell>
+                <TableCell>{renderCell(booking?.vendor_payout?.earning)} AED</TableCell>
                 <TableCell>{booking?.trainer_details?.trainer_name} </TableCell>
-                <TableCell>{booking?.vendor_payout[0]?.vendor_name} </TableCell>
-                <TableCell>{renderCell(booking?.vendor_payout[0]?.earning)} AED</TableCell>
+                <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
               </TableRow>
             ))}
           </TableBody>

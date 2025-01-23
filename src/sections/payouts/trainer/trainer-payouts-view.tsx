@@ -173,7 +173,7 @@ export default function TrainerPayoutPage() {
   const renderLargeScreenContent = (item: any) => {
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.paid_bookings ?? 0 },
+      { label: 'Total Completed Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -220,11 +220,12 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
+  console.log('payoutsList', payoutsList);
 
   const renderSmallScreenContent = (item: any) => {
     const fields = [
       { label: 'Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.paid_bookings ?? 0 },
+      { label: 'Total Completed Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -296,9 +297,11 @@ export default function TrainerPayoutPage() {
               border: '1px solid #ddd',
               borderRadius: 2,
               boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: tour.paid_bookings > 0 ? 'pointer' : 'not-allowed',
+              cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
             }}
-            onClick={() => tour.paid_bookings > 0 && handleCardClick(tour.trainer_id)}
+            onClick={() =>
+              tour.total_paid_and_completed_booking > 0 && handleCardClick(tour.trainer_id)
+            }
           >
             {/* Large Screen Content */}
             <CardContent
