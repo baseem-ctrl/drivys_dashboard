@@ -133,11 +133,6 @@ export default function UserNewEditForm({
   });
   const [selectedSchool, setSelectedSchool] = useState(null);
 
-  const handleSchoolChange = (event, newValue) => {
-    const school = schoolList.find((item) => item.id === newValue?.value);
-    setSelectedSchool(school || null);
-  };
-
   useEffect(() => {
     if (enumData?.length > 0) {
       const updatedValues =
@@ -417,6 +412,15 @@ export default function UserNewEditForm({
       }
     }
   }, [currentUser?.id, reset, defaultValues]);
+  const watchedVendorId = watch('vendor_id');
+
+  useEffect(() => {
+    if (watchedVendorId) {
+      const school = schoolList.find((item) => item.id === watchedVendorId.value);
+      setSelectedSchool(school || null);
+    }
+  }, [watchedVendorId, schoolList]);
+
   // Function to add more language entry
   const handleAddMore = () => {
     append({ id: '', fluency_level: '' });
@@ -809,7 +813,6 @@ export default function UserNewEditForm({
                   disableClearable={false}
                   loading={schoolLoading}
                   value={defaultOption}
-                  onChange={handleSchoolChange}
                 />
               )}
 
