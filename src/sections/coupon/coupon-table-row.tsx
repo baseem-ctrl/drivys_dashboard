@@ -52,6 +52,7 @@ export default function LanguageTableRow({
     is_active,
     categories,
     id,
+    is_applicable_to_transport_fee,
   } = row;
 
   const confirm = useBoolean();
@@ -89,10 +90,12 @@ export default function LanguageTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{coupon_code}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{discount_type_text}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {value}
-          {use_percentage === 1 ? ' %' : ' AED'}
+          {is_applicable_to_transport_fee ? 'Pickup' : discount_type_text}
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {use_percentage === 1 ? Number(value).toFixed(0) : value}
+          {use_percentage === 1 ? '%' : ' AED'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>

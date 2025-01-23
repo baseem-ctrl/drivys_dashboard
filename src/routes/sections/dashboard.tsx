@@ -46,6 +46,7 @@ import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view
 import SchoolPayoutPage from 'src/sections/payouts/school/school-payouts-view';
 import { BookingDetailsTable } from 'src/sections/payouts/trainer/trainer-booking-details';
 import { SchoolBookingDetailsTable } from 'src/sections/payouts/school/school-booking-details';
+import TrainerProfileUpdatesListView from 'src/sections/trainer-profile-updates/view/trainer-profile-update-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -227,6 +228,7 @@ const allroutes = [
       { element: <ToDoListViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListViewVerification /> },
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+      { path: 'trainer-profile-updates', element: <TrainerProfileUpdatesListView /> },
     ],
   },
   { path: 'certificate', element: <CertificateListView />, index: true },

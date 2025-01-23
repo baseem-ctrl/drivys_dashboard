@@ -337,4 +337,8 @@ export const endpoints = {
     schoolPayouts: 'admin/payout/get-by-vendors',
     getList: 'admin/payout/get-list',
   },
+  profileUpdate: {
+    list: 'admin/trainerProfileupdate/get-list',
+    unverifyTrainer: 'admin/trainerProfileupdate/un-verify',
+  },
 };

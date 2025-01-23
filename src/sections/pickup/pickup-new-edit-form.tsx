@@ -56,7 +56,9 @@ export default function PickupCreateEditForm({
 
   const formattedEndTime = moment.utc(currentPickup?.end_time).format('HH:mm');
   const formattedEndTime12hr = moment.utc(currentPickup?.end_time).format('hh:mm a');
-
+  const parseTime = (time) => {
+    return moment(time, 'HH:mm:ss').isValid() ? moment(time, 'HH:mm:ss').toDate() : new Date();
+  };
   const defaultValues = useMemo(
     () => ({
       city_id: currentPickup?.city
@@ -66,18 +68,15 @@ export default function PickupCreateEditForm({
           }
         : null,
       end_date: currentPickup?.end_date ? moment(currentPickup.end_date).toDate() : new Date(),
-      end_time: currentPickup?.end_time ? moment.utc(currentPickup.end_time).toDate() : new Date(),
+      end_time: currentPickup?.end_time && parseTime(currentPickup?.end_time),
       start_date: currentPickup?.start_date
         ? moment(currentPickup.start_date).toDate()
         : new Date(),
-      start_time: currentPickup?.start_time
-        ? moment.utc(currentPickup.start_time).toDate()
-        : new Date(),
+      start_time: currentPickup?.start_time && parseTime(currentPickup?.start_time),
       status: currentPickup?.status || false,
     }),
     [currentPickup]
   );
-
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -104,10 +103,8 @@ export default function PickupCreateEditForm({
         formData.append('id', currentPickup.id);
       }
       formData.append('city_id', data?.city_id?.value || currentPickup.city_id);
-      const startDate = data.start_date
-        ? new Date(data.start_date).toISOString().split('T')[0]
-        : '';
-      const endDate = data.end_date ? new Date(data.end_date).toISOString().split('T')[0] : '';
+      const startDate = data.start_date ? moment(data.start_date).format('YYYY-MM-DD') : '';
+      const endDate = data.end_date ? moment(data.end_date).format('YYYY-MM-DD') : '';
 
       const startTime = data.start_time ? moment.utc(data.start_time).format('HH:mm') : '';
 
@@ -140,6 +137,7 @@ export default function PickupCreateEditForm({
       }
     }
   });
+
   return (
     <Dialog
       fullWidth

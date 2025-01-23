@@ -127,6 +127,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     number_of_sessions: Yup.string(),
     status: Yup.string(),
     is_published: Yup.boolean(),
+    is_certificate_included: Yup.boolean(),
+    is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
   });
@@ -137,6 +139,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       session_inclusions: selectedLocaleObject?.session_inclusions || '',
       number_of_sessions: details?.number_of_sessions || '',
       is_published: !!details?.is_published,
+      is_certificate_included: !!details?.is_certificate_included,
+      is_pickup_fee_included: !!details?.is_pickup_fee_included,
       vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
         ?.vendor_translations[0]?.name,
       category_id:
@@ -261,7 +265,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     setSessionTitles(updatedTitles);
     schoolSetValue(`session_titles[${index}]`, value);
   };
-  console.log('details', details);
   const onSubmit = packageSubmit(async (data) => {
     try {
       let payload = {
@@ -275,6 +278,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         ],
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
+        is_certificate_included: data?.is_certificate_included ? '1' : '0',
+        is_pickup_fee_included: data?.is_pickup_fee_included ? '1' : '0',
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
       };
@@ -282,6 +287,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       let formData = new FormData();
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
+      formData.append('is_certificate_included', payload.is_certificate_included);
+      formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
+
       formData.append('number_of_sessions', payload.number_of_sessions);
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
@@ -315,13 +323,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         title: newTitle,
       }));
 
-      sessionTitles.push({
-        locale: selectedLocale || selectedLanguage,
-        titles: sessionDetails.map((session) => session.title),
-      });
-
       sessionTitles.forEach((session, index) => {
-        if (session.locale) {
+        if (session.locale && sessionTitles.length > 0) {
+          sessionTitles.push({
+            locale: selectedLocale || selectedLanguage,
+            titles: sessionDetails.map((session) => session.title),
+          });
           formData.append(`session_titles[${index}][locale]`, session.locale);
         }
         if (Array.isArray(session.titles)) {
@@ -358,6 +365,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             );
           }
         });
+      }
+      if (sessionTitles.length === 0) {
+        formData.append('session_titles', '');
       }
 
       const response = await createUpdatePackage(formData);
@@ -510,6 +520,24 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     <Iconify color="red" icon="bi:x-square-fill" />
                   ),
               },
+              {
+                label: 'Is Cerificate Fee Included',
+                value:
+                  details?.is_certificate_included === true ? (
+                    <Iconify color="green" icon="bi:check-square-fill" />
+                  ) : (
+                    <Iconify color="red" icon="bi:x-square-fill" />
+                  ),
+              },
+              {
+                label: 'Is Pickup Fee Included',
+                value:
+                  details?.is_pickup_fee_included === true ? (
+                    <Iconify color="green" icon="bi:check-square-fill" />
+                  ) : (
+                    <Iconify color="red" icon="bi:x-square-fill" />
+                  ),
+              },
 
               ...(details?.session_details
                 ?.slice(0, Math.floor(numberOfSessions / 2))
@@ -623,6 +651,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   />
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_published" label="Publish" />
+                  </Stack>
+                  <Stack direction="row" alignItems="center">
+                    <RHFSwitch name="is_certificate_included" label="Is Certificate fee included" />
+                  </Stack>
+                  <Stack direction="row" alignItems="center">
+                    <RHFSwitch name="is_pickup_fee_included" label="Is Pickup fee included" />
                   </Stack>
                 </Box>
                 <Box mt={2}>

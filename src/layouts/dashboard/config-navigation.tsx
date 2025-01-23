@@ -65,6 +65,10 @@ export function useNavData() {
       children: [
         { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
         { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+        {
+          title: t('updated trainer profile'),
+          path: paths.dashboard.todo.trainerProfileUpdates,
+        },
       ],
     },
 
