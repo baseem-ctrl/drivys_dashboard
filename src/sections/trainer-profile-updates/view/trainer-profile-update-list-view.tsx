@@ -50,7 +50,13 @@ export default function TrainerProfileUpdatesListView() {
     profileUpdateLoading,
     revalidateProfileUpdates,
   } = useGetTrainerProfileUpdateList(filters);
-
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      page: table.page + 1,
+      limit: table.rowsPerPage,
+    }));
+  }, [table.page, table.rowsPerPage]);
   const [tableData, setTableData] = useState([]);
 
   const confirm = useBoolean();
