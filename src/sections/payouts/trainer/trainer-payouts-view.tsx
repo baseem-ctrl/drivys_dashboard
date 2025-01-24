@@ -48,7 +48,7 @@ const defaultFilters: any = {
 // ----------------------------------------------------------------------
 const PAYOUT_SORT_OPTIONS = [
   { value: 'id', label: 'Latest' },
-  { value: 'paid_bookings', label: 'Bookings' },
+  { value: 'total_paid_and_completed_booking', label: 'Bookings' },
   { value: 'paid_cash_bookings', label: 'Cash Bookings' },
 ];
 export default function TrainerPayoutPage() {
@@ -173,7 +173,7 @@ export default function TrainerPayoutPage() {
   const renderLargeScreenContent = (item: any) => {
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Completed Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -225,7 +225,7 @@ export default function TrainerPayoutPage() {
   const renderSmallScreenContent = (item: any) => {
     const fields = [
       { label: 'Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Completed Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
