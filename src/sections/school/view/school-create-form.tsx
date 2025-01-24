@@ -22,6 +22,7 @@ import FormProvider, {
   RHFCheckbox,
   RHFSelect,
   RHFAutocomplete,
+  RHFEditor,
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
@@ -409,17 +410,16 @@ export default function SchoolCreateForm({
               error={!!errors.max_commision}
               helperText={errors.max_commision?.message}
             />
-            <RHFTextField
-              name="about"
-              label="About"
-              fullWidth
-              multiline
-              rows={3}
-              sx={{ mt: 2 }}
-              error={!!errors.about}
-              helperText={errors.about?.message}
-            />
           </Box>
+          <Grid item xs={12} mt={2} mb={2}>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: '15px', fontWeight: '600', ml: 1, mt: 4, mb: 1 }}
+            >
+              About:
+            </Typography>
+            <RHFEditor name="about" fullWidth />
+          </Grid>
           <Grid item xs={6} mt={2} mb={2}>
             <RHFCheckbox name="is_active" label="Active" />
           </Grid>
