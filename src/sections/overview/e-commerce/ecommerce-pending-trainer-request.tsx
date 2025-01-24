@@ -61,7 +61,7 @@ export default function PendingRequests({
 }: any) {
   const router = useRouter();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const {
@@ -84,6 +84,10 @@ export default function PendingRequests({
   };
 
   const handleVerifyRequest = async (request: any, status: any) => {
+    const action = status === 1 ? 'accept' : 'reject';
+
+    // Set loading state for the specific request and action
+    setLoadingStates((prev) => ({ ...prev, [`${request.id}-${action}`]: true }));
     try {
       let response;
 
@@ -112,6 +116,7 @@ export default function PendingRequests({
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
+      setLoadingStates((prev) => ({ ...prev, [`${request.id}-${action}`]: false }));
       revalidatePendingRequests();
     }
   };
@@ -257,8 +262,13 @@ export default function PendingRequests({
                       variant="contained"
                       color="error"
                       onClick={() => handleVerifyRequest(request, 0)}
+                      disabled={loadingStates[`${request.id}-reject`]}
                     >
-                      Reject
+                      {loadingStates[`${request.id}-reject`] ? (
+                        <CircularProgress size={24} />
+                      ) : (
+                        'Reject'
+                      )}
                     </Button>
                     <Button
                       fullWidth
@@ -266,8 +276,13 @@ export default function PendingRequests({
                       variant="contained"
                       color="success"
                       onClick={() => handleVerifyRequest(request, 1)}
+                      disabled={loadingStates[`${request.id}-accept`]}
                     >
-                      Accept
+                      {loadingStates[`${request.id}-accept`] ? (
+                        <CircularProgress size={24} />
+                      ) : (
+                        'Accept'
+                      )}
                     </Button>
                   </Box>
                 </Card>
