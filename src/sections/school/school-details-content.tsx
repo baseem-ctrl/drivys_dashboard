@@ -797,25 +797,32 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     latitude: Yup.string().nullable(),
     longitude: Yup.string().nullable(),
   });
+
   const defaultValues = useMemo(
     () => ({
       street_address:
         editingIndex !== null ? details?.vendor_addresses[editingIndex]?.street_address : '',
-      city: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.city || '' : '', // ensure city is set correctly
+      city:
+        editingIndex !== null
+          ? details?.vendor_addresses[editingIndex]?.city?.city_translations[0]?.id || ''
+          : '',
       country: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.country : '',
-      state: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.state : '',
+      state:
+        editingIndex !== null
+          ? details?.vendor_addresses[editingIndex]?.state?.translations[0]?.id
+          : '',
       latitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.latitude : '',
       longitude: editingIndex !== null ? details?.vendor_addresses[editingIndex]?.longitude : '',
     }),
     [details?.vendor_addresses, editingIndex]
   );
-  useEffect(() => {
-    if (editingIndex !== null && details?.vendor_addresses) {
-      const address = details.vendor_addresses[editingIndex];
-      setSelectedCity(address.city);
-      setSelectedState(address.state);
-    }
-  }, [editingIndex, details?.vendor_addresses]);
+  // useEffect(() => {
+  //   if (editingIndex !== null && details?.vendor_addresses) {
+  //     const address = details.vendor_addresses[editingIndex];
+  //     setSelectedCity(address.city);
+  //     setSelectedState(address.state?.translations[0]?.id || '');
+  //   }
+  // }, [editingIndex, details?.vendor_addresses]);
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -927,16 +934,19 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 };
 
                 const translatedCityName =
-                  city?.find(
-                    (cityItem) =>
-                      cityItem?.city_translations?.[0]?.city_id?.toString() ===
-                      details?.city?.toString()
-                  )?.city_translations?.[0]?.name || 'N/A';
+                  city?.find((cityItem) => {
+                    const cityId = cityItem?.city_translations?.[0]?.city_id?.toString();
+                    const detailsCity = details?.city?.id.toString();
+                    return cityId === detailsCity;
+                  })?.city_translations?.[0]?.name || 'N/A';
+
                 const translatedStateName =
-                  stateList?.find(
-                    (stateItem) =>
-                      stateItem?.translations[0]?.state_province_id.toString() === details?.state
-                  )?.translations?.[0]?.name || 'N/A';
+                  stateList?.find((stateItem) => {
+                    const stateProvinceId =
+                      stateItem?.translations?.[0]?.state_province_id?.toString();
+                    const detailsState = details?.state?.id.toString();
+                    return stateProvinceId === detailsState;
+                  })?.translations?.[0]?.name || 'N/A';
 
                 return (
                   <Box key={details.id} sx={{ width: '100%' }}>
