@@ -108,3 +108,45 @@ export function useGetSchoolPayouts({
     revalidatePayouts,
   };
 }
+export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGetParams = {}) {
+  // Construct query parameters dynamically
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (vendor_id) params.vendor_id = vendor_id;
+    if (trainer_id) params.trainer_id = trainer_id;
+
+    return params;
+  }, [limit, page, vendor_id, trainer_id]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.payouts.getList}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePayouts = () => {
+    mutate(fullUrl);
+  };
+
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    return {
+      payoutsList: data?.data || [],
+      payoutsLoading: isLoading,
+      payoutsError: error,
+      payoutsValidating: isValidating,
+      payoutsEmpty: data?.data?.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePayouts,
+  };
+}

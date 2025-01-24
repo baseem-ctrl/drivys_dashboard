@@ -32,6 +32,7 @@ import { Box, Card, CardContent, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetUsers } from 'src/api/users';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -47,11 +48,13 @@ const defaultFilters: any = {
 // ----------------------------------------------------------------------
 const PAYOUT_SORT_OPTIONS = [
   { value: 'id', label: 'Latest' },
-  { value: 'paid_bookings', label: 'Bookings' },
+  { value: 'total_paid_and_completed_booking', label: 'Bookings' },
   { value: 'paid_cash_bookings', label: 'Cash Bookings' },
 ];
 export default function TrainerPayoutPage() {
   const settings = useSettingsContext();
+  const router = useRouter();
+
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const openFilters = useBoolean();
@@ -170,7 +173,7 @@ export default function TrainerPayoutPage() {
   const renderLargeScreenContent = (item: any) => {
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.paid_bookings ?? 0 },
+      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -217,11 +220,12 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
+  console.log('payoutsList', payoutsList);
 
   const renderSmallScreenContent = (item: any) => {
     const fields = [
       { label: 'Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.paid_bookings ?? 0 },
+      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -249,6 +253,9 @@ export default function TrainerPayoutPage() {
         ))}
       </Box>
     );
+  };
+  const handleCardClick = (id) => {
+    router.push(paths.dashboard.payouts.details(id));
   };
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -290,9 +297,11 @@ export default function TrainerPayoutPage() {
               border: '1px solid #ddd',
               borderRadius: 2,
               boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: 'pointer',
+              cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
             }}
-            // onClick={() => handleView(tour.id)}
+            onClick={() =>
+              tour.total_paid_and_completed_booking > 0 && handleCardClick(tour.trainer_id)
+            }
           >
             {/* Large Screen Content */}
             <CardContent

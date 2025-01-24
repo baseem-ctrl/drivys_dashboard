@@ -335,6 +335,7 @@ export const endpoints = {
   payouts: {
     trainerPayouts: 'admin/payout/get-by-trainers',
     schoolPayouts: 'admin/payout/get-by-vendors',
+    getList: 'admin/payout/get-list',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',
