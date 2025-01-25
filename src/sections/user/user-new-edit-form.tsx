@@ -240,26 +240,29 @@ export default function UserNewEditForm({
     ),
     cash_in_hand: Yup.string(),
     max_cash_in_hand_allowed: Yup.string(),
-    school_commission_in_percentage: Yup.number()
-      .required('School commission is required')
-      .when([], {
-        is: () =>
-          selectedSchool?.min_commision >= 0 &&
-          selectedSchool?.max_commision >= 0 &&
-          selectedSchool?.max_commision &&
-          selectedSchool?.max_commision,
-        then: (schema) =>
-          schema
-            .min(
-              selectedSchool?.min_commision,
-              `School commission must be greater than or equal to ${selectedSchool?.min_commision}%`
-            )
-            .max(
-              selectedSchool?.max_commision,
-              `School commission must be less than or equal to ${selectedSchool?.max_commision}%`
-            ),
-        otherwise: (schema) => schema,
-      }),
+    school_commission_in_percentage: Yup.number().when('user_type', {
+      is: 'TRAINER',
+      then: (schema) =>
+        schema.required('School commission is required').when([], {
+          is: () =>
+            selectedSchool?.min_commision >= 0 &&
+            selectedSchool?.max_commision >= 0 &&
+            selectedSchool?.max_commision &&
+            selectedSchool?.max_commision,
+          then: (schema) =>
+            schema
+              .min(
+                selectedSchool?.min_commision,
+                `School commission must be greater than or equal to ${selectedSchool?.min_commision}%`
+              )
+              .max(
+                selectedSchool?.max_commision,
+                `School commission must be less than or equal to ${selectedSchool?.max_commision}%`
+              ),
+          otherwise: (schema) => schema,
+        }),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -325,7 +328,7 @@ export default function UserNewEditForm({
           }
         : '',
       school_commission_in_percentage:
-        currentUser?.user_preference?.school_commission_in_percentage || '',
+        currentUser?.user_preference?.school_commission_in_percentage,
       price_per_km: currentUser?.user_preference?.price_per_km || '',
       doc_side: currentUser?.user_preference?.doc_side || '',
       min_price: currentUser?.user_preference?.min_price || '',
@@ -359,7 +362,6 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
-  console.log('errors', errors);
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
   const { states, isLoading: stateLoading } = useGetStateList({
@@ -627,7 +629,6 @@ export default function UserNewEditForm({
       </Box>
     );
   }
-
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
