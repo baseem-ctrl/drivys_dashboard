@@ -312,33 +312,54 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         }
       }
 
+      // const sessionTitles = [];
+      // const selectedLocale = data?.locale?.toLowerCase() || selectedLanguage.toLowerCase();
+
+      // const filteredSessionTitles = Array.isArray(data?.session_titles)
+      //   ? data.session_titles.filter((title) => title)
+      //   : [];
+      // const sessionDetails = filteredSessionTitles.map((newTitle) => ({
+      //   locale: selectedLocale || selectedLanguage,
+      //   title: newTitle,
+      // }));
+      // console.log('session.locale ', sessionTitles);
+      // sessionTitles.forEach((session, index) => {
+      //   if (session.locale && sessionTitles.length > 0) {
+      //     sessionTitles.push({
+      //       locale: selectedLocale || selectedLanguage,
+      //       titles: sessionDetails.map((session) => session.title),
+      //     });
+      //     formData.append(`session_titles[${index}][locale]`, session.locale);
+      //   }
+      //   if (Array.isArray(session.titles)) {
+      //     session.titles.forEach((title, titleIndex) => {
+      //       if (title) {
+      //         formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
+      //       }
+      //     });
+      //   }
+      // });
       const sessionTitles = [];
-      const selectedLocale = data?.locale?.toLowerCase() || selectedLanguage.toLowerCase();
+      if (data?.locale && data?.session_titles) {
+        const selectedLocale = data.locale.toLowerCase();
 
-      const filteredSessionTitles = Array.isArray(data?.session_titles)
-        ? data.session_titles.filter((title) => title)
-        : [];
-      const sessionDetails = filteredSessionTitles.map((newTitle) => ({
-        locale: selectedLocale || selectedLanguage,
-        title: newTitle,
-      }));
+        const titles = data.session_titles.filter((title: string) => title);
 
-      sessionTitles.forEach((session, index) => {
-        if (session.locale && sessionTitles.length > 0) {
-          sessionTitles.push({
-            locale: selectedLocale || selectedLanguage,
-            titles: sessionDetails.map((session) => session.title),
-          });
+        sessionTitles.push({
+          locale: selectedLocale,
+          titles: titles,
+        });
+      }
+      if (sessionTitles.length === 0) {
+        formData.append('session_titles', '');
+      } else {
+        sessionTitles.forEach((session, index) => {
           formData.append(`session_titles[${index}][locale]`, session.locale);
-        }
-        if (Array.isArray(session.titles)) {
           session.titles.forEach((title, titleIndex) => {
-            if (title) {
-              formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
-            }
+            formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
           });
-        }
-      });
+        });
+      }
 
       // Handle City Edits
       if (Array.isArray(details?.package_city) && details.package_city.length > 0) {
