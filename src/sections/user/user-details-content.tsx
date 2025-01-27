@@ -1417,7 +1417,7 @@ export default function UserDetailsContent({
                     ? address?.state_province?.translations?.[0]?.name
                     : 'N/A',
                 },
-                { label: 'Country Code', value: address?.country_code ?? 'N/A' },
+                // { label: 'Country Code', value: address?.country_code ?? 'UAE' },
                 { label: 'Label', value: address?.label ?? 'N/A' },
                 { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
                 { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
