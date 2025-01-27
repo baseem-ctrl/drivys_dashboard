@@ -43,6 +43,7 @@ const defaultFilters: any = {
   startDate: null,
   endDate: null,
   trainer_id: '',
+  vendor_id: '',
 };
 
 // ----------------------------------------------------------------------
@@ -73,6 +74,7 @@ export default function TrainerPayoutPage() {
       page: table?.page + 1,
       limit: table?.rowsPerPage,
       trainer_id: filters?.trainer_id,
+      vendor_id: filters?.vendor_id,
       sort_dir: table.order,
       sorting_by: sortBy,
     });
@@ -143,7 +145,7 @@ export default function TrainerPayoutPage() {
     <Stack
       spacing={2}
       justifyContent="space-between"
-      alignItems={{ xs: 'flex', sm: 'center' }}
+      alignItems={{ xs: 'flex-start', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
       <PayoutSearch
@@ -173,6 +175,8 @@ export default function TrainerPayoutPage() {
   const renderLargeScreenContent = (item: any) => {
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
+      { label: 'Vendor Name', value: item?.vendor_name ?? 'NA' },
+
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
@@ -186,7 +190,7 @@ export default function TrainerPayoutPage() {
     return (
       <Box
         display="grid"
-        gridTemplateColumns="repeat(6, 1fr)"
+        gridTemplateColumns="repeat(7, 1fr)"
         gap={2}
         sx={{ alignItems: 'center' }}
       >
@@ -220,11 +224,12 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
-  console.log('payoutsList', payoutsList);
 
   const renderSmallScreenContent = (item: any) => {
     const fields = [
-      { label: 'Name', value: item?.trainer_name ?? 'NA' },
+      { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
+      { label: 'Vendor', value: item?.vendor_name ?? 'NA' },
+
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: 'Total Eranings ',
