@@ -17,6 +17,7 @@ export function useGetTrainerPayouts({
   trainer_id,
   sort_dir,
   sorting_by,
+  vendor_id,
 }: useGetParams = {}) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
@@ -24,11 +25,12 @@ export function useGetTrainerPayouts({
     if (limit) params.limit = limit;
     if (page) params.page = page;
     if (trainer_id) params.trainer_id = trainer_id;
+    if (vendor_id) params.vendor_id = vendor_id;
     if (sort_dir) params.sort_dir = sort_dir;
     if (sorting_by) params.sorting_by = sorting_by;
 
     return params;
-  }, [limit, page, sorting_by, trainer_id, sort_dir]);
+  }, [limit, page, sorting_by, trainer_id, sort_dir, vendor_id]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.trainerPayouts}?${new URLSearchParams(queryParams)}`,
