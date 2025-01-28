@@ -795,7 +795,9 @@ export default function UserNewEditForm({
                     schoolList && schoolList.length > 0
                       ? [
                           ...schoolList.map((item) => ({
-                            label: `${item.vendor_translations?.[0]?.name} - ${item.email}`,
+                            label: `${item.vendor_translations?.[0]?.name}${
+                              item.email ? ` - ${item.email}` : ''
+                            }`,
                             value: item.id,
                           })),
                           {
