@@ -559,6 +559,19 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   )}
                 />
                 <Controller
+                  name="license_expiry"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label="License Expiry"
+                      {...field}
+                      error={!!errors.license_expiry}
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  )}
+                />
+                <Controller
                   name="min_commision"
                   control={schoolControl}
                   render={({ field }) => (
@@ -605,19 +618,6 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           </InputAdornment>
                         ),
                       }}
-                    />
-                  )}
-                />
-                <Controller
-                  name="license_expiry"
-                  control={schoolControl}
-                  render={({ field }) => (
-                    <TextField
-                      label="License Expiry"
-                      {...field}
-                      error={!!errors.license_expiry}
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
                     />
                   )}
                 />

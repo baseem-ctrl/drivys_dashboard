@@ -419,8 +419,16 @@ export default function UserNewEditForm({
 
   useEffect(() => {
     if (watchedVendorId) {
-      const school = schoolList.find((item) => item.id === watchedVendorId.value);
-      setSelectedSchool(school || null);
+      console.log(watchedVendorId, 'ghjk');
+      if (watchedVendorId.value) {
+        const school = schoolList.find((item) => item.id === watchedVendorId.value);
+        setSelectedSchool(school || null);
+      } else {
+        const school = schoolList.find(
+          (item) => item.vendor_translations?.[0]?.name === watchedVendorId
+        );
+        setSelectedSchool(school || null);
+      }
     }
   }, [watchedVendorId, schoolList]);
 
@@ -832,12 +840,12 @@ export default function UserNewEditForm({
                     label="School Commission (%)"
                     type="number"
                   />
-                  {selectedSchool && (
+                  {/* {selectedSchool && (
                     <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
                       School Commission must be in between {selectedSchool.min_commision || '0'}%
                       and {selectedSchool.max_commision || '0'}%
                     </FormHelperText>
-                  )}
+                  )} */}
                 </div>
               )}
               {values.user_type === 'TRAINER' && (
