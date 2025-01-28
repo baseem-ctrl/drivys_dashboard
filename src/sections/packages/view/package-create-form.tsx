@@ -214,6 +214,7 @@ export default function PackageCreateForm({
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
       setValue('session_inclusions', translation?.session_inclusions);
+      setValue('session_inclusions', translation?.session_inclusions);
 
       // Update the previous locale
       previousLocaleRef.current = selectedLocale;
@@ -287,7 +288,7 @@ export default function PackageCreateForm({
       const response = await createUpdatePackage(formData);
       if (response) {
         reset();
-        onClose();
+        handleClose();
         setCityFields([{ id: null, min_price: '', max_price: '' }]);
         revalidateDeliverey();
         enqueueSnackbar(response?.message, { variant: 'success' });
@@ -313,8 +314,10 @@ export default function PackageCreateForm({
     reset(defaultValues);
     onClose();
     setCityFields([{ id: null, min_price: '', max_price: '' }]);
-    setSelectedLocale('');
+    setSelectedLocale(null);
   };
+  console.log(errors, 'errors');
+
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
