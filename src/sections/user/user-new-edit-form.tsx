@@ -365,10 +365,11 @@ export default function UserNewEditForm({
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
   const { states, isLoading: stateLoading } = useGetStateList({
-    city_id: selectedCity.value,
+    city_id: selectedCity?.value ?? null,
     limit: 1000,
     page: 0,
   });
+
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'languages',
