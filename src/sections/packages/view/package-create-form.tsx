@@ -387,11 +387,11 @@ export default function PackageCreateForm({
                   name="vendor_id"
                   label="Select School"
                   // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                  options={schoolList?.map((item) => ({
-                    label:
-                      item?.vendor_translations.find((item) => item?.locale?.toLowerCase() === 'en')
-                        ?.name || 'Unknown',
-                    value: item?.id,
+                  options={schoolList?.map((item: any) => ({
+                    label: `${item.vendor_translations?.[0]?.name}${
+                      item.email ? ` - ${item.email}` : ''
+                    }`,
+                    value: item.id,
                   }))}
                   onInputChange={(e: any) => handleSearchChange(e)}
                   loading={schoolLoading}
