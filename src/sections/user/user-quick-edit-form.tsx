@@ -210,8 +210,10 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 name="vendor_id"
                 label="Select School"
                 placeholder="Search School..."
-                options={schoolList.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                options={schoolList?.map((item: any) => ({
+                  label: `${item.vendor_translations?.[0]?.name}${
+                    item.email ? ` - ${item.email}` : ''
+                  }`,
                   value: item.id,
                 }))}
                 setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}

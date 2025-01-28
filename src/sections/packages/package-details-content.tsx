@@ -651,7 +651,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     label="Select School"
                     placeholder="Search School..."
                     options={schoolList?.map((item: any) => ({
-                      label: `${item.vendor_translations?.[0]?.name}-${item.email}`, // Display full name
+                      label: `${item.vendor_translations?.[0]?.name}${
+                        item.email ? ` - ${item.email}` : ''
+                      }`,
                       value: item.id,
                     }))}
                     setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
@@ -663,7 +665,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     label="Select Category"
                     placeholder="Search Category..."
                     options={category?.map((item: any) => ({
-                      label: `${item.category_translations?.[0]?.name}`, // Display full name
+                      label: `${item.category_translations?.[0]?.name}`,
                       value: item.id,
                     }))}
                     setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
