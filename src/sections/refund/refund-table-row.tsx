@@ -4,12 +4,12 @@ import TableCell from '@mui/material/TableCell';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Label from 'src/components/label';
 import { usePopover } from 'src/components/custom-popover';
-import { IconButton, Link, MenuItem, Select, Tooltip, Typography } from '@mui/material';
+import { Button, IconButton, Link, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { useSnackbar } from 'src/components/snackbar';
 import { paths } from 'src/routes/paths';
 import { updateRefundRequestStatus } from 'src/api/refund';
-import { useGetPaymentRefundStatusEnum } from 'src/api/enum';
+import { useGetPaymentRefundStatusEnum, useGetRefundRequestStatusEnum } from 'src/api/enum';
 import { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -25,28 +25,33 @@ export default function RefundTableRow({
   const { enqueueSnackbar } = useSnackbar();
 
   const { user, driver, driver_id } = row;
-  const { paymentRefundStatusEnum } = useGetPaymentRefundStatusEnum();
+  const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
   const mapStatusToValue = (
     statusName: string,
-    statusEnum: Array<{ name: string; value: number }>
+    statusEnum: Array<{ name: string; value: string }>
   ) => {
-    const match = statusEnum.find((status) => status.name === statusName);
-    return match ? match.value : 0;
+    const match = statusEnum.find(
+      (status) => status?.name?.toLowerCase() === statusName?.toLowerCase()
+    );
+    return match ? match.value : '';
   };
 
+  console.log('row.statu', row);
   const [refundStatus, setRefundStatus] = useState(
-    mapStatusToValue(row.payment_refund_status, paymentRefundStatusEnum)
+    mapStatusToValue(row.status, refundRequestStatusEnum)
   );
+  console.log('refundStatus', refundStatus);
   useEffect(() => {
-    setRefundStatus(mapStatusToValue(row.payment_refund_status, paymentRefundStatusEnum));
-  }, [paymentRefundStatusEnum, row.payment_refund_status]);
+    setRefundStatus(mapStatusToValue(row.status, refundRequestStatusEnum));
+  }, [refundRequestStatusEnum, row.status]);
+
   const handleRefundStatusChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
     const newStatus = event.target.value as string;
     setRefundStatus(newStatus);
 
     const payload = {
       booking_id: row?.id,
-      payment_refund_status: newStatus,
+      status: newStatus,
       amount_refunded: row?.amount_refunded,
       payment_refund_id: row?.payment_refund_id,
     };
@@ -76,7 +81,7 @@ export default function RefundTableRow({
   };
 
   const handleClickDetails = (id) => {
-    router.push(paths.dashboard.user.details(id));
+    router.push(paths.dashboard.booking.details(id));
   };
   const handleClickPackageDetails = (id) => {
     router.push(paths.dashboard.package.details(id));
@@ -116,12 +121,12 @@ export default function RefundTableRow({
         }}
         onClick={(event) => {
           event.stopPropagation();
-          if (row.driver) {
-            handleClickDetails(driver_id);
+          if (row?.booking?.id) {
+            handleClickDetails(row?.booking?.id);
           }
         }}
       >
-        {driver?.name || 'N/A'}
+        {row?.booking?.id || 'N/A'}
       </TableCell>
       <TableCell>
         <Typography
@@ -134,17 +139,17 @@ export default function RefundTableRow({
           onClick={(event) => {
             event.stopPropagation();
             if (row.package) {
-              handleClickPackageDetails(row?.package?.id);
+              handleClickPackageDetails(row?.booking?.package?.id);
             }
           }}
         >
-          {row?.package?.package_translations[0]?.name ?? 'Unknown Package'}
+          {row?.booking?.package?.package_translations[0]?.name ?? 'Unknown Package'}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>
-          {row?.package?.is_unlimited
+          {row?.booking?.package?.is_unlimited
             ? 'Unlimited Sessions'
-            : `${row?.package?.number_of_sessions ?? 0} Sessions`}
+            : `${row?.booking?.package?.number_of_sessions ?? 0} Sessions`}
         </Label>
       </TableCell>
 
@@ -159,7 +164,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row?.booking_status || 'N/A'}
+          {row?.booking?.booking_status || 'N/A'}
         </Label>
       </TableCell>
       <TableCell>
@@ -173,34 +178,51 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row.payment_status || 'N/A'}
+          {row.booking?.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.sub_total}</TableCell>
-      <TableCell>{row?.payment_method}</TableCell>
-      <TableCell>{row.refund_reason ? row.refund_reason : 'N/A'}</TableCell>
+      <TableCell>{row?.refund_amount_sanctioned}</TableCell>
+      <TableCell>{row?.remaining_amount_to_refund}</TableCell>
+
+      <TableCell>{row?.booking?.payment_method}</TableCell>
+      <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
       <TableCell>
         <Tooltip
           title={
-            refundStatus === 1 ? 'This status has already been refunded and cannot be changed' : ''
+            refundStatus === 'approved'
+              ? 'This status has already been refunded and cannot be changed'
+              : ''
           }
           arrow
         >
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Select
-              value={refundStatus ?? ''}
-              onChange={handleRefundStatusChange}
-              displayEmpty
-              size="small"
-              disabled={refundStatus === 1}
-            >
-              {paymentRefundStatusEnum.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.name}
-                </MenuItem>
-              ))}
-            </Select>
-            {refundStatus === 1 && (
+            {refundStatus === 'approved' ? (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  console.log('Refund the amount');
+                }}
+              >
+                Refund the Amount
+              </Button>
+            ) : (
+              <Select
+                value={refundStatus || ''}
+                onChange={handleRefundStatusChange}
+                displayEmpty
+                size="small"
+                disabled={refundStatus === 'approved'} // Adjust condition to match string
+              >
+                {refundRequestStatusEnum.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+
+            {refundStatus === 'approved' && (
               <IconButton size="small" disabled>
                 <InfoIcon />
               </IconButton>
@@ -208,6 +230,7 @@ export default function RefundTableRow({
           </div>
         </Tooltip>
       </TableCell>
+
       <TableCell>
         {moment(row?.created_at)
           .local()

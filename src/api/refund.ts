@@ -7,7 +7,7 @@ import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 
 // Function to get the refund request list
 export function useGetRefundRequestList(filters = {}) {
-  const { city_id, category_id, driver_id, page, limit, search } = filters;
+  const { city_id, category_id, driver_id, page, limit, search, status } = filters;
 
   const queryParams = new URLSearchParams();
 
@@ -16,6 +16,8 @@ export function useGetRefundRequestList(filters = {}) {
   if (page !== undefined) queryParams.append('page', page);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (driver_id !== undefined) queryParams.append('driver_id', driver_id);
+  if (status !== undefined) queryParams.append('status', status);
+
   if (search !== undefined && search.trim() !== '') queryParams.append('search', search);
 
   const URL = `${endpoints.booking.refund.list}?${queryParams.toString()}`;

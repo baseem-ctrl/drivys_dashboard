@@ -193,3 +193,26 @@ export function useGetSessionTypeEnum() {
 
   return { ...memoizedValue, revalidateSessionTypeEnum };
 }
+export function useGetRefundRequestStatusEnum() {
+  const URL = endpoints.enum.refundRequestStatus;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    const refundRequestStatusEnum = data?.values || [];
+    return {
+      refundRequestStatusEnum,
+      refundRequestStatusError: error,
+      refundRequestStatusLoading: isLoading,
+      refundRequestStatusValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidateRefundRequestStatusEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateRefundRequestStatusEnum };
+}

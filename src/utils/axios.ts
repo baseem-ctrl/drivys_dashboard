@@ -290,6 +290,7 @@ export const endpoints = {
     paymentMethodEnum: 'public/enum/get-payment-method-type-enum',
     paymentRefundStatusEnum: 'public/enum/get-payment-refund-status-type-enum',
     paymentStatusEnum: 'public/enum/get-payment-status-type-enum',
+    refundRequestStatus: 'public/enum/get-refund-request-status-enum',
     sessionStatusEnum: 'public/enum/get-session-status-type-enum',
     sessionTypeEnum: 'public/enum/get-session-type-enum',
   },

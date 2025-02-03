@@ -38,15 +38,15 @@ import RefundFilters from '../refund-filter';
 const TABLE_HEAD = {
   all: [
     { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'BookingId', label: 'Booking ID', width: 180 },
     { id: 'packages', label: 'Package', width: 180 },
     { id: 'orderStatus', label: 'Booking Status', width: 150 },
     { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paid', label: 'Amount Sanctioned', width: 220 },
+    { id: 'refunded', label: 'Amount to refund', width: 220 },
     { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-
     { id: 'reason', label: 'Reason', width: 200 },
-    { id: 'refundStatus', label: 'Refund Status', width: 150 },
+    { id: 'refundStatus', label: 'Refund Status', width: 250 },
     { id: 'created', label: 'Created', width: 200 },
   ],
 };
@@ -66,21 +66,24 @@ export default function RefundListView() {
     useGetRefundRequestList({
       page: table.page,
       limit: table.rowsPerPage,
+      status: 'pending',
       ...(filters?.category_id && { category_id: filters.category_id }),
       ...(filters?.city_id && { city_id: filters.city_id }),
       ...(filters?.driver_id && { driver_id: filters.driver_id }),
     });
-
-  const { refundedRequests, revalidateRefundedRequests, refundedRequestLoading } =
-    useGetRefundedList({
-      page: table.page,
-      limit: table.rowsPerPage,
-      ...(filters?.category_id && { category_id: filters.category_id }),
-      ...(filters?.city_id && { city_id: filters.city_id }),
-      ...(filters?.driver_id && { driver_id: filters.driver_id }),
-    });
-  console.log('refundedRequests', refundedRequests);
   console.log('refundRequests', refundRequests);
+  const {
+    refundRequests: refundedRequests,
+    revalidateRefundRequests: revalidateRefundedRequests,
+    refundRequestLoading: refundedRequestLoading,
+  } = useGetRefundRequestList({
+    page: table.page,
+    limit: table.rowsPerPage,
+    status: 'approved',
+    ...(filters?.category_id && { category_id: filters.category_id }),
+    ...(filters?.city_id && { city_id: filters.city_id }),
+    ...(filters?.driver_id && { driver_id: filters.driver_id }),
+  });
 
   const openFilters = useBoolean();
 
@@ -179,7 +182,7 @@ export default function RefundListView() {
             variant="h6"
             sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
           >
-            Refund Requests
+            Pending Refund Requests
           </Typography>
 
           <TableSelectedAction
@@ -256,7 +259,7 @@ export default function RefundListView() {
             variant="h6"
             sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
           >
-            Refunded List
+            Approved Refunded List
           </Typography>
 
           <TableSelectedAction

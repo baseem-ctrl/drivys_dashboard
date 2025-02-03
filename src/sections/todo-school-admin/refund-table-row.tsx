@@ -33,7 +33,6 @@ export default function RefundTableRow({
     const match = statusEnum.find((status) => status.name === statusName);
     return match ? match.value : 0;
   };
-
   const [refundStatus, setRefundStatus] = useState(
     mapStatusToValue(row.payment_refund_status, paymentRefundStatusEnum)
   );

@@ -61,11 +61,11 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
       page: table.page + 1,
       limit: table.rowsPerPage,
       search: searchValue,
+      status: 'pending',
       // ...(filters?.category_id && { category_id: filters.category_id }),
       // ...(filters?.city_id && { city_id: filters.city_id }),
       // ...(filters?.driver_id && { driver_id: filters.driver_id }),
     });
-
   const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState([]);
