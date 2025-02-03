@@ -14,6 +14,8 @@ import {
   TableRow,
   Typography,
   Stack,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -34,6 +36,7 @@ import { useGetUsers } from 'src/api/users';
 import { useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
 import RefundTableRow from '../refund-table-row';
 import RefundFilters from '../refund-filter';
+import RefundedTableRow from '../refunded-table-row';
 
 const TABLE_HEAD = {
   all: [
@@ -49,6 +52,18 @@ const TABLE_HEAD = {
     { id: 'refundStatus', label: 'Refund Status', width: 250 },
     { id: 'created', label: 'Created', width: 200 },
   ],
+  refunded: [
+    { id: 'customerName', label: 'Customer Name', width: 180 },
+    { id: 'vendorName', label: 'Driver Name', width: 180 },
+    { id: 'packages', label: 'Package', width: 180 },
+    { id: 'orderStatus', label: 'Booking Status', width: 150 },
+    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
+    { id: 'price', label: 'Price', width: 120 },
+    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
+
+    { id: 'reason', label: 'Reason', width: 200 },
+    { id: 'created', label: 'Created', width: 200 },
+  ],
 };
 
 const defaultFilters = {
@@ -61,24 +76,36 @@ export default function RefundListView() {
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const [filters, setFilters] = useState(defaultFilters);
-
+  const [selectedTab, setSelectedTab] = useState(0);
+  const tablePending = useTable({
+    defaultRowsPerPage: 5,
+    defaultCurrentPage: 0,
+  });
+  const tableApproved = useTable({
+    defaultRowsPerPage: 5,
+    defaultCurrentPage: 0,
+  });
+  const tableRefunded = useTable({
+    defaultRowsPerPage: 5,
+    defaultCurrentPage: 0,
+  });
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
-      page: table.page,
-      limit: table.rowsPerPage,
+      page: tablePending.page,
+      limit: tablePending.rowsPerPage,
       status: 'pending',
       ...(filters?.category_id && { category_id: filters.category_id }),
       ...(filters?.city_id && { city_id: filters.city_id }),
       ...(filters?.driver_id && { driver_id: filters.driver_id }),
     });
-  console.log('refundRequests', refundRequests);
   const {
     refundRequests: refundedRequests,
     revalidateRefundRequests: revalidateRefundedRequests,
     refundRequestLoading: refundedRequestLoading,
+    totalCount: total,
   } = useGetRefundRequestList({
-    page: table.page,
-    limit: table.rowsPerPage,
+    page: tableApproved.page,
+    limit: tableApproved.rowsPerPage,
     status: 'approved',
     ...(filters?.category_id && { category_id: filters.category_id }),
     ...(filters?.city_id && { city_id: filters.city_id }),
@@ -88,14 +115,31 @@ export default function RefundListView() {
   const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState([]);
+  const [approvedTableData, setApprovedTableData] = useState([]);
   const [refundedTableData, setRefundedTableData] = useState([]);
-
+  const {
+    refundedRequests: refundedRequestsList,
+    revalidateRefundedRequests: revalidateRefundedRequestsList,
+    refundedRequestLoading: refundedRequestLoadingList,
+    totalRefundedCount,
+  } = useGetRefundedList({
+    page: tableRefunded.page,
+    limit: tableRefunded.rowsPerPage,
+    ...(filters?.category_id && { category_id: filters.category_id }),
+    ...(filters?.city_id && { city_id: filters.city_id }),
+    ...(filters?.driver_id && { driver_id: filters.driver_id }),
+  });
   const confirm = useBoolean();
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+    revalidateRefundedRequests();
+    revalidateRefundRequests();
+    revalidateRefundedRequestsList();
+  };
   useEffect(() => {
     if (refundRequests && refundRequests?.length > 0) {
       setTableData(refundRequests);
@@ -105,11 +149,18 @@ export default function RefundListView() {
   }, [refundRequests]);
   useEffect(() => {
     if (refundedRequests && refundedRequests.length > 0) {
-      setRefundedTableData(refundedRequests);
+      setApprovedTableData(refundedRequests);
+    } else {
+      setApprovedTableData([]);
+    }
+  }, [refundedRequests]);
+  useEffect(() => {
+    if (refundedRequestsList && refundedRequestsList.length > 0) {
+      setRefundedTableData(refundedRequestsList);
     } else {
       setRefundedTableData([]);
     }
-  }, [refundedRequests]);
+  }, [refundedRequestsList]);
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -122,13 +173,13 @@ export default function RefundListView() {
   );
 
   const currentTableHeaders = (() => {
-    switch (filters.bookingType) {
-      case 'confirmed':
-        return TABLE_HEAD.confirmed;
-      case 'cancelled':
-        return TABLE_HEAD.cancelled;
-      case 'pending':
-        return TABLE_HEAD.pending;
+    switch (selectedTab) {
+      case 0:
+        return TABLE_HEAD.all;
+      case 1:
+        return TABLE_HEAD.all;
+      case 2:
+        return TABLE_HEAD.refunded;
       default:
         return TABLE_HEAD.all;
     }
@@ -136,6 +187,16 @@ export default function RefundListView() {
 
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
+  };
+  const tabStyles = {
+    fontWeight: 'bold',
+    color: '#CF5A0D',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    textTransform: 'uppercase',
+    '&.Mui-selected': {
+      fontWeight: 'bold',
+    },
   };
   const canReset = !isEqual(defaultFilters, filters);
 
@@ -176,168 +237,285 @@ export default function RefundListView() {
         sx={{ mb: 3 }}
       />
       {renderFilters}
-      <Card sx={{ mb: 5 }}>
-        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-          <Typography
-            variant="h6"
-            sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
-          >
-            Pending Refund Requests
-          </Typography>
 
-          <TableSelectedAction
-            dense={table.dense}
-            numSelected={table.selected.length}
-            rowCount={tableData.length}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                tableData.map((row) => row.id)
-              )
-            }
-            action={
-              <Tooltip title="Delete">
-                <IconButton onClick={confirm.onTrue}>
-                  <Iconify icon="solar:trash-bin-trash-bold" />
-                </IconButton>
-              </Tooltip>
-            }
-          />
+      <Tabs
+        value={selectedTab}
+        onChange={handleTabChange}
+        centered={false}
+        variant="scrollable"
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          backgroundColor: 'background.paper',
+        }}
+      >
+        {['Pending Refund Requests', 'Approved Refund Requests', 'Refunded Requests'].map(
+          (label) => (
+            <Tab key={label} sx={tabStyles} label={label} />
+          )
+        )}
+      </Tabs>
 
-          <Scrollbar>
-            <Table size={table.dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={table.order}
-                orderBy={table.orderBy}
-                headLabel={currentTableHeaders}
-                rowCount={tableData.length}
-                numSelected={table.selected.length}
-                onSort={table.onSort}
-              />
-              <TableBody>
-                {refundRequestLoading &&
-                  Array.from(new Array(5)).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell colSpan={currentTableHeaders.length}>
-                        <Skeleton animation="wave" height={40} />
+      {selectedTab === 0 && (
+        <Card sx={{ mb: 5 }}>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
+            {/* <Typography
+              variant="h6"
+              sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
+            >
+              Pending Refund Requests
+            </Typography> */}
+
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  tableData.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
+
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={currentTableHeaders}
+                  rowCount={tableData.length}
+                  numSelected={table.selected.length}
+                  onSort={table.onSort}
+                />
+                <TableBody>
+                  {refundRequestLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={currentTableHeaders.length}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                  {!refundRequestLoading &&
+                    tableData.length > 0 &&
+                    tableData.map((row) => (
+                      <RefundTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateRefundRequests}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))}
+
+                  {!refundRequestLoading && tableData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={currentTableHeaders.length} align="center">
+                        <Typography variant="h6" color="textSecondary">
+                          No data available
+                        </Typography>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+            <TablePaginationCustom
+              count={totalCount}
+              page={tablePending.page}
+              rowsPerPage={tablePending.rowsPerPage}
+              onPageChange={tablePending.onChangePage}
+              onRowsPerPageChange={tablePending.onChangeRowsPerPage}
+              dense={tablePending.dense}
+              onChangeDense={tablePending.onChangeDense}
+            />
+          </TableContainer>
+        </Card>
+      )}
 
-                {!refundRequestLoading &&
-                  tableData.length > 0 &&
-                  tableData.map((row) => (
-                    <RefundTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => handleRowClick(row)}
-                      reload={revalidateRefundRequests}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
-                    />
-                  ))}
+      {selectedTab === 1 && (
+        <Card sx={{ mb: 5 }}>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
+            {/* <Typography
+              variant="h6"
+              sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
+            >
+              Approved Refund List
+            </Typography> */}
 
-                {!refundRequestLoading && tableData.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={currentTableHeaders.length} align="center">
-                      <Typography variant="h6" color="textSecondary">
-                        No data available
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Scrollbar>
-        </TableContainer>
-      </Card>
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  approvedTableData.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
 
-      <Card>
-        <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
-          <Typography
-            variant="h6"
-            sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
-          >
-            Approved Refunded List
-          </Typography>
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={currentTableHeaders}
+                  rowCount={approvedTableData.length}
+                  numSelected={table.selected.length}
+                  onSort={table.onSort}
+                />
+                <TableBody>
+                  {refundedRequestLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={currentTableHeaders.length}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
-          <TableSelectedAction
-            dense={table.dense}
-            numSelected={table.selected.length}
-            rowCount={tableData.length}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                refundedTableData.map((row) => row.id)
-              )
-            }
-            action={
-              <Tooltip title="Delete">
-                <IconButton onClick={confirm.onTrue}>
-                  <Iconify icon="solar:trash-bin-trash-bold" />
-                </IconButton>
-              </Tooltip>
-            }
-          />
+                  {approvedTableData.length > 0 &&
+                    approvedTableData.map((row) => (
+                      <RefundTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateRefundedRequests}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))}
 
-          <Scrollbar>
-            <Table size={table.dense ? 'small' : 'medium'}>
-              <TableHeadCustom
-                order={table.order}
-                orderBy={table.orderBy}
-                headLabel={currentTableHeaders}
-                rowCount={refundedTableData.length}
-                numSelected={table.selected.length}
-                onSort={table.onSort}
-              />
-              <TableBody>
-                {refundedRequestLoading &&
-                  Array.from(new Array(5)).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell colSpan={currentTableHeaders.length}>
-                        <Skeleton animation="wave" height={40} />
+                  {approvedTableData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={currentTableHeaders.length} align="center">
+                        <Typography variant="h6" color="textSecondary">
+                          No data available
+                        </Typography>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+            <TablePaginationCustom
+              count={total}
+              page={tableApproved.page}
+              rowsPerPage={tableApproved.rowsPerPage}
+              onPageChange={tableApproved.onChangePage}
+              onRowsPerPageChange={tableApproved.onChangeRowsPerPage}
+              dense={tableApproved.dense}
+              onChangeDense={tableApproved.onChangeDense}
+            />
+          </TableContainer>
+        </Card>
+      )}
+      {selectedTab === 2 && (
+        <Card>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
+            {/* <Typography
+              variant="h6"
+              sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
+            >
+              Refunded List
+            </Typography> */}
 
-                {refundedTableData.length > 0 &&
-                  refundedTableData.map((row) => (
-                    <RefundTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => handleRowClick(row)}
-                      reload={revalidateRefundedRequests}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
-                    />
-                  ))}
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={tableData.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  refundedRequestsList.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
 
-                {refundedTableData.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={currentTableHeaders.length} align="center">
-                      <Typography variant="h6" color="textSecondary">
-                        No data available
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Scrollbar>
-        </TableContainer>
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={currentTableHeaders}
+                  rowCount={refundedRequestsList.length}
+                  numSelected={table.selected.length}
+                  onSort={table.onSort}
+                />
+                <TableBody>
+                  {refundedRequestLoadingList &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={currentTableHeaders.length}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
-        <TablePaginationCustom
-          count={totalCount}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
-        />
-      </Card>
+                  {refundedTableData.length > 0 &&
+                    refundedTableData.map((row) => (
+                      <RefundedTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateRefundedRequestsList}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))}
+
+                  {refundedRequestsList.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={currentTableHeaders.length} align="center">
+                        <Typography variant="h6" color="textSecondary">
+                          No data available
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+            <TablePaginationCustom
+              count={totalRefundedCount}
+              page={tableRefunded.page}
+              rowsPerPage={tableRefunded.rowsPerPage}
+              onPageChange={tableRefunded.onChangePage}
+              onRowsPerPageChange={tableRefunded.onChangeRowsPerPage}
+              dense={tableRefunded.dense}
+              onChangeDense={tableRefunded.onChangeDense}
+            />
+          </TableContainer>
+        </Card>
+      )}
     </Container>
   );
 }

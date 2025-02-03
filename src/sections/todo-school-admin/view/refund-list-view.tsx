@@ -63,7 +63,7 @@ export default function PendingSchoolAdminRefundListView({
 }) {
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
-      page: table.page + 1,
+      page: table.page,
       limit: table.rowsPerPage,
       search: searchValue,
       status: 'pending',

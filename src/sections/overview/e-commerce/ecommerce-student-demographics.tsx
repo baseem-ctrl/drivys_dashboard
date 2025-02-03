@@ -60,7 +60,6 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
           fontWeight: 600,
         },
         formatter(value) {
-          console.log('value', value, typeof value);
           if (typeof value === 'string') {
             const lastWord = value.split(/(?=[A-Z])/).pop();
             return lastWord.charAt(0).toUpperCase() + lastWord.slice(1);
