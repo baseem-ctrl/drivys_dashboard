@@ -275,6 +275,7 @@ export const endpoints = {
     refund: {
       list: 'admin/booking/refund/get-request-list',
       update: 'admin/booking/refund/update-status-by-booking-id',
+      updateStatus: 'admin/booking/refund/update-refund-request',
       refundedList: 'admin/booking/refund/get-refunded-list',
     },
   },
@@ -290,6 +291,7 @@ export const endpoints = {
     paymentMethodEnum: 'public/enum/get-payment-method-type-enum',
     paymentRefundStatusEnum: 'public/enum/get-payment-refund-status-type-enum',
     paymentStatusEnum: 'public/enum/get-payment-status-type-enum',
+    refundRequestStatus: 'public/enum/get-refund-request-status-enum',
     sessionStatusEnum: 'public/enum/get-session-status-type-enum',
     sessionTypeEnum: 'public/enum/get-session-type-enum',
   },

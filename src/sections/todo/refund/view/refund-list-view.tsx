@@ -37,15 +37,15 @@ import RefundFilters from '../refund-filter';
 
 const TABLE_HEAD = [
   { id: 'customerName', label: 'Customer Name', width: 180 },
-  { id: 'vendorName', label: 'Driver Name', width: 180 },
+  { id: 'BookingId', label: 'Booking ID', width: 180 },
   { id: 'packages', label: 'Package', width: 180 },
   { id: 'orderStatus', label: 'Booking Status', width: 150 },
   { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-  { id: 'price', label: 'Price', width: 120 },
+  { id: 'paid', label: 'Amount Sanctioned', width: 220 },
+  { id: 'refunded', label: 'Amount to refund', width: 220 },
   { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-
   { id: 'reason', label: 'Reason', width: 200 },
-  { id: 'refundStatus', label: 'Refund Status', width: 150 },
+  { id: 'refundStatus', label: 'Refund Status', width: 250 },
   { id: 'created', label: 'Created', width: 200 },
 ];
 
@@ -58,14 +58,14 @@ const defaultFilters = {
 export default function PendingRefundListView({ table, filters, setFilters, searchValue }) {
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
-      page: table.page + 1,
+      page: table.page,
       limit: table.rowsPerPage,
       search: searchValue,
+      status: 'pending',
       // ...(filters?.category_id && { category_id: filters.category_id }),
       // ...(filters?.city_id && { city_id: filters.city_id }),
       // ...(filters?.driver_id && { driver_id: filters.driver_id }),
     });
-
   const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState([]);
@@ -76,7 +76,6 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-  console.log(refundRequests, 'refundRequests');
 
   useEffect(() => {
     if (refundRequests?.length > 0) {

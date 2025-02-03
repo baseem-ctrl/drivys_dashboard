@@ -25,7 +25,7 @@ import InfoIcon from '@mui/icons-material/Info';
 
 // ----------------------------------------------------------------------
 
-export default function RefundTableRow({
+export default function RefundedTableRow({
   row,
   selected,
 
@@ -36,56 +36,7 @@ export default function RefundTableRow({
 
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [refundAmount, setRefundAmount] = useState<number | string>('');
-  // const [refundStatus, setRefundStatus] = useState<string>(
-  //   mapStatusToValue(row.status, refundRequestStatusEnum)
-  // );
 
-  const handleRefundAmountClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleRefundAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRefundAmount(event.target.value);
-  };
-
-  const handleRefundSubmit = async () => {
-    const payload = {
-      booking_id: row?.booking_id,
-      amount_refunded: refundAmount,
-    };
-    try {
-      const response = await updateRefundRequestStatus(payload);
-      if (response) {
-        reload();
-        enqueueSnackbar('Refund Status updated successfully!', { variant: 'success' });
-      } else {
-        enqueueSnackbar('Failed to update Refund Status!', { variant: 'error' });
-      }
-      reload();
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    } finally {
-      handlePopoverClose();
-    }
-  };
-  const open = Boolean(anchorEl);
-  const id = open ? 'refund-popover' : undefined;
   const mapStatusToValue = (
     statusName: string,
     statusEnum: Array<{ name: string; value: string }>
@@ -177,12 +128,12 @@ export default function RefundTableRow({
         }}
         onClick={(event) => {
           event.stopPropagation();
-          if (row?.booking?.id) {
-            handleClickDetails(row?.booking?.id);
+          if (row.driver) {
+            handleClickDetails(driver_id);
           }
         }}
       >
-        {row?.booking?.id || 'N/A'}
+        {driver?.name || 'N/A'}
       </TableCell>
       <TableCell>
         <Typography
@@ -195,17 +146,17 @@ export default function RefundTableRow({
           onClick={(event) => {
             event.stopPropagation();
             if (row.package) {
-              handleClickPackageDetails(row?.booking?.package?.id);
+              handleClickPackageDetails(row?.package?.id);
             }
           }}
         >
-          {row?.booking?.package?.package_translations[0]?.name ?? 'Unknown Package'}
+          {row?.package?.package_translations[0]?.name ?? 'Unknown Package'}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>
-          {row?.booking?.package?.is_unlimited
+          {row?.package?.is_unlimited
             ? 'Unlimited Sessions'
-            : `${row?.booking?.package?.number_of_sessions ?? 0} Sessions`}
+            : `${row?.package?.number_of_sessions ?? 0} Sessions`}
         </Label>
       </TableCell>
 
@@ -220,7 +171,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row?.booking?.booking_status || 'N/A'}
+          {row?.booking_status || 'N/A'}
         </Label>
       </TableCell>
       <TableCell>
@@ -234,86 +185,12 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row.booking?.payment_status || 'N/A'}
+          {row.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.refund_amount_sanctioned}</TableCell>
-      <TableCell>{row?.remaining_amount_to_refund}</TableCell>
-
-      <TableCell>{row?.booking?.payment_method}</TableCell>
-      <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
-      <TableCell>
-        <Tooltip
-          title={
-            refundStatus === 'approved'
-              ? 'This status has already been refunded and cannot be changed'
-              : ''
-          }
-          arrow
-        >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {refundStatus === 'approved' ? (
-              <Button variant="outlined" color="primary" onClick={handleRefundAmountClick}>
-                Refund
-              </Button>
-            ) : (
-              <Select
-                value={refundStatus || ''}
-                onChange={handleRefundStatusChange}
-                displayEmpty
-                size="small"
-                disabled={refundStatus === 'approved'}
-              >
-                {refundRequestStatusEnum.map((status) => (
-                  <MenuItem key={status.value} value={status.value}>
-                    {status.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
-
-            {/* {refundStatus === 'approved' && (
-              <IconButton size="small" disabled>
-                <InfoIcon />
-              </IconButton>
-            )} */}
-          </div>
-        </Tooltip>
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handlePopoverClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <div style={{ padding: 16 }}>
-            <TextField
-              label="Refund Amount"
-              value={refundAmount}
-              onChange={handleRefundAmountChange}
-              type="number"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleRefundSubmit}
-              disabled={!refundAmount || Number(refundAmount) <= 0}
-            >
-              Submit Refund
-            </Button>
-          </div>
-        </Popover>
-      </TableCell>
+      <TableCell>{row?.sub_total}</TableCell>
+      <TableCell>{row?.payment_method}</TableCell>
+      <TableCell>{row.refund_reason ? row.refund_reason : 'N/A'}</TableCell>
 
       <TableCell>
         {moment(row?.created_at)

@@ -316,7 +316,6 @@ export default function PackageCreateForm({
     setCityFields([{ id: null, min_price: '', max_price: '' }]);
     setSelectedLocale(null);
   };
-  console.log(errors, 'errors');
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>

@@ -291,7 +291,7 @@ export function useNavData() {
       icon: ICONS.tour,
       children: [
         { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
-        { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+        // { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
         { title: t('pending certificates'), path: paths.dashboard.school.certificate },
       ],
     },

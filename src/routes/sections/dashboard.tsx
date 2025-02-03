@@ -349,7 +349,7 @@ const schooladminRoutes = [
     children: [
       { element: <ToDoListSchoolAdminViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListSchoolAdminViewVerification /> },
-      { path: 'pending-refund', element: <ToDoListViewRefundSchoolAdmin />, index: true },
+      // { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
       { path: 'certificates', element: <CertificateListView />, index: true },
     ],
   },

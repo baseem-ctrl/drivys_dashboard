@@ -184,7 +184,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       });
 
       const sessionCount = details?.number_of_sessions / 2 || 0;
-      console.log('sessionCount', sessionCount);
       const filledSessionTitles = Array.from({ length: sessionCount }, (_, index) => ({
         title: updatedSessionTitles[index]?.title || '',
       }));
@@ -194,7 +193,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         schoolSetValue(`session_titles[${index}]`, session.title);
       });
     } else {
-      console.log('inside else');
       schoolSetValue('name', '');
       schoolSetValue('session_inclusions', '');
 
