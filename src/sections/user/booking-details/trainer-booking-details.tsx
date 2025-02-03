@@ -65,7 +65,6 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
               <TableRow
                 key={booking.id}
                 onClick={() => {
-                  console.log(`Booking ID clicked: ${booking.id}`);
                   handleBookingClick(booking.id);
                 }}
                 sx={{
@@ -82,14 +81,14 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                     </Grid>
                   </Grid>
                 </TableCell>
-                <TableCell>{booking.user.email}</TableCell>
-                <TableCell align="center">{booking.total} AED</TableCell>
-                <TableCell>{booking.package?.number_of_sessions}</TableCell>
-                <TableCell>{booking?.no_of_sessions}</TableCell>
-                <TableCell>{booking?.no_of_sessions_completed}</TableCell>
+                <TableCell>{booking?.user?.email || 'N/A'}</TableCell>
+                <TableCell align="center">{booking?.total || 'N/A'} AED</TableCell>
+                <TableCell>{booking?.package?.number_of_sessions || 'N/A'}</TableCell>
+                <TableCell>{booking?.no_of_sessions || 'N/A'}</TableCell>
+                <TableCell>{booking?.no_of_sessions_completed || 'N/A'}</TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={booking.booking_status}
+                    label={booking?.booking_status || 'N/A'}
                     color={
                       booking?.booking_status === 'PENDING'
                         ? 'info'
@@ -106,7 +105,7 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 </TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={booking.payment_status}
+                    label={booking?.payment_status || 'N/A'}
                     color={
                       booking?.payment_status === 'PENDING'
                         ? 'info'

@@ -23,7 +23,6 @@ export default function TrainerCommissionRow({ reload, row }) {
     vendor_name,
     trainer_id,
   } = row;
-  console.log('row', row);
   const [newCommission, setNewCommission] = useState(vendor_session_commission_in_percentage);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
