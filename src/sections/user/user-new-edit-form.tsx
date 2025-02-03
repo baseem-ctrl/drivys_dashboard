@@ -839,7 +839,7 @@ export default function UserNewEditForm({
                     label="School Commission (%)"
                     type="number"
                   />
-                  {selectedSchool.min_commision && selectedSchool.max_commision ? (
+                  {selectedSchool?.min_commision && selectedSchool?.max_commision ? (
                     <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
                       School Commission must be in between {selectedSchool.min_commision || '0'}%
                       and {selectedSchool.max_commision || '0'}%
