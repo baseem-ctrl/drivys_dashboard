@@ -20,6 +20,8 @@ const icon = (name: string) => (
 
 const ICONS = {
   job: icon('ic_job'),
+  commission: icon('ic_commission'),
+
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
   mail: icon('ic_mail'),
@@ -147,6 +149,22 @@ export function useNavData() {
       //   { title: t('certificates'), path: paths.dashboard.certificate },
       //   // { title: t('Generate Certificate'), path: paths.dashboard.createCertificate },
       // ],
+    },
+    {
+      title: t('Commission'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.commission,
+      children: [
+        { title: t('Trainer Commission'), path: paths.dashboard.commission.root },
+        {
+          title: t('Trainer Certificate Commission'),
+          path: paths.dashboard.commission.certificateCommissionTrainer,
+        },
+        {
+          title: t('Drivys Certificate Commission'),
+          path: paths.dashboard.commission.certificateCommissionDrivys,
+        },
+      ],
     },
     // HOME LISTING
     {
@@ -296,6 +314,18 @@ export function useNavData() {
         { title: t('Trainer List'), path: paths.dashboard.school.trainer },
         { title: t('rewards'), path: paths.dashboard.school.trainerRewards },
         { title: t('notifications'), path: paths.dashboard.school.trainerNotifications },
+      ],
+    },
+    {
+      title: t('Commission'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.commission,
+      children: [
+        { title: t('Trainer Commission'), path: paths.dashboard.commission.root },
+        {
+          title: t('Trainer Certificate Commission'),
+          path: paths.dashboard.commission.certificateCommissionTrainer,
+        },
       ],
     },
     {

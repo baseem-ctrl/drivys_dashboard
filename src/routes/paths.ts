@@ -196,6 +196,11 @@ export const paths = {
       studentReview: `${ROOTS.DASHBOARD}/review/student-review`,
       trainerReview: `${ROOTS.DASHBOARD}/review/trainer-review`,
     },
+    commission: {
+      root: `${ROOTS.DASHBOARD}/commission/trainer-commission`,
+      certificateCommissionTrainer: `${ROOTS.DASHBOARD}/commission/certificate-commission-trainer`,
+      certificateCommissionDrivys: `${ROOTS.DASHBOARD}/commission/certificate-commission-drivys`,
+    },
     loyality: `${ROOTS.DASHBOARD}/loyality`,
 
     todo: {

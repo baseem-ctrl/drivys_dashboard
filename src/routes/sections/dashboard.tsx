@@ -39,7 +39,6 @@ import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
 import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
 import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
-import GenerateCertificateForm from 'src/sections/certificate/certificate-generate-admin';
 import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality-program-list-view';
 import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
 import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view';
@@ -47,6 +46,9 @@ import SchoolPayoutPage from 'src/sections/payouts/school/school-payouts-view';
 import { BookingDetailsTable } from 'src/sections/payouts/trainer/trainer-booking-details';
 import { SchoolBookingDetailsTable } from 'src/sections/payouts/school/school-booking-details';
 import TrainerProfileUpdatesListView from 'src/sections/trainer-profile-updates/view/trainer-profile-update-list-view';
+import CertificateCommissionTrainer from 'src/sections/certificate-commission-trainer/view/certificate-commission-trainer-list-view';
+import CertificateCommissionDrivys from 'src/sections/certificate-commission/view/certificate-commission-list-view';
+import TrainerCommission from 'src/sections/trainer-commission/view/trainer-commission-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -181,6 +183,14 @@ const allroutes = [
     ],
   },
   {
+    path: 'commission',
+    children: [
+      { path: 'trainer-commission', element: <TrainerCommission />, index: true },
+      { path: 'certificate-commission-trainer', element: <CertificateCommissionTrainer /> },
+      { path: 'certificate-commission-drivys', element: <CertificateCommissionDrivys /> },
+    ],
+  },
+  {
     path: 'homelisting',
     children: [
       { element: <HomeListingListPage />, index: true },
@@ -222,6 +232,7 @@ const allroutes = [
       { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
     ],
   },
+
   {
     path: 'todo',
     children: [
@@ -316,6 +327,13 @@ const schooladminRoutes = [
       { element: <BookingSchoolAdminListView />, index: true },
       { path: ':id', element: <BookingSchoolAdminDetailsComponent /> },
       // { path: 'new', element: <HomeSliderCreatePage /> },
+    ],
+  },
+  {
+    path: 'commission',
+    children: [
+      { path: 'trainer-commission', element: <TrainerCommission />, index: true },
+      { path: 'certificate-commission-trainer', element: <CertificateCommissionTrainer /> },
     ],
   },
   {

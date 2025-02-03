@@ -341,4 +341,10 @@ export const endpoints = {
     list: 'admin/trainerProfileupdate/get-list',
     unverifyTrainer: 'admin/trainerProfileupdate/un-verify',
   },
+  commission: {
+    listAdmin: 'admin/vendor/get-vendors-commission-list',
+
+    listAdminTrainerCommission: 'admin/trainers/get-school-trainer-commission-list',
+    updateCommission: 'admin/trainers/set-school-trainer-commission',
+  },
 };
