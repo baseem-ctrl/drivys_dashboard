@@ -419,7 +419,6 @@ export default function UserNewEditForm({
 
   useEffect(() => {
     if (watchedVendorId) {
-      console.log(watchedVendorId, 'ghjk');
       if (watchedVendorId.value) {
         const school = schoolList.find((item) => item.id === watchedVendorId.value);
         setSelectedSchool(school || null);
@@ -840,12 +839,14 @@ export default function UserNewEditForm({
                     label="School Commission (%)"
                     type="number"
                   />
-                  {/* {selectedSchool && (
+                  {selectedSchool.min_commision && selectedSchool.max_commision ? (
                     <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
                       School Commission must be in between {selectedSchool.min_commision || '0'}%
                       and {selectedSchool.max_commision || '0'}%
                     </FormHelperText>
-                  )} */}
+                  ) : (
+                    <></>
+                  )}
                 </div>
               )}
               {values.user_type === 'TRAINER' && (
