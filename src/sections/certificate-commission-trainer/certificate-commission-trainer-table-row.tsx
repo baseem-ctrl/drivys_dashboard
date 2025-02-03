@@ -7,6 +7,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
 import { updateCommission } from 'src/api/commission';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 interface RowProps {
@@ -23,6 +24,8 @@ interface StudentReviewRowProps {
 
 export default function CertificateCommissionRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
+
   const router = useRouter();
   const {
     trainer_certificate_commission_in_percentage,
@@ -68,9 +71,16 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
           sx={{
             textDecoration: 'none',
             cursor: 'pointer',
-            '&:hover': { textDecoration: 'underline' },
+            '&:hover':
+              user?.user?.user_type !== 'SCHOOL_ADMIN'
+                ? { textDecoration: 'underline' }
+                : { textDecoration: 'none' },
           }}
-          onClick={() => router.push(paths.dashboard.user.details(trainer_id))}
+          onClick={() =>
+            user?.user?.user_type !== 'SCHOOL_ADMIN'
+              ? router.push(paths.dashboard.user.details(trainer_id))
+              : ''
+          }
         >
           {trainer_name || 'N/A'}
         </Typography>
@@ -79,9 +89,16 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
         sx={{
           textDecoration: 'none',
           cursor: 'pointer',
-          '&:hover': { textDecoration: 'underline' },
+          '&:hover':
+            user?.user?.user_type !== 'SCHOOL_ADMIN'
+              ? { textDecoration: 'underline' }
+              : { textDecoration: 'none' },
         }}
-        onClick={() => router.push(paths.dashboard.school.details(vendor_id))}
+        onClick={() =>
+          user?.user?.user_type !== 'SCHOOL_ADMIN'
+            ? router.push(paths.dashboard.school.details(vendor_id))
+            : ''
+        }
       >
         {vendor_name || 'N/A'}
       </TableCell>

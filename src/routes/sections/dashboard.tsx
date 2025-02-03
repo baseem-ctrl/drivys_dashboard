@@ -330,6 +330,13 @@ const schooladminRoutes = [
     ],
   },
   {
+    path: 'commission',
+    children: [
+      { path: 'trainer-commission', element: <TrainerCommission />, index: true },
+      { path: 'certificate-commission-trainer', element: <CertificateCommissionTrainer /> },
+    ],
+  },
+  {
     path: 'review',
     children: [
       { path: 'student-review', element: <StudentReviewListView /> },

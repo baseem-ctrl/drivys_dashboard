@@ -39,6 +39,7 @@ const TABLE_HEAD = [
   { id: 'max-commission', label: 'Max Commission', width: 180 },
   { id: 'min-commission', label: 'Min Commission', width: 180 },
   { id: 'certificate-commission', label: 'Drivys Certificate Commission (%)', width: 280 },
+  { id: 'action', label: '', width: 180 },
 ];
 
 // ----------------------------------------------------------------------

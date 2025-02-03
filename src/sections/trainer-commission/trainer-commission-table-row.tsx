@@ -6,11 +6,14 @@ import { Typography, Button, TextField } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
+import { useAuthContext } from 'src/auth/hooks';
 import { updateCommission } from 'src/api/commission';
 // ----------------------------------------------------------------------
 
 export default function TrainerCommissionRow({ reload, row }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
+
   const router = useRouter();
   const {
     vendor_session_commission_in_percentage,
@@ -60,9 +63,16 @@ export default function TrainerCommissionRow({ reload, row }) {
           sx={{
             textDecoration: 'none',
             cursor: 'pointer',
-            '&:hover': { textDecoration: 'underline' },
+            '&:hover':
+              user?.user?.user_type !== 'SCHOOL_ADMIN'
+                ? { textDecoration: 'underline' }
+                : { textDecoration: 'none' },
           }}
-          onClick={() => router.push(paths.dashboard.user.details(trainer_id))}
+          onClick={() =>
+            user?.user?.user_type !== 'SCHOOL_ADMIN'
+              ? router.push(paths.dashboard.user.details(trainer_id))
+              : ''
+          }
         >
           {trainer_name || 'N/A'}
         </Typography>
@@ -72,9 +82,16 @@ export default function TrainerCommissionRow({ reload, row }) {
         sx={{
           textDecoration: 'none',
           cursor: 'pointer',
-          '&:hover': { textDecoration: 'underline' },
+          '&:hover':
+            user?.user?.user_type !== 'SCHOOL_ADMIN'
+              ? { textDecoration: 'underline' }
+              : { textDecoration: 'none' },
         }}
-        onClick={() => router.push(paths.dashboard.school.details(vendor_id))}
+        onClick={() =>
+          user?.user?.user_type !== 'SCHOOL_ADMIN'
+            ? router.push(paths.dashboard.school.details(vendor_id))
+            : ''
+        }
       >
         {vendor_name || 'N/A'}
       </TableCell>

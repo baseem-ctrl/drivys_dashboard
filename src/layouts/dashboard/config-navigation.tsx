@@ -317,6 +317,18 @@ export function useNavData() {
       ],
     },
     {
+      title: t('Commission'),
+      path: paths.dashboard.review.root,
+      icon: ICONS.commission,
+      children: [
+        { title: t('Trainer Commission'), path: paths.dashboard.commission.root },
+        {
+          title: t('Trainer Certificate Commission'),
+          path: paths.dashboard.commission.certificateCommissionTrainer,
+        },
+      ],
+    },
+    {
       title: t('packages'),
       path: paths.dashboard.school.package,
       icon: ICONS.blank,
