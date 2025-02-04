@@ -152,3 +152,7 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     revalidatePayouts,
   };
 }
+export function processPayoutToTrainer(body: Record<string, any>) {
+  const URL = `${endpoints.payouts.payToTrainer}`;
+  return drivysCreator([URL, body]);
+}
