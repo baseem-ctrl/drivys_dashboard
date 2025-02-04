@@ -216,3 +216,26 @@ export function useGetRefundRequestStatusEnum() {
 
   return { ...memoizedValue, revalidateRefundRequestStatusEnum };
 }
+export function usePaymentMethodEnum() {
+  const URL = endpoints.enum.getPaymentMethodEnum;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(() => {
+    const paymentMethodEnum = data?.values || [];
+    return {
+      paymentMethodEnum,
+      paymentMethodError: error,
+      paymentMethodLoading: isLoading,
+      paymentMethodValidating: isValidating,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  const revalidatePaymentMethodEnum = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidatePaymentMethodEnum };
+}

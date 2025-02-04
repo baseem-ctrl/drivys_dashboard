@@ -28,11 +28,12 @@ import PayoutSearch from '../payout-search';
 // import TourFilters from '../tour-filters';
 import PayoutFiltersResult from '../payout-filters-result';
 import { useGetTrainerPayouts } from 'src/api/payouts';
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Tooltip, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetUsers } from 'src/api/users';
 import { useRouter } from 'src/routes/hooks';
+import PayoutCreateForm from '../payout-create-form';
 
 // ----------------------------------------------------------------------
 
@@ -55,12 +56,14 @@ const PAYOUT_SORT_OPTIONS = [
 export default function TrainerPayoutPage() {
   const settings = useSettingsContext();
   const router = useRouter();
+  const quickCreate = useBoolean();
 
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('');
+  const [trainerId, setTrainerId] = useState(false);
 
   const [search, setSearch] = useState<{ query: string; results: ITourItem[] }>({
     query: '',
@@ -69,7 +72,7 @@ export default function TrainerPayoutPage() {
   const [searchValue, setSearchValue] = useState('');
 
   const [filters, setFilters] = useState(defaultFilters);
-  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages } =
+  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, revalidatePayouts } =
     useGetTrainerPayouts({
       page: table?.page + 1,
       limit: table?.rowsPerPage,
@@ -172,19 +175,41 @@ export default function TrainerPayoutPage() {
       results={dataFiltered.length}
     />
   );
+
   const renderLargeScreenContent = (item: any) => {
+    const isPayoutAvailable = item?.amount_required_from_admin >= 1;
+
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
       { label: 'Vendor Name', value: item?.vendor_name ?? 'NA' },
-
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
-        label: 'Total Eranings ',
+        label: 'Total Earnings',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
       },
-      { label: 'Earnings In Cash ', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
+      { label: 'Earnings In Cash', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
-      { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
+      {
+        label: 'Action',
+        value: (
+          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+            <span>
+              {' '}
+              <Button
+                variant="outlined"
+                disabled={!isPayoutAvailable}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  quickCreate.onTrue();
+                  setTrainerId(item?.trainer_id);
+                }}
+              >
+                Payouts
+              </Button>
+            </span>
+          </Tooltip>
+        ),
+      },
     ];
 
     return (
@@ -201,7 +226,7 @@ export default function TrainerPayoutPage() {
             variant="subtitle2"
             sx={{
               fontWeight: 'bold',
-              textAlign: index === 0 ? 'left' : 'center', // Align the first label to the left
+              textAlign: index === 0 ? 'left' : 'center',
               color: 'text.secondary',
             }}
           >
@@ -215,7 +240,7 @@ export default function TrainerPayoutPage() {
             key={`value-${index}`}
             variant="body2"
             sx={{
-              textAlign: index === 0 ? 'left' : 'center', // Align the first value to the left
+              textAlign: index === 0 ? 'left' : 'center',
             }}
           >
             {field.value}
@@ -226,19 +251,39 @@ export default function TrainerPayoutPage() {
   };
 
   const renderSmallScreenContent = (item: any) => {
+    const isPayoutAvailable = item?.amount_required_from_admin >= 1;
+
     const fields = [
       { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
       { label: 'Vendor', value: item?.vendor_name ?? 'NA' },
-
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       {
-        label: 'Total Eranings ',
+        label: 'Total Earnings',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
       },
-      { label: 'Earnings In Cash ', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
-
+      { label: 'Earnings In Cash', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
-      { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
+      {
+        label: 'Action',
+        value: (
+          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+            <span>
+              {' '}
+              <Button
+                variant="outlined"
+                disabled={!isPayoutAvailable} // Disable button if no payout
+                onClick={(e) => {
+                  e.stopPropagation();
+                  quickCreate.onTrue();
+                  setTrainerId(item?.trainer_id);
+                }}
+              >
+                Payouts
+              </Button>
+            </span>
+          </Tooltip>
+        ),
+      },
     ];
 
     return (
@@ -259,6 +304,7 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
+
   const handleCardClick = (id) => {
     router.push(paths.dashboard.payouts.details(id));
   };
@@ -328,7 +374,12 @@ export default function TrainerPayoutPage() {
           </Card>
         ))}
       </Box>
-
+      <PayoutCreateForm
+        open={quickCreate.value}
+        onClose={quickCreate.onFalse}
+        trainerId={trainerId}
+        reload={revalidatePayouts}
+      />
       <TablePaginationCustom
         count={totalPages}
         page={table.page}

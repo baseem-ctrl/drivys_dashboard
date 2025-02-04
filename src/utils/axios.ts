@@ -294,6 +294,7 @@ export const endpoints = {
     refundRequestStatus: 'public/enum/get-refund-request-status-enum',
     sessionStatusEnum: 'public/enum/get-session-status-type-enum',
     sessionTypeEnum: 'public/enum/get-session-type-enum',
+    getPaymentMethodEnum: 'public/enum/get-payment-transfer-payment-method-enum',
   },
   notification: {
     getList: 'admin/notification/get-list',
@@ -338,6 +339,7 @@ export const endpoints = {
     trainerPayouts: 'admin/payout/get-by-trainers',
     schoolPayouts: 'admin/payout/get-by-vendors',
     getList: 'admin/payout/get-list',
+    payToTrainer: 'admin/payout/transfer/trainer-pay',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',
