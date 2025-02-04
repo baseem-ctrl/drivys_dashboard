@@ -246,7 +246,7 @@ export default function SchoolPayoutPage() {
           { name: 'Dashboard', href: paths.dashboard.root },
           {
             name: 'Payout',
-            href: paths.dashboard.tour.root,
+            href: paths.dashboard.payouts.school,
           },
           { name: 'School Payouts' },
         ]}

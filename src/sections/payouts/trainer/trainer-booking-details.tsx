@@ -44,18 +44,18 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1rem' };
 
   const tableCells = [
+    { label: 'Trainer Name', width: '250px' },
     { label: 'Booking ID', width: '150px' },
     { label: 'Total Booking Revenue', width: '240px' },
     { label: "Drivy's Commission", width: '250px' },
     { label: 'Trainer Earning', width: '250px' },
-    { label: 'Trainer Name', width: '250px' },
     { label: 'Vendor Name', width: '250px' },
     { label: 'Vendor Earnings', width: '250px' },
   ];
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Payout"
+        heading="Trainer Payout Details"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
@@ -82,6 +82,8 @@ export const BookingDetailsTable: React.FC<{}> = () => {
           <TableBody>
             {payoutsList?.map((booking, index) => (
               <TableRow key={index}>
+                <TableCell>{booking?.trainer_details?.trainer_name}</TableCell>
+
                 <TableCell
                   sx={{
                     cursor: 'pointer',
@@ -97,9 +99,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                 <TableCell>{renderCell(booking?.total_booking_revenue)} AED</TableCell>
                 <TableCell>{renderCell(booking?.drivys_commission)} AED</TableCell>
                 <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
-                <TableCell>{booking?.trainer_details?.trainer_name}</TableCell>
-                <TableCell>{booking?.vendor_payout[0]?.vendor_name} </TableCell>
-                <TableCell>{renderCell(booking?.vendor_payout[0]?.earning)} AED </TableCell>
+                <TableCell>{booking?.vendor_payout?.vendor_name ?? 'NA'} </TableCell>
+                <TableCell>
+                  {Math.round(booking?.vendor_payout?.earning * 100) / 100} AED{' '}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

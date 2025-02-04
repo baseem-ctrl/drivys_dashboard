@@ -270,7 +270,7 @@ export default function TrainerPayoutPage() {
           { name: 'Dashboard', href: paths.dashboard.root },
           {
             name: 'Payout',
-            href: paths.dashboard.tour.root,
+            href: paths.dashboard.payouts.root,
           },
           { name: 'Trainer Payouts' },
         ]}
