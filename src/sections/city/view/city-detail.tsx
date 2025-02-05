@@ -95,6 +95,7 @@ export default function CityDetails({ onEdit, city }) {
                               </Typography>
                             </Box>
                           </Box>
+
                           {city.is_certificate_available === 1 && (
                             <>
                               <Box sx={{ display: 'flex', width: '100%' }}>
@@ -146,6 +147,49 @@ export default function CityDetails({ onEdit, city }) {
                               </Box>
                             </>
                           )}
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                              Reschedule Fee
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.reschedule_fee ?? 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                              Fee Reschedule Before
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.free_reschedule_before ?? 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                              Fee Reschedule Before Type
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.free_reschedule_before_type === 0
+                                  ? 'Hours'
+                                  : city?.free_reschedule_before_type === 1
+                                  ? 'Days'
+                                  : 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
                         </Stack>
                       </Box>
                     </Stack>
