@@ -340,6 +340,7 @@ export const endpoints = {
     schoolPayouts: 'admin/payout/get-by-vendors',
     getList: 'admin/payout/get-list',
     payToTrainer: 'admin/payout/transfer/trainer-pay',
+    getPayoutHistory: 'admin/payout/transfer/get-list',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',
