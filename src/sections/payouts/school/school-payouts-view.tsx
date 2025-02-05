@@ -167,7 +167,14 @@ export default function SchoolPayoutPage() {
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
-      { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
+      {
+        label: 'Action',
+        value: (
+          <Button variant="contained" color="primary">
+            Payouts
+          </Button>
+        ),
+      },
     ];
 
     return (
@@ -214,7 +221,14 @@ export default function SchoolPayoutPage() {
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
-      { label: 'Action', value: <Button variant="outlined">Payouts</Button> },
+      {
+        label: 'Action',
+        value: (
+          <Button variant="contained" color="primary">
+            Payouts
+          </Button>
+        ),
+      },
     ];
 
     return (

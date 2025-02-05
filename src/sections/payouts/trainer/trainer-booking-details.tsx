@@ -17,6 +17,7 @@ import {
   Tabs,
   Tab,
   Chip,
+  Button,
 } from '@mui/material';
 import { useGetPayoutHistory, useGetPayoutsList } from 'src/api/payouts';
 import { TablePaginationCustom, useTable } from 'src/components/table';
@@ -40,6 +41,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       trainer_id: id,
     }
   );
+  console.log('payoutsList', payoutsList);
   const { payoutHistoryList, totalPages: historyTotalPages } = useGetPayoutHistory({
     page: table.page + 1,
     limit: table.rowsPerPage,
@@ -77,6 +79,37 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     { label: 'Proof File', width: '200px' },
     { label: 'Status', width: '200px' },
   ];
+  const PayoutSummary = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 2,
+        backgroundColor: '#fff',
+        borderRadius: 2,
+        boxShadow: 1,
+        mb: 3,
+      }}
+    >
+      <Box sx={{ width: 200, height: 200, backgroundColor: '#ddd' }} />
+      <Box sx={{ textAlign: 'center' }}>
+        <Typography variant="subtitle1">Total paid amount</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          8,161.91
+        </Typography>
+        <Chip label="Paid" color="success" variant="soft" sx={{ mt: 1 }} />
+        <Button
+          variant="contained"
+          sx={{ mt: 2, backgroundColor: '#C25A1D', '&:hover': { backgroundColor: '#A04917' } }}
+          endIcon={<span>&rarr;</span>}
+        >
+          Payout
+        </Button>
+      </Box>
+    </Box>
+  );
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -93,6 +126,8 @@ export const BookingDetailsTable: React.FC<{}> = () => {
           mb: { xs: 3, md: 5 },
         }}
       />
+      <PayoutSummary />
+
       <Tabs value={activeTab} onChange={handleTabChange} aria-label="payout tabs">
         <Tab label="Payout Details" />
         <Tab label="Payout History" />

@@ -198,7 +198,8 @@ export default function TrainerPayoutPage() {
             <span>
               {' '}
               <Button
-                variant="outlined"
+                variant="contained"
+                color="primary"
                 disabled={!isPayoutAvailable}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -272,7 +273,8 @@ export default function TrainerPayoutPage() {
             <span>
               {' '}
               <Button
-                variant="outlined"
+                variant="contained"
+                color="primary"
                 disabled={!isPayoutAvailable} // Disable button if no payout
                 onClick={(e) => {
                   e.stopPropagation();
