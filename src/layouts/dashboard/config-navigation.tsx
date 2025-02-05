@@ -35,7 +35,7 @@ const ICONS = {
   kanban: icon('ic_kanban'),
   folder: icon('ic_folder'),
   banking: icon('ic_banking'),
-  booking: icon('ic_booking'),
+  booking: icon('ic_booking_icon'),
   invoice: icon('ic_invoice'),
   product: icon('ic_product'),
   calendar: icon('ic_calendar'),
