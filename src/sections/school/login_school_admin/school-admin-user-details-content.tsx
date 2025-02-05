@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Label from 'src/components/label';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import ListItemText from '@mui/material/ListItemText';
 // utils
@@ -326,14 +328,34 @@ export default function UserDetailsContentAdmin({
                         tooltip:
                           'Indicates if the school has verified the user. Click "Verify" to verify.',
                         value: !details?.school_verified_at ? (
-                          <Box>
-                            <Button variant="soft" onClick={handleVerify}>
-                              {' '}
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <Chip
+                              label="Not Verified"
+                              color="error"
+                              icon={<ErrorOutlineIcon />}
+                              variant="outlined"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              startIcon={<CheckCircleIcon />}
+                              sx={{ padding: '6px 16px', minWidth: '100px' }}
+                              onClick={handleVerify}
+                            >
                               Verify
                             </Button>
                           </Box>
                         ) : (
-                          moment.utc(details?.school_verified_at).format('ll')
+                          <Chip
+                            label={`Verified on ${moment
+                              .utc(details?.school_verified_at)
+                              .format('ll')}`}
+                            color="success"
+                            icon={<CheckCircleIcon />}
+                            variant="outlined"
+                            sx={{ fontWeight: 'bold' }}
+                          />
                         ),
                       },
                       {
@@ -341,9 +363,32 @@ export default function UserDetailsContentAdmin({
                         tooltip:
                           'Indicates if the admin has verified the user. Displays the verification date if verified.',
                         value: !details?.verified_at ? (
-                          <Box>Not Verified Yet</Box>
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <Chip
+                              label="Not Verified"
+                              color="error"
+                              icon={<ErrorOutlineIcon />}
+                              variant="outlined"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              startIcon={<CheckCircleIcon />}
+                              sx={{ padding: '6px 16px', minWidth: '100px' }}
+                              onClick={handleVerify}
+                            >
+                              Verify
+                            </Button>
+                          </Box>
                         ) : (
-                          moment.utc(details?.verified_at).format('ll')
+                          <Chip
+                            label={`Verified on ${moment.utc(details?.verified_at).format('ll')}`}
+                            color="success"
+                            icon={<CheckCircleIcon />}
+                            variant="outlined"
+                            sx={{ fontWeight: 'bold' }}
+                          />
                         ),
                       },
                     ]
