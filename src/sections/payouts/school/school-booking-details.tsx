@@ -54,12 +54,12 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1rem' };
 
   const tableCells = [
-    { label: 'Vendor Name', width: '250px' },
+    { label: 'School Name', width: '250px' },
     { label: 'Trainer Name', width: '250px' },
     { label: 'Booking ID', width: '150px' },
     { label: 'Total Booking Revenue', width: '240px' },
     { label: "Drivy's Commission", width: '250px' },
-    { label: 'Vendor Earnings', width: '250px' },
+    { label: 'School Earnings', width: '250px' },
     { label: 'Trainer Earning', width: '250px' },
   ];
   return (

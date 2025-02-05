@@ -34,7 +34,7 @@ import CertificateCommissionRow from '../certificate-commission-table-row';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'vendor-name', label: 'Vendor Name', width: 180 },
+  { id: 'vendor-name', label: 'School Name', width: 180 },
 
   { id: 'max-commission', label: 'Max Commission', width: 180 },
   { id: 'min-commission', label: 'Min Commission', width: 180 },

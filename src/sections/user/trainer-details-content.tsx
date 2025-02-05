@@ -194,7 +194,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         value: details?.last_booking_was ?? 'N/A',
                       },
                       {
-                        label: 'Vendor Commission',
+                        label: 'School Commission',
                         value: details?.vendor_commission_in_percentage ?? 'N/A',
                       },
                     ]

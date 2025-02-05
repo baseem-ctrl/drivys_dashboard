@@ -181,7 +181,7 @@ export default function TrainerPayoutPage() {
 
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'Vendor Name', value: item?.vendor_name ?? 'NA' },
+      { label: 'School Name', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
 
@@ -256,7 +256,7 @@ export default function TrainerPayoutPage() {
 
     const fields = [
       { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
-      { label: 'Vendor', value: item?.vendor_name ?? 'NA' },
+      { label: 'School', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
       {
