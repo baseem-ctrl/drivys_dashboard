@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +19,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { createCityTranslation, updateCityTranslation } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
+import { IconButton, Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +41,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     is_certificate_available: Yup.boolean(),
     certificate_price: Yup.string(),
     certificate_link: Yup.string(),
+    reschedule_fee: Yup.mixed(),
+    free_reschedule_before: Yup.mixed(),
+    free_reschedule_before_type: Yup.mixed(),
   });
   const { language } = useGetAllLanguage(0, 1000);
 
@@ -54,6 +59,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       is_certificate_available: !!currentCity?.is_certificate_available ?? false,
       certificate_price: currentCity?.certificate_price || 0,
       certificate_link: currentCity?.certificate_link || '',
+      reschedule_fee: currentCity?.reschedule_fee ?? '',
+      free_reschedule_before: currentCity?.free_reschedule_before ?? '',
+      free_reschedule_before_type: currentCity?.free_reschedule_before_type ?? '',
     }),
     [currentCity]
   );
@@ -61,7 +69,6 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-
   const {
     reset,
     handleSubmit,
@@ -71,7 +78,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   } = methods;
   const values = watch();
   const selectedLocale = watch('locale');
-
+  const rescheduleType = watch('free_reschedule_before_type');
+  const rescheduleValue = watch('free_reschedule_before');
+  const tooltipTitle =
+    rescheduleType === 1
+      ? `The reschedule fee applies only after ${rescheduleValue} day(s).`
+      : `The reschedule fee applies only after ${rescheduleValue} hour(s).`;
   useEffect(() => {
     if (currentCity?.id) {
       reset(defaultValues);
@@ -96,11 +108,18 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       formData.append('is_published', data.published ? '1' : '0');
       formData.append('city_translation[0][locale]', data.locale);
       formData.append('city_translation[0][name]', data.name);
+
       formData.append('is_certificate_available', data.is_certificate_available ? '1' : '0');
       if (data?.is_certificate_available) {
         formData.append('certificate_price', data.certificate_price ?? '0');
         formData.append('certificate_link', data.certificate_link ?? '');
       }
+      if (data?.reschedule_fee) {
+        formData.append('reschedule_fee', data.reschedule_fee ?? '0');
+      }
+      formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
+
+      formData.append('free_reschedule_before_type', data.free_reschedule_before_type ?? '0');
 
       if (currentCity?.id) {
         await updateCityTranslation(formData);
@@ -200,6 +219,31 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
                 <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
               </>
             )}
+            <RHFTextField
+              name="reschedule_fee"
+              label="Reschedule Fee"
+              type="number"
+              inputProps={{ min: 2, max: 999999 }}
+            />
+            <Box display="flex" alignItems="center" gap={1}>
+              <RHFSelect name="free_reschedule_before_type" label="Free Reschedule Before Type">
+                <MenuItem value={1}>Day</MenuItem>
+                <MenuItem value={0}>Hour</MenuItem>
+              </RHFSelect>
+            </Box>
+            <Box display="flex" alignItems="center" gap={1}>
+              {' '}
+              <RHFTextField
+                name="free_reschedule_before"
+                label="Free Reschedule Before"
+                type="number"
+              />
+              <Tooltip title={tooltipTitle} arrow placement="top">
+                <IconButton size="small" sx={{ padding: 0 }}>
+                  <InfoOutlinedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </DialogContent>
 
