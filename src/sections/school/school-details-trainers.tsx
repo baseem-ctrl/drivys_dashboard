@@ -250,7 +250,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
               <div>
                 <RHFTextField
                   name="vendor_commission_in_percentage"
-                  label="Vendor Commission (%)"
+                  label="School Commission (%)"
                 />
                 <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
                   School Commission must be in between {candidates.min_commision || '0'}% and{' '}

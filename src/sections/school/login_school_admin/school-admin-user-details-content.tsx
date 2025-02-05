@@ -191,7 +191,7 @@ export default function UserDetailsContentAdmin({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Vendor Commission',
+                        label: 'School Commission',
                         value:
                           `${details?.user_preference?.school_commission_in_percentage} %` ?? 'N/A',
                       },
@@ -420,7 +420,7 @@ export default function UserDetailsContentAdmin({
         {details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
             <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
-              Vendor Financial Summary
+              School Financial Summary
             </Typography>
             <Scrollbar>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>

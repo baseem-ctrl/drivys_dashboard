@@ -373,7 +373,7 @@ export default function SchoolCreateForm({
             </Grid>
             <RHFTextField
               name="min_commision"
-              label="Min Vendor Commission in (%)"
+              label="Min School Commission in (%)"
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{
@@ -393,7 +393,7 @@ export default function SchoolCreateForm({
 
             <RHFTextField
               name="max_commision"
-              label="Max Vendor Commission in (%)"
+              label="Max School Commission in (%)"
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{

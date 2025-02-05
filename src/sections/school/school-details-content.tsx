@@ -379,11 +379,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
 
               { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
               {
-                label: 'Min. Vendor Commission in (%)',
+                label: 'Min. School Commission in (%)',
                 value: `${details?.min_commision ?? 'NA'}%`,
               },
               {
-                label: 'Max. Vendor Commission in (%)',
+                label: 'Max. School Commission in (%)',
                 value: `${details?.max_commision ?? 'NA'}%`,
               },
 

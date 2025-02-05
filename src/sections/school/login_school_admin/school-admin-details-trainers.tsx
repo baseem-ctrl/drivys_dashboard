@@ -293,7 +293,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     <div>
                       <RHFTextField
                         name="vendor_commission_in_percentage"
-                        label="Vendor Commision"
+                        label="School Commision"
                         fullWidth
                         suffix="%"
                       />
@@ -485,7 +485,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
 
                     { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? 'NA' },
                     {
-                      label: 'Vendor Commission',
+                      label: 'School Commission',
                       value: trainer?.vendor_commission_in_percentage ?? 'NA',
                     },
                     {

@@ -33,7 +33,7 @@ import CertificateCommissionRow from '../trainer-commission-table-row';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer Name', width: 180 },
-  { id: 'vendor-name', label: 'Vendor Name', width: 180 },
+  { id: 'vendor-name', label: 'School Name', width: 180 },
   { id: 'trainer-certificate-commission', label: 'Trainer Commission', width: 180 },
   { id: 'action', label: '', width: 180 },
 ];

@@ -128,7 +128,7 @@ export default function BookingTableToolbar({
           onChange={(event, newValue) => handleChange('vendor')(newValue?.value || '')}
           renderInput={(params) => (
             <TextField
-              placeholder="Select Trainer"
+              placeholder="Select School"
               {...params}
               onChange={(e) => setSearch(e.target.value)}
               fullWidth

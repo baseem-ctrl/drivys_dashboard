@@ -64,8 +64,8 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     { label: 'Total Booking Revenue', width: '240px' },
     { label: "Drivy's Commission", width: '250px' },
     { label: 'Trainer Earning', width: '250px' },
-    { label: 'Vendor Name', width: '250px' },
-    { label: 'Vendor Earnings', width: '250px' },
+    { label: 'School Name', width: '250px' },
+    { label: 'School Earnings', width: '250px' },
   ];
 
   const payoutHistoryCells = [

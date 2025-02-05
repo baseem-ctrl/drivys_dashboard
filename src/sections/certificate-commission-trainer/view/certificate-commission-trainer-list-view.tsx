@@ -35,7 +35,7 @@ import { useGetAllVendorCommissionList } from 'src/api/commission';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer Name', width: 180 },
-  { id: 'vendor-name', label: 'Vendor Name', width: 180 },
+  { id: 'vendor-name', label: 'School Name', width: 180 },
   { id: 'trainer-certificate-commission', label: 'Trainer Certificate Commission', width: 180 },
   { id: 'action', label: '', width: 180 },
 ];

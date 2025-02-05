@@ -354,7 +354,7 @@ export default function BookingListView() {
           )}
           {filters.vendor && (
             <Box display="flex" alignItems="center">
-              <Typography variant="body2">{`Vendor: ${vendorOptions.find(
+              <Typography variant="body2">{`School: ${vendorOptions.find(
                 (v) => v.value === filters.vendor
               )?.label}`}</Typography>
               <IconButton size="small" onClick={handleClear('vendor')}>
