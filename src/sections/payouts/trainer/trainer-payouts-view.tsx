@@ -183,6 +183,8 @@ export default function TrainerPayoutPage() {
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
       { label: 'Vendor Name', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
+
       {
         label: 'Total Earnings',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
@@ -215,7 +217,7 @@ export default function TrainerPayoutPage() {
     return (
       <Box
         display="grid"
-        gridTemplateColumns="repeat(7, 1fr)"
+        gridTemplateColumns="repeat(8, 1fr)"
         gap={2}
         sx={{ alignItems: 'center' }}
       >
@@ -249,7 +251,6 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
-
   const renderSmallScreenContent = (item: any) => {
     const isPayoutAvailable = item?.amount_required_from_admin >= 1;
 
@@ -257,6 +258,7 @@ export default function TrainerPayoutPage() {
       { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
       { label: 'Vendor', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
       {
         label: 'Total Earnings',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
