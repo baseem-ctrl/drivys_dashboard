@@ -53,7 +53,7 @@ const QontoStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(
     }),
     '& .QontoStepIcon-completedIcon': {
       zIndex: 1,
-      fontSize: 18,
+      fontSize: 20,
       color: theme.palette.success.main,
     },
     '& .QontoStepIcon-circle': {

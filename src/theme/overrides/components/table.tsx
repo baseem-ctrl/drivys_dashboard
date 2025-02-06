@@ -36,7 +36,7 @@ export function table(theme: Theme) {
           borderBottomStyle: 'dashed',
         },
         head: {
-          fontSize: 14,
+          fontSize: 16,
           color: theme.palette.text.secondary,
           fontWeight: theme.typography.fontWeightSemiBold,
           backgroundColor: theme.palette.background.neutral,

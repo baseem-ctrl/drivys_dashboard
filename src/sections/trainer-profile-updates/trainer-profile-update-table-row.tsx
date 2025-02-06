@@ -106,7 +106,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                     sx={{
                       fontWeight: 'bold',
                       marginRight: '1rem',
-                      fontSize: '1.1rem',
+                      fontSize: '1.225rem',
                     }}
                   >
                     •

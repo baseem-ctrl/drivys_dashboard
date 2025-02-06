@@ -23,7 +23,7 @@ export default function KanbanDetailsPriority({ priority, onChangePriority }: Pr
             py: 0.5,
             pl: 0.75,
             pr: 1.25,
-            fontSize: 12,
+            fontSize: 14,
             borderRadius: 1,
             lineHeight: '20px',
             textTransform: 'capitalize',

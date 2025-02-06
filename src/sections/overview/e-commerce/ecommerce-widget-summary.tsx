@@ -170,7 +170,7 @@ export default function EcommerceWidgetSummary({
           <Typography
             component="span"
             sx={{
-              fontSize: '0.85rem',
+              fontSize: '0.975rem',
               fontWeight: 'medium',
               color: 'text.secondary',
               backgroundColor: percentageBgColor,

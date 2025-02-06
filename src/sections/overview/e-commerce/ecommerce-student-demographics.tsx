@@ -56,7 +56,7 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
     yaxis: {
       labels: {
         style: {
-          fontSize: '12px',
+          fontSize: '14px',
           fontWeight: 600,
         },
         formatter(value) {
@@ -69,7 +69,7 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
       },
       title: {
         style: {
-          fontSize: '14px',
+          fontSize: '16px',
           fontWeight: 'bold',
           color: '#333',
         },
@@ -87,7 +87,7 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
         return 'No data available';
       },
       style: {
-        fontSize: '11px',
+        fontSize: '13px',
         colors: ['#FFFFFF'],
       },
       offsetX: 0,

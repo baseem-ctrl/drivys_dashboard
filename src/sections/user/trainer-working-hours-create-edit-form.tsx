@@ -173,7 +173,7 @@ export default function WorkingHoursCreateEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <Box sx={{ mb: 2, fontWeight: 'bold', fontSize: '1rem' }}>
+            <Box sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.1rem' }}>
               Select the shifts for Every Day:
             </Box>
             {/* Is Off Day */}

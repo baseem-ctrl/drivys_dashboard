@@ -346,7 +346,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                         <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
                       </Box>
 
-                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                      <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
                         {' '}
                         What's included{' '}
                       </Typography>

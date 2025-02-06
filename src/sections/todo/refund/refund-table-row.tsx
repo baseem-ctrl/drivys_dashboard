@@ -187,7 +187,7 @@ export default function RefundTableRow({
       <TableCell>
         <Typography
           sx={{
-            fontSize: 13,
+            fontSize: 15,
             cursor: 'pointer',
             textDecoration: 'none',
             '&:hover': { textDecoration: 'underline' },
@@ -319,7 +319,7 @@ export default function RefundTableRow({
         {moment(row?.created_at)
           .local()
           .format('DD/MM/YY h:mm a')}
-        <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+        <Typography color="text.secondary" sx={{ fontSize: '0.925rem' }}>
           Updated{' '}
           {moment(row?.updated_at)
             .local()

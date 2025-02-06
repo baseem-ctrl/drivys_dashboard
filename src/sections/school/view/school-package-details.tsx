@@ -57,7 +57,7 @@ export default function SchoolPackageDetails({ id }) {
                   <Typography
                     variant="h8"
                     color="#CF5A0D"
-                    sx={{ paddingRight: '14px', fontSize: '14px', fontWeight: 'bold' }}
+                    sx={{ paddingRight: '14px', fontSize: '16px', fontWeight: 'bold' }}
                   >
                     {packageItem.package_translations.length > 0
                       ? packageItem.package_translations.map((trans) => (
@@ -71,7 +71,7 @@ export default function SchoolPackageDetails({ id }) {
 
                 <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
                   <Typography variant="body2">{packageItem.number_of_sessions} Sessions</Typography>
-                  <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                  <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
                     What's included
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
