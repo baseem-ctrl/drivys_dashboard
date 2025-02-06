@@ -185,7 +185,7 @@ const SchoolAdminMap: React.FC = () => {
                             textAlign: 'center',
                             width: '80px',
 
-                            fontSize: '12px',
+                            fontSize: '14px',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -204,7 +204,7 @@ const SchoolAdminMap: React.FC = () => {
                               src={profile}
                             />
                           )}
-                          <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>
+                          <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
                             {trainer.name}
                           </h4>
                         </div>
@@ -230,7 +230,7 @@ const SchoolAdminMap: React.FC = () => {
                             textAlign: 'center',
                             width: '80px',
 
-                            fontSize: '12px',
+                            fontSize: '14px',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -249,7 +249,7 @@ const SchoolAdminMap: React.FC = () => {
                               src={profile}
                             />
                           )}
-                          <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>
+                          <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
                             {trainer.name}
                           </h4>
                         </div>

@@ -351,7 +351,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                         <Typography
                           sx={{
                             fontWeight: 'bold',
-                            fontSize: '16px',
+                            fontSize: '18px',
                             alignSelf: 'flex-start',
                           }}
                         >
@@ -383,7 +383,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.approved_at ?? 'N/A'}
                             </Typography>
@@ -438,7 +438,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc?.created_at
                                 ? moment(doc.created_at).format('YYYY-MM-DD HH:mm:ss')
@@ -470,7 +470,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Tooltip title={doc.doc_file} arrow>
                               <Typography
                                 onClick={() => handleOpenFile(doc.doc_file)}
-                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                               >
                                 {doc?.doc_file
                                   ? `${doc.doc_file.slice(0, 8)}...${doc.doc_file.slice(-6)}`
@@ -499,7 +499,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.doc_side ?? 'N/A'}
                             </Typography>
@@ -525,7 +525,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.doc_type ?? 'N/A'}
                             </Typography>

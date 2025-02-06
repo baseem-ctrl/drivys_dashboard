@@ -211,7 +211,7 @@ const HeatMap: React.FC = () => {
                             textAlign: 'center',
                             width: '80px',
 
-                            fontSize: '12px',
+                            fontSize: '14px',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -230,7 +230,7 @@ const HeatMap: React.FC = () => {
                               src={profile}
                             />
                           )}
-                          <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>
+                          <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
                             {trainer.name}
                           </h4>
                         </div>
@@ -256,7 +256,7 @@ const HeatMap: React.FC = () => {
                             textAlign: 'center',
                             width: '80px',
 
-                            fontSize: '12px',
+                            fontSize: '14px',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
@@ -275,7 +275,7 @@ const HeatMap: React.FC = () => {
                               src={profile}
                             />
                           )}
-                          <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>
+                          <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
                             {trainer.name}
                           </h4>
                         </div>

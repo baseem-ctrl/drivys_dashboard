@@ -123,7 +123,7 @@ export function button(theme: Theme) {
       }),
       ...(largeSize && {
         height: 48,
-        fontSize: 15,
+        fontSize: 17,
         paddingLeft: 16,
         paddingRight: 16,
         ...(textVariant && {

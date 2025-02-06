@@ -433,7 +433,7 @@ export default function JobItem({
                 textTransform: 'capitalize',
                 width: '120px',
                 mr: 2,
-                fontSize: '11px',
+                fontSize: '13px',
                 mt: 2,
                 color: category?.published ? '#CF5A0D' : 'inherit',
                 borderColor: category?.published ? '#CF5A0D' : 'inherit', // Change border color too

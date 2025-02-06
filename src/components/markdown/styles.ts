@@ -45,7 +45,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
     // Blockquote
     '& blockquote': {
       lineHeight: 1.5,
-      fontSize: '1.5em',
+      fontSize: '1.625em',
       margin: '40px auto',
       position: 'relative',
       fontFamily: 'Georgia, serif',
@@ -65,7 +65,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
         left: 16,
         top: -8,
         display: 'block',
-        fontSize: '3em',
+        fontSize: '3.125em',
         content: '"\\201C"',
         position: 'absolute',
         color: theme.palette.text.disabled,
@@ -74,7 +74,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
 
     // Code Block
     '& pre, & pre > code': {
-      fontSize: 16,
+      fontSize: 18,
       overflowX: 'auto',
       whiteSpace: 'pre',
       padding: theme.spacing(2),
@@ -83,7 +83,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
       backgroundColor: isLight ? theme.palette.grey[900] : alpha(theme.palette.grey[500], 0.16),
     },
     '& code': {
-      fontSize: 14,
+      fontSize: 16,
       borderRadius: 4,
       whiteSpace: 'pre',
       padding: theme.spacing(0.2, 0.5),

@@ -30,7 +30,7 @@ export default function RHFFileUpload({ name, label, helperText, ...other }: Pro
             }}
           />
           {error && (
-            <div style={{ marginTop: '4px', fontSize: '12px', color: '#d32f2f' }}>
+            <div style={{ marginTop: '4px', fontSize: '14px', color: '#d32f2f' }}>
               {error.message}
             </div>
           )}

@@ -546,7 +546,7 @@ export default function ProductCard({
                         alignItems: 'center',
                         justifyContent: 'center',
                         textAlign: 'center',
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: 'bold',
                         borderRadius: '10px',
                         cursor: 'pointer',

@@ -61,7 +61,7 @@ const NavItem = forwardRef<HTMLDivElement, Props>(
             primary={title}
             primaryTypographyProps={{
               noWrap: true,
-              fontSize: 10,
+              fontSize: 12,
               lineHeight: '16px',
               textAlign: 'center',
               textTransform: 'capitalize',

@@ -160,7 +160,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
               <Typography
                 variant="h6"
                 gutterBottom
-                sx={{ color: 'primary.main', mt: 3, fontSize: '20px' }}
+                sx={{ color: 'primary.main', mt: 3, fontSize: '22px' }}
               >
                 Reviews:
               </Typography>

@@ -155,7 +155,7 @@ const TrainerLiveLocation: React.FC = () => {
                       borderRadius: '8px',
                       textAlign: 'center',
                       width: '80px',
-                      fontSize: '12px',
+                      fontSize: '14px',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
@@ -174,7 +174,7 @@ const TrainerLiveLocation: React.FC = () => {
                         src={profile}
                       />
                     )}
-                    <h4 style={{ margin: 0, color: 'black', fontSize: '12px' }}>{trainer.name}</h4>
+                    <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>{trainer.name}</h4>
                   </div>
                 </OverlayView>
               </Marker>

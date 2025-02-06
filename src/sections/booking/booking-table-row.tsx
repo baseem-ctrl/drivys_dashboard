@@ -131,7 +131,7 @@ export default function BookingTableRow({
         {moment(row?.created_at)
           .local()
           .format('DD/MM/YY h:mm a')}
-        <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+        <Typography color="text.secondary" sx={{ fontSize: '0.925rem' }}>
           Updated{' '}
           {moment(row?.updated_at)
             .local()

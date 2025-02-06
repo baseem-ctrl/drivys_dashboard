@@ -122,7 +122,7 @@ export default function useChart(options?: ApexOptions) {
     // Legend
     legend: {
       show: true,
-      fontSize: 13,
+      fontSize: 15,
       position: 'top',
       horizontalAlign: 'right',
       markers: {

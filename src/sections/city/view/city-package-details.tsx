@@ -172,7 +172,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     </Typography>
                   </Box>
 
-                  <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                  <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
                     What's included
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
