@@ -322,8 +322,9 @@ export default function TrainerFilters({
         options={
           schoolList?.map((item: any) => ({
             label: item.vendor_translations
-              .map((translation: any) => translation.name) // Extract all names
-              .join(' - '), // Display full name
+              .slice(0, 2)
+              .map((translation: any) => translation.name)
+              .join(' - '),
             value: item.id,
           })) ?? []
         }

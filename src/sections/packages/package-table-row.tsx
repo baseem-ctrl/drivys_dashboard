@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './package-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { InputAdornment, ListItemText, Select, TextField } from '@mui/material';
+import { Autocomplete, InputAdornment, ListItemText, Select, TextField } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -330,15 +330,19 @@ export default function PackageTableRow({
               name="vendor_id"
               control={control}
               render={({ field }) => (
-                <Select {...field} value={field?.value || ''}>
-                  {schoolList.map((option: any) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option?.vendor_translations.find(
-                        (item) => item?.locale?.toLowerCase() === 'en'
-                      )?.name || 'Unknown'}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Autocomplete
+                  {...field}
+                  value={schoolList.find((item) => item.id === field?.value) || null}
+                  options={schoolList}
+                  getOptionLabel={(option) => option?.vendor_translations?.[0]?.name || 'Unknown'}
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue?.id || '');
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Select School" placeholder="Search School..." />
+                  )}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                />
               )}
             />
           ) : (

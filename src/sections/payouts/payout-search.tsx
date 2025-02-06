@@ -99,6 +99,7 @@ export default function PayoutSearch({
           options={
             schoolList?.map((item: any) => ({
               label: item.vendor_translations
+                .slice(0, 2)
                 .map((translation: any) => translation.name)
                 .join(' - '),
               value: item.id,
