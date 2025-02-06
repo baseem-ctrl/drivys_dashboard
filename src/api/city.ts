@@ -225,3 +225,9 @@ export function useGetPackageCityList({ city_id, page, limit }: UseGetPackageCit
 //   const response = drivysSmasher(URL);
 //   return response;
 // }
+// Create or update package-city mapping
+export function updateRescheduleBulk(body: any) {
+  const URL = endpoints.city.updateResheduleBulk;
+  const response = drivysCreator([URL, body]);
+  return response;
+}

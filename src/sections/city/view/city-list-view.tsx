@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import {
   Skeleton,
   Stack,
@@ -17,12 +18,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  MenuItem,
 } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -48,10 +51,13 @@ import CityFilters from '../city-filters';
 import CitySearch from '../city-search';
 import { useRouter } from 'src/routes/hooks';
 import { useGetAllLanguage } from 'src/api/language';
+import CityUpdateBulkRescheduleFee from '../city-reschedule-bulk-edit';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'action', label: '', width: 88 },
+
   { id: 'name', label: 'Name' },
   { id: 'locale', label: 'Locale', width: 180 },
   { id: 'is_published', label: 'Published', width: 180 },
@@ -68,9 +74,11 @@ const defaultFilters: ICityTableFilters = {
 
 export default function CityListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
+  const popover = usePopover();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const createCity = useBoolean();
+  const updateRescheduleFee = useBoolean();
   const openFilters = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -81,6 +89,9 @@ export default function CityListView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [localeFilter, setLocaleFilter] = useState('');
   const [originalTableData, setOriginalTableData] = useState<any>([]);
+  const [selectedCityIds, setSelectedCityIds] = useState<string[]>([]); // State for selected city IDs
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openPopover, setOpenPopover] = useState(false);
   const router = useRouter();
 
   const [index, setIndex] = useState(null);
@@ -104,7 +115,24 @@ export default function CityListView() {
       setOriginalTableData([]);
     }
   }, [cities]);
+  const handleCheckboxClick = (event: React.ChangeEvent<HTMLInputElement>, cityId: string) => {
+    setSelectedCityIds((prevSelected) => {
+      if (prevSelected.includes(cityId)) {
+        return prevSelected.filter((id) => id !== cityId); // Deselect city
+      } else {
+        return [...prevSelected, cityId]; // Select city
+      }
+    });
+  };
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpenPopover(true);
+  };
 
+  const handlePopoverClose = () => {
+    setOpenPopover(false);
+  };
+  console.log('selectedCityIds', selectedCityIds);
   // Function to delete a city row by city ID
   const handleDeleteRow = async (cityId: string) => {
     const response = await deleteCity(cityId);
@@ -186,6 +214,25 @@ export default function CityListView() {
           localeOptions={localeOptions}
           onLocaleChange={handleLocaleFilterChange}
         />
+        {selectedCityIds?.length > 0 && (
+          <IconButton>
+            <Iconify icon="eva:more-vertical-fill" onClick={popover.onOpen} />
+          </IconButton>
+        )}
+        <CustomPopover
+          open={popover.open}
+          onClose={popover.onClose}
+          arrow="top-right"
+          sx={{ width: 240 }}
+        >
+          <MenuItem
+            onClick={() => {
+              updateRescheduleFee.onTrue();
+            }}
+          >
+            Update Bulk Commission
+          </MenuItem>
+        </CustomPopover>
       </Stack>
     </Stack>
   );
@@ -264,11 +311,13 @@ export default function CityListView() {
                       ))
                     : dataFiltered?.map((row) => (
                         <CityTableRow
+                          key={row.id}
                           row={row}
-                          selected={table.selected.includes(row.id)}
+                          selected={selectedCityIds.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
+                          handleCheckboxClick={handleCheckboxClick}
+                          selectedCityIds={selectedCityIds}
                           reload={revalidateCities}
                         />
                       ))}
@@ -293,6 +342,15 @@ export default function CityListView() {
         open={createCity.value}
         onClose={createCity.onFalse}
         reload={revalidateCities}
+      />
+      <CityUpdateBulkRescheduleFee
+        title="Bulk Edit Reschedule Fee"
+        open={updateRescheduleFee.value}
+        onClose={updateRescheduleFee.onFalse}
+        onClosePopOver={popover.onClose}
+        reload={revalidateCities}
+        selectedCityIds={selectedCityIds}
+        setSelelectedCityId={setSelectedCityIds}
       />
     </>
   );

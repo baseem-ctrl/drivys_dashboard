@@ -245,6 +245,7 @@ export const endpoints = {
     createPackage: 'admin/package-city/create-packge-city',
     getPackageList: 'admin/package-city/get-package-city',
     deletePackageList: 'admin/package-city/delete-packge-city/',
+    updateResheduleBulk: 'admin/city/update-reschedule-setting-in-bulk',
   },
   state: {
     createStateTranslation: 'admin/state-province/create-state-translation',
