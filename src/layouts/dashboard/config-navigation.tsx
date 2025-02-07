@@ -212,7 +212,7 @@ export function useNavData() {
     },
     {
       title: t('loyality'),
-      path: paths.dashboard.loyality,
+      path: paths.dashboard.loyality.root,
       icon: ICONS.order,
     },
 

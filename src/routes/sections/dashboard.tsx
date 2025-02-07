@@ -50,6 +50,7 @@ import CertificateCommissionTrainer from 'src/sections/certificate-commission-tr
 import CertificateCommissionDrivys from 'src/sections/certificate-commission/view/certificate-commission-list-view';
 import TrainerCommission from 'src/sections/trainer-commission/view/trainer-commission-list-view';
 import ToDoListPendingReward from 'src/sections/todo/refund/to-do-list-pending-rewards';
+import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-program-details';
 
 // ----------------------------------------------------------------------
 
@@ -263,6 +264,8 @@ const allroutes = [
     ],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
+  { path: 'loyality/:id', element: <LoyaltyProgramDetails /> },
+
   { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
 
   {
