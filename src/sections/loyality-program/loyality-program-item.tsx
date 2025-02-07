@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import * as Yup from 'yup';
 import FormProvider from 'src/components/hook-form/form-provider';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -25,6 +25,7 @@ import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetAllLanguage } from 'src/api/language';
 import { createOrUpdateLoyaltyProgram, deleteLoyaltyProgramById } from 'src/api/loyality';
+import { paths } from 'src/routes/paths';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -51,6 +52,7 @@ export default function LoyalityProgramItem({
   setSearchValue,
 }: Props) {
   const deletecustomer = useBoolean();
+
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
@@ -227,6 +229,7 @@ export default function LoyalityProgramItem({
       setAddOnlyOneCategory(false);
     }
   });
+
   const renderForm = (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Box

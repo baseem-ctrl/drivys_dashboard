@@ -5,6 +5,7 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 // types
 import { IJobItem } from 'src/types/job';
 //
@@ -46,19 +47,15 @@ export default function LoyalityProgramList({
   //     has_child: 1,
   //   });
 
-  const handleView = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.job.details(id));
-    },
-    [router]
-  );
-
   const handleEdit = useCallback(
     (id: string) => {
       router.push(paths.dashboard.job.edit(id));
     },
     [router]
   );
+  const handleView = (id) => {
+    router.push(paths.dashboard.loyality.details(id));
+  };
 
   const handleDelete = useCallback((id: string) => {
     console.info('DELETE', id);
@@ -77,19 +74,31 @@ export default function LoyalityProgramList({
       }}
     >
       {tableData.map((categoryItem: any) => (
-        <LoyalityProgramItem
-          key={categoryItem.id}
-          category={categoryItem}
-          onView={() => handleView(categoryItem.id)}
-          onEdit={() => handleEdit(categoryItem.id)}
-          onDelete={() => handleDelete(categoryItem.id)}
-          reload={reload}
-          setTableData={setTableData}
-          setAddOnlyOneCategory={setAddOnlyOneCategory}
-          parentCategoryValues={loyaltyPrograms}
-          searchCategory={handleSearch}
-          setSearchValue={setSearchValue}
-        />
+        <Box
+          onClick={() => handleView(categoryItem.id)}
+          sx={{
+            cursor: 'pointer',
+            transition: '0.3s',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.05)',
+              transform: 'scale(1.02)',
+            },
+          }}
+        >
+          {' '}
+          <LoyalityProgramItem
+            key={categoryItem.id}
+            category={categoryItem}
+            onEdit={() => handleEdit(categoryItem.id)}
+            onDelete={() => handleDelete(categoryItem.id)}
+            reload={reload}
+            setTableData={setTableData}
+            setAddOnlyOneCategory={setAddOnlyOneCategory}
+            parentCategoryValues={loyaltyPrograms}
+            searchCategory={handleSearch}
+            setSearchValue={setSearchValue}
+          />
+        </Box>
       ))}
     </Box>
   );

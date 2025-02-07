@@ -201,7 +201,10 @@ export const paths = {
       certificateCommissionTrainer: `${ROOTS.DASHBOARD}/commission/certificate-commission-trainer`,
       certificateCommissionDrivys: `${ROOTS.DASHBOARD}/commission/certificate-commission-drivys`,
     },
-    loyality: `${ROOTS.DASHBOARD}/loyality`,
+    loyality: {
+      root: `${ROOTS.DASHBOARD}/loyality`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/loyality/${id}`,
+    },
 
     todo: {
       root: `${ROOTS.DASHBOARD}/todo/pending-verification`,

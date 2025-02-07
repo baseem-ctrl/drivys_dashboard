@@ -13,12 +13,7 @@ import { processTrainerReward } from 'src/api/loyality';
 
 // ----------------------------------------------------------------------
 
-export default function PendingRewardTableRow({
-  row,
-  selected,
-
-  reload,
-}: Props) {
+export default function RewardTableRow({ row, selected, tabIndex, reload }: Props) {
   const router = useRouter();
   const methods = useForm();
   const { enqueueSnackbar } = useSnackbar();
@@ -40,9 +35,7 @@ export default function PendingRewardTableRow({
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
-  const handleClickLoyalityDetails = (id) => {
-    router.push(paths.dashboard.loyality.details(id));
-  };
+
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append('id', row?.id);
@@ -73,6 +66,7 @@ export default function PendingRewardTableRow({
       handlePopoverClose();
     }
   };
+
   return (
     <TableRow hover selected={selected}>
       <TableCell
@@ -99,21 +93,7 @@ export default function PendingRewardTableRow({
           {user?.name || 'N/A'}
         </Link>
       </TableCell>
-      <TableCell
-        sx={{
-          cursor: 'pointer',
-          textDecoration: 'none',
-          '&:hover': { textDecoration: 'underline' },
-        }}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (row?.trainer_reward_id) {
-            handleClickLoyalityDetails(row?.trainer_reward_id);
-          }
-        }}
-      >
-        {row?.trainer_reward?.trainer_reward_translation[0]?.name || 'N/A'}
-      </TableCell>
+      <TableCell>{row?.trainer_reward?.trainer_reward_translation[0]?.name || 'N/A'}</TableCell>
       <TableCell>
         <Typography fontSize="0.875rem">
           {row?.reward_details?.reward_amount ?? 'N/A'} AED{' '}
@@ -177,53 +157,55 @@ export default function PendingRewardTableRow({
               .format('DD/MM/YY h:mm a')
           : 'N/A'}
       </TableCell>
-      <TableCell>
-        <Button
-          variant="outlined"
-          color="primary"
-          sx={{ fontSize: '15px' }}
-          onClick={handleRefundAmountClick}
-        >
-          Send
-        </Button>
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handlePopoverClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <div style={{ padding: 16 }}>
-            <FormProvider {...methods}>
-              <form onSubmit={methods.handleSubmit(onSubmit)}>
-                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: 'primary.main' }}>
-                  Upload Proof of Payment
-                </Typography>
+      {tabIndex === 0 && (
+        <TableCell>
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ fontSize: '15px' }}
+            onClick={handleRefundAmountClick}
+          >
+            Send
+          </Button>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handlePopoverClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <div style={{ padding: 16 }}>
+              <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(onSubmit)}>
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: 'primary.main' }}>
+                    Upload Proof of Payment
+                  </Typography>
 
-                <Box display="flex" flexDirection="column" gap={2}>
-                  <RHFFileUpload name="document" label="Upload Proof of Payment" />
+                  <Box display="flex" flexDirection="column" gap={2}>
+                    <RHFFileUpload name="document" label="Upload Proof of Payment" />
 
-                  <Box display="flex" gap={2} justifyContent="flex-end">
-                    <Button variant="outlined" color="primary" onClick={handlePopoverClose}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" variant="contained" color="primary">
-                      Submit
-                    </Button>
+                    <Box display="flex" gap={2} justifyContent="flex-end">
+                      <Button variant="outlined" color="primary" onClick={handlePopoverClose}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" variant="contained" color="primary">
+                        Submit
+                      </Button>
+                    </Box>
                   </Box>
-                </Box>
-              </form>
-            </FormProvider>
-          </div>
-        </Popover>
-      </TableCell>
+                </form>
+              </FormProvider>
+            </div>
+          </Popover>
+        </TableCell>
+      )}
     </TableRow>
   );
 }
