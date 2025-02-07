@@ -119,3 +119,13 @@ export function useGetEligibleRewardTrainerList({
 
   return { ...memoizedValue, revalidateEligibleRewardTrainers };
 }
+export async function processTrainerReward(loyaltyProgramData: Body) {
+  const URL = endpoints.loyalityProgram.processTrainerReward;
+  try {
+    const response = await drivysCreator([URL, loyaltyProgramData]);
+    return response;
+  } catch (error) {
+    console.error('Error creating or updating loyalty program:', error);
+    throw error;
+  }
+}

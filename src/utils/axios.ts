@@ -333,6 +333,7 @@ export const endpoints = {
     createUpdate: 'admin/trainer-rewards/create-update-reward-translation',
     delete: 'admin/trainer-rewards/delete-reward-by-id',
     eligibleRewardTrainerList: 'admin/trainerAchievementReward/get-list',
+    processTrainerReward: 'admin/trainerAchievementReward/ahievement-reward?id',
   },
   location: {
     getLiveTrainerLocation: 'admin/trainers/get-live-location-trainers-list',
