@@ -22,6 +22,7 @@ import { TableHeadCustom, TableSelectedAction, TablePaginationCustom } from 'src
 import RefundFilters from '../refund-filter';
 import { useGetEligibleRewardTrainerList } from 'src/api/loyality';
 import PendingRewardTableRow from '../pending-rewards-table-row';
+import TrainerRewardFilters from '../trainer-reward-filter';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer', width: 180 },
@@ -38,9 +39,7 @@ const TABLE_HEAD = [
 ];
 
 const defaultFilters = {
-  city_id: null,
-  category_id: null,
-  driver_id: null,
+  trainer_id: null,
 };
 
 export default function PendingRewardListView({ table, filters, setFilters, searchValue }) {
@@ -56,7 +55,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
     status: 'pending',
     // ...(filters?.category_id && { category_id: filters.category_id }),
     // ...(filters?.city_id && { city_id: filters.city_id }),
-    // ...(filters?.driver_id && { driver_id: filters.driver_id }),
+    ...(filters?.trainer_id && { trainer_id: filters.trainer_id }),
   });
   const openFilters = useBoolean();
 
@@ -88,6 +87,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
+  console.log('filtered', filters);
   const canReset = !isEqual(defaultFilters, filters);
 
   const renderFilters = (
@@ -99,7 +99,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
       margin={3}
     >
       <Stack direction="row" spacing={1} flexShrink={0}>
-        <RefundFilters
+        <TrainerRewardFilters
           open={openFilters.value}
           onOpen={openFilters.onTrue}
           onClose={openFilters.onFalse}
@@ -117,6 +117,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
   );
   return (
     <Card sx={{ mb: 5 }}>
+      {renderFilters}
       <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
         <TableSelectedAction
           dense={table.dense}
