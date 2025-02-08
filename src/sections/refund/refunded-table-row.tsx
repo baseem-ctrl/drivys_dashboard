@@ -138,7 +138,7 @@ export default function RefundedTableRow({
       <TableCell>
         <Typography
           sx={{
-            fontSize: 13,
+            fontSize: 15,
             cursor: 'pointer',
             textDecoration: 'none',
             '&:hover': { textDecoration: 'underline' },

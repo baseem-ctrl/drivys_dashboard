@@ -245,6 +245,7 @@ export const endpoints = {
     createPackage: 'admin/package-city/create-packge-city',
     getPackageList: 'admin/package-city/get-package-city',
     deletePackageList: 'admin/package-city/delete-packge-city/',
+    updateResheduleBulk: 'admin/city/update-reschedule-setting-in-bulk',
   },
   state: {
     createStateTranslation: 'admin/state-province/create-state-translation',
@@ -331,6 +332,8 @@ export const endpoints = {
     getById: 'admin/trainer-rewards/get-rewards-list',
     createUpdate: 'admin/trainer-rewards/create-update-reward-translation',
     delete: 'admin/trainer-rewards/delete-reward-by-id',
+    eligibleRewardTrainerList: 'admin/trainerAchievementReward/get-list',
+    processTrainerReward: 'admin/trainerAchievementReward/ahievement-reward?id',
   },
   location: {
     getLiveTrainerLocation: 'admin/trainers/get-live-location-trainers-list',

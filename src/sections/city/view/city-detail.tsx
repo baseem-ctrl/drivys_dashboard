@@ -31,7 +31,7 @@ export default function CityDetails({ onEdit, city }) {
                       <Box sx={{ p: 2, width: '100%' }}>
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                               City Name
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -43,7 +43,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                               Locale
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -55,7 +55,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                               Published
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -74,7 +74,7 @@ export default function CityDetails({ onEdit, city }) {
                             </Box>
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
-                            <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                               Certificate Available
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
@@ -95,12 +95,13 @@ export default function CityDetails({ onEdit, city }) {
                               </Typography>
                             </Box>
                           </Box>
+
                           {city.is_certificate_available === 1 && (
                             <>
                               <Box sx={{ display: 'flex', width: '100%' }}>
                                 <Box
                                   component="span"
-                                  sx={{ minWidth: '200px', fontWeight: 'bold' }}
+                                  sx={{ minWidth: '250px', fontWeight: 'bold' }}
                                 >
                                   Certificate Price
                                 </Box>
@@ -119,7 +120,7 @@ export default function CityDetails({ onEdit, city }) {
                               <Box sx={{ display: 'flex', width: '100%' }}>
                                 <Box
                                   component="span"
-                                  sx={{ minWidth: '200px', fontWeight: 'bold' }}
+                                  sx={{ minWidth: '250px', fontWeight: 'bold' }}
                                 >
                                   Certificate Link
                                 </Box>
@@ -146,6 +147,49 @@ export default function CityDetails({ onEdit, city }) {
                               </Box>
                             </>
                           )}
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Reschedule Fee
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.reschedule_fee ?? 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Fee Reschedule Before
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.free_reschedule_before ?? 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Fee Reschedule Before Type
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city?.free_reschedule_before_type === 0
+                                  ? 'Hours'
+                                  : city?.free_reschedule_before_type === 1
+                                  ? 'Days'
+                                  : 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
                         </Stack>
                       </Box>
                     </Stack>

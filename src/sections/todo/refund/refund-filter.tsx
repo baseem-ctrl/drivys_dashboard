@@ -162,20 +162,9 @@ export default function RefundFilters({
           })) ?? []
         }
         getOptionLabel={(option) => option.label || ''}
-        value={
-          filters.driver_id
-            ? vendorOptions?.find((item) => item.value === filters.driver_id)
-              ? {
-                  label:
-                    vendorOptions?.find((item) => item.value === filters.driver_id)?.label ||
-                    'Unknown Trainer',
-                  value: filters.driver_id,
-                }
-              : null
-            : null
-        }
+        value={vendorOptions?.find((item) => item.value === filters.driver_id) || null}
         onChange={(event, newValue) => {
-          handleFilterChange('driver_id', newValue?.value);
+          handleFilterChange('driver_id', newValue?.value || filters.trainer_id);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
         renderInput={(params) => <TextField placeholder="Select Trainer" {...params} />}

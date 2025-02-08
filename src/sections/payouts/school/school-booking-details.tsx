@@ -51,7 +51,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   const handleBookingClick = (id) => {
     router.push(paths.dashboard.booking.details(id));
   };
-  const tableCellStyle = { fontWeight: 'bold', fontSize: '1rem' };
+  const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const tableCells = [
     { label: 'School Name', width: '250px' },

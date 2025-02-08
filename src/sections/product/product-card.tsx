@@ -607,7 +607,7 @@ export default function ProductCard({
                       display: 'none',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.875rem',
+                      fontSize: '1rem',
                       fontWeight: 'bold',
                       borderRadius: 1,
                       cursor: 'pointer',

@@ -71,6 +71,10 @@ export function useNavData() {
           title: t('updated trainer profile'),
           path: paths.dashboard.todo.trainerProfileUpdates,
         },
+        {
+          title: t('pending trainer rewards'),
+          path: paths.dashboard.todo.trainerPendingRewards,
+        },
       ],
     },
 
@@ -208,7 +212,7 @@ export function useNavData() {
     },
     {
       title: t('loyality'),
-      path: paths.dashboard.loyality,
+      path: paths.dashboard.loyality.root,
       icon: ICONS.order,
     },
 

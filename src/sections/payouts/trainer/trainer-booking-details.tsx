@@ -34,14 +34,14 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const { id } = params;
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
-  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages } = useGetPayoutsList(
-    {
+  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, totalPaidValue } =
+    useGetPayoutsList({
       page: table?.page + 1,
       limit: table?.rowsPerPage,
       trainer_id: id,
-    }
-  );
+    });
   console.log('payoutsList', payoutsList);
+  console.log('totalPaidValue', totalPaidValue);
   const { payoutHistoryList, totalPages: historyTotalPages } = useGetPayoutHistory({
     page: table.page + 1,
     limit: table.rowsPerPage,
@@ -58,7 +58,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const handleBookingClick = (id) => {
     router.push(paths.dashboard.booking.details(id));
   };
-  const tableCellStyle = { fontWeight: 'bold', fontSize: '1rem' };
+  const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const bookingTableCells = [
     { label: 'Trainer Name', width: '250px' },
@@ -84,7 +84,6 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
         padding: 2,
         backgroundColor: '#fff',
         borderRadius: 2,
@@ -96,7 +95,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="subtitle1">Total paid amount</Typography>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          8,161.91
+          {totalPaidValue ?? '0'} AED
         </Typography>
         <Chip label="Paid" color="success" variant="soft" sx={{ mt: 1 }} />
         <Button

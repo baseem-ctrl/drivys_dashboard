@@ -190,7 +190,9 @@ export default function PackageDocumentCreateUpdate({
               </Grid>
 
               <Grid item xs={12}>
-                <Box sx={{ fontWeight: 'bold', fontSize: '1rem', mb: 1, color: 'primary.main' }}>
+                <Box
+                  sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
+                >
                   Package Document Upload
                 </Box>
               </Grid>
@@ -204,7 +206,9 @@ export default function PackageDocumentCreateUpdate({
               </Grid>
 
               <Grid item xs={12}>
-                <Box sx={{ fontWeight: 'bold', fontSize: '1rem', mb: 1, color: 'primary.main' }}>
+                <Box
+                  sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
+                >
                   Package Icon Upload
                 </Box>
               </Grid>

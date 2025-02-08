@@ -294,7 +294,7 @@ export default function PackageDocumentDetails({
                             ) : doc.type === 'image' ? (
                               <span
                                 style={{
-                                  fontSize: '16px',
+                                  fontSize: '18px',
                                   color: '#999',
                                   display: 'flex',
                                   justifyContent: 'center',
@@ -310,7 +310,7 @@ export default function PackageDocumentDetails({
                               <span
                                 style={{
                                   cursor: 'pointer',
-                                  fontSize: '14px',
+                                  fontSize: '16px',
                                   color: '#999',
                                   display: 'flex',
                                   justifyContent: 'center',
@@ -338,7 +338,7 @@ export default function PackageDocumentDetails({
                               <Typography
                                 sx={{
                                   mt: 3,
-                                  fontSize: '14px',
+                                  fontSize: '16px',
                                   mx: 'auto',
                                   display: 'block',
                                   textAlign: 'center',
@@ -378,7 +378,7 @@ export default function PackageDocumentDetails({
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.title ?? 'N/A'}
                             </Typography>
@@ -405,7 +405,7 @@ export default function PackageDocumentDetails({
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.description ?? 'N/A'}
                             </Typography>
@@ -433,7 +433,7 @@ export default function PackageDocumentDetails({
                             </Typography>
                             <Tooltip title={doc?.file ?? 'N/A'} arrow>
                               <Typography
-                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                               >
                                 {doc?.file
                                   ? `${doc.file.slice(0, 8)}...${doc.file.slice(-13)}`
@@ -467,7 +467,7 @@ export default function PackageDocumentDetails({
                               sx={{
                                 textAlign: 'left',
                                 marginLeft: 2,
-                                fontSize: 15,
+                                fontSize: 17,
                                 cursor: 'pointer',
                                 textDecoration: 'none',
                                 '&:hover': {
@@ -510,7 +510,7 @@ export default function PackageDocumentDetails({
                             </Typography>
                             <Tooltip title={doc?.file ?? 'N/A'} arrow>
                               <Typography
-                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                                sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                               >
                                 {doc?.type ? doc.type : 'N/A'}
                               </Typography>
@@ -538,7 +538,7 @@ export default function PackageDocumentDetails({
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.status ?? 'N/A'}
                             </Typography>
@@ -565,7 +565,7 @@ export default function PackageDocumentDetails({
                               :
                             </Typography>
                             <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 15 }}
+                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
                               {doc.session_no ?? 'N/A'}
                             </Typography>
@@ -620,7 +620,7 @@ export default function PackageDocumentDetails({
                             ) : (
                               <span
                                 style={{
-                                  fontSize: '16px',
+                                  fontSize: '18px',
                                   color: '#999',
                                   display: 'flex',
 
@@ -651,7 +651,7 @@ export default function PackageDocumentDetails({
                                 color: '#fff',
                                 fontWeight: 'bold',
                                 lineHeight: 1.5,
-                                fontSize: '0.75rem',
+                                fontSize: '0.875rem',
                                 fontFamily: 'Public Sans, sans-serif',
                               }}
                             >
@@ -692,7 +692,7 @@ export default function PackageDocumentDetails({
                             sx={{
                               textAlign: 'left',
                               marginLeft: 2,
-                              fontSize: 15,
+                              fontSize: 17,
                               cursor: 'pointer',
                               textDecoration: 'none',
                             }}

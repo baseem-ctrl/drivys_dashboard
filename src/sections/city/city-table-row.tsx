@@ -3,6 +3,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ILanguageItem } from 'src/types/language';
 import Label from 'src/components/label';
@@ -20,6 +21,8 @@ type Props = {
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
   reload: VoidFunction;
+  selectedCityIds: string[];
+  handleCheckboxClick: (event: React.ChangeEvent<HTMLInputElement>, cityId: string) => void;
 };
 
 export default function CityTableRow({
@@ -29,6 +32,7 @@ export default function CityTableRow({
   onSelectRow,
   onDeleteRow,
   reload,
+  handleCheckboxClick,
 }: Props) {
   const { is_published, display_order, city_translations } = row;
   const confirm = useBoolean();
@@ -40,14 +44,18 @@ export default function CityTableRow({
     onSelectRow();
     // navigate(paths.dashboard.system.viewDetails(cityId));
   };
-
+  const handleCheckboxClickWrapper = (event: React.MouseEvent) => {
+    // Prevent the click event from propagating to the row click
+    event.stopPropagation();
+    handleCheckboxClick(event, row.id);
+  };
   return (
     <>
       <TableRow hover selected={selected}>
         {/* Uncomment if you want a checkbox for selection */}
-        {/* <TableCell padding="checkbox">
-            <Checkbox checked={selected} onClick={onSelectRow} />
-          </TableCell> */}
+        <TableCell padding="checkbox">
+          <Checkbox onChange={handleCheckboxClickWrapper} checked={selected} />
+        </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           {city_translations[zerothIndex].name}

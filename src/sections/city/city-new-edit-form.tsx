@@ -14,6 +14,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { IconButton, Tooltip } from '@mui/material';
+
 // utils
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
@@ -25,7 +28,6 @@ import { useGetAllLanguage } from 'src/api/language';
 export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
-
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -37,7 +39,11 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     is_certificate_available: Yup.boolean(),
     certificate_price: Yup.string(),
     certificate_link: Yup.string(),
+    reschedule_fee: Yup.mixed(),
+    free_reschedule_before: Yup.mixed(),
+    free_reschedule_before_type: Yup.mixed(),
   });
+  console.log('city', city);
   const methods = useForm({
     resolver: yupResolver(CitySchema),
     defaultValues: {
@@ -48,6 +54,9 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       is_certificate_available: !!city?.is_certificate_available ?? false,
       certificate_price: city?.certificate_price || 0,
       certificate_link: city?.certificate_link || '',
+      reschedule_fee: city?.reschedule_fee ?? '',
+      free_reschedule_before: city?.free_reschedule_before ?? '',
+      free_reschedule_before_type: city?.free_reschedule_before_type ?? '',
     },
   });
 
@@ -61,6 +70,12 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   } = methods;
 
   const selectedLocale = watch('locale');
+  const rescheduleType = watch('free_reschedule_before_type');
+  const rescheduleValue = watch('free_reschedule_before');
+  const tooltipTitle =
+    rescheduleType === 1
+      ? `The reschedule fee applies only after ${rescheduleValue} day(s).`
+      : `The reschedule fee applies only after ${rescheduleValue} hour(s).`;
   const values = watch();
   useEffect(() => {
     if (city) {
@@ -100,6 +115,12 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
         formData.append('certificate_price', city.certificate_price ?? '0');
         formData.append('certificate_link', city.certificate_link ?? '');
       }
+      if (city?.reschedule_fee) {
+        formData.append('reschedule_fee', city.reschedule_fee ?? '0');
+      }
+      formData.append('free_reschedule_before', city.free_reschedule_before ?? '0');
+
+      formData.append('free_reschedule_before_type', city.free_reschedule_before_type ?? '0');
       // Update city call
       const response = await updateCityTranslation(formData);
       if (response) {
@@ -164,6 +185,31 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
                 type="number"
               />
               <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
+              <RHFTextField
+                name="reschedule_fee"
+                label="Reschedule Fee"
+                type="number"
+                inputProps={{ min: 2, max: 999999 }}
+              />
+              <Box display="flex" alignItems="center" gap={1}>
+                <RHFSelect name="free_reschedule_before_type" label="Free Reschedule Before Type">
+                  <MenuItem value={1}>Day</MenuItem>
+                  <MenuItem value={0}>Hour</MenuItem>
+                </RHFSelect>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                {' '}
+                <RHFTextField
+                  name="free_reschedule_before"
+                  label="Free Reschedule Before"
+                  type="number"
+                />
+                <Tooltip title={tooltipTitle} arrow placement="top">
+                  <IconButton size="small" sx={{ padding: 0 }}>
+                    <InfoOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </>
           )}
         </Box>

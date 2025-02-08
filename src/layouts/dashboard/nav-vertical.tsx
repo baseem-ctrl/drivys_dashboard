@@ -48,6 +48,14 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
           display: 'flex',
           flexDirection: 'column',
         },
+        '& .MuiTypography-root': {
+          fontSize: '16px !important',
+          fontWeight: '700 !important ',
+        },
+        '& .MuiButtonBase-root': {
+          fontSize: '16px !important',
+          fontWeight: '700 !important ',
+        },
       }}
     >
       <Logo sx={{ mt: 3, ml: 4, mb: 1 }} />
@@ -64,7 +72,6 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
       {/* <NavUpgrade /> */}
     </Scrollbar>
   );
-
   return (
     <Box
       component="nav"
@@ -81,6 +88,7 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
             height: 1,
             position: 'fixed',
             width: NAV.W_VERTICAL,
+
             borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}
         >

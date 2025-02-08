@@ -201,13 +201,17 @@ export const paths = {
       certificateCommissionTrainer: `${ROOTS.DASHBOARD}/commission/certificate-commission-trainer`,
       certificateCommissionDrivys: `${ROOTS.DASHBOARD}/commission/certificate-commission-drivys`,
     },
-    loyality: `${ROOTS.DASHBOARD}/loyality`,
+    loyality: {
+      root: `${ROOTS.DASHBOARD}/loyality`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/loyality/${id}`,
+    },
 
     todo: {
       root: `${ROOTS.DASHBOARD}/todo/pending-verification`,
       pendingVerification: `${ROOTS.DASHBOARD}/todo/pending-verification`,
       pendingRefund: `${ROOTS.DASHBOARD}/todo/pending-refund`,
       trainerProfileUpdates: `${ROOTS.DASHBOARD}/todo/trainer-profile-updates`,
+      trainerPendingRewards: `${ROOTS.DASHBOARD}/todo/trainer-pending-rewards`,
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,

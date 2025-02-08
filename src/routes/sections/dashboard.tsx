@@ -49,6 +49,8 @@ import TrainerProfileUpdatesListView from 'src/sections/trainer-profile-updates/
 import CertificateCommissionTrainer from 'src/sections/certificate-commission-trainer/view/certificate-commission-trainer-list-view';
 import CertificateCommissionDrivys from 'src/sections/certificate-commission/view/certificate-commission-list-view';
 import TrainerCommission from 'src/sections/trainer-commission/view/trainer-commission-list-view';
+import ToDoListPendingReward from 'src/sections/todo/refund/to-do-list-pending-rewards';
+import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-program-details';
 
 // ----------------------------------------------------------------------
 
@@ -239,6 +241,7 @@ const allroutes = [
       { element: <ToDoListViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListViewVerification /> },
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
+      { path: 'trainer-pending-rewards', element: <ToDoListPendingReward /> },
       { path: 'trainer-profile-updates', element: <TrainerProfileUpdatesListView /> },
     ],
   },
@@ -261,6 +264,8 @@ const allroutes = [
     ],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
+  { path: 'loyality/:id', element: <LoyaltyProgramDetails /> },
+
   { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
 
   {

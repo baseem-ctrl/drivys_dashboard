@@ -395,7 +395,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         </Typography>
                       </Box>
 
-                      <Typography sx={{ fontSize: '12px', fontWeight: '700' }}>
+                      <Typography sx={{ fontSize: '16px', fontWeight: '700' }}>
                         {' '}
                         What's included{' '}
                       </Typography>

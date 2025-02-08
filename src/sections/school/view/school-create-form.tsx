@@ -414,7 +414,7 @@ export default function SchoolCreateForm({
           <Grid item xs={12} mt={2} mb={2}>
             <Typography
               variant="body1"
-              sx={{ fontSize: '15px', fontWeight: '600', ml: 1, mt: 4, mb: 1 }}
+              sx={{ fontSize: '17px', fontWeight: '600', ml: 1, mt: 4, mb: 1 }}
             >
               About:
             </Typography>

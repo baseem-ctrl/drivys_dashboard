@@ -182,10 +182,9 @@ export default function CouponDialog({
         const filteredOptions = source.map((item: { [key: string]: any[]; id: any }) => {
           // Access the translations dynamically based on the provided translation key
           const translations = item[translationKey];
-
           // Find the 'en' and 'ar' translations
-          const enTranslation = translations.find((translation) => translation.locale === 'en');
-          const arTranslation = translations.find((translation) => translation.locale === 'ar');
+          const enTranslation = translations.find((translation) => translation.locale === 'En');
+          const arTranslation = translations.find((translation) => translation.locale === 'Ar');
 
           // Create a label by concatenating the 'en' name with the 'ar' name inside brackets if both exist
           const label = `${enTranslation?.name || 'No Name'} (${arTranslation?.name || 'No Name'})`;
@@ -206,7 +205,7 @@ export default function CouponDialog({
   useEffect(() => {
     setSelectedDiscountType(defaultValues?.discount_type_id || '');
   }, [updateValue]);
-
+  console.log('category options', categoryOptions);
   const { formState } = methods;
   const { enqueueSnackbar } = useSnackbar();
   const today = moment().format('YYYY-MM-DD');

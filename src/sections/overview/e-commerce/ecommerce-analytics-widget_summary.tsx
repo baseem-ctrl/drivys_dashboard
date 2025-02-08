@@ -94,7 +94,7 @@ export default function AnalyticsWidgetSummary({
             borderRadius: 1,
             px: 1,
             py: 0.5,
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: 'bold',
             display: 'flex',
             alignItems: 'center',

@@ -17,7 +17,7 @@ import { ICityItem } from 'src/types/city';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
-import { createCityTranslation, updateCityTranslation } from 'src/api/city';
+import { createCityTranslation, updateCityTranslation, updateRescheduleBulk } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
 import { IconButton, Tooltip } from '@mui/material';
 
@@ -28,37 +28,32 @@ type Props = {
   open: boolean;
   onClose: VoidFunction;
   currentCity?: ICityItem;
+  selectedCityIds: any;
+  setSelelectedCityId: any;
+  onClosePopOver: any;
   reload: VoidFunction;
 };
 
-export default function CityCreateEditForm({ title, currentCity, open, onClose, reload }: Props) {
+export default function CityUpdateBulkRescheduleFee({
+  title,
+  currentCity,
+  open,
+  onClose,
+  reload,
+  selectedCityIds,
+  onClosePopOver,
+  setSelelectedCityId,
+}: Props) {
   const { enqueueSnackbar } = useSnackbar();
-
+  console.log('selectedCityIds', selectedCityIds);
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    locale: Yup.string().required('Locale is required'),
-    published: Yup.boolean(),
-    is_certificate_available: Yup.boolean(),
-    certificate_price: Yup.string(),
-    certificate_link: Yup.string(),
     reschedule_fee: Yup.mixed(),
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
   });
-  const { language } = useGetAllLanguage(0, 1000);
 
-  const localeOptions = (language || []).map((lang) => ({
-    value: lang.language_culture,
-    label: lang.name,
-  }));
   const defaultValues = useMemo(
     () => ({
-      name: currentCity?.city_translations[0]?.name || '',
-      locale: currentCity?.city_translations[0]?.locale || localeOptions[0]?.value,
-      published: currentCity?.is_published === 1 ? true : false,
-      is_certificate_available: !!currentCity?.is_certificate_available ?? false,
-      certificate_price: currentCity?.certificate_price || 0,
-      certificate_link: currentCity?.certificate_link || '',
       reschedule_fee: currentCity?.reschedule_fee ?? '',
       free_reschedule_before: currentCity?.free_reschedule_before ?? '',
       free_reschedule_before_type: currentCity?.free_reschedule_before_type ?? '',
@@ -104,34 +99,26 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
-      formData.append('city_id', currentCity?.id || '');
-      formData.append('is_published', data.published ? '1' : '0');
-      formData.append('city_translation[0][locale]', data.locale);
-      formData.append('city_translation[0][name]', data.name);
 
-      formData.append('is_certificate_available', data.is_certificate_available ? '1' : '0');
-      if (data?.is_certificate_available) {
-        formData.append('certificate_price', data.certificate_price ?? '0');
-        formData.append('certificate_link', data.certificate_link ?? '');
-      }
+      selectedCityIds.forEach((cityId) => {
+        formData.append('city_ids[]', cityId);
+      });
+
       if (data?.reschedule_fee) {
         formData.append('reschedule_fee', data.reschedule_fee ?? '0');
       }
-      formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
 
+      formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
       formData.append('free_reschedule_before_type', data.free_reschedule_before_type ?? '0');
 
-      if (currentCity?.id) {
-        await updateCityTranslation(formData);
-        enqueueSnackbar('City translation updated successfully.');
-      } else {
-        await createCityTranslation(formData);
-        enqueueSnackbar('City translation created successfully.');
-      }
+      await updateRescheduleBulk(formData);
+      enqueueSnackbar('Reschedule Fee updated successfully.');
 
       reset();
       onClose();
       reload();
+      onClosePopOver();
+      setSelelectedCityId([]);
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
@@ -146,6 +133,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       }
     }
   });
+
   useEffect(() => {
     const defaultLocale = 'En'; // default value
 
@@ -189,36 +177,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
             </MenuItem>
           ))}
         </Select> */}
-            <RHFSelect name="locale" label="Locale">
-              <MenuItem value="" disabled>
-                Select Locale
-              </MenuItem>
-              {localeOptions?.length > 0 ? (
-                localeOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem value="" disabled>
-                  No options available
-                </MenuItem>
-              )}
-            </RHFSelect>
-            <RHFTextField name="name" label="Name" />
-            <RHFSwitch name="published" label="Published" />
-            <RHFSwitch name="is_certificate_available" label="Is Certificate Available" />
-            {values?.is_certificate_available && (
-              <>
-                <RHFTextField
-                  name="certificate_price"
-                  label="Certificate Price"
-                  prefix="AED"
-                  type="number"
-                />
-                <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
-              </>
-            )}
+
             <RHFTextField
               name="reschedule_fee"
               label="Reschedule Fee"
