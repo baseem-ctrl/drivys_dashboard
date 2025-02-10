@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'src/routes/hooks';
 import moment from 'moment';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import {
   Table,
@@ -18,6 +19,9 @@ import {
   Tab,
   Chip,
   Button,
+  Card,
+  CardContent,
+  Tooltip,
 } from '@mui/material';
 import { useGetPayoutHistory, useGetPayoutsList } from 'src/api/payouts';
 import { TablePaginationCustom, useTable } from 'src/components/table';
@@ -25,6 +29,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import { useRouter } from 'src/routes/hooks';
+import { useGetUserDetails } from 'src/api/users';
 
 export const BookingDetailsTable: React.FC<{}> = () => {
   const settings = useSettingsContext();
@@ -40,6 +45,8 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       limit: table?.rowsPerPage,
       trainer_id: id,
     });
+  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
+  console.log('details', details);
   console.log('payoutsList', payoutsList);
   console.log('totalPaidValue', totalPaidValue);
   const { payoutHistoryList, totalPages: historyTotalPages } = useGetPayoutHistory({
@@ -83,29 +90,73 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'center',
-        padding: 2,
-        backgroundColor: '#fff',
-        borderRadius: 2,
-        boxShadow: 1,
+        padding: 3,
+        borderRadius: 3,
         mb: 3,
       }}
     >
-      <Box sx={{ width: 200, height: 200, backgroundColor: '#ddd' }} />
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography variant="subtitle1">Total paid amount</Typography>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          {totalPaidValue ?? '0'} AED
+      {/* Left Section - Profile Image with Tooltip */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 3 }}>
+        <Tooltip
+          title={
+            <Box sx={{ textAlign: 'center', p: 1 }}>
+              <Typography variant="body1">{details?.name ?? 'User Name'}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {details?.email ?? 'user@example.com'}
+              </Typography>
+            </Box>
+          }
+          arrow
+          placement="top"
+        >
+          <Box
+            component="img"
+            src={details?.photo_url}
+            alt="Profile Photo"
+            sx={{
+              width: 250,
+              height: 250,
+              borderRadius: '20px',
+              objectFit: 'cover',
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              border: '3px solid #f5f5f5',
+              cursor: 'pointer',
+            }}
+          />
+        </Tooltip>
+      </Box>
+
+      <CardContent sx={{ flex: 1 }}>
+        <Typography variant="subtitle2" sx={{ color: '#666', fontSize: '14px', mb: 1 }}>
+          Total Paid Amount
         </Typography>
-        <Chip label="Paid" color="success" variant="soft" sx={{ mt: 1 }} />
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          {totalPaidValue ?? '0'} AED{' '}
+          <Chip
+            label="Paid"
+            color="success"
+            variant="soft"
+            sx={{ fontWeight: 'bold', fontSize: '14px', ml: 2, width: '10%' }}
+          />
+        </Typography>
+
         <Button
           variant="contained"
-          sx={{ mt: 2, backgroundColor: '#C25A1D', '&:hover': { backgroundColor: '#A04917' } }}
-          endIcon={<span>&rarr;</span>}
+          sx={{
+            mt: 3,
+            backgroundColor: '#C25A1D',
+            '&:hover': { backgroundColor: '#A04917' },
+            padding: '10px 50px',
+            width: '60%',
+            fontWeight: 'bold',
+            fontSize: '14px',
+            borderRadius: '8px',
+          }}
+          endIcon={<ArrowForwardIcon />}
         >
           Payout
         </Button>
-      </Box>
+      </CardContent>
     </Box>
   );
 
