@@ -26,13 +26,12 @@ import TrainerRewardFilters from '../trainer-reward-filter';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer', width: 180 },
-  { id: 'reward-name', label: 'Reward Name', width: 180 },
   { id: 'reward-amount', label: 'Reward Amount', width: 180 },
   { id: 'is-periodic', label: 'Periodic', width: 220 },
 
   { id: 'start-date', label: 'Start Date', width: 220 },
   { id: 'end-date', label: 'End Date', width: 220 },
-  { id: 'sessions-progress', label: 'Sessions Progress', width: 250 },
+  { id: 'notes', label: 'Notes', width: 180 },
 
   { id: 'achieved-date', label: 'Achieved Date', width: 200 },
   { id: 'notes', label: '', width: 250 },
