@@ -99,21 +99,7 @@ export default function PendingRewardTableRow({
           {user?.name || 'N/A'}
         </Link>
       </TableCell>
-      <TableCell
-        sx={{
-          cursor: 'pointer',
-          textDecoration: 'none',
-          '&:hover': { textDecoration: 'underline' },
-        }}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (row?.trainer_reward_id) {
-            handleClickLoyalityDetails(row?.trainer_reward_id);
-          }
-        }}
-      >
-        {row?.trainer_reward?.trainer_reward_translation[0]?.name || 'N/A'}
-      </TableCell>
+
       <TableCell>
         <Typography fontSize="0.875rem">
           {row?.reward_details?.reward_amount ?? 'N/A'} AED{' '}
@@ -147,36 +133,28 @@ export default function PendingRewardTableRow({
               .format('DD/MM/YY h:mm a')
           : 'N/A'}
       </TableCell>
-      <TableCell>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <LinearProgress
-            variant="determinate"
-            value={Math.min(
-              (row?.reward_details?.completed_sessions / row?.reward_details?.required_sessions) *
-                100 || 0,
-              100
-            )}
-            sx={{ width: '200px', height: 8, borderRadius: 4 }}
-          />
-          <Typography
-            variant="caption"
-            color="#118D57"
-            sx={{ fontSize: '11px', textAlign: 'center', mt: '3px' }}
-          >
-            {row?.reward_details?.completed_sessions ?? 0} out of{' '}
-            {row?.reward_details?.required_sessions ?? 0} sessions completed
-          </Typography>
-        </Box>
-      </TableCell>
+      <TableCell>{row?.notes ? `${row?.notes}` : 'N/A'}</TableCell>
 
       <TableCell>
-        {' '}
-        {row?.achieved_date
-          ? moment(row?.achieved_date)
+        {row?.achieved_date ? (
+          <>
+            {moment(row?.achieved_date)
               .local()
-              .format('DD/MM/YY h:mm a')
-          : 'N/A'}
+              .format('DD/MM/YY h:mm a')}
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+              Claimed At:{' '}
+              {row?.claimed_at
+                ? moment(row?.claimed_at)
+                    .local()
+                    .format('DD/MM/YY h:mm a')
+                : 'N/A'}
+            </Typography>
+          </>
+        ) : (
+          'N/A'
+        )}
       </TableCell>
+
       <TableCell>
         <Button
           variant="outlined"
