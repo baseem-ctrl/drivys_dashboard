@@ -11,6 +11,7 @@ import {
   TableCell,
   TableRow,
   Typography,
+  Stack,
 } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -26,6 +27,7 @@ import {
 // import BookingTableToolbar from '../booking-table-toolbar';
 import { paths } from 'src/routes/paths';
 import TrainerProfileUpdateRow from '../trainer-profile-update-table-row';
+import ProfileUpdateFilter from '../profile-update-filter';
 
 const TABLE_HEAD = [
   { id: 'userName', label: 'Trainer', width: 180 },
@@ -35,12 +37,14 @@ const TABLE_HEAD = [
 ];
 
 export default function TrainerProfileUpdatesListView() {
+  const openFilters = useBoolean();
+
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const [filters, setFilters] = useState({
-    trainer_id: undefined,
+    trainer_id: '',
     page: table.page + 1,
     limit: table.rowsPerPage,
-    is_verified: undefined,
+    is_verified: 0,
   });
 
   const {
@@ -72,7 +76,29 @@ export default function TrainerProfileUpdatesListView() {
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
-
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      sx={{ marginBottom: 3 }}
+    >
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <ProfileUpdateFilter
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          filters={filters}
+          setFilters={setFilters}
+          onFilters={handleFiltersChange}
+        />
+      </Stack>
+    </Stack>
+  );
   return (
     <Card sx={{ mb: 5 }}>
       <CustomBreadcrumbs
@@ -89,6 +115,7 @@ export default function TrainerProfileUpdatesListView() {
           mb: { xs: 3, md: 5 },
         }}
       />
+      {renderFilters}
       <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
         <TableSelectedAction
           dense={table.dense}

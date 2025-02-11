@@ -11,7 +11,7 @@ export function useGetTrainerProfileUpdateList(filters = {}) {
 
   const queryParams = new URLSearchParams();
 
-  if (trainer_id !== undefined) queryParams.append('trainer_id', trainer_id);
+  if (trainer_id !== undefined && trainer_id) queryParams.append('trainer_id', trainer_id);
   if (is_verified !== undefined) queryParams.append('is_verified', is_verified);
   if (page !== undefined) queryParams.append('page', page);
   if (limit !== undefined) queryParams.append('limit', limit);
