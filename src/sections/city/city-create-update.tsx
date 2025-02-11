@@ -80,10 +80,15 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   const selectedLocale = watch('locale');
   const rescheduleType = watch('free_reschedule_before_type');
   const rescheduleValue = watch('free_reschedule_before');
-  const tooltipTitle =
-    rescheduleType === 1
-      ? `The reschedule fee applies only after ${rescheduleValue} day(s).`
-      : `The reschedule fee applies only after ${rescheduleValue} hour(s).`;
+  let tooltipTitle;
+  if (!rescheduleType) {
+    tooltipTitle = 'A reschedule fee applies every time the student reschedules the slot.';
+  } else if (rescheduleType === 1) {
+    tooltipTitle = `The reschedule fee applies only after ${rescheduleValue} day(s).`;
+  } else {
+    tooltipTitle = `The reschedule fee applies only after ${rescheduleValue} hour(s).`;
+  }
+
   useEffect(() => {
     if (currentCity?.id) {
       reset(defaultValues);
@@ -117,9 +122,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       if (data?.reschedule_fee) {
         formData.append('reschedule_fee', data.reschedule_fee ?? '0');
       }
-      formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
-
-      formData.append('free_reschedule_before_type', data.free_reschedule_before_type ?? '0');
+      if (data?.free_reschedule_before) {
+        formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
+      }
+      if (data?.free_reschedule_before_type) {
+        formData.append('free_reschedule_before_type', data.free_reschedule_before_type ?? '0');
+      }
 
       if (currentCity?.id) {
         await updateCityTranslation(formData);
