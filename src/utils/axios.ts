@@ -344,6 +344,7 @@ export const endpoints = {
     getList: 'admin/payout/get-list',
     payToTrainer: 'admin/payout/transfer/trainer-pay',
     getPayoutHistory: 'admin/payout/transfer/get-list',
+    getPayoutByBooking: 'admin/payout/get-by-bookings',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',

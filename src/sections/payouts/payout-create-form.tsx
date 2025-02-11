@@ -11,11 +11,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Stack from '@mui/material/Stack';
+import { useRouter } from 'src/routes/hooks';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { usePaymentMethodEnum } from 'src/api/enum';
 import { MenuItem, Typography } from '@mui/material';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { processPayoutToTrainer } from 'src/api/payouts';
+import { paths } from 'src/routes/paths';
 
 const PayoutSchema = Yup.object().shape({
   amount: Yup.number().required('Amount is required').positive('Amount must be positive'),
@@ -24,7 +26,7 @@ const PayoutSchema = Yup.object().shape({
   notes: Yup.string().max(500, 'Notes should not exceed 500 characters'),
 });
 
-export default function PayoutCreateForm({ open, onClose, trainerId, reload }) {
+export default function PayoutCreateForm({ open, onClose, trainerId, reload, amount }) {
   const defaultValues = useMemo(
     () => ({
       amount: '',
@@ -35,6 +37,7 @@ export default function PayoutCreateForm({ open, onClose, trainerId, reload }) {
     }),
     []
   );
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = usePaymentMethodEnum();
   const methods = useForm({
@@ -67,6 +70,7 @@ export default function PayoutCreateForm({ open, onClose, trainerId, reload }) {
         onClose();
         reload();
         enqueueSnackbar(response?.message, { variant: 'success' });
+        router.push(paths.dashboard.payouts.root);
       }
     } catch (error) {
       enqueueSnackbar('Failed to create payout.', { variant: 'error' });
@@ -78,6 +82,24 @@ export default function PayoutCreateForm({ open, onClose, trainerId, reload }) {
       <DialogTitle>Create Payout</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              mt: 1,
+              mb: 2,
+              backgroundColor: '#E8F5E9',
+              padding: 2,
+              borderRadius: 2,
+              boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <Typography sx={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>
+              Amount Required From Admin is {amount} AED
+            </Typography>
+          </Box>
+
           <Stack spacing={2} mt={2} direction="row" flexWrap="wrap" gap={2}>
             <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
               <RHFTextField
@@ -87,6 +109,7 @@ export default function PayoutCreateForm({ open, onClose, trainerId, reload }) {
                 control={control}
                 fullWidth
               />
+
               <RHFSelect name="payment_method" label="Payment Method" control={control} fullWidth>
                 <MenuItem value="">Select Payment Method</MenuItem>
                 {paymentMethodEnum.map((method) => (

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'src/routes/hooks';
 import moment from 'moment';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Avatar from '@mui/material/Avatar';
 
 import {
   Table,
@@ -22,22 +23,49 @@ import {
   Card,
   CardContent,
   Tooltip,
+  useMediaQuery,
+  Divider,
 } from '@mui/material';
-import { useGetPayoutHistory, useGetPayoutsList } from 'src/api/payouts';
+import {
+  useGetPayoutByBooking,
+  useGetPayoutHistory,
+  useGetPayoutsList,
+  useGetTrainerPayouts,
+} from 'src/api/payouts';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useRouter } from 'src/routes/hooks';
 import { useGetUserDetails } from 'src/api/users';
+import PayoutCreateForm from '../payout-create-form';
+import { useLocation } from 'react-router';
 
 export const BookingDetailsTable: React.FC<{}> = () => {
   const settings = useSettingsContext();
   const router = useRouter();
-
+  const quickCreate = useBoolean();
+  const { search } = useLocation();
   const params = useParams();
   const { id } = params;
+  const queryParams = new URLSearchParams(search);
+  const isPayoutDisabled = queryParams.get('disablePayout') === '0';
+  const amount = queryParams.get('amount');
+
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const bookingsTable = useTable({
+    defaultRowsPerPage: 15,
+    defaultOrderBy: 'id',
+    defaultOrder: 'desc',
+  });
+  const historyTable = useTable({
+    defaultRowsPerPage: 15,
+    defaultOrderBy: 'processed_at',
+    defaultOrder: 'desc',
+  });
+  const [activeTab, setActiveTab] = useState(0);
+  const [tableData, setTableData] = useState();
 
   const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, totalPaidValue } =
     useGetPayoutsList({
@@ -45,17 +73,33 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       limit: table?.rowsPerPage,
       trainer_id: id,
     });
+  const {
+    payoutByBookingList,
+    payoutByBookingLoading,
+    payoutByBookingError,
+    payoutByBookingEmpty,
+    totalPages: totalPagesInBooking,
+    revalidatePayoutByBooking,
+  } = useGetPayoutByBooking({
+    page: bookingsTable.page + 1,
+    limit: bookingsTable.rowsPerPage,
+    is_paid: activeTab,
+  });
+  const { revalidatePayouts } = useGetTrainerPayouts();
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
-  console.log('details', details);
-  console.log('payoutsList', payoutsList);
-  console.log('totalPaidValue', totalPaidValue);
   const { payoutHistoryList, totalPages: historyTotalPages } = useGetPayoutHistory({
-    page: table.page + 1,
-    limit: table.rowsPerPage,
+    page: historyTable.page + 1,
+    limit: historyTable.rowsPerPage,
     trainer_id: id,
   });
-  const [activeTab, setActiveTab] = useState(0);
 
+  useEffect(() => {
+    if (payoutByBookingList?.length) {
+      setTableData(payoutByBookingList);
+    } else {
+      setTableData([]);
+    }
+  }, [payoutByBookingList]);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -65,16 +109,17 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const handleBookingClick = (id) => {
     router.push(paths.dashboard.booking.details(id));
   };
+  const handleUserClick = (id) => {
+    router.push(paths.dashboard.user.details(id));
+  };
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const bookingTableCells = [
-    { label: 'Trainer Name', width: '250px' },
     { label: 'Booking ID', width: '150px' },
     { label: 'Total Booking Revenue', width: '240px' },
-    { label: "Drivy's Commission", width: '250px' },
-    { label: 'Trainer Earning', width: '250px' },
-    { label: 'School Name', width: '250px' },
-    { label: 'School Earnings', width: '250px' },
+    { label: "Drivy's Payout", width: '250px' },
+    { label: 'Trainer Payout', width: '250px' },
+    { label: 'School Payout', width: '250px' },
   ];
 
   const payoutHistoryCells = [
@@ -86,17 +131,30 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     { label: 'Proof File', width: '200px' },
     { label: 'Status', width: '200px' },
   ];
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
+
   const PayoutSummary = () => (
     <Box
+      onClick={() => handleUserClick(id)}
       sx={{
         display: 'flex',
+        flexDirection: isSmallScreen ? 'column' : 'row',
+        alignItems: isSmallScreen ? 'center' : 'flex-start',
         padding: 3,
         borderRadius: 3,
         mb: 3,
+        gap: isSmallScreen ? 2 : 0,
       }}
     >
-      {/* Left Section - Profile Image with Tooltip */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 3 }}>
+      {/* Left Section - Profile Image with Avatar Fallback */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          mr: isSmallScreen ? 0 : 3,
+        }}
+      >
         <Tooltip
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
@@ -109,24 +167,43 @@ export const BookingDetailsTable: React.FC<{}> = () => {
           arrow
           placement="top"
         >
-          <Box
-            component="img"
-            src={details?.photo_url}
-            alt="Profile Photo"
-            sx={{
-              width: 250,
-              height: 250,
-              borderRadius: '20px',
-              objectFit: 'cover',
-              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-              border: '3px solid #f5f5f5',
-              cursor: 'pointer',
-            }}
-          />
+          {details?.photo_url ? (
+            <Box
+              component="img"
+              src={details.photo_url}
+              alt="Profile Photo"
+              sx={{
+                width: isSmallScreen ? '100%' : 250,
+                maxWidth: 250,
+                height: isSmallScreen ? 'auto' : 250,
+                borderRadius: '20px',
+                objectFit: 'cover',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                border: '3px solid #f5f5f5',
+                cursor: 'pointer',
+              }}
+            />
+          ) : (
+            <Avatar
+              sx={{
+                width: isSmallScreen ? '100%' : 250,
+                maxWidth: 250,
+                height: isSmallScreen ? 'auto' : 250,
+                borderRadius: '20px',
+                objectFit: 'cover',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                border: '3px solid #f5f5f5',
+                cursor: 'pointer',
+              }}
+            >
+              {details?.name ? details.name[0] : 'U'}
+            </Avatar>
+          )}
         </Tooltip>
       </Box>
 
-      <CardContent sx={{ flex: 1 }}>
+      {/* Right Section - Payment Details */}
+      <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
         <Typography variant="subtitle2" sx={{ color: '#666', fontSize: '14px', mb: 1 }}>
           Total Paid Amount
         </Typography>
@@ -136,26 +213,42 @@ export const BookingDetailsTable: React.FC<{}> = () => {
             label="Paid"
             color="success"
             variant="soft"
-            sx={{ fontWeight: 'bold', fontSize: '14px', ml: 2, width: '10%' }}
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '14px',
+              ml: isSmallScreen ? 0 : 2,
+              mt: isSmallScreen ? 1 : 0,
+              width: isSmallScreen ? '40%' : '10%',
+            }}
           />
         </Typography>
-
-        <Button
-          variant="contained"
-          sx={{
-            mt: 3,
-            backgroundColor: '#C25A1D',
-            '&:hover': { backgroundColor: '#A04917' },
-            padding: '10px 50px',
-            width: '60%',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            borderRadius: '8px',
-          }}
-          endIcon={<ArrowForwardIcon />}
-        >
-          Payout
-        </Button>
+        <Typography color="primary" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
+          Amount Required From Admin is {amount} AED
+        </Typography>
+        <Tooltip title={isPayoutDisabled ? 'No payout remaining' : ''} arrow>
+          <span>
+            <Button
+              variant="contained"
+              disabled={isPayoutDisabled}
+              sx={{
+                mt: 3,
+                backgroundColor: '#C25A1D',
+                '&:hover': { backgroundColor: '#A04917' },
+                padding: '10px 50px',
+                width: isSmallScreen ? '100%' : '60%',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                borderRadius: '8px',
+              }}
+              endIcon={<ArrowForwardIcon />}
+              onClick={(e) => {
+                quickCreate.onTrue();
+              }}
+            >
+              Payout
+            </Button>
+          </span>
+        </Tooltip>
       </CardContent>
     </Box>
   );
@@ -179,14 +272,14 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <PayoutSummary />
 
       <Tabs value={activeTab} onChange={handleTabChange} aria-label="payout tabs">
-        <Tab label="Payout Details" />
-        <Tab label="Payout History" />
+        <Tab label="Unpaid Bookings" />
+        <Tab label="Paid Bookings" />
       </Tabs>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              {(activeTab === 0 ? bookingTableCells : payoutHistoryCells).map((cell, index) => (
+              {bookingTableCells.map((cell, index) => (
                 <TableCell key={index} sx={{ ...tableCellStyle, width: cell.width }}>
                   {cell.label}
                 </TableCell>
@@ -194,78 +287,40 @@ export const BookingDetailsTable: React.FC<{}> = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {(activeTab === 0 ? payoutsList : payoutHistoryList)?.length === 0 ? (
+            {tableData?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} sx={{ textAlign: 'center', fontStyle: 'italic' }}>
                   No records available
                 </TableCell>
               </TableRow>
             ) : (
-              (activeTab === 0 ? payoutsList : payoutHistoryList)?.map((item, index) => (
+              tableData?.map((item, index) => (
                 <TableRow key={index}>
                   {activeTab === 0 ? (
                     <>
-                      <TableCell>{item?.trainer_details?.trainer_name}</TableCell>
                       <TableCell
                         sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
                         onClick={() => handleBookingClick(item?.booking_id)}
                       >
                         {renderCell(item?.booking_id)}
                       </TableCell>
-                      <TableCell>{renderCell(item?.total_booking_revenue)} AED</TableCell>
-                      <TableCell>{renderCell(item?.drivys_commission)} AED</TableCell>
-                      <TableCell>
-                        {renderCell(item?.trainer_details?.trainer_earning)} AED
-                      </TableCell>
-                      <TableCell>{item?.vendor_payout?.vendor_name ?? 'NA'}</TableCell>
-                      <TableCell>
-                        {Math.round(item?.vendor_payout?.earning * 100) / 100} AED
-                      </TableCell>
+                      <TableCell>{renderCell(item?.total_booking_revenue)}</TableCell>
+                      <TableCell>{renderCell(item?.drivys_payout)} AED</TableCell>
+                      <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
+                      <TableCell>{renderCell(item?.school_payout)} AED</TableCell>
                     </>
                   ) : (
                     <>
-                      <TableCell>{renderCell(item?.amount)} AED</TableCell>
-                      <TableCell>{renderCell(item?.notes)}</TableCell>
-                      <TableCell>{renderCell(item?.payment_method)}</TableCell>
-                      <TableCell>{renderCell(item?.payment_method_details)}</TableCell>
-                      <TableCell>
-                        {item?.processed_at
-                          ? moment(item.processed_at).format('DD MMM YYYY, HH:mm A')
-                          : 'N/A'}
+                      <TableCell
+                        sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                        onClick={() => handleBookingClick(item?.booking_id)}
+                      >
+                        {renderCell(item?.booking_id)}
                       </TableCell>
-
-                      <TableCell>
-                        {item?.proof_file ? (
-                          <img
-                            src={item.proof_file}
-                            alt="Proof"
-                            style={{ width: '60px', height: 'auto', borderRadius: '4px' }}
-                          />
-                        ) : (
-                          'N/A'
-                        )}
-                      </TableCell>
-
-                      <TableCell>
-                        {item?.status ? (
-                          <Chip
-                            label={item.status}
-                            color={
-                              item.status === 'Processed'
-                                ? 'success'
-                                : item.status === 'Pending'
-                                ? 'warning'
-                                : item.status === 'Failed'
-                                ? 'error'
-                                : 'default'
-                            }
-                            variant="soft"
-                            size="small"
-                          />
-                        ) : (
-                          'N/A'
-                        )}
-                      </TableCell>
+                      <TableCell>{renderCell(item?.total_booking_revenue)}</TableCell>
+                      <TableCell>{renderCell(item?.drivys_payout)} AED</TableCell>
+                      <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
+                      <TableCell>{renderCell(item?.school_payout)} AED</TableCell>
                     </>
                   )}
                 </TableRow>
@@ -277,13 +332,104 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px' }}>
         <TablePaginationCustom
-          count={activeTab === 0 ? totalPages : historyTotalPages}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
+          count={totalPagesInBooking}
+          page={bookingsTable.page}
+          rowsPerPage={bookingsTable.rowsPerPage}
+          onPageChange={bookingsTable.onChangePage}
+          onRowsPerPageChange={bookingsTable.onChangeRowsPerPage}
         />
       </Box>
+      <Divider sx={{ my: 4, borderColor: '#ddd' }} />
+
+      <Typography variant="h6" color="primary" sx={{ mt: 4, mb: 2 }}>
+        Payout History
+      </Typography>
+      <TableContainer component={Paper} sx={{ mt: 2 }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              {payoutHistoryCells.map((cell, index) => (
+                <TableCell key={index} sx={{ ...tableCellStyle, width: cell.width }}>
+                  {cell.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {payoutHistoryList?.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} sx={{ textAlign: 'center', fontStyle: 'italic' }}>
+                  No records available
+                </TableCell>
+              </TableRow>
+            ) : (
+              payoutHistoryList?.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{renderCell(item?.amount)} AED</TableCell>
+                  <TableCell>{renderCell(item?.notes)}</TableCell>
+                  <TableCell>{renderCell(item?.payment_method)}</TableCell>
+                  <TableCell>{renderCell(item?.payment_method_details)}</TableCell>
+                  <TableCell>
+                    {item?.processed_at
+                      ? moment(item.processed_at).format('DD MMM YYYY, HH:mm A')
+                      : 'N/A'}
+                  </TableCell>
+
+                  <TableCell>
+                    {item?.proof_file ? (
+                      <img
+                        src={item.proof_file}
+                        alt="Proof"
+                        style={{ width: '60px', height: 'auto', borderRadius: '4px' }}
+                      />
+                    ) : (
+                      'N/A'
+                    )}
+                  </TableCell>
+
+                  <TableCell>
+                    {item?.status ? (
+                      <Chip
+                        label={item.status}
+                        color={
+                          item.status === 'Processed'
+                            ? 'success'
+                            : item.status === 'Pending'
+                            ? 'warning'
+                            : item.status === 'Failed'
+                            ? 'error'
+                            : 'default'
+                        }
+                        variant="soft"
+                        size="small"
+                      />
+                    ) : (
+                      'N/A'
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '16px' }}>
+        <TablePaginationCustom
+          count={historyTotalPages}
+          page={historyTable.page}
+          rowsPerPage={historyTable.rowsPerPage}
+          onPageChange={historyTable.onChangePage}
+          onRowsPerPageChange={historyTable.onChangeRowsPerPage}
+        />
+      </Box>
+      <PayoutCreateForm
+        open={quickCreate.value}
+        onClose={quickCreate.onFalse}
+        trainerId={id}
+        reload={revalidatePayouts}
+        amount={amount}
+      />
     </Container>
   );
 };

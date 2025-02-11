@@ -64,6 +64,7 @@ export default function TrainerPayoutPage() {
 
   const [sortBy, setSortBy] = useState('');
   const [trainerId, setTrainerId] = useState(false);
+  const [amount, setAmount] = useState(false);
 
   const [search, setSearch] = useState<{ query: string; results: ITourItem[] }>({
     query: '',
@@ -72,6 +73,7 @@ export default function TrainerPayoutPage() {
   const [searchValue, setSearchValue] = useState('');
 
   const [filters, setFilters] = useState(defaultFilters);
+
   const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, revalidatePayouts } =
     useGetTrainerPayouts({
       page: table?.page + 1,
@@ -205,6 +207,7 @@ export default function TrainerPayoutPage() {
                   e.stopPropagation();
                   quickCreate.onTrue();
                   setTrainerId(item?.trainer_id);
+                  setAmount(item?.amount_required_from_admin);
                 }}
               >
                 Payouts
@@ -280,6 +283,7 @@ export default function TrainerPayoutPage() {
                   e.stopPropagation();
                   quickCreate.onTrue();
                   setTrainerId(item?.trainer_id);
+                  setAmount(item?.amount_required_from_admin);
                 }}
               >
                 Payouts
@@ -309,9 +313,14 @@ export default function TrainerPayoutPage() {
     );
   };
 
-  const handleCardClick = (id) => {
-    router.push(paths.dashboard.payouts.details(id));
+  const handleCardClick = (id, isPayoutDisabled, amount) => {
+    setAmount(amount);
+    router.push(paths.dashboard.payouts.details(id), {
+      disablePayout: isPayoutDisabled ? '1' : '0',
+      amount: amount,
+    });
   };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -355,7 +364,12 @@ export default function TrainerPayoutPage() {
               cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
             }}
             onClick={() =>
-              tour.total_paid_and_completed_booking > 0 && handleCardClick(tour.trainer_id)
+              tour.total_paid_and_completed_booking > 0 &&
+              handleCardClick(
+                tour.trainer_id,
+                tour.amount_required_from_admin >= 1,
+                tour.amount_required_from_admin
+              )
             }
           >
             {/* Large Screen Content */}
@@ -383,6 +397,7 @@ export default function TrainerPayoutPage() {
         onClose={quickCreate.onFalse}
         trainerId={trainerId}
         reload={revalidatePayouts}
+        amount={amount}
       />
       <TablePaginationCustom
         count={totalPages}

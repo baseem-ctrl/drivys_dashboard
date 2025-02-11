@@ -248,3 +248,57 @@ export function useGetPayoutHistory({
     revalidatePayoutHistory,
   };
 }
+
+// Function to fetch the booking by payment status
+export function useGetPayoutByBooking({
+  is_paid,
+  limit,
+  page,
+}: { is_paid?: 0 | 1; limit?: number; page?: number } = {}) {
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (is_paid !== undefined) params.is_paid = is_paid;
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+
+    return params;
+  }, [is_paid, limit, page]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.payouts.getPayoutByBooking}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePayoutByBooking = () => {
+    mutate(fullUrl);
+  };
+
+  // Memoize the return value for performance
+  const memoizedValue = useMemo(() => {
+    return {
+      payoutByBookingList: data?.data || [],
+      payoutByBookingLoading: isLoading,
+      payoutByBookingError: error,
+      payoutByBookingValidating: isValidating,
+      payoutByBookingEmpty: data?.data?.length === 0,
+      totalPages: data?.total || 0,
+      totalPaidValue: data?.total_revenue_amount_from_booking,
+    };
+  }, [
+    data?.data,
+    data?.total,
+    error,
+    isLoading,
+    isValidating,
+    data?.total_revenue_amount_from_booking,
+  ]);
+
+  return {
+    ...memoizedValue,
+    revalidatePayoutByBooking,
+  };
+}
