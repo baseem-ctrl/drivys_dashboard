@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'src/routes/hooks';
 import moment from 'moment';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+
 import Avatar from '@mui/material/Avatar';
 
 import {
@@ -84,6 +86,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     page: bookingsTable.page + 1,
     limit: bookingsTable.rowsPerPage,
     is_paid: activeTab,
+    trainer_id: id,
   });
   const { revalidatePayouts } = useGetTrainerPayouts();
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
@@ -116,10 +119,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
   const bookingTableCells = [
     { label: 'Booking ID', width: '150px' },
-    { label: 'Total Booking Revenue', width: '240px' },
-    { label: "Drivy's Payout", width: '250px' },
+    { label: 'Amount', width: '240px' },
     { label: 'Trainer Payout', width: '250px' },
-    { label: 'School Payout', width: '250px' },
+    { label: 'Date', width: '250px' },
+    { label: 'Payment Method', width: '250px' },
   ];
 
   const payoutHistoryCells = [
@@ -304,10 +307,34 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                       >
                         {renderCell(item?.booking_id)}
                       </TableCell>
-                      <TableCell>{renderCell(item?.total_booking_revenue)}</TableCell>
-                      <TableCell>{renderCell(item?.drivys_payout)} AED</TableCell>
+                      <TableCell>
+                        {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
+                        {renderCell(item?.transaction_details[0]?.currency)}
+                      </TableCell>
                       <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
-                      <TableCell>{renderCell(item?.school_payout)} AED</TableCell>
+                      <TableCell>
+                        {' '}
+                        <Chip
+                          icon={<AccessTimeIcon fontSize="small" />}
+                          label={moment(item?.transaction_details[0]?.date).format(
+                            'MMM DD, YYYY hh:mm A'
+                          )}
+                          size="small"
+                          color="success"
+                          variant="soft"
+                        />
+                      </TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={item?.transaction_details[0]?.payment_method ?? 'N/A'}
+                          variant="soft"
+                          color="warning"
+                          sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+                        />
+
+                        {/* {renderCell(item?.transaction_details[0]?.payment_method)} */}
+                      </TableCell>
                     </>
                   ) : (
                     <>
@@ -317,10 +344,34 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                       >
                         {renderCell(item?.booking_id)}
                       </TableCell>
-                      <TableCell>{renderCell(item?.total_booking_revenue)}</TableCell>
-                      <TableCell>{renderCell(item?.drivys_payout)} AED</TableCell>
+                      <TableCell>
+                        {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
+                        {renderCell(item?.transaction_details[0]?.currency)}
+                      </TableCell>
                       <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
-                      <TableCell>{renderCell(item?.school_payout)} AED</TableCell>
+                      <TableCell>
+                        {' '}
+                        <Chip
+                          icon={<AccessTimeIcon fontSize="small" />}
+                          label={moment(item?.transaction_details[0]?.date).format(
+                            'MMM DD, YYYY hh:mm A'
+                          )}
+                          size="small"
+                          color="success"
+                          variant="soft"
+                        />
+                      </TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={item?.transaction_details[0]?.payment_method ?? 'N/A'}
+                          variant="soft"
+                          color="warning"
+                          sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+                        />
+
+                        {/* {renderCell(item?.transaction_details[0]?.payment_method)} */}
+                      </TableCell>
                     </>
                   )}
                 </TableRow>

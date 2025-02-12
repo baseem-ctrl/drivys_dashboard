@@ -51,7 +51,7 @@ const defaultFilters: any = {
 // ----------------------------------------------------------------------
 const PAYOUT_SORT_OPTIONS = [
   { value: 'id', label: 'Latest' },
-  { value: 'total_paid_and_completed_booking', label: 'Bookings' },
+  { value: 'one_booking_completed_and_paid', label: 'Bookings' },
   { value: 'paid_cash_bookings', label: 'Cash Bookings' },
 ];
 export default function TrainerPayoutPage() {
