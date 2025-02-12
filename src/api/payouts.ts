@@ -254,15 +254,17 @@ export function useGetPayoutByBooking({
   is_paid,
   limit,
   page,
+  trainer_id,
 }: { is_paid?: 0 | 1; limit?: number; page?: number } = {}) {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (is_paid !== undefined) params.is_paid = is_paid;
     if (limit) params.limit = limit;
     if (page) params.page = page;
+    if (trainer_id) params.trainer_id = trainer_id;
 
     return params;
-  }, [is_paid, limit, page]);
+  }, [is_paid, limit, page, trainer_id]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.getPayoutByBooking}?${new URLSearchParams(queryParams)}`,
