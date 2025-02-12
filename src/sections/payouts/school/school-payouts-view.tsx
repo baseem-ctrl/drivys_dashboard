@@ -1,5 +1,7 @@
 import orderBy from 'lodash/orderBy';
 import { useState, useCallback } from 'react';
+import moment from 'moment';
+
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -27,7 +29,7 @@ import PayoutSearch from '../payout-search';
 // import TourFilters from '../tour-filters';
 import PayoutFiltersResult from '../payout-filters-result';
 import { useGetSchoolPayouts, useGetTrainerPayouts } from 'src/api/payouts';
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetSchool } from 'src/api/school';
@@ -162,10 +164,28 @@ export default function SchoolPayoutPage() {
     />
   );
   const renderLargeScreenContent = (item: any) => {
+    const lastPaidDate = item?.last_paid_at
+      ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
+      : 'NA';
     const fields = [
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
+      {
+        label: 'Last Paid',
+        value: (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Chip
+              label={`Time: ${lastPaidDate}`}
+              size="small"
+              color="success"
+              variant="soft"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        ),
+      },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       {
         label: 'Action',
@@ -180,7 +200,7 @@ export default function SchoolPayoutPage() {
     return (
       <Box
         display="grid"
-        gridTemplateColumns="repeat(5, 1fr)"
+        gridTemplateColumns="repeat(6, 1fr)"
         gap={2}
         sx={{ alignItems: 'center' }}
       >
@@ -216,10 +236,28 @@ export default function SchoolPayoutPage() {
   };
 
   const renderSmallScreenContent = (item: any) => {
+    const lastPaidDate = item?.last_paid_at
+      ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
+      : 'NA';
     const fields = [
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
       { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
+      {
+        label: 'Last Paid',
+        value: (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Chip
+              label={`Time: ${lastPaidDate}`}
+              size="small"
+              color="success"
+              variant="soft"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        ),
+      },
       { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       {
         label: 'Action',
