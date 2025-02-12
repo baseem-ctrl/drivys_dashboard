@@ -1,5 +1,6 @@
 import orderBy from 'lodash/orderBy';
 import { useState, useCallback } from 'react';
+import moment from 'moment';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -28,7 +29,7 @@ import PayoutSearch from '../payout-search';
 // import TourFilters from '../tour-filters';
 import PayoutFiltersResult from '../payout-filters-result';
 import { useGetTrainerPayouts } from 'src/api/payouts';
-import { Box, Card, CardContent, Tooltip, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Tooltip, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetUsers } from 'src/api/users';
@@ -180,12 +181,28 @@ export default function TrainerPayoutPage() {
 
   const renderLargeScreenContent = (item: any) => {
     const isPayoutAvailable = item?.amount_required_from_admin >= 1;
-
+    const lastPaidDate = item?.last_paid_at
+      ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
+      : 'NA';
     const fields = [
       { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
       { label: 'School Name', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
+      {
+        label: 'Last Paid',
+        value: (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Chip
+              label={`Time: ${lastPaidDate}`}
+              size="small"
+              color="success"
+              variant="soft"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        ),
+      },
 
       {
         label: 'Total Earnings',
@@ -257,12 +274,28 @@ export default function TrainerPayoutPage() {
   };
   const renderSmallScreenContent = (item: any) => {
     const isPayoutAvailable = item?.amount_required_from_admin >= 1;
-
+    const lastPaidDate = item?.last_paid_at
+      ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
+      : 'NA';
     const fields = [
       { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
       { label: 'School', value: item?.vendor_name ?? 'NA' },
       { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: 'Transferred Amount', value: item?.transferred_amount ?? 0 },
+      {
+        label: 'Last Paid',
+        value: (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Chip
+              label={`Time: ${lastPaidDate}`}
+              size="small"
+              color="success"
+              variant="soft"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        ),
+      },
       {
         label: 'Total Earnings',
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
