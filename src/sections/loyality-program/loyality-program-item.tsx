@@ -247,6 +247,7 @@ export default function LoyalityProgramItem({
           onChange={handleChange}
           name="locale"
           borderRadius="0px"
+          onClick={(e) => e.stopPropagation()}
         >
           {localeOptions?.length > 0 &&
             localeOptions?.map((option: any) => (
@@ -267,7 +268,7 @@ export default function LoyalityProgramItem({
         }}
       />
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }} onClick={(e) => e.stopPropagation()}>
         {!watch('is_periodic') && (
           <>
             <Controller
@@ -371,7 +372,7 @@ export default function LoyalityProgramItem({
           }}
           render={({ field, fieldState: { error } }) => (
             <Box sx={{ mb: 2 }}>
-              <Select {...field} fullWidth displayEmpty>
+              <Select {...field} fullWidth displayEmpty onClick={(e) => e.stopPropagation()}>
                 {periodOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
                     {option.label}
