@@ -75,7 +75,14 @@ export default function LoyalityProgramList({
     >
       {tableData.map((categoryItem: any) => (
         <Box
-          onClick={() => handleView(categoryItem.id)}
+          onClick={(e) => {
+            const tagName = e.target.tagName;
+            if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON', 'LABEL'].includes(tagName)) {
+              e.stopPropagation();
+              return;
+            }
+            handleView(categoryItem.id);
+          }}
           sx={{
             cursor: 'pointer',
             transition: '0.3s',
