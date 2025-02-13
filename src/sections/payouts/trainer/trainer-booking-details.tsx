@@ -119,7 +119,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
   const bookingTableCells = [
     { label: 'Booking ID', width: '150px' },
-    { label: 'Amount', width: '240px' },
+    { label: 'Earning Amount', width: '240px' },
     { label: 'Trainer Payout', width: '250px' },
     { label: 'Date', width: '250px' },
     { label: 'Payment Method', width: '250px' },
