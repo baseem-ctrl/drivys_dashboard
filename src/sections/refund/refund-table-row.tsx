@@ -243,14 +243,7 @@ export default function RefundTableRow({
       <TableCell>{row?.booking?.payment_method}</TableCell>
       <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
       <TableCell>
-        <Tooltip
-          title={
-            refundStatus === 'approved'
-              ? 'This status has already been refunded and cannot be changed'
-              : ''
-          }
-          arrow
-        >
+        <Tooltip title={refundStatus === 'approved' ? 'You can process the refund now' : ''} arrow>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {refundStatus === 'approved' ? (
               <Button variant="outlined" color="primary" onClick={handleRefundAmountClick}>
