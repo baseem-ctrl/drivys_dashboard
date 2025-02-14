@@ -16,7 +16,12 @@ export function useGetRefundRequestList(filters = {}) {
   if (page !== undefined) queryParams.append('page', page + 1);
   if (limit !== undefined) queryParams.append('limit', limit);
   if (driver_id !== undefined) queryParams.append('driver_id', driver_id);
-  if (status !== undefined) queryParams.append('status', status);
+
+  if (Array.isArray(status)) {
+    status.forEach((s) => queryParams.append('status[]', s));
+  } else if (status !== undefined) {
+    queryParams.append('status[]', status);
+  }
 
   if (search !== undefined && search.trim() !== '') queryParams.append('search', search);
 

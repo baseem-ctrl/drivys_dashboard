@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
+import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
 import {
   Container,
@@ -77,6 +78,8 @@ export default function RefundListView() {
 
   const [filters, setFilters] = useState(defaultFilters);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [statusFilter, setStatusFilter] = useState('all');
+
   const tablePending = useTable({
     defaultRowsPerPage: 5,
     defaultCurrentPage: 0,
@@ -93,7 +96,7 @@ export default function RefundListView() {
     useGetRefundRequestList({
       page: tablePending.page,
       limit: tablePending.rowsPerPage,
-      status: 'pending',
+      status: statusFilter === 'all' ? ['pending', 'approved'] : statusFilter,
       ...(filters?.category_id && { category_id: filters.category_id }),
       ...(filters?.city_id && { city_id: filters.city_id }),
       ...(filters?.driver_id && { driver_id: filters.driver_id }),
@@ -106,16 +109,14 @@ export default function RefundListView() {
   } = useGetRefundRequestList({
     page: tableApproved.page,
     limit: tableApproved.rowsPerPage,
-    status: 'approved',
+    status: ['pending', 'approved'],
     ...(filters?.category_id && { category_id: filters.category_id }),
     ...(filters?.city_id && { city_id: filters.city_id }),
     ...(filters?.driver_id && { driver_id: filters.driver_id }),
   });
 
   const openFilters = useBoolean();
-
   const [tableData, setTableData] = useState([]);
-  const [approvedTableData, setApprovedTableData] = useState([]);
   const [refundedTableData, setRefundedTableData] = useState([]);
   const {
     refundedRequests: refundedRequestsList,
@@ -147,13 +148,7 @@ export default function RefundListView() {
       setTableData([]);
     }
   }, [refundRequests]);
-  useEffect(() => {
-    if (refundedRequests && refundedRequests.length > 0) {
-      setApprovedTableData(refundedRequests);
-    } else {
-      setApprovedTableData([]);
-    }
-  }, [refundedRequests]);
+
   useEffect(() => {
     if (refundedRequestsList && refundedRequestsList.length > 0) {
       setRefundedTableData(refundedRequestsList);
@@ -237,25 +232,41 @@ export default function RefundListView() {
         sx={{ mb: 3 }}
       />
       {renderFilters}
-
-      <Tabs
-        value={selectedTab}
-        onChange={handleTabChange}
-        centered={false}
-        variant="scrollable"
-        sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          backgroundColor: 'background.paper',
-        }}
-      >
-        {['Pending Refund Requests', 'Approved Refund Requests', 'Refunded Requests'].map(
-          (label) => (
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Tabs
+          value={selectedTab}
+          onChange={handleTabChange}
+          centered={false}
+          variant="scrollable"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            backgroundColor: 'background.paper',
+          }}
+        >
+          {['Refund Requests', 'Refunded Requests'].map((label) => (
             <Tab key={label} sx={tabStyles} label={label} />
-          )
-        )}
-      </Tabs>
+          ))}
+        </Tabs>
 
+        {selectedTab === 0 && (
+          <Box ml="auto" width={200}>
+            <FormControl fullWidth variant="outlined" size="small">
+              <InputLabel sx={{ mb: 0.5 }}>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                label="Status"
+                sx={{ pt: 1, pb: 1 }}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="approved">Approved</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        )}
+      </Box>
       {selectedTab === 0 && (
         <Card sx={{ mb: 5 }}>
           <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
@@ -343,94 +354,7 @@ export default function RefundListView() {
           </TableContainer>
         </Card>
       )}
-
       {selectedTab === 1 && (
-        <Card sx={{ mb: 5 }}>
-          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
-            {/* <Typography
-              variant="h6"
-              sx={{ mt: 4, mb: 5, textAlign: 'center', color: 'primary.main' }}
-            >
-              Approved Refund List
-            </Typography> */}
-
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  approvedTableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={currentTableHeaders}
-                  rowCount={approvedTableData.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                />
-                <TableBody>
-                  {refundedRequestLoading &&
-                    Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={currentTableHeaders.length}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-
-                  {approvedTableData.length > 0 &&
-                    approvedTableData.map((row) => (
-                      <RefundTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        reload={revalidateRefundedRequests}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
-
-                  {approvedTableData.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={currentTableHeaders.length} align="center">
-                        <Typography variant="h6" color="textSecondary">
-                          No data available
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-            <TablePaginationCustom
-              count={total}
-              page={tableApproved.page}
-              rowsPerPage={tableApproved.rowsPerPage}
-              onPageChange={tableApproved.onChangePage}
-              onRowsPerPageChange={tableApproved.onChangeRowsPerPage}
-              dense={tableApproved.dense}
-              onChangeDense={tableApproved.onChangeDense}
-            />
-          </TableContainer>
-        </Card>
-      )}
-      {selectedTab === 2 && (
         <Card>
           <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
             {/* <Typography
