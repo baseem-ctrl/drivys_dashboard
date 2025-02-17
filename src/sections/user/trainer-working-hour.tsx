@@ -112,8 +112,8 @@ export default function TrainerWorkingHour({ userId }: Props) {
     return {
       label: 'Partial Leave',
       date: moment(leave.date).format('MMMM Do, YYYY'),
-      time: `${moment(leave.start_time).utc().format('h:mm A')} - ${moment(leave.end_time)
-        .utc()
+      time: `${moment(leave.start_time).local().format('h:mm A')} - ${moment(leave.end_time)
+        .local()
         .format('h:mm A')}`,
     };
   });
@@ -175,8 +175,8 @@ export default function TrainerWorkingHour({ userId }: Props) {
                           groupedWorkingHours[day].map((hour, index) => (
                             <Box key={index} component="div">
                               <Typography variant="body2">
-                                {moment(hour.start_time).utc().format('h:mm A')} -{' '}
-                                {moment(hour.end_time).utc().format('h:mm A')}
+                                {moment(hour.start_time).local().format('h:mm A')} -{' '}
+                                {moment(hour.end_time).local().format('h:mm A')}
                               </Typography>
                             </Box>
                           ))
