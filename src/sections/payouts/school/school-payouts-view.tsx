@@ -34,6 +34,7 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetSchool } from 'src/api/school';
 import { useRouter } from 'src/routes/hooks';
+import { useGetUsers } from 'src/api/users';
 
 // ----------------------------------------------------------------------
 
@@ -79,7 +80,11 @@ export default function SchoolPayoutPage() {
     limit: 1000,
     search: searchValue,
   });
-
+  const { users } = useGetUsers({
+    page: 0,
+    limit: 1000,
+    user_types: 'TRAINER',
+  });
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -142,7 +147,7 @@ export default function SchoolPayoutPage() {
       <PayoutSearch
         filters={filters}
         onFilters={handleFilters}
-        options={schoolList}
+        options={users}
         setSearchValue={setSearchValue}
         usersLoading={schoolLoading}
       />
