@@ -223,11 +223,11 @@ export default function OverviewEcommerceView() {
     series: [
       {
         label: 'Active Trainers',
-        value: analytics?.activeTrainers || trainerInsights?.activeTrainers,
+        value: analytics?.activeTrainers || trainerInsights?.activeTrainers || 0,
       },
       {
         label: 'Inactive Trainers',
-        value: analytics?.inactiveTrainers || trainerInsights?.inactiveTrainers,
+        value: analytics?.inactiveTrainers || trainerInsights?.inactiveTrainers || 0,
       },
     ],
     options: {
@@ -238,8 +238,8 @@ export default function OverviewEcommerceView() {
     colors: ['#FF6F61', '#6B5B95'],
 
     series: [
-      { label: 'Active Students', value: analytics.activeStudents },
-      { label: 'Inactive Students', value: analytics.inactiveStudents },
+      { label: 'Active Students', value: analytics.activeStudents || 0 },
+      { label: 'Inactive Students', value: analytics.inactiveStudents || 0 },
     ],
     options: {
       labels: ['Active Students', 'Inactive Students'],
@@ -539,7 +539,6 @@ export default function OverviewEcommerceView() {
               </Grid>
 
               {/* EcommerceWidgetSummary components in the next line */}
-
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
                   title="Total Trainers"
@@ -647,7 +646,7 @@ export default function OverviewEcommerceView() {
               </Grid>
             </Grid>
           </Box>
-          {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
+          {user?.user?.user_type === 'ADMIN' && (
             <Grid xs={12} md={12} lg={12}>
               <HeatMap />
             </Grid>
@@ -656,6 +655,7 @@ export default function OverviewEcommerceView() {
               <SchoolAdminMap />
            </Grid> */}
           {analytics?.trainerCount > 0 &&
+          trainerInsights &&
           trainerInsights?.activeTrainers !== null &&
           trainerInsights.inactiveTrainers !== null ? (
             <Grid xs={12} md={6} lg={4}>

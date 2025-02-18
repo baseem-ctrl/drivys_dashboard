@@ -539,13 +539,16 @@ export default function UserDetailsContent({
                       {
                         label: 'School Commission',
                         value:
-                          `${details?.user_preference?.school_commission_in_percentage} %` ?? 'N/A',
+                          details?.user_preference?.school_commission_in_percentage != null
+                            ? `${details.user_preference.school_commission_in_percentage} %`
+                            : 'N/A',
                       },
                       {
                         label: 'Certificate Commission',
                         value:
-                          `${details?.user_preference?.certificate_commission_in_percentage} %` ??
-                          'N/A',
+                          details?.user_preference?.certificate_commission_in_percentage != null
+                            ? `${details.user_preference.certificate_commission_in_percentage} %`
+                            : 'N/A',
                       },
                     ]
                   : []),
