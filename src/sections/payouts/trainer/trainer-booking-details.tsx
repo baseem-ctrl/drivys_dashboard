@@ -138,7 +138,6 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
   const PayoutSummary = () => (
     <Box
-      onClick={() => handleUserClick(id)}
       sx={{
         display: 'flex',
         flexDirection: isSmallScreen ? 'column' : 'row',
@@ -185,6 +184,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                 border: '3px solid #f5f5f5',
                 cursor: 'pointer',
               }}
+              onClick={() => handleUserClick(id)}
             />
           ) : (
             <Avatar
