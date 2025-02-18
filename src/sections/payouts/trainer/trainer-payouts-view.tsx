@@ -180,7 +180,7 @@ export default function TrainerPayoutPage() {
   );
 
   const renderLargeScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin >= 1;
+    const isPayoutAvailable = item?.amount_required_from_admin > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
@@ -273,7 +273,7 @@ export default function TrainerPayoutPage() {
     );
   };
   const renderSmallScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin >= 1;
+    const isPayoutAvailable = item?.amount_required_from_admin > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
@@ -400,7 +400,7 @@ export default function TrainerPayoutPage() {
               tour.total_paid_and_completed_booking > 0 &&
               handleCardClick(
                 tour.trainer_id,
-                tour.amount_required_from_admin >= 1,
+                tour.amount_required_from_admin > 0,
                 tour.amount_required_from_admin
               )
             }
