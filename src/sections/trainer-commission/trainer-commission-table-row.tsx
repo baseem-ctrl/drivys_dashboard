@@ -94,7 +94,7 @@ export default function TrainerCommissionRow({ reload, row }) {
       >
         {vendor_name || 'N/A'}
       </TableCell>
-      <TableCell>
+      <TableCell style={{ fontWeight: 700 }}>
         {isEditing ? (
           <TextField
             size="small"
