@@ -71,7 +71,9 @@ const HeatMap: React.FC = () => {
         setTrainers(
           response.data.data.map((trainer: any) => ({
             id: trainer.id,
-            location: { lat: trainer.address.latitude, lng: trainer.address.longitude },
+            location: trainer.address
+              ? { lat: trainer.address.latitude ?? 0, lng: trainer.address.longitude ?? 0 }
+              : { lat: 0, lng: 0 },
             name: trainer.name,
             photoUrl: trainer.photo_url,
           }))
@@ -97,7 +99,13 @@ const HeatMap: React.FC = () => {
         setStudents(
           response.data.data.map((student: any) => ({
             id: student.id,
-            location: { lat: student.address.latitude, lng: student.address.longitude },
+            location: student.addresses?.length
+              ? {
+                  lat: student.addresses[0].latitude ?? 0,
+                  lng: student.addresses[0].longitude ?? 0,
+                }
+              : { lat: 0, lng: 0 },
+
             name: student?.name,
             photoUrl: student?.photo_url,
           }))
