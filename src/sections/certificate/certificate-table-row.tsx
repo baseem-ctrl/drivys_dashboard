@@ -171,7 +171,7 @@ export default function CertificateRow({ row, reload }) {
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
-        sx={{ width: 140 }}
+        sx={{ width: 180 }}
       >
         <MenuItem
           onClick={() => {
