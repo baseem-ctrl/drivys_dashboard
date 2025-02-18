@@ -25,6 +25,7 @@ export default function PendingRewardTableRow({
 
   const { user } = row;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleRefundAmountClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,6 +45,8 @@ export default function PendingRewardTableRow({
     router.push(paths.dashboard.loyality.details(id));
   };
   const onSubmit = async (data) => {
+    setLoading(true);
+
     const formData = new FormData();
     formData.append('id', row?.id);
     formData.append('document', data?.document);
@@ -70,6 +73,7 @@ export default function PendingRewardTableRow({
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
+      setLoading(false);
       handlePopoverClose();
     }
   };
@@ -187,13 +191,18 @@ export default function PendingRewardTableRow({
 
                 <Box display="flex" flexDirection="column" gap={2}>
                   <RHFFileUpload name="document" label="Upload Proof of Payment" />
-
+                  {loading && <LinearProgress />}
                   <Box display="flex" gap={2} justifyContent="flex-end">
-                    <Button variant="outlined" color="primary" onClick={handlePopoverClose}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handlePopoverClose}
+                      disabled={loading}
+                    >
                       Cancel
                     </Button>
-                    <Button type="submit" variant="contained" color="primary">
-                      Submit
+                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                      {loading ? 'Submitting...' : 'Submit'}
                     </Button>
                   </Box>
                 </Box>
