@@ -7,6 +7,8 @@ import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
+
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -47,7 +49,8 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import LanguageCreateEditForm from '../app-settings-update';
 import { useGetAllAppSettings } from 'src/api/app-settings';
 import { width } from '@mui/system';
-import { Skeleton, TableCell, TableRow } from '@mui/material';
+import { Grid, Skeleton, TableCell, TableRow } from '@mui/material';
+import AppSettingForm from '../app-settings-form';
 
 // ----------------------------------------------------------------------
 
@@ -89,7 +92,7 @@ export default function AppSettingsListView() {
   });
 
   const { appSettings, appSettingsLoading, totalpages, revalidateLanguage, appSettingsError } =
-    useGetAllAppSettings(table.page, table.rowsPerPage);
+    useGetAllAppSettings(table.page, 1000);
 
   useEffect(() => {
     if (appSettings?.length) {
@@ -125,7 +128,7 @@ export default function AppSettingsListView() {
         />
 
         <Card>
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          {/* <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -171,11 +174,7 @@ export default function AppSettingsListView() {
                         </TableCell>
                       </TableRow>
                     ))}
-                  {!appSettingsLoading &&
-                    tableData.length > 0 &&
-                    tableData.map((row) => (
-                      <AppSettingTableRow key={row.id} row={row} reload={revalidateLanguage} />
-                    ))}
+                 
 
                   <TableEmptyRows
                     // height={denseHeight}
@@ -183,12 +182,29 @@ export default function AppSettingsListView() {
                   />
 
                   <TableNoData notFound={notFound} />
+
+                  <Grid item xs={12} sx={{ mt: 2 }}>
+                    <LoadingButton
+                      fullWidth
+                      variant="outlined"
+                      color="primary"
+                      // onClick={onSubmit}
+                      // loading={isSubmitting}
+                    >
+                      Save
+                    </LoadingButton>
+                  </Grid>
                 </TableBody>
               </Table>
             </Scrollbar>
-          </TableContainer>
+          </TableContainer> */}
+          {!appSettingsLoading &&
+            tableData.length > 0 &&
+            tableData.map((row) => (
+              <AppSettingForm key={row.id} row={row} reload={revalidateLanguage} />
+            ))}
 
-          <TablePaginationCustom
+          {/* <TablePaginationCustom
             count={totalpages}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
@@ -197,7 +213,7 @@ export default function AppSettingsListView() {
             //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
-          />
+          /> */}
         </Card>
       </Container>
       <LanguageCreateEditForm
