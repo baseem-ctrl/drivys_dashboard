@@ -69,12 +69,21 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [tableData, setTableData] = useState();
 
-  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, totalPaidValue } =
-    useGetPayoutsList({
-      page: table?.page + 1,
-      limit: table?.rowsPerPage,
-      trainer_id: id,
-    });
+  const {
+    payoutsList,
+    payoutsLoading,
+    payoutsError,
+    payoutsEmpty,
+    totalPages,
+    totalDrivysCommission,
+    totalRevenueValue,
+    totalTrainerEarning,
+    totalVendorEarning,
+  } = useGetPayoutsList({
+    page: table?.page + 1,
+    limit: table?.rowsPerPage,
+    trainer_id: id,
+  });
   const {
     payoutByBookingList,
     payoutByBookingLoading,
@@ -207,27 +216,50 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
       {/* Right Section - Payment Details */}
       <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
-        <Typography variant="subtitle2" sx={{ color: '#666', fontSize: '14px', mb: 1 }}>
-          Total Paid Amount
-        </Typography>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          {totalPaidValue ?? '0'} AED{' '}
-          <Chip
-            label="Paid"
-            color="success"
-            variant="soft"
-            sx={{
-              fontWeight: 'bold',
-              fontSize: '14px',
-              ml: isSmallScreen ? 0 : 2,
-              mt: isSmallScreen ? 1 : 0,
-              width: isSmallScreen ? '40%' : '10%',
-            }}
-          />
-        </Typography>
-        <Typography color="primary" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
+            Total Revenue Amount
+          </Typography>
+          <Typography variant="subtitle2">:</Typography>
+          <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
+            {totalRevenueValue ?? '0'} AED
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
+            Total Drivys Commission
+          </Typography>
+          <Typography variant="subtitle2">:</Typography>
+          <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
+            {totalDrivysCommission ?? '0'} AED
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
+            Total Trainer Earning
+          </Typography>
+          <Typography variant="subtitle2">:</Typography>
+          <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
+            {totalTrainerEarning ?? '0'} AED
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
+            Total Vendor Earning
+          </Typography>
+          <Typography variant="subtitle2">:</Typography>
+          <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
+            {totalVendorEarning ?? '0'} AED
+          </Typography>
+        </Box>
+
+        <Typography variant="subtitle2" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
           Amount Required From Admin is {amount} AED
         </Typography>
+
         <Tooltip title={isPayoutDisabled ? 'No payout remaining' : ''} arrow>
           <span>
             <Button
