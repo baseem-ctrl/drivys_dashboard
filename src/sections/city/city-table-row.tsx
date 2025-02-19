@@ -85,7 +85,7 @@ export default function CityTableRow({
       </TableRow>
 
       <CityCreateEditForm
-        title="Edit Emirate"
+        title="Edit City"
         currentCity={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
