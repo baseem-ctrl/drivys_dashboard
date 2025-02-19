@@ -144,7 +144,10 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
       payoutsValidating: isValidating,
       payoutsEmpty: data?.data?.length === 0,
       totalPages: data?.total || 0,
-      totalPaidValue: data?.total_revenue_amount_from_booking,
+      totalRevenueValue: data?.total_revenue_amount_from_booking,
+      totalTrainerEarning: data?.total_trainer_earning_from_bookings,
+      totalVendorEarning: data?.total_vendor_earning_from_bookings,
+      totalDrivysCommission: data?.total_drivys_commission_from_bookings,
     };
   }, [
     data?.data,
@@ -153,6 +156,8 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     isLoading,
     isValidating,
     data?.total_revenue_amount_from_booking,
+    data?.total_trainer_earning_from_bookings,
+    data?.total_drivys_commission_from_bookings,
   ]);
 
   return {
