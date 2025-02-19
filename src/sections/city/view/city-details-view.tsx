@@ -84,7 +84,7 @@ export default function CityDetailsView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Emirate',
+            name: 'City',
             href: paths.dashboard.system.city,
           },
           { name: `${city?.city_translations?.[0]?.name}` },
@@ -118,7 +118,7 @@ export default function CityDetailsView() {
         </>
       )}
       <Dialog open={openEditPopup} onClose={handleClosePopup}>
-        <DialogTitle>Edit Emirate</DialogTitle>
+        <DialogTitle>Edit City</DialogTitle>
         <DialogContent>
           <CityNewEditForm city={city} reload={revalidate} handleClosePopup={handleClosePopup} />
         </DialogContent>
