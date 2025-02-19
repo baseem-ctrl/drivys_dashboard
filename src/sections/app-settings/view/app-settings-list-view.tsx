@@ -50,7 +50,7 @@ import LanguageCreateEditForm from '../app-settings-update';
 import { useGetAllAppSettings } from 'src/api/app-settings';
 import { width } from '@mui/system';
 import { Grid, Skeleton, TableCell, TableRow } from '@mui/material';
-import AppSettingForm from '../app-settings-form';
+import EditableForm from '../app-settings-form';
 
 // ----------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ export default function AppSettingsListView() {
     filters,
   });
 
-  const { appSettings, appSettingsLoading, totalpages, revalidateLanguage, appSettingsError } =
+  const { appSettings, appSettingsLoading, totalpages, revalidateAppSettings, appSettingsError } =
     useGetAllAppSettings(table.page, 1000);
 
   useEffect(() => {
@@ -127,8 +127,7 @@ export default function AppSettingsListView() {
           }}
         />
 
-        <Card>
-          {/* <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+        {/* <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -198,13 +197,18 @@ export default function AppSettingsListView() {
               </Table>
             </Scrollbar>
           </TableContainer> */}
-          {!appSettingsLoading &&
-            tableData.length > 0 &&
-            tableData.map((row) => (
-              <AppSettingForm key={row.id} row={row} reload={revalidateLanguage} />
-            ))}
 
-          {/* <TablePaginationCustom
+        {/* <Grid container spacing={2}>
+          {tableData.length > 0 &&
+            tableData.map((row) => (
+              <Grid item xs={12} sm={6} md={4} key={row.id}>
+                <AppSettingForm row={row} reload={revalidateLanguage} />
+              </Grid>
+            ))}
+        </Grid> */}
+        <EditableForm />
+
+        {/* <TablePaginationCustom
             count={totalpages}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
@@ -214,13 +218,12 @@ export default function AppSettingsListView() {
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           /> */}
-        </Card>
       </Container>
       <LanguageCreateEditForm
         title="Create Language"
         open={createLanguage.value}
         onClose={createLanguage.onFalse}
-        reload={revalidateLanguage}
+        reload={revalidateAppSettings}
       />
 
       {/* <ConfirmDialog

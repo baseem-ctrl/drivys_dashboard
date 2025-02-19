@@ -1,85 +1,92 @@
-import { Grid, TextField } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import {
+  TextField,
+  Switch,
+  FormControlLabel,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Paper,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from '@mui/material';
+import { useGetAllLanguage } from 'src/api/language';
+import { enqueueSnackbar } from 'src/components/snackbar';
+import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
 
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// types
-import { ILanguageItem } from 'src/types/language';
-// components
-import { useSnackbar } from 'src/components/snackbar';
-import { updateValue } from 'src/api/app-settings';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { LoadingButton } from '@mui/lab';
-import { useEffect, useState, useMemo } from 'react';
+interface FormField {
+  id: number;
+  key: string;
+  value: any;
+  locale: string | null;
+}
 
-// ----------------------------------------------------------------------
-
-type Props = {
-  row: ILanguageItem;
-  reload: VoidFunction;
-};
-
-export default function AppSettingForm({ row, reload }: Props) {
-  const { key, value, id } = row;
-
-  const confirm = useBoolean();
-  const quickEdit = useBoolean();
-
-  const [editingRowId, setEditingRowId] = useState<boolean | null>(null);
-
-  const NewSchema = Yup.object().shape({
-    value: Yup.mixed().test('valid-value', 'Only "true" or "false" are allowed.', (value) => {
-      if (key === 'STRIPE_ENABLED' || key === 'CASH_ENABLED') {
-        return value === 'true' || value === 'false'; // Only allow string "true" or "false"
-      }
-      return true; // Skip validation for other fields
-    }),
-    value2: Yup.string().required('Second field is required'), // Example validation for value2
-  });
-
-  const defaultValues = useMemo(
-    () => ({
-      value: value,
-      value2: '', // Add value2 with an initial empty string or default value
-    }),
-    [row]
-  );
-
-  const methods = useForm({
-    resolver: yupResolver(NewSchema) as any,
-    defaultValues,
-  });
-
+const EditableForm: React.FC = () => {
+  const { language } = useGetAllLanguage(0, 1000);
+  const [selectedLocale, setSelectedLocale] = useState('En');
   const {
-    watch,
-    reset,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-    setValue,
-    control,
-  } = methods;
-  const { enqueueSnackbar } = useSnackbar();
-  const values = watch();
+    appSettings: data,
+    appSettingsLoading,
+    totalpages,
+    revalidateAppSettings,
+    appSettingsError,
+  } = useGetAllAppSettings(0, 1000, selectedLocale === 'En' ? null : selectedLocale);
+  const [formData, setFormData] = useState(data);
+
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
+  console.log('data', data);
+  const handleLocaleChange = (event: SelectChangeEvent<string>) => {
+    setSelectedLocale(event.target.value);
+  };
+
+  const handleChange = (id: number, newValue: any) => {
+    setFormData((prevData) =>
+      prevData.map((item) => (item.id === id ? { ...item, value: newValue } : item))
+    );
+  };
 
   useEffect(() => {
-    if (editingRowId !== null) {
-      reset(defaultValues);
-    }
-  }, [editingRowId]);
+    setFormData(data);
+  }, [data]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const handleSave = async () => {
+    console.log('Data saved:', formData);
     try {
-      const body = {
-        key: row?.key,
-        value: data?.value,
-        id: row?.id,
-      };
+      const editedField = formData.find((item) => {
+        const original = data.find((d) => d.key === item.key);
+        return original && String(original.value) !== String(item.value);
+      });
+
+      const body = editedField
+        ? {
+            id: editedField.id,
+            key: editedField.key,
+            value: editedField.value,
+            locale: selectedLocale,
+          }
+        : null;
+
+      console.log('Final Payload:', body);
+
+      const updatedData = formData.map((item) => ({
+        key: item.key,
+        value: item.value,
+        id: item.id,
+      }));
       const response = await updateValue(body);
       if (response) {
         enqueueSnackbar(response.message, {
           variant: 'success',
         });
+        revalidateAppSettings();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -90,39 +97,154 @@ export default function AppSettingForm({ row, reload }: Props) {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
-      setEditingRowId(false); // Set to false instead of null
-      reload();
-      reset();
+      revalidateAppSettings();
     }
-  });
-  console.log('row', row);
-  return (
-    <Grid
-      container
-      spacing={2}
-      sx={{ display: 'flex', flexWrap: 'wrap', maxWidth: '100%', padding: 2 }}
-    >
-      {Object.entries(row)
-        .filter(([key]) => key.startsWith('value'))
-        .map(([key, fieldValue]) => (
-          <Grid item xs={12} sm={6} md={4} key={key} sx={{ flexGrow: 1 }}>
-            <Controller
-              name={key}
-              control={control}
-              defaultValue={fieldValue}
-              render={({ field }) => (
-                <TextField
-                  fullWidth
-                  label={row.key}
-                  {...field}
-                  error={Boolean(errors[key])}
-                  helperText={errors[key] ? errors[key].message : ''}
-                  placeholder="Enter value"
-                />
-              )}
+  };
+  let sortedFormData = [];
+  if (!appSettingsLoading) {
+    sortedFormData = [
+      // Numbers and short strings (≤ 20 characters)
+      ...data.filter(
+        (item) =>
+          (typeof item.value === 'number' || typeof item.value === 'string') &&
+          item.value.toString().length <= 20
+      ),
+
+      // Long strings (> 20 characters)
+      ...data.filter((item) => typeof item.value === 'string' && item.value.toString().length > 20),
+
+      // Boolean values
+      ...data.filter((item) => typeof item.value === 'boolean'),
+    ];
+  }
+
+  const renderInputField = (item: FormField) => {
+    if (typeof item.value === 'boolean') {
+      return (
+        <FormControlLabel
+          control={
+            <Switch
+              checked={item.value}
+              onChange={(e) => handleChange(item.id, e.target.checked)}
+              color="primary"
             />
-          </Grid>
-        ))}
-    </Grid>
+          }
+          label={item.key}
+        />
+      );
+    } else if (typeof item.value === 'number' || typeof item.value === 'string') {
+      if (item.value.toString().length > 20) {
+        return (
+          <TextField
+            value={item.value}
+            onChange={(e) => handleChange(item.id, e.target.value)}
+            label={item.key}
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+          />
+        );
+      }
+      return (
+        <TextField
+          value={item.value}
+          onChange={(e) => handleChange(item.id, e.target.value)}
+          label={item.key}
+          fullWidth
+          variant="outlined"
+          margin="normal"
+        />
+      );
+    }
+    return null;
+  };
+  console.log('Selected Locale:', selectedLocale);
+  console.log('Available Options:', localeOptions);
+
+  // Separate fields based on type (single-line, multi-line, switch)
+  const singleLineFields = sortedFormData.filter(
+    (item) => typeof item.value === 'string' || typeof item.value === 'number'
   );
-}
+  const multiLineFields = sortedFormData.filter(
+    (item) => typeof item.value === 'string' && item.value.toString().length > 20
+  );
+  const switchFields = sortedFormData.filter((item) => typeof item.value === 'boolean');
+
+  return (
+    <Container maxWidth="xl">
+      <Paper sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 3,
+          }}
+        >
+          <Typography variant="h5" component="h1" color="primary">
+            App Settings
+          </Typography>
+          <FormControl sx={{ minWidth: 250, mb: 4 }}>
+            <InputLabel>Language</InputLabel>
+            <Select value={selectedLocale} onChange={handleLocaleChange}>
+              {localeOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        <form>
+          {/* Render single-line fields */}
+          <Grid container spacing={2}>
+            {singleLineFields.map((item, index) => (
+              <Grid item xs={6} key={item.id}>
+                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Render multi-line fields */}
+          <Grid container spacing={2}>
+            {multiLineFields.map((item, index) => (
+              <Grid item xs={6} key={item.id}>
+                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Render switch fields */}
+          <Grid container spacing={2}>
+            {switchFields.map((item, index) => (
+              <Grid item xs={6} key={item.id}>
+                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)} </Box>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Save button */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleSave}
+              sx={{
+                padding: '10px 20px',
+                fontSize: '16px',
+                borderRadius: 2,
+                boxShadow: 2,
+              }}
+            >
+              Save
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Container>
+  );
+};
+
+export default EditableForm;
