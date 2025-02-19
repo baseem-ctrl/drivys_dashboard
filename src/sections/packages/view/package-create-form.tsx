@@ -28,7 +28,15 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip, Typography, IconButton } from '@mui/material';
+import {
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+  IconButton,
+  FormControlLabel,
+  Switch,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
@@ -504,15 +512,22 @@ export default function PackageCreateForm({
                 Add City
               </Button>
             </Box>
-            <Grid item xs={3}>
-              <RHFCheckbox name="is_published" label="Publish" />
+            <Grid item xs={12} mt={1}>
+              <FormControlLabel control={<Switch name="is_published" />} label="Publish" />
             </Grid>
-            <Grid item xs={4}>
-              <RHFCheckbox name="is_pickup_fee_included" label="Pickup Fee Included" />
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Switch name="is_pickup_fee_included" />}
+                label="Pickup Fee Included"
+              />
             </Grid>
-            <Grid item xs={5}>
-              <RHFCheckbox name="is_certificate_included" label="Certificate Fee Included" />
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Switch name="is_certificate_included" />}
+                label="Certificate Fee Included"
+              />
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
                 <Typography variant="subtitle2">Session inclusions</Typography>
