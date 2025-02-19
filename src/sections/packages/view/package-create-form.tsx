@@ -84,6 +84,18 @@ export default function PackageCreateForm({
     search: searchValueCity,
     is_published: 1,
   });
+  const [formDataState, setFormData] = useState({
+    is_published: false,
+    is_pickup_fee_included: false,
+    is_certificate_included: false,
+  });
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [event.target.name]: event.target.checked,
+    }));
+  };
+
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
@@ -231,12 +243,13 @@ export default function PackageCreateForm({
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
+    console.log('data', data);
     saveCurrentLocaleTranslation();
     const formData = new FormData();
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
-    formData.append('is_published', data.is_published ? 1 : 0);
-    formData.append('is_pickup_fee_included', data.is_pickup_fee_included ? 1 : 0);
-    formData.append('is_certificate_included', data.is_certificate_included ? 1 : 0);
+    formData.append('is_published', formDataState.is_published ? 1 : 0);
+    formData.append('is_pickup_fee_included', formDataState.is_pickup_fee_included ? 1 : 0);
+    formData.append('is_certificate_included', formDataState.is_certificate_included ? 1 : 0);
 
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
@@ -512,18 +525,40 @@ export default function PackageCreateForm({
                 Add City
               </Button>
             </Box>
+
             <Grid item xs={12} mt={1}>
-              <FormControlLabel control={<Switch name="is_published" />} label="Publish" />
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_published"
+                    checked={formDataState.is_published}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Publish"
+              />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Switch name="is_pickup_fee_included" />}
+                control={
+                  <Switch
+                    name="is_pickup_fee_included"
+                    checked={formDataState.is_pickup_fee_included}
+                    onChange={handleSwitchChange}
+                  />
+                }
                 label="Pickup Fee Included"
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Switch name="is_certificate_included" />}
+                control={
+                  <Switch
+                    name="is_certificate_included"
+                    checked={formDataState.is_certificate_included}
+                    onChange={handleSwitchChange}
+                  />
+                }
                 label="Certificate Fee Included"
               />
             </Grid>
