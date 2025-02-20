@@ -15,7 +15,7 @@ import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
-export default function CertificateRow({ row, reload }) {
+export default function CertificateRow({ row, reload, path }) {
   const { city, comments, gear, request_date, status, trainer, txn, user, vehicle_type = [] } = row;
   const router = useRouter();
   const popover = usePopover();
@@ -141,22 +141,27 @@ export default function CertificateRow({ row, reload }) {
         </TableCell>
 
         <TableCell>{comments || 'No Comments'}</TableCell>
-        <TableCell align="right">
-          {/* Disable the "Update Status" button if status is "approved" */}
-          {status !== 'APPROVED' ? (
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          ) : (
-            <Tooltip title="Status is approved. Cannot update." arrow>
-              <span>
-                <IconButton color="default" disabled>
-                  <Iconify icon="eva:more-vertical-fill" />
-                </IconButton>
-              </span>
-            </Tooltip>
-          )}
-        </TableCell>
+
+        {path !== 'approved-certificate' ? (
+          <TableCell align="right">
+            {/* Disable the "Update Status" button if status is "approved" */}
+            {status !== 'APPROVED' ? (
+              <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+                <Iconify icon="eva:more-vertical-fill" />
+              </IconButton>
+            ) : (
+              <Tooltip title="Status is approved. Cannot update." arrow>
+                <span>
+                  <IconButton color="default" disabled>
+                    <Iconify icon="eva:more-vertical-fill" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+          </TableCell>
+        ) : (
+          <TableCell></TableCell>
+        )}
       </TableRow>
 
       <CertificateStatusUpdateForm

@@ -25,6 +25,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import { useGetAllCertificateRequests } from 'src/api/certificate';
+import { useLocation } from 'react-router-dom';
 
 // types
 
@@ -56,6 +57,9 @@ const TABLE_HEAD = [
 export default function CertificateListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
+  const location = useLocation();
+  const path = location.pathname.split('/').pop();
+  console.log('path', path);
   const confirm = useBoolean();
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
@@ -66,7 +70,13 @@ export default function CertificateListView() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { certificateRequests, certificateLoading, totalpages, revalidateCertificateRequests } =
-    useGetAllCertificateRequests(table.page, table.rowsPerPage, searchQuery);
+    useGetAllCertificateRequests(
+      table.page,
+      table.rowsPerPage,
+      searchQuery,
+      path === 'approved-certificate' ? 'APPROVED' : 'PENDING'
+    );
+
   const { language } = useGetAllLanguage(0, 1000);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
@@ -153,8 +163,6 @@ export default function CertificateListView() {
       </Stack>
     </Stack>
   );
-  const approvedRequests = tableData.filter((row) => row.status === 'APPROVED');
-  const otherRequests = tableData.filter((row) => row.status !== 'APPROVED');
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -162,7 +170,7 @@ export default function CertificateListView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Certificate',
+            name: path === 'awaiting-certificate' ? 'Awaiting Certificate' : 'Approved Certificate',
             href: paths.dashboard.school.certificate,
             onClick: (event) => {
               setViewMode('table');
@@ -212,20 +220,13 @@ export default function CertificateListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {otherRequests.length > 0 ? (
+                  {tableData.length > 0 ? (
                     <>
-                      <TableRow>
-                        <TableCell
-                          colSpan={TABLE_HEAD.length}
-                          sx={{ fontWeight: 'bold', color: 'primary.main' }}
-                        >
-                          AWAITING APPROVAL
-                        </TableCell>
-                      </TableRow>
-                      {otherRequests.map((row) => (
+                      {tableData.map((row) => (
                         <CertificateRow
                           key={row.id}
                           row={row}
+                          path={path}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
                           reload={revalidateCertificateRequests}
@@ -238,38 +239,7 @@ export default function CertificateListView() {
                         colSpan={TABLE_HEAD.length}
                         sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
                       >
-                        No requests awaiting approval at the moment.
-                      </TableCell>
-                    </TableRow>
-                  )}
-
-                  {approvedRequests.length > 0 ? (
-                    <>
-                      <TableRow>
-                        <TableCell
-                          colSpan={TABLE_HEAD.length}
-                          sx={{ fontWeight: 'bold', color: 'primary.main' }}
-                        >
-                          GENERATED CERTIFICATES
-                        </TableCell>
-                      </TableRow>
-                      {approvedRequests.map((row) => (
-                        <CertificateRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateCertificateRequests}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={TABLE_HEAD.length}
-                        sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
-                      >
-                        No certificates have been generated yet
+                        Nothing to show
                       </TableCell>
                     </TableRow>
                   )}
