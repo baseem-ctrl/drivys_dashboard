@@ -143,11 +143,12 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const bookingTableCells = [
-    { label: 'Booking ID', width: '150px' },
-    { label: 'Booking Revenue Amount', width: '240px' },
-    { label: 'Trainer Payout', width: '250px' },
-    { label: 'Date', width: '250px' },
-    { label: 'Payment Method', width: '250px' },
+    { label: 'Booking ID', minWidth: '50px' },
+    { label: 'Booking Revenue Amount', minWidth: '240px' },
+    { label: 'Sessions Completed', minWidth: '140px' },
+    { label: 'Trainer Payout', minWidth: '150px' },
+    { label: 'Date', minWidth: '250px' },
+    { label: 'Payment Method', minWidth: '150px' },
   ];
 
   const payoutHistoryCells = [
@@ -366,6 +367,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                       {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
                       {renderCell(item?.transaction_details[0]?.currency)}
                     </TableCell>
+                    <TableCell>{renderCell(item?.sessions?.length || '0')} </TableCell>
                     <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
                     <TableCell>
                       <Chip
@@ -389,7 +391,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                   </TableRow>
 
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ padding: 0 }}>
+                    <TableCell colSpan={6} sx={{ padding: 0 }}>
                       <Collapse in={expandedRow === item?.booking_id} timeout="auto" unmountOnExit>
                         <Typography
                           variant="body1"
@@ -399,14 +401,13 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                           Session Details:
                         </Typography>
                         <Box sx={{ width: '100%', overflowX: 'auto' }}>
-                          {' '}
-                          <Table size="small">
+                          <Table sx={{ width: '100%' }}>
                             <TableHead>
                               <TableRow>
                                 <TableCell sx={{ width: '250px' }}>Start Time</TableCell>
                                 <TableCell sx={{ width: '250px' }}>End Time</TableCell>
-                                <TableCell sx={{ width: '120px' }}>Outstanding</TableCell>
-                                <TableCell sx={{ width: '130px' }}>Drivys Payout</TableCell>
+                                <TableCell sx={{ width: '220px' }}>Outstanding</TableCell>
+                                <TableCell sx={{ width: '230px' }}>Drivys Payout</TableCell>
                                 <TableCell sx={{ width: '120px' }}>Revenue</TableCell>
                                 <TableCell sx={{ width: '130px' }}>School Payout</TableCell>
                                 <TableCell sx={{ width: '130px' }}>Trainer Payout</TableCell>
