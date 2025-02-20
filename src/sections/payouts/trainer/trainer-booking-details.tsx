@@ -27,6 +27,7 @@ import {
   Tooltip,
   useMediaQuery,
   Divider,
+  Collapse,
 } from '@mui/material';
 import {
   useGetPayoutByBooking,
@@ -43,6 +44,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useGetUserDetails } from 'src/api/users';
 import PayoutCreateForm from '../payout-create-form';
 import { useLocation } from 'react-router';
+import { useGetSessionStatusEnum } from 'src/api/enum';
 
 export const BookingDetailsTable: React.FC<{}> = () => {
   const settings = useSettingsContext();
@@ -66,8 +68,9 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     defaultOrderBy: 'processed_at',
     defaultOrder: 'desc',
   });
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState('PAID');
   const [tableData, setTableData] = useState();
+  const [expandedRow, setExpandedRow] = useState(null);
 
   const {
     payoutsList,
@@ -94,9 +97,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   } = useGetPayoutByBooking({
     page: bookingsTable.page + 1,
     limit: bookingsTable.rowsPerPage,
-    is_paid: activeTab,
+    session_payout_category: activeTab,
     trainer_id: id,
   });
+  const { sessionStatusEnum, sessionStatusLoading } = useGetSessionStatusEnum();
   const { revalidatePayouts } = useGetTrainerPayouts();
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const { payoutHistoryList, totalPages: historyTotalPages } = useGetPayoutHistory({
@@ -104,6 +108,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     limit: historyTable.rowsPerPage,
     trainer_id: id,
   });
+  const tabLabels = ['PAID', 'UNPAID', 'PARTIAL_PAID'];
 
   useEffect(() => {
     if (payoutByBookingList?.length) {
@@ -112,8 +117,19 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       setTableData([]);
     }
   }, [payoutByBookingList]);
+
+  const handleRowClick = (bookingId) => {
+    setExpandedRow(expandedRow === bookingId ? null : bookingId);
+  };
   const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+    setActiveTab(tabLabels[newValue]);
+  };
+
+  const statusColorMap = {
+    0: 'warning', // PENDING
+    1: 'info', // CONFIRMED
+    2: 'error', // CANCELLED
+    3: 'success', // COMPLETED
   };
   const renderCell = (value: any) => {
     return value === 0 ? value : value || 'N/A';
@@ -127,11 +143,12 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const bookingTableCells = [
-    { label: 'Booking ID', width: '150px' },
-    { label: 'Booking Revenue Amount', width: '240px' },
-    { label: 'Trainer Payout', width: '250px' },
-    { label: 'Date', width: '250px' },
-    { label: 'Payment Method', width: '250px' },
+    { label: 'Booking ID', minWidth: '50px' },
+    { label: 'Booking Revenue Amount', minWidth: '240px' },
+    { label: 'Sessions Completed', minWidth: '140px' },
+    { label: 'Trainer Payout', minWidth: '150px' },
+    { label: 'Date', minWidth: '250px' },
+    { label: 'Payment Method', minWidth: '150px' },
   ];
 
   const payoutHistoryCells = [
@@ -306,9 +323,14 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       />
       <PayoutSummary />
 
-      <Tabs value={activeTab} onChange={handleTabChange} aria-label="payout tabs">
-        <Tab label="Unpaid Bookings" />
-        <Tab label="Paid Bookings" />
+      <Tabs
+        value={tabLabels.indexOf(activeTab)}
+        onChange={handleTabChange}
+        aria-label="payout tabs"
+      >
+        {tabLabels.map((label) => (
+          <Tab key={label} label={label} />
+        ))}
       </Tabs>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table stickyHeader>
@@ -330,83 +352,131 @@ export const BookingDetailsTable: React.FC<{}> = () => {
               </TableRow>
             ) : (
               tableData?.map((item, index) => (
-                <TableRow key={index}>
-                  {activeTab === 0 ? (
-                    <>
-                      <TableCell
-                        sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-                        onClick={() => handleBookingClick(item?.booking_id)}
-                      >
-                        {renderCell(item?.booking_id)}
-                      </TableCell>
-                      <TableCell>
-                        {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
-                        {renderCell(item?.transaction_details[0]?.currency)}
-                      </TableCell>
-                      <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
-                      <TableCell>
-                        {' '}
-                        <Chip
-                          icon={<AccessTimeIcon fontSize="small" />}
-                          label={moment(item?.transaction_details[0]?.date).format(
-                            'MMM DD, YYYY hh:mm A'
-                          )}
-                          size="small"
-                          color="success"
-                          variant="soft"
-                        />
-                      </TableCell>
+                <React.Fragment key={index}>
+                  <TableRow
+                    onClick={() => handleRowClick(item?.booking_id)}
+                    sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                  >
+                    <TableCell
+                      sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                      onClick={() => handleBookingClick(item?.booking_id)}
+                    >
+                      {renderCell(item?.booking_id)}
+                    </TableCell>
+                    <TableCell>
+                      {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
+                      {renderCell(item?.transaction_details[0]?.currency)}
+                    </TableCell>
+                    <TableCell>{renderCell(item?.sessions?.length || '0')} </TableCell>
+                    <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
+                    <TableCell>
+                      <Chip
+                        icon={<AccessTimeIcon fontSize="small" />}
+                        label={moment(item?.transaction_details[0]?.date).format(
+                          'MMM DD, YYYY hh:mm A'
+                        )}
+                        size="small"
+                        sx={{ color: '#008B8B' }}
+                        variant="soft"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={item?.transaction_details[0]?.payment_method ?? 'N/A'}
+                        variant="soft"
+                        color="warning"
+                        sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
+                      />
+                    </TableCell>
+                  </TableRow>
 
-                      <TableCell>
-                        <Chip
-                          label={item?.transaction_details[0]?.payment_method ?? 'N/A'}
-                          variant="soft"
-                          color="warning"
-                          sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
-                        />
+                  <TableRow>
+                    <TableCell colSpan={6} sx={{ padding: 0 }}>
+                      <Collapse in={expandedRow === item?.booking_id} timeout="auto" unmountOnExit>
+                        <Typography
+                          variant="body1"
+                          color="primary"
+                          sx={{ fontWeight: 'bold', fontSize: '15px', px: 2, py: 1, mt: 3, mb: 1 }}
+                        >
+                          Session Details:
+                        </Typography>
+                        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+                          <Table sx={{ width: '100%' }}>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={{ width: '250px' }}>Start Time</TableCell>
+                                <TableCell sx={{ width: '250px' }}>End Time</TableCell>
+                                <TableCell sx={{ width: '220px' }}>Outstanding</TableCell>
+                                <TableCell sx={{ width: '230px' }}>Drivys Payout</TableCell>
+                                <TableCell sx={{ width: '120px' }}>Revenue</TableCell>
+                                <TableCell sx={{ width: '130px' }}>School Payout</TableCell>
+                                <TableCell sx={{ width: '130px' }}>Trainer Payout</TableCell>
+                                <TableCell sx={{ width: '140px' }}>Transferred Amount</TableCell>
+                                <TableCell sx={{ width: '160px' }}>Session Status</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {sessionStatusLoading ? (
+                                <TableRow>
+                                  <TableCell colSpan={9} sx={{ textAlign: 'center' }}>
+                                    Loading...
+                                  </TableCell>
+                                </TableRow>
+                              ) : item?.sessions?.length > 0 ? (
+                                item.sessions.map((session, sessionIndex) => {
+                                  console.log(`Session ${sessionIndex}:`, session);
+                                  console.log(`Session Status Enum:`, sessionStatusEnum);
 
-                        {/* {renderCell(item?.transaction_details[0]?.payment_method)} */}
-                      </TableCell>
-                    </>
-                  ) : (
-                    <>
-                      <TableCell
-                        sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-                        onClick={() => handleBookingClick(item?.booking_id)}
-                      >
-                        {renderCell(item?.booking_id)}
-                      </TableCell>
-                      <TableCell>
-                        {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
-                        {renderCell(item?.transaction_details[0]?.currency)}
-                      </TableCell>
-                      <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
-                      <TableCell>
-                        {' '}
-                        <Chip
-                          icon={<AccessTimeIcon fontSize="small" />}
-                          label={moment(item?.transaction_details[0]?.date).format(
-                            'MMM DD, YYYY hh:mm A'
-                          )}
-                          size="small"
-                          color="success"
-                          variant="soft"
-                        />
-                      </TableCell>
+                                  const statusLabel =
+                                    sessionStatusEnum.find(
+                                      (status) => status.value === session.session_status
+                                    )?.name || 'Unknown';
 
-                      <TableCell>
-                        <Chip
-                          label={item?.transaction_details[0]?.payment_method ?? 'N/A'}
-                          variant="soft"
-                          color="warning"
-                          sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
-                        />
+                                  console.log(
+                                    `Mapped Status Label for session ${sessionIndex}:`,
+                                    statusLabel
+                                  );
 
-                        {/* {renderCell(item?.transaction_details[0]?.payment_method)} */}
-                      </TableCell>
-                    </>
-                  )}
-                </TableRow>
+                                  return (
+                                    <TableRow key={sessionIndex}>
+                                      <TableCell>
+                                        {moment(session.start_time).format('MM/DD/YY HH:mm')}
+                                      </TableCell>
+                                      <TableCell>
+                                        {moment(session.end_time).format('MM/DD/YY HH:mm')}
+                                      </TableCell>
+                                      <TableCell>{session.outstanding}</TableCell>
+                                      <TableCell>{session.drivys_payout}</TableCell>
+                                      <TableCell>{session.revenue}</TableCell>
+                                      <TableCell>{session.school_payout}</TableCell>
+                                      <TableCell>{session.trainer_payout}</TableCell>
+                                      <TableCell>{session.transferred_amount}</TableCell>
+                                      <TableCell>
+                                        <Chip
+                                          label={statusLabel}
+                                          color={
+                                            statusColorMap[session.session_status] || 'default'
+                                          }
+                                          variant="soft"
+                                        />
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                })
+                              ) : (
+                                <TableRow>
+                                  <TableCell colSpan={9} sx={{ textAlign: 'center' }}>
+                                    No sessions available
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               ))
             )}
           </TableBody>

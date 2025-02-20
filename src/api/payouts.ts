@@ -256,20 +256,25 @@ export function useGetPayoutHistory({
 
 // Function to fetch the booking by payment status
 export function useGetPayoutByBooking({
-  is_paid,
   limit,
   page,
   trainer_id,
-}: { is_paid?: 0 | 1; limit?: number; page?: number } = {}) {
+  session_payout_category,
+}: {
+  limit?: number;
+  page?: number;
+  trainer_id?: string;
+  session_payout_category?: string;
+} = {}) {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
-    if (is_paid !== undefined) params.is_paid = is_paid;
     if (limit) params.limit = limit;
     if (page) params.page = page;
     if (trainer_id) params.trainer_id = trainer_id;
+    if (session_payout_category) params.session_payout_category = session_payout_category;
 
     return params;
-  }, [is_paid, limit, page, trainer_id]);
+  }, [limit, page, trainer_id, session_payout_category]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.getPayoutByBooking}?${new URLSearchParams(queryParams)}`,
