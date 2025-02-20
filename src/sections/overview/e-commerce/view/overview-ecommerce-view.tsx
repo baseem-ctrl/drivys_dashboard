@@ -754,7 +754,7 @@ export default function OverviewEcommerceView() {
                 />
               </Grid>
             )}
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid item xs={12} md={12} lg={12}>
             {' '}
             <AnalyticsConversionRates
               title="Student Categories and Preferences"
@@ -781,31 +781,7 @@ export default function OverviewEcommerceView() {
               data={formattedSessionData}
             />
           </Grid> */}
-          <Grid xs={12} md={6} lg={6}>
-            <EcommerceYearlySales
-              title="Yearly Revenue"
-              revenue={revenue}
-              revenueLoading={revenueLoading}
-              revalidateAnalytics={revalidateAnalytics}
-              // subheader="(+43%) than last year"
-              chart={{
-                categories: [
-                  'Jan',
-                  'Feb',
-                  'Mar',
-                  'Apr',
-                  'May',
-                  'Jun',
-                  'Jul',
-                  'Aug',
-                  'Sep',
-                  'Oct',
-                  'Nov',
-                  'Dec',
-                ],
-              }}
-            />
-          </Grid>
+
           <Grid xs={12} md={6} lg={6}>
             {' '}
             <RevenueByPackagePieChart
@@ -843,6 +819,31 @@ export default function OverviewEcommerceView() {
           </Grid> */}
           <Grid xs={12} md={6} lg={4}>
             <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
+          </Grid>
+          <Grid xs={12} md={6} lg={12}>
+            <EcommerceYearlySales
+              title="Yearly Revenue"
+              revenue={revenue}
+              revenueLoading={revenueLoading}
+              revalidateAnalytics={revalidateAnalytics}
+              // subheader="(+43%) than last year"
+              chart={{
+                categories: [
+                  'Jan',
+                  'Feb',
+                  'Mar',
+                  'Apr',
+                  'May',
+                  'Jun',
+                  'Jul',
+                  'Aug',
+                  'Sep',
+                  'Oct',
+                  'Nov',
+                  'Dec',
+                ],
+              }}
+            />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
             <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
