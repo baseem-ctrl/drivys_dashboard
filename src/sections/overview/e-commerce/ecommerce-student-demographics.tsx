@@ -33,7 +33,7 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
 
   const chartOptions = useChart({
     colors: chartColors,
-    stroke: { width: 2, colors: ['transparent'] },
+    stroke: { width: 1, colors: ['transparent'] },
     legend: { show: false },
     tooltip: {
       enabled: true,
@@ -97,8 +97,8 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
     plotOptions: {
       bar: {
         horizontal: true,
-        borderRadius: 3,
-        barHeight: '80%',
+        borderRadius: 4,
+        barHeight: '60%',
 
         dataLabels: { position: 'center' },
       },
@@ -120,9 +120,9 @@ export function AnalyticsConversionRates({ title, subheader, chart, sx, ...other
         slotProps={{ loading: { p: 2.5 } }}
         sx={{
           pl: 2.1,
-          py: 2.1,
+          py: 1.1,
           pr: 1.8,
-          maxHeight: '400px', // Set max height
+          maxHeight: '200px', // Set max height
           overflowY: 'auto',
         }}
       />
