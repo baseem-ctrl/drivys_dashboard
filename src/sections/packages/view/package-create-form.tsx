@@ -405,21 +405,19 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={6}>
-              {!schoolLoading && (
-                <RHFAutocompleteSearch
-                  name="vendor_id"
-                  label="Select School"
-                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                  options={schoolList?.map((item: any) => ({
-                    label: `${item.vendor_translations?.[0]?.name}${
-                      item.email ? ` - ${item.email}` : ''
-                    }`,
-                    value: item.id,
-                  }))}
-                  onInputChange={(e: any) => handleSearchChange(e)}
-                  loading={schoolLoading}
-                />
-              )}
+              <RHFAutocompleteSearch
+                name="vendor_id"
+                label="Select School"
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={schoolList?.map((item: any) => ({
+                  label: `${item.vendor_translations?.[0]?.name}${
+                    item.email ? ` - ${item.email}` : ''
+                  }`,
+                  value: item.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={schoolLoading}
+              />
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
@@ -441,22 +439,19 @@ export default function PackageCreateForm({
             {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
-              {!categoryLoading && (
-                <RHFAutocompleteSearch
-                  name="category_id"
-                  label="Select Category"
-                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                  options={category?.map((item) => ({
-                    label:
-                      item?.category_translations.find(
-                        (item) => item?.locale?.toLowerCase() === 'en'
-                      )?.name || 'Unknown',
-                    value: item?.id,
-                  }))}
-                  onInputChange={(e: any) => handleSearchChange(e)}
-                  loading={categoryLoading}
-                />
-              )}
+              <RHFAutocompleteSearch
+                name="category_id"
+                label="Select Category"
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={category?.map((item) => ({
+                  label:
+                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                      ?.name || 'Unknown',
+                  value: item?.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={categoryLoading}
+              />
             </Grid>
             <Box sx={{ mt: 2 }}>
               {(!cityLoading &&
