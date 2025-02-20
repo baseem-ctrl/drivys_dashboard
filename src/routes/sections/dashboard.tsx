@@ -38,7 +38,7 @@ import ToDoListViewVerification from 'src/sections/todo/refund/todo-list-view-ve
 import ToDoListViewRefund from 'src/sections/todo/refund/todo-list-view-refund';
 import ToDoListSchoolAdminViewVerification from 'src/sections/todo-school-admin/todo-list-view-verification';
 import ToDoListViewRefundSchoolAdmin from 'src/sections/todo-school-admin/todo-list-view-refund';
-import CertificateListView from 'src/sections/certificate/view/certificate-list-view';
+import CertificateListView from 'src/sections/awaiting-certificate/view/certificate-list-view';
 import LoyalityProgramListView from 'src/sections/loyality-program/view/loyality-program-list-view';
 import TrainerLiveLocation from 'src/sections/trainer-live-location/trainer-location';
 import TrainerPayoutPage from 'src/sections/payouts/trainer/trainer-payouts-view';
@@ -245,7 +245,9 @@ const allroutes = [
       { path: 'trainer-profile-updates', element: <TrainerProfileUpdatesListView /> },
     ],
   },
-  { path: 'certificate', element: <CertificateListView />, index: true },
+  { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
+  { path: 'approved-certificate', element: <CertificateListView /> },
+
   // { path: 'certificate-create', element: <GenerateCertificateForm /> },
   {
     path: 'system',
@@ -316,7 +318,8 @@ const schooladminRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
       { path: 'rewards', element: <RewardDetailsPage /> },
-      { path: 'certificate', element: <CertificateListView /> },
+      { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
+      { path: 'approved-certificate', element: <CertificateListView /> },
       { path: 'notifications', element: <TrainerNotificationForm /> },
       {
         path: 'trainers-list',
@@ -355,7 +358,7 @@ const schooladminRoutes = [
       { element: <ToDoListSchoolAdminViewVerification />, index: true },
       { path: 'pending-verification', element: <ToDoListSchoolAdminViewVerification /> },
       // { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
-      { path: 'certificates', element: <CertificateListView />, index: true },
+      { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
     ],
   },
   // {
