@@ -403,8 +403,8 @@ export default function OverviewEcommerceView() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
-                title="Certificates"
-                total={0}
+                title="Issued Certificates"
+                total={analytics?.issuedCertificates}
                 color="error"
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
               />
