@@ -11,7 +11,7 @@ import { fCurrency } from 'src/utils/format-number';
 //
 import Scrollbar from 'src/components/scrollbar';
 import { ColorPreview } from 'src/components/color-utils';
-import Package from '../../../../public/logo/package-icon.svg';
+import Package from '../../../../public/logo/logo_single.png';
 import { RouterLink } from 'src/routes/components';
 import { paths } from 'src/routes/paths';
 import { Container, Typography } from '@mui/material';
@@ -72,9 +72,15 @@ function ProductItem({ product }: ProductItemProps) {
     <Stack direction="row" spacing={2}>
       <Avatar
         variant="rounded"
-        alt={package_name ?? 'Un Known  '}
+        alt={package_name ?? 'Unknown'}
         src={Package}
-        sx={{ width: 48, height: 48, flexShrink: 0 }}
+        sx={{
+          width: 48,
+          height: 48,
+          flexShrink: 0,
+          bgcolor: 'transparent',
+        }}
+        imgProps={{ style: { objectFit: 'contain' } }}
       />
 
       <ListItemText
