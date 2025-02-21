@@ -88,6 +88,7 @@ export default function PackageCreateForm({
     is_published: false,
     is_pickup_fee_included: false,
     is_certificate_included: false,
+    is_cash_pay_available: false,
   });
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prevData) => ({
@@ -131,6 +132,7 @@ export default function PackageCreateForm({
     session_inclusions: Yup.string().required('Session Inclusion is required'),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
+    is_cash_pay_available: Yup.boolean(),
     is_pickup_fee_included: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
@@ -163,6 +165,7 @@ export default function PackageCreateForm({
       is_published: false,
       is_pickup_fee_included: false,
       is_certificate_included: false,
+      is_cash_pay_available: false,
       number_of_sessions: '',
       category_id: '',
       vendor_id: '',
@@ -250,6 +253,8 @@ export default function PackageCreateForm({
     formData.append('is_published', formDataState.is_published ? 1 : 0);
     formData.append('is_pickup_fee_included', formDataState.is_pickup_fee_included ? 1 : 0);
     formData.append('is_certificate_included', formDataState.is_certificate_included ? 1 : 0);
+
+    formData.append('is_cash_pay_available', formDataState.is_cash_pay_available ? 1 : 0);
 
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
@@ -557,7 +562,18 @@ export default function PackageCreateForm({
                 label="Certificate Fee Included"
               />
             </Grid>
-
+            <Grid item xs={12} mt={1}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_cash_pay_available"
+                    checked={formDataState.is_cash_pay_available}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Pay By Cash"
+              />
+            </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
                 <Typography variant="subtitle2">Session inclusions</Typography>

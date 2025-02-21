@@ -128,6 +128,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     status: Yup.string(),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
+    is_cash_pay_available: Yup.boolean(),
+
     is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
@@ -140,6 +142,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       number_of_sessions: details?.number_of_sessions || '',
       is_published: !!details?.is_published,
       is_certificate_included: !!details?.is_certificate_included,
+      is_cash_pay_available: !!details?.is_cash_pay_available,
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
       vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
         ?.vendor_translations[0]?.name,
@@ -277,6 +280,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
         is_certificate_included: data?.is_certificate_included ? '1' : '0',
+        is_cash_pay_available: data?.is_cash_pay_available ? '1' : '0',
         is_pickup_fee_included: data?.is_pickup_fee_included ? '1' : '0',
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
@@ -286,6 +290,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       // Append fields to FormData
       formData.append('is_published', payload.is_published);
       formData.append('is_certificate_included', payload.is_certificate_included);
+      formData.append('is_cash_pay_available', payload.is_cash_pay_available);
+
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
 
       formData.append('number_of_sessions', payload.number_of_sessions);
@@ -549,6 +555,16 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
               {
+                label: 'Is Pay By Cash Available',
+                value:
+                  details?.is_cash_pay_available === true ? (
+                    <Iconify color="green" icon="bi:check-square-fill" />
+                  ) : (
+                    <Iconify color="red" icon="bi:x-square-fill" />
+                  ),
+              },
+              //
+              {
                 label: 'Is Pickup Fee Included',
                 value:
                   details?.is_pickup_fee_included === true ? (
@@ -643,7 +659,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       ),
                     }}
                   />
-
                   <RHFAutocompleteSearch
                     name="vendor_id"
                     label="Select School"
@@ -676,6 +691,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_certificate_included" label="Is Certificate fee included" />
                   </Stack>
+                  <Stack direction="row" alignItems="center">
+                    <RHFSwitch name="is_cash_pay_available" label="Is Pay by Cash Available" />
+                  </Stack>
+
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_pickup_fee_included" label="Is Pickup fee included" />
                   </Stack>
