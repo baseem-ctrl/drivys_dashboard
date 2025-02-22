@@ -28,7 +28,15 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
-import { InputAdornment, TextField, Tooltip, Typography, IconButton } from '@mui/material';
+import {
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+  IconButton,
+  FormControlLabel,
+  Switch,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
@@ -76,6 +84,19 @@ export default function PackageCreateForm({
     search: searchValueCity,
     is_published: 1,
   });
+  const [formDataState, setFormData] = useState({
+    is_published: false,
+    is_pickup_fee_included: false,
+    is_certificate_included: false,
+    is_cash_pay_available: false,
+  });
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [event.target.name]: event.target.checked,
+    }));
+  };
+
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
@@ -111,6 +132,7 @@ export default function PackageCreateForm({
     session_inclusions: Yup.string().required('Session Inclusion is required'),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
+    is_cash_pay_available: Yup.boolean(),
     is_pickup_fee_included: Yup.boolean(),
     number_of_sessions: Yup.number().test(
       'is-even',
@@ -143,6 +165,7 @@ export default function PackageCreateForm({
       is_published: false,
       is_pickup_fee_included: false,
       is_certificate_included: false,
+      is_cash_pay_available: false,
       number_of_sessions: '',
       category_id: '',
       vendor_id: '',
@@ -223,12 +246,15 @@ export default function PackageCreateForm({
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
+    console.log('data', data);
     saveCurrentLocaleTranslation();
     const formData = new FormData();
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
-    formData.append('is_published', data.is_published ? 1 : 0);
-    formData.append('is_pickup_fee_included', data.is_pickup_fee_included ? 1 : 0);
-    formData.append('is_certificate_included', data.is_certificate_included ? 1 : 0);
+    formData.append('is_published', formDataState.is_published ? 1 : 0);
+    formData.append('is_pickup_fee_included', formDataState.is_pickup_fee_included ? 1 : 0);
+    formData.append('is_certificate_included', formDataState.is_certificate_included ? 1 : 0);
+
+    formData.append('is_cash_pay_available', formDataState.is_cash_pay_available ? 1 : 0);
 
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
@@ -384,21 +410,19 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={6}>
-              {!schoolLoading && (
-                <RHFAutocompleteSearch
-                  name="vendor_id"
-                  label="Select School"
-                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                  options={schoolList?.map((item: any) => ({
-                    label: `${item.vendor_translations?.[0]?.name}${
-                      item.email ? ` - ${item.email}` : ''
-                    }`,
-                    value: item.id,
-                  }))}
-                  onInputChange={(e: any) => handleSearchChange(e)}
-                  loading={schoolLoading}
-                />
-              )}
+              <RHFAutocompleteSearch
+                name="vendor_id"
+                label="Select School"
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={schoolList?.map((item: any) => ({
+                  label: `${item.vendor_translations?.[0]?.name}${
+                    item.email ? ` - ${item.email}` : ''
+                  }`,
+                  value: item.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={schoolLoading}
+              />
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
@@ -420,22 +444,19 @@ export default function PackageCreateForm({
             {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
-              {!categoryLoading && (
-                <RHFAutocompleteSearch
-                  name="category_id"
-                  label="Select Category"
-                  // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                  options={category?.map((item) => ({
-                    label:
-                      item?.category_translations.find(
-                        (item) => item?.locale?.toLowerCase() === 'en'
-                      )?.name || 'Unknown',
-                    value: item?.id,
-                  }))}
-                  onInputChange={(e: any) => handleSearchChange(e)}
-                  loading={categoryLoading}
-                />
-              )}
+              <RHFAutocompleteSearch
+                name="category_id"
+                label="Select Category"
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={category?.map((item) => ({
+                  label:
+                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                      ?.name || 'Unknown',
+                  value: item?.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={categoryLoading}
+              />
             </Grid>
             <Box sx={{ mt: 2 }}>
               {(!cityLoading &&
@@ -504,14 +525,54 @@ export default function PackageCreateForm({
                 Add City
               </Button>
             </Box>
-            <Grid item xs={3}>
-              <RHFCheckbox name="is_published" label="Publish" />
+
+            <Grid item xs={12} mt={1}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_published"
+                    checked={formDataState.is_published}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Publish"
+              />
             </Grid>
-            <Grid item xs={4}>
-              <RHFCheckbox name="is_pickup_fee_included" label="Pickup Fee Included" />
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_pickup_fee_included"
+                    checked={formDataState.is_pickup_fee_included}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Pickup Fee Included"
+              />
             </Grid>
-            <Grid item xs={5}>
-              <RHFCheckbox name="is_certificate_included" label="Certificate Fee Included" />
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_certificate_included"
+                    checked={formDataState.is_certificate_included}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Certificate Fee Included"
+              />
+            </Grid>
+            <Grid item xs={12} mt={1}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="is_cash_pay_available"
+                    checked={formDataState.is_cash_pay_available}
+                    onChange={handleSwitchChange}
+                  />
+                }
+                label="Pay By Cash"
+              />
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>

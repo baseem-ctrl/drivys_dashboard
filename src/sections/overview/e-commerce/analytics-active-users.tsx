@@ -44,9 +44,9 @@ interface Props extends CardProps {
 export default function AnalyticsActiveUsers({ title, subheader, chart, ...other }: Props) {
   const theme = useTheme();
 
-  const { colors, series, options } = chart;
+  const { colors = [], series = [], options = {} } = chart;
 
-  const chartSeries = series.map((i) => i.value);
+  const chartSeries = series.length > 0 ? series.map((i) => i.value) : [];
 
   const chartOptions = useChart({
     chart: {
@@ -55,7 +55,7 @@ export default function AnalyticsActiveUsers({ title, subheader, chart, ...other
       },
     },
     colors,
-    labels: series.map((i) => i.label),
+    labels: series.length > 0 ? series.map((i) => i.label) : [],
     stroke: {
       colors: [theme.palette.background.paper],
     },

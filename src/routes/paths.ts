@@ -212,6 +212,7 @@ export const paths = {
       pendingRefund: `${ROOTS.DASHBOARD}/todo/pending-refund`,
       trainerProfileUpdates: `${ROOTS.DASHBOARD}/todo/trainer-profile-updates`,
       trainerPendingRewards: `${ROOTS.DASHBOARD}/todo/trainer-pending-rewards`,
+      todoPendingCertificates: `${ROOTS.DASHBOARD}/todo/awaiting-certificate`,
     },
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
@@ -226,7 +227,8 @@ export const paths = {
       trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
       trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
       package: `${ROOTS.DASHBOARD}/school/package-list`,
-      certificate: `${ROOTS.DASHBOARD}/school/certificate`,
+      awatingCertificate: `${ROOTS.DASHBOARD}/school/awaiting-certificate`,
+      approvedCertificate: `${ROOTS.DASHBOARD}/school/approved-certificate`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,
@@ -261,7 +263,8 @@ export const paths = {
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
     },
-    certificate: `${ROOTS.DASHBOARD}/certificate`,
+    awatingCertificate: `${ROOTS.DASHBOARD}/awaiting-certificate`,
+    approvedCertificate: `${ROOTS.DASHBOARD}/approved-certificate`,
     location: `${ROOTS.DASHBOARD}/trainers-location`,
 
     // createCertificate: `${ROOTS.DASHBOARD}/certificate-create`,

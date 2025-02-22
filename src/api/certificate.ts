@@ -10,26 +10,25 @@ import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo } from 'react';
 
 // Fetch all certificate requests with pagination
-export function useGetAllCertificateRequests(page: number, limit: number, search: string) {
+export function useGetAllCertificateRequests(
+  page: number,
+  limit: number,
+  search: string,
+  status?: string
+) {
   const getTheFullUrl = () => {
     let queryPrams: Record<string, any> = {};
-    if (page) {
-      queryPrams = { ...queryPrams, page: page + 1 };
-    } else {
-      queryPrams = { ...queryPrams, page: 1 };
-    }
-    if (limit) {
-      queryPrams = { ...queryPrams, limit };
-    } else {
-      queryPrams = { ...queryPrams, limit: 10 };
-    }
-    if (search) {
-      queryPrams = { ...queryPrams, search };
-    }
+
+    queryPrams.page = page ? page + 1 : 1;
+    queryPrams.limit = limit || 10;
+    if (search) queryPrams.search = search;
+    if (status) queryPrams.status = status;
+
     return `${endpoints.certificate.list}?${new URLSearchParams(queryPrams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
   const memoizedValue = useMemo(
     () => ({
       certificateRequests: data?.data as any,

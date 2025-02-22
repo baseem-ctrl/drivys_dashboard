@@ -31,8 +31,8 @@ const containerStyle = {
 };
 
 // Default map center coordinates
-const defaultLatitude = 24.4798521;
-const defaultLongitude = 54.4562213;
+const defaultLatitude = 24.2765;
+const defaultLongitude = 54.346;
 
 interface Person {
   id: string;
@@ -87,7 +87,7 @@ const TrainerLiveLocation: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(11);
+  const [zoomLevel, setZoomLevel] = useState(8);
   const updateZoomLevel = () => {
     if (mapRef.current) {
       const zoom = mapRef.current.getZoom();

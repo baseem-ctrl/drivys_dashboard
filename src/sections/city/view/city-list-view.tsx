@@ -244,7 +244,7 @@ export default function CityListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             {
-              name: 'Emirates',
+              name: 'City',
               href: paths.dashboard.system.city,
               onClick: (event) => {
                 setViewMode('table');
@@ -261,7 +261,7 @@ export default function CityListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New Emirates
+                New City
               </Button>
             )
           }
@@ -338,7 +338,7 @@ export default function CityListView() {
       </Container>
 
       <CityCreateEditForm
-        title="Create Emirate"
+        title="Create City"
         open={createCity.value}
         onClose={createCity.onFalse}
         reload={revalidateCities}

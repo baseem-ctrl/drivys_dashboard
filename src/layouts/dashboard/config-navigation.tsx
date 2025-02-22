@@ -143,17 +143,22 @@ export function useNavData() {
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
     },
-
     {
       title: t('Certificates'),
-      path: paths.dashboard.certificate,
+      path: paths.dashboard.awatingCertificate,
       icon: ICONS.file,
-
-      // children: [
-      //   { title: t('certificates'), path: paths.dashboard.certificate },
-      //   // { title: t('Generate Certificate'), path: paths.dashboard.createCertificate },
-      // ],
+      children: [
+        {
+          title: t('Awaiting Certificates'),
+          path: paths.dashboard.awatingCertificate,
+        },
+        {
+          title: t('Approved Certificates'),
+          path: paths.dashboard.approvedCertificate,
+        },
+      ],
     },
+
     {
       title: t('Commission'),
       path: paths.dashboard.review.root,
@@ -275,7 +280,7 @@ export function useNavData() {
       icon: ICONS.language,
       children: [
         { title: t('Language'), path: paths.dashboard.system.root },
-        { title: t('Emirates'), path: paths.dashboard.system.city },
+        { title: t('City'), path: paths.dashboard.system.city },
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
         { title: t('Areas'), path: paths.dashboard.system.state },
         { title: t('Dialect'), path: paths.dashboard.system.dialect },
@@ -296,7 +301,7 @@ export function useNavData() {
       children: [
         { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
         // { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
-        { title: t('pending certificates'), path: paths.dashboard.school.certificate },
+        { title: t('pending certificates'), path: paths.dashboard.todo.todoPendingCertificates },
       ],
     },
     {
@@ -304,12 +309,19 @@ export function useNavData() {
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
     },
-
     {
       title: t('Certificates'),
-      path: paths.dashboard.school.certificate,
+      path: paths.dashboard.school.awatingCertificate,
       icon: ICONS.file,
+      children: [
+        { title: t('Awaiting Certificates'), path: paths.dashboard.school.awatingCertificate },
+        {
+          title: t('Approved Certificates'),
+          path: paths.dashboard.school.approvedCertificate,
+        },
+      ],
     },
+
     {
       title: t('trainers'),
       path: paths.dashboard.school.trainer,

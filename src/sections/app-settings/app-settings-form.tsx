@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  CircularProgress,
 } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
@@ -35,30 +36,30 @@ const EditableForm: React.FC = () => {
     totalpages,
     revalidateAppSettings,
     appSettingsError,
-  } = useGetAllAppSettings(0, 1000, selectedLocale === 'En' ? null : selectedLocale);
-  const [formData, setFormData] = useState(data);
+  } = useGetAllAppSettings(0, 1000, selectedLocale);
 
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
   }));
-  console.log('data', data);
   const handleLocaleChange = (event: SelectChangeEvent<string>) => {
     setSelectedLocale(event.target.value);
   };
+
+  const [formData, setFormData] = useState<FormField[]>([]);
+
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      setFormData([...data]);
+    }
+  }, [data]);
 
   const handleChange = (id: number, newValue: any) => {
     setFormData((prevData) =>
       prevData.map((item) => (item.id === id ? { ...item, value: newValue } : item))
     );
   };
-
-  useEffect(() => {
-    setFormData(data);
-  }, [data]);
-
   const handleSave = async () => {
-    console.log('Data saved:', formData);
     try {
       const editedField = formData.find((item) => {
         const original = data.find((d) => d.key === item.key);
@@ -104,17 +105,19 @@ const EditableForm: React.FC = () => {
   if (!appSettingsLoading) {
     sortedFormData = [
       // Numbers and short strings (≤ 20 characters)
-      ...data.filter(
+      ...formData.filter(
         (item) =>
           (typeof item.value === 'number' || typeof item.value === 'string') &&
           item.value.toString().length <= 20
       ),
 
       // Long strings (> 20 characters)
-      ...data.filter((item) => typeof item.value === 'string' && item.value.toString().length > 20),
+      ...formData.filter(
+        (item) => typeof item.value === 'string' && item.value.toString().length > 20
+      ),
 
       // Boolean values
-      ...data.filter((item) => typeof item.value === 'boolean'),
+      ...formData.filter((item) => typeof item.value === 'boolean'),
     ];
   }
 
@@ -160,8 +163,6 @@ const EditableForm: React.FC = () => {
     }
     return null;
   };
-  console.log('Selected Locale:', selectedLocale);
-  console.log('Available Options:', localeOptions);
 
   // Separate fields based on type (single-line, multi-line, switch)
   const singleLineFields = sortedFormData.filter(
@@ -187,8 +188,12 @@ const EditableForm: React.FC = () => {
             App Settings
           </Typography>
           <FormControl sx={{ minWidth: 250, mb: 4 }}>
-            <InputLabel>Language</InputLabel>
-            <Select value={selectedLocale} onChange={handleLocaleChange}>
+            <InputLabel>Locale</InputLabel>
+            <Select
+              value={selectedLocale}
+              onChange={handleLocaleChange}
+              InputLabelProps={{ shrink: true }}
+            >
               {localeOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
@@ -197,51 +202,59 @@ const EditableForm: React.FC = () => {
             </Select>
           </FormControl>
         </Box>
-        <form>
-          {/* Render single-line fields */}
-          <Grid container spacing={2}>
-            {singleLineFields.map((item, index) => (
-              <Grid item xs={6} key={item.id}>
-                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* Render multi-line fields */}
-          <Grid container spacing={2}>
-            {multiLineFields.map((item, index) => (
-              <Grid item xs={6} key={item.id}>
-                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* Render switch fields */}
-          <Grid container spacing={2}>
-            {switchFields.map((item, index) => (
-              <Grid item xs={6} key={item.id}>
-                <Box sx={{ marginBottom: 2 }}>{renderInputField(item)} </Box>
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* Save button */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleSave}
-              sx={{
-                padding: '10px 20px',
-                fontSize: '16px',
-                borderRadius: 2,
-                boxShadow: 2,
-              }}
-            >
-              Save
-            </Button>
+        {appSettingsLoading ? (
+          <Box
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}
+          >
+            <CircularProgress />
           </Box>
-        </form>
+        ) : (
+          <form>
+            {/* Render single-line fields */}
+            <Grid container spacing={2}>
+              {singleLineFields.map((item, index) => (
+                <Grid item xs={6} key={item.id}>
+                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Render multi-line fields */}
+            <Grid container spacing={2}>
+              {multiLineFields.map((item, index) => (
+                <Grid item xs={6} key={item.id}>
+                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Render switch fields */}
+            <Grid container spacing={2}>
+              {switchFields.map((item, index) => (
+                <Grid item xs={6} key={item.id}>
+                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)} </Box>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Save button */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleSave}
+                sx={{
+                  padding: '10px 20px',
+                  fontSize: '16px',
+                  borderRadius: 2,
+                  boxShadow: 2,
+                }}
+              >
+                Save
+              </Button>
+            </Box>
+          </form>
+        )}
       </Paper>
     </Container>
   );

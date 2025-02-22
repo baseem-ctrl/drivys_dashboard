@@ -36,7 +36,7 @@ export default function ReviewedTrainer({ title, subheader, feedbackList, ...oth
           sx={{
             p: 3,
             minWidth: 390,
-            height: '382px',
+            height: '408px',
             overflowY: 'auto',
           }}
         >
