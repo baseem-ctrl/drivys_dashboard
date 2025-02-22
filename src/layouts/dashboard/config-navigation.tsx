@@ -61,18 +61,18 @@ export function useNavData() {
     //TO DO list
 
     {
-      title: t('To Do'),
+      title: t('to_do'),
       path: paths.dashboard.todo.root,
       icon: ICONS.tour,
       children: [
-        { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
-        { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+        { title: t('pending_verification'), path: paths.dashboard.todo.pendingVerification },
+        { title: t('pending_refund'), path: paths.dashboard.todo.pendingRefund },
         {
-          title: t('updated trainer profile'),
+          title: t('updated_trainer_profile'),
           path: paths.dashboard.todo.trainerProfileUpdates,
         },
         {
-          title: t('pending trainer rewards'),
+          title: t('pending_trainer_rewards'),
           path: paths.dashboard.todo.trainerPendingRewards,
         },
       ],
@@ -144,40 +144,34 @@ export function useNavData() {
       // ],
     },
     {
-      title: t('Certificates'),
+      title: t('certificates'),
       path: paths.dashboard.awatingCertificate,
       icon: ICONS.file,
       children: [
-        {
-          title: t('Awaiting Certificates'),
-          path: paths.dashboard.awatingCertificate,
-        },
-        {
-          title: t('Approved Certificates'),
-          path: paths.dashboard.approvedCertificate,
-        },
+        { title: t('awaiting_certificates'), path: paths.dashboard.awatingCertificate },
+        { title: t('approved_certificates'), path: paths.dashboard.approvedCertificate },
       ],
     },
 
     {
-      title: t('Commission'),
+      title: t('commission'),
       path: paths.dashboard.review.root,
       icon: ICONS.commission,
       children: [
-        { title: t('Trainer Commission'), path: paths.dashboard.commission.root },
+        { title: t('trainer_commission'), path: paths.dashboard.commission.root },
         {
-          title: t('Trainer Certificate Commission'),
+          title: t('trainer_certificate_commission'),
           path: paths.dashboard.commission.certificateCommissionTrainer,
         },
         {
-          title: t('Drivys Certificate Commission'),
+          title: t('drivys_certificate_commission'),
           path: paths.dashboard.commission.certificateCommissionDrivys,
         },
       ],
     },
     // HOME LISTING
     {
-      title: t('home Page listing'),
+      title: t('home_page_listing'),
       path: paths.dashboard.homelisting.root,
       icon: ICONS.kanban,
       // children: [
@@ -228,16 +222,16 @@ export function useNavData() {
 
       children: [
         { title: t('booking'), path: paths.dashboard.booking.root },
-        { title: t('Refund'), path: paths.dashboard.booking.refund },
+        { title: t('refund'), path: paths.dashboard.booking.refund },
       ],
     },
     {
-      title: t('Reviews'),
+      title: t('reviews'),
       path: paths.dashboard.review.root,
       icon: ICONS.chat,
       children: [
-        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
-        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+        { title: t('trainer_review'), path: paths.dashboard.review.trainerReview },
+        { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
 
@@ -258,8 +252,8 @@ export function useNavData() {
       path: paths.dashboard.payouts.root,
       icon: ICONS.invoice,
       children: [
-        { title: t('tariner payouts'), path: paths.dashboard.payouts.root },
-        { title: t('school payouts'), path: paths.dashboard.payouts.school },
+        { title: t('trainer_payouts'), path: paths.dashboard.payouts.root },
+        { title: t('school_payouts'), path: paths.dashboard.payouts.school },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
@@ -275,17 +269,17 @@ export function useNavData() {
 
     // SYSTEM SETTINGS
     {
-      title: t('System Settings'),
+      title: t('system_settings'),
       path: paths.dashboard.system.root,
       icon: ICONS.language,
       children: [
-        { title: t('Language'), path: paths.dashboard.system.root },
-        { title: t('City'), path: paths.dashboard.system.city },
+        { title: t('language'), path: paths.dashboard.system.root },
+        { title: t('city'), path: paths.dashboard.system.city },
         // { title: t('City Details'), path: `${paths.dashboard.system.city}/:id` },
-        { title: t('Areas'), path: paths.dashboard.system.state },
-        { title: t('Dialect'), path: paths.dashboard.system.dialect },
-        { title: t('Pickup'), path: paths.dashboard.system.pickup },
-        { title: t('App Settings'), path: paths.dashboard.system.appsettings },
+        { title: t('areas'), path: paths.dashboard.system.state },
+        { title: t('dialect'), path: paths.dashboard.system.dialect },
+        { title: t('pickup'), path: paths.dashboard.system.pickup },
+        { title: t('app_settings'), path: paths.dashboard.system.appsettings },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
@@ -295,13 +289,13 @@ export function useNavData() {
   ];
   const schooladminRoutes = [
     {
-      title: t('To Do'),
+      title: t('to_do'),
       path: paths.dashboard.todo.root,
       icon: ICONS.tour,
       children: [
-        { title: t('pending verification'), path: paths.dashboard.todo.pendingVerification },
+        { title: t('pending_verification'), path: paths.dashboard.todo.pendingVerification },
         // { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
-        { title: t('pending certificates'), path: paths.dashboard.todo.todoPendingCertificates },
+        { title: t('pending_certificates'), path: paths.dashboard.todo.todoPendingCertificates },
       ],
     },
     {
@@ -310,13 +304,13 @@ export function useNavData() {
       icon: ICONS.school,
     },
     {
-      title: t('Certificates'),
+      title: t('certificates'),
       path: paths.dashboard.school.awatingCertificate,
       icon: ICONS.file,
       children: [
-        { title: t('Awaiting Certificates'), path: paths.dashboard.school.awatingCertificate },
+        { title: t('awaiting_certificates'), path: paths.dashboard.school.awatingCertificate },
         {
-          title: t('Approved Certificates'),
+          title: t('approved_certificates'),
           path: paths.dashboard.school.approvedCertificate,
         },
       ],
@@ -327,25 +321,25 @@ export function useNavData() {
       path: paths.dashboard.school.trainer,
       icon: ICONS.user,
       children: [
-        { title: t('Trainer List'), path: paths.dashboard.school.trainer },
+        { title: t('trainer_list'), path: paths.dashboard.school.trainer },
         { title: t('rewards'), path: paths.dashboard.school.trainerRewards },
-        { title: t('notifications'), path: paths.dashboard.school.trainerNotifications },
+        { title: t('trainer_notifications'), path: paths.dashboard.school.trainerNotifications },
       ],
     },
     {
-      title: t('Commission'),
+      title: t('commission'),
       path: paths.dashboard.review.root,
       icon: ICONS.commission,
       children: [
-        { title: t('Trainer Commission'), path: paths.dashboard.commission.root },
+        { title: t('trainer_commission'), path: paths.dashboard.commission.root },
         {
-          title: t('Trainer Certificate Commission'),
+          title: t('trainer_certificate_commission'),
           path: paths.dashboard.commission.certificateCommissionTrainer,
         },
       ],
     },
     {
-      title: t('packages'),
+      title: t('package'),
       path: paths.dashboard.school.package,
       icon: ICONS.blank,
     },
@@ -355,12 +349,12 @@ export function useNavData() {
       icon: ICONS.booking,
     },
     {
-      title: t('Reviews'),
+      title: t('reviews'),
       path: paths.dashboard.review.root,
       icon: ICONS.chat,
       children: [
-        { title: t('Trainer Review'), path: paths.dashboard.review.trainerReview },
-        { title: t('Student Review'), path: paths.dashboard.review.studentReview },
+        { title: t('trainer_review'), path: paths.dashboard.review.trainerReview },
+        { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
   ];
@@ -388,7 +382,7 @@ export function useNavData() {
             icon: ICONS.analytics,
           },
           {
-            title: t('live location'),
+            title: t('live_location'),
             path: paths.dashboard.location,
             icon: ICONS.map,
           },
