@@ -156,5 +156,20 @@
   "heat_map": "الخريطة الحرارية",
   "Trainers": "المدربون",
   "dashboard": "لوحة المعلومات",
-  "trainers_live_location": "الموقع المباشر للمدربين"
+  "trainers_live_location": "الموقع المباشر للمدربين",
+  "trainer_session_subheader": "المدربون الذين أكملوا حصة تدريبية واحدة على الأقل",
+  "students_with_bookings": "الطلاب الذين لديهم حجوزات",
+  "registered_students": "الطلاب المسجلين",
+  "session_count": "عدد الحصص",
+  "current_year_revenue": "إيرادات العام الحالي",
+  "last_year_revenue": "إيرادات العام الماضي",
+  "pending_verification_requests": "طلبات التحقق المعلقة",
+  "loading_pending_requests": "جارٍ تحميل الطلبات المعلقة...",
+  "error_fetching_pending_requests": "حدث خطأ أثناء جلب الطلبات المعلقة. يرجى المحاولة مرة أخرى.",
+  "no_pending_requests": "لا توجد طلبات معلقة في الوقت الحالي.",
+  "requested_time": "الوقت المطلوب",
+  "trainer_from": "المدرب من",
+  "n_a": "غير متاح",
+  "reject": "رفض",
+  "accept": "قبول"
 }

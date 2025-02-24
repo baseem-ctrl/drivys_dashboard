@@ -169,5 +169,7 @@
   "trainer_from": "Trainer from",
   "n_a": "N/A",
   "reject": "Reject",
-  "accept": "Accept"
+  "accept": "Accept",
+  "sessions": "sessions:",
+  "total_bookings": "Total Bookings:"
 }
