@@ -349,10 +349,9 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                   <Stack
                     component={Card}
                     direction="column"
-                    key={item?.id}
                     sx={{
                       marginBottom: '16px',
-                      height: '260px',
+                      height: '310px',
                       position: 'relative',
                     }}
                   >
@@ -364,10 +363,9 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                     >
                       <Box>
                         <Typography variant="h5" color="#CF5A0D">
-                          {' '}
                           {item?.package?.package_translations
                             ? item?.package?.package_translations[0]?.name
-                            : 'NA'}{' '}
+                            : 'NA'}
                         </Typography>
                         {item?.package?.number_of_sessions} Sessions
                       </Box>
@@ -387,21 +385,20 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         backgroundColor: '#CF5A0D',
                       }}
                     />
-                    <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
+                    {/* Scrollable content box */}
+                    <Box sx={{ px: 3, pt: 3, pb: 2, maxHeight: '180px', overflowY: 'auto' }}>
                       <Box display={'flex'}>
                         <Typography variant="h6">{' AED'}</Typography>
                         <Typography variant="h4">
-                          {item?.price ? parseFloat(item?.price) : '0'}{' '}
+                          {item?.price ? parseFloat(item?.price) : '0'}
                         </Typography>
                       </Box>
 
                       <Typography sx={{ fontSize: '16px', fontWeight: '700' }}>
-                        {' '}
-                        What's included{' '}
+                        What's included
                       </Typography>
 
                       <Stack direction="row" spacing={1}>
-                        {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />{' '} */}
                         <Typography
                           component="span"
                           dangerouslySetInnerHTML={{
@@ -411,7 +408,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                           }}
                         />
                       </Stack>
-                    </Stack>
+                    </Box>
                   </Stack>
                 </Grid>
               ))}
