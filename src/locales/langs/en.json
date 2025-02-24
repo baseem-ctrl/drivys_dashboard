@@ -91,5 +91,8 @@
   "trainers": "Trainers",
   "trainer_list": "Trainer List",
   "rewards": "Rewards",
-  "trainer_notifications": "Trainer Notifications"
+  "trainer_notifications": "Trainer Notifications",
+  "dashboard": "Dashboard",
+  "trainers_live_location": "Trainers Live Location",
+  "Live_location": "Live Location"
 }
