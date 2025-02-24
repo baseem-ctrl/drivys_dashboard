@@ -34,6 +34,8 @@ import {
 } from '@mui/material';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useLocales } from 'src/locales';
+
 // _mock
 import {
   _ecommerceNewProducts,
@@ -81,6 +83,8 @@ import { useGetAllCity } from 'src/api/city';
 // ----------------------------------------------------------------------
 
 export default function OverviewEcommerceView() {
+  const { t } = useLocales();
+
   const { user } = useAuthContext();
   const settings = useSettingsContext();
 
@@ -150,8 +154,9 @@ export default function OverviewEcommerceView() {
     };
   });
 
-  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
-  const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
+  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState(t('yearly'));
+  const [sessionSeriesData, setSessionSeriesData] = useState(t('yearly'));
+
   const {
     studentInsights,
     studentInsightsError,
@@ -176,12 +181,12 @@ export default function OverviewEcommerceView() {
   const chartBookingData = {
     colors: ['#28a745', '#fd7e14', '#dc3545'],
     series: [
-      { label: 'Completed', value: analytics.completedBookingsCount },
-      { label: 'Pending', value: analytics.pendingBookingsCount },
-      { label: 'Canceled', value: analytics.canceledBookingsCount },
+      { label: t('completed'), value: analytics.completedBookingsCount },
+      { label: t('pending'), value: analytics.pendingBookingsCount },
+      { label: t('canceled'), value: analytics.canceledBookingsCount },
     ],
     options: {
-      labels: ['Completed', 'Pending', 'Canceled'],
+      labels: [t('completed'), t('pending'), t('canceled')],
     },
   };
 
@@ -222,29 +227,30 @@ export default function OverviewEcommerceView() {
     colors: ['#34C38F', '#FF7D1E'],
     series: [
       {
-        label: 'Active Trainers',
+        label: t('active_trainers'),
         value: analytics?.activeTrainers || trainerInsights?.activeTrainers || 0,
       },
       {
-        label: 'Inactive Trainers',
+        label: t('inactive_trainers'),
         value: analytics?.inactiveTrainers || trainerInsights?.inactiveTrainers || 0,
       },
     ],
     options: {
-      labels: ['Active Trainers', 'Inactive Trainers'],
+      labels: [t('active_trainers'), t('inactive_trainers')],
     },
   };
+
   const studentChartData = {
     colors: ['#FF6F61', '#6B5B95'],
-
     series: [
-      { label: 'Active Students', value: analytics.activeStudents || 0 },
-      { label: 'Inactive Students', value: analytics.inactiveStudents || 0 },
+      { label: t('active_students'), value: analytics.activeStudents || 0 },
+      { label: t('inactive_students'), value: analytics.inactiveStudents || 0 },
     ],
     options: {
-      labels: ['Active Students', 'Inactive Students'],
+      labels: [t('active_students'), t('inactive_students')],
     },
   };
+
   const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
     label: item.package_name,
     value: parseFloat(item.total_revenue),
@@ -325,11 +331,12 @@ export default function OverviewEcommerceView() {
   };
 
   const tableLabels = [
-    { id: 'school_name', label: 'School Name' },
-    { id: 'revenue', label: 'Revenue' },
-    { id: 'bookings', label: 'Bookings' },
-    { id: 'trainer_ratings', label: 'Trainer Ratings' },
+    { id: 'school_name', label: t('school_name') },
+    { id: 'revenue', label: t('revenue') },
+    { id: 'bookings', label: t('bookings') },
+    { id: 'trainer_ratings', label: t('trainer_ratings') },
   ];
+
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -370,15 +377,14 @@ export default function OverviewEcommerceView() {
                 mb: { xs: 2, md: 1 },
               }}
             >
-              Hi, Welcome back 👋
-              {/* {user?.user?.name} */}
+              {t('hi_welcome_back')} 👋
             </Typography>
           </Grid>
           <Grid container item xs={12} sm={12} md={12}>
             {' '}
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
-                title="Total Revenue"
+                title={t('total_revenue')}
                 color="success"
                 percentageChange={revenue?.earningsPercentChange}
                 total={analytics?.revenueGenerated}
@@ -387,7 +393,7 @@ export default function OverviewEcommerceView() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
-                title="Total Booking"
+                title={t('total_booking')}
                 total={analytics?.bookingsCount}
                 color="info"
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
@@ -395,7 +401,7 @@ export default function OverviewEcommerceView() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
-                title="In Progress Booking"
+                title={t('in_progress_booking')}
                 total={analytics?.pendingBookingsCount}
                 color="warning"
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
@@ -403,7 +409,7 @@ export default function OverviewEcommerceView() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <AnalyticsWidgetSummary
-                title="Issued Certificates"
+                title={t('issued_certificates')}
                 total={analytics?.issuedCertificates}
                 color="error"
                 icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
@@ -418,7 +424,7 @@ export default function OverviewEcommerceView() {
           >
             {' '}
             <Typography variant="h6" align="center" gutterBottom>
-              Analytics Filter
+              {t('analytics_filter')}
             </Typography>
             <Grid container spacing={3} justifyContent="center" alignItems="center">
               <Grid
@@ -478,7 +484,9 @@ export default function OverviewEcommerceView() {
                     onChange={(event, newValue) => {
                       handleFilterChange('city_id', newValue ? newValue.value : null);
                     }}
-                    renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+                    renderInput={(params) => (
+                      <TextField placeholder={t('select_city')} {...params} />
+                    )}
                     renderOption={(props, option) => (
                       <li {...props} key={option.value}>
                         {option.label}
@@ -522,17 +530,17 @@ export default function OverviewEcommerceView() {
                       },
                     }}
                   >
-                    Select Date
+                    {t('select_date')}
                   </Button>
                 </Grid>
 
                 <Grid>
                   <Box display="flex" justifyContent="flex-start" gap={1}>
                     <Button variant="contained" color="primary" onClick={handleApply}>
-                      Apply
+                      {t('apply')}
                     </Button>
                     <Button variant="outlined" color="primary" onClick={handleClear}>
-                      Clear
+                      {t('clear')}
                     </Button>
                   </Box>
                 </Grid>
@@ -541,7 +549,7 @@ export default function OverviewEcommerceView() {
               {/* EcommerceWidgetSummary components in the next line */}
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
-                  title="Total Trainers"
+                  title={t('total_trainers')}
                   icon="eva:person-done-outline"
                   total={analytics?.trainerCount ?? '0'}
                   bgcolor="rgba(0, 123, 255, 0.1)"
@@ -553,7 +561,7 @@ export default function OverviewEcommerceView() {
               </Grid>
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
-                  title="Total Students"
+                  title={t('total_students')}
                   icon="eva:person-fill"
                   bgcolor="rgba(40, 167, 69, 0.1)"
                   textColor="rgba(40, 167, 69, 0.9)"
@@ -570,7 +578,7 @@ export default function OverviewEcommerceView() {
                     icon="mdi:steering"
                     bgcolor="rgba(255, 193, 7, 0.1)"
                     textColor="rgba(220, 53, 69, 0.9)"
-                    title="Total School"
+                    title={t('total_school')}
                     total={analytics?.schoolCount ?? '0'}
                   />
                 </Grid>
@@ -579,7 +587,7 @@ export default function OverviewEcommerceView() {
                 <EcommerceWidgetSummary
                   bgcolor="rgba(155, 89, 182, 0.1)"
                   textColor="rgba(138, 43, 226, 0.9)"
-                  title="Confirmed Bookings"
+                  title={t('confirmed_bookings')}
                   icon="mdi:check-circle"
                   total={analytics?.confirmedBookingsCount ?? '0'}
                 />
@@ -588,7 +596,7 @@ export default function OverviewEcommerceView() {
                 <EcommerceWidgetSummary
                   bgcolor="rgba(255, 0, 0, 0.1)"
                   textColor="rgba(255, 0, 0, 0.9)"
-                  title="Failed Transactions"
+                  title={t('failed_transactions')}
                   icon="mdi:close-circle"
                   total={analytics?.failedTransactions ?? '0'}
                 />
@@ -598,7 +606,7 @@ export default function OverviewEcommerceView() {
                 <EcommerceWidgetSummary
                   bgcolor="rgba(108, 117, 125, 0.1)"
                   textColor="rgba(108, 117, 125, 0.9)"
-                  title="Cancelled Bookings"
+                  title={t('cancelled_bookings')}
                   icon="mdi:cancel-circle"
                   total={analytics?.canceledBookingsCount ?? '0'}
                 />
@@ -608,7 +616,7 @@ export default function OverviewEcommerceView() {
                 <EcommerceWidgetSummary
                   bgcolor="rgba(255, 165, 0, 0.1)"
                   textColor="rgba(255, 193, 7, 0.9)"
-                  title="Completed Bookings"
+                  title={t('completed_bookings')}
                   icon="mdi:check-circle"
                   total={analytics?.completedBookingsCount ?? '0'}
                 />
@@ -618,7 +626,7 @@ export default function OverviewEcommerceView() {
                   <EcommerceWidgetSummary
                     bgcolor="rgba(0, 204, 204, 0.1)"
                     textColor="rgba(0, 123, 255, 0.9)"
-                    title="Refund Requests"
+                    title={t('refund_requests')}
                     icon="mdi:cash-refund"
                     total={analytics?.refundReqs ?? '0'}
                   />
@@ -627,7 +635,7 @@ export default function OverviewEcommerceView() {
 
               <Grid item xs={12} md={3}>
                 <EcommerceWidgetSummary
-                  title="Pending Certificates"
+                  title={t('pending_certificates')}
                   icon="mdi:seal"
                   total={analytics?.pendingCertificates ?? '0'}
                   bgcolor="rgba(0, 123, 255, 0.1)"
@@ -639,7 +647,7 @@ export default function OverviewEcommerceView() {
                   icon="mdi:calendar-check"
                   bgcolor="rgba(255, 193, 7, 0.1)"
                   textColor="rgba(220, 53, 69, 0.9)"
-                  title="Rescheduled Booking Count"
+                  title={t('rescheduled_booking_count')}
                   total={analytics?.rescheduledBookingsCount ?? '0'}
                   percent={analytics?.rescheduledPercentage ?? '0'}
                 />
@@ -660,8 +668,8 @@ export default function OverviewEcommerceView() {
           trainerInsights.inactiveTrainers !== null ? (
             <Grid xs={12} md={6} lg={4}>
               <AnalyticsActiveUsers
-                title="Trainer Analytics"
-                subheader={`Total Trainers: ${analytics?.trainerCount || 0}`}
+                title={t('trainer_analytics')}
+                subheader={`${t('total_trainers')}: ${analytics?.trainerCount || 0}`}
                 chart={trainerChartData}
               />
             </Grid>
@@ -674,7 +682,7 @@ export default function OverviewEcommerceView() {
             >
               <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
                 <Typography variant="h6" color="textSecondary">
-                  No trainers available at the moment.
+                  {t('no_trainers_available')}{' '}
                 </Typography>
               </Box>
             </Grid>
@@ -684,14 +692,20 @@ export default function OverviewEcommerceView() {
             analytics?.trainerCount && (
               <Grid xs={12} md={6} lg={4}>
                 <EcommerceSaleByGender
-                  title="Trainers By Gender"
+                  title={t('trainers_by_gender')}
                   total={analytics?.trainerCount ?? 0}
                   chart={{
                     series: [
-                      { label: 'Mens', value: trainerInsights?.maleTrainers?.length ?? 0 },
-                      { label: 'Womens', value: trainerInsights?.femaleTrainers?.length ?? 0 },
                       {
-                        label: 'Gender Not Specified',
+                        label: t('male_trainers'),
+                        value: trainerInsights?.maleTrainers?.length ?? 0,
+                      },
+                      {
+                        label: t('female_trainers'),
+                        value: trainerInsights?.femaleTrainers?.length ?? 0,
+                      },
+                      {
+                        label: t('gender_not_specified'),
                         value:
                           Number(analytics?.trainerCount) -
                             (Number(trainerInsights?.femaleTrainers?.length) +
@@ -705,8 +719,8 @@ export default function OverviewEcommerceView() {
           {analytics?.studentCount > 0 && analytics.activeStudents ? (
             <Grid xs={12} md={6} lg={4}>
               <AnalyticsActiveUsers
-                title="Student Analytics"
-                subheader={`Total Students: ${analytics?.studentCount || 0}`}
+                title={t('student_analytics')}
+                subheader={`${t('total_students')}: ${analytics?.studentCount || 0}`}
                 chart={studentChartData}
               />
             </Grid>
@@ -719,46 +733,45 @@ export default function OverviewEcommerceView() {
             >
               <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
                 <Typography variant="h6" color="textSecondary">
-                  No students available at the moment.
+                  {t('no_students_available')}
                 </Typography>
               </Box>
             </Grid>
           )}
+
           {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
             <Grid xs={12} md={6} lg={6}>
-              {' '}
               <SchoolPerformanceDetails
-                title="School Performance"
-                subheader="Detailed performance data for schools"
+                title={t('school_performance')}
+                subheader={t('school_performance_subheader')}
                 tableLabels={tableLabels}
                 tableData={analytics?.schoolsPerformance}
               />
             </Grid>
           )}
+
           {user?.user?.user_type !== 'SCHOOL_ADMIN' &&
             studentInsights.enrollmentTrends &&
             studentInsights.enrollmentTrendsRegisteredStudents && (
               <Grid xs={12} md={6} lg={6}>
-                {' '}
                 <EnrollmentTrendsChart
-                  title="Enrollment Trends"
-                  subheader="Overview of student enrollment trends"
+                  title={t('enrollment_trends')}
+                  subheader={t('enrollment_trends_subheader')}
                   chart={enrollmentChart}
                   enrollmentTrends={studentInsights.enrollmentTrends}
                   enrollmentTrendsRegisteredStudents={
                     studentInsights.enrollmentTrendsRegisteredStudents
                   }
                   enrollmentTrendsLoading={studentInsightsLoading}
-                  // enrollmentTrendsRegisteredStudentsLoading={studentInsightsRegisteredStudentsLoading}
                   revalidateEnrollmentTrends={revalidateStudentInsights}
                 />
               </Grid>
             )}
+
           <Grid item xs={12} md={12} lg={12}>
-            {' '}
             <AnalyticsConversionRates
-              title="Student Categories and Preferences"
-              subheader="Demographics Breakdown"
+              title={t('student_categories_preferences')}
+              subheader={t('student_categories_preferences_subheader')}
               chart={{
                 categories: categories,
                 series: alignedSeries,
@@ -766,13 +779,15 @@ export default function OverviewEcommerceView() {
               }}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={6}>
             <ReviewedTrainer
-              title="Trainer Feedback"
-              subheader="Student reviews for the trainers"
+              title={t('trainer_feedback')}
+              subheader={t('trainer_feedback_subheader')}
               feedbackList={trainerInsights?.sessionFeedback}
             />
           </Grid>
+
           {/* <Grid xs={12} md={12} lg={12}>
             {' '}
             <SessionOverview
@@ -783,50 +798,54 @@ export default function OverviewEcommerceView() {
           </Grid> */}
 
           <Grid xs={12} md={6} lg={6}>
-            {' '}
             <RevenueByPackagePieChart
-              title="Revenue by Package"
-              subheader="Overview of revenue distribution by package"
+              title={t('revenue_by_package')}
+              subheader={t('revenue_by_package_subheader')}
               chart={chartConfig}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={6}>
             <PaymentMethodRevenue
-              title="Payment Methods Revenue"
-              subheader="Overview of payment method usage"
+              title={t('payment_methods_revenue')}
+              subheader={t('payment_methods_revenue_subheader')}
               chart={chartConfigRevenueByPaymentMethodData}
-              // sx={{ height: 460 }}
             />
           </Grid>
+
           <Grid xs={12} md={6} lg={6}>
-            <AnalyticsActiveUsers
-              title="Booking Analytics"
-              subheader={`Total Booking: ${analytics?.bookingsCount ?? 0}`}
-              chart={chartBookingData}
-              sx={{ height: 488 }}
-            />
+            <Grid xs={12} md={6} lg={6}>
+              <AnalyticsActiveUsers
+                title={t('booking_analytics')}
+                subheader={t('booking_analytics_subheader', {
+                  count: analytics?.bookingsCount ?? 0,
+                })}
+                chart={chartBookingData}
+                sx={{ height: 488 }}
+              />
+            </Grid>
           </Grid>
           {/* {trainerInsights?.sessionFeedback?.length > 0 && ( */}
           {/* )} */}
           <Grid xs={12} md={6} lg={8}>
             <TotalTrainersSession
-              title="Trainer Session"
-              subheader="Tariners completed at least one sessions"
+              title={t('trainer_session')}
+              subheader={t('trainer_session_subheader')}
             />
           </Grid>
+
           {/* <Grid xs={12} md={6} lg={8}>
             <EcommerceSalesOverview title="Sales Overview" data={_ecommerceSalesOverview} />
           </Grid> */}
           <Grid xs={12} md={6} lg={4}>
-            <EcommerceBestTrainer title="Top Trainers" list={analytics?.topTrendingTrainers} />
+            <EcommerceBestTrainer title={t('top_trainers')} list={analytics?.topTrendingTrainers} />
           </Grid>
           <Grid xs={12} md={6} lg={12}>
             <EcommerceYearlySales
-              title="Yearly Revenue"
+              title={t('yearly_revenue')}
               revenue={revenue}
               revenueLoading={revenueLoading}
               revalidateAnalytics={revalidateAnalytics}
-              // subheader="(+43%) than last year"
               chart={{
                 categories: [
                   'Jan',
@@ -846,14 +865,18 @@ export default function OverviewEcommerceView() {
             />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
-            <EcommerceLatestProducts title="Top Packages" list={analytics?.mostBookedPackages} />
+            <EcommerceLatestProducts
+              title={t('top_packages')}
+              list={analytics?.mostBookedPackages}
+            />
           </Grid>
           <Grid xs={12} md={6} lg={6}>
             <PendingRequests height={'394px'} />
           </Grid>
+
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
-              title="Issued Certificates"
+              title={t('issued_certificates')}
               chart={chartCertificateIssuedData}
               seriesData={issuedCerificateSeriesData}
               setSeriesData={setIssuedCertificateSeriesData}
@@ -861,7 +884,7 @@ export default function OverviewEcommerceView() {
           </Grid>
           <Grid item xs={12} md={6} lg={6}>
             <BookingStatistics
-              title="Completed Session"
+              title={t('completed_session')}
               chart={chartCompletedSessionData}
               seriesData={sessionSeriesData}
               setSeriesData={setSessionSeriesData}
