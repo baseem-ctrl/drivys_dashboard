@@ -9,6 +9,7 @@ import Card, { CardProps } from '@mui/material/Card';
 // components
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
+import { useLocales } from 'src/locales';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { DatePicker } from '@mui/x-date-pickers';
 
@@ -34,6 +35,7 @@ export default function EcommerceYearlySales({
 }: Props) {
   const { colors, categories, options } = chart;
   const popover = usePopover();
+  const { t } = useLocales();
 
   const [seriesData, setSeriesData] = useState(new Date().getFullYear().toString());
   const [chartData, setChartData] = useState({
@@ -86,11 +88,11 @@ export default function EcommerceYearlySales({
         year: seriesData,
         data: [
           {
-            name: 'Current Year Revenue',
+            name: t('current_year_revenue'),
             data: currentYearData,
           },
           {
-            name: 'Last Revenue',
+            name: t('last_year_revenue'),
             data: lastYearData.map(() => 0), // Placeholder for expenses
           },
         ],

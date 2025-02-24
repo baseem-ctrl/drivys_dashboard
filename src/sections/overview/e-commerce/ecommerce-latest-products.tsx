@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
 import Card, { CardProps } from '@mui/material/Card';
+import { useLocales } from 'src/locales';
 import ListItemText from '@mui/material/ListItemText';
 // utils
 import { fCurrency } from 'src/utils/format-number';
@@ -67,6 +68,8 @@ type ProductItemProps = {
 };
 
 function ProductItem({ product }: ProductItemProps) {
+  const { t } = useLocales();
+
   const { package_name, id, bookings_count, number_of_sessions } = product;
   return (
     <Stack direction="row" spacing={2}>
@@ -96,13 +99,13 @@ function ProductItem({ product }: ProductItemProps) {
         secondary={
           <>
             {/* {!!category && ( */}
+
             <Box component="span" sx={{ mr: 5 }}>
-              Bookings: {bookings_count}
+              {t('bookings')}: {bookings_count}
             </Box>
-            {/* )} */}
 
             <Box component="span" sx={{ color: 'text.secondary' }}>
-              Sessions: {number_of_sessions}
+              {t('sessions')}: {number_of_sessions}
             </Box>
           </>
         }

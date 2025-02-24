@@ -154,8 +154,8 @@ export default function OverviewEcommerceView() {
     };
   });
 
-  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState(t('yearly'));
-  const [sessionSeriesData, setSessionSeriesData] = useState(t('yearly'));
+  const [issuedCerificateSeriesData, setIssuedCertificateSeriesData] = useState('Yearly');
+  const [sessionSeriesData, setSessionSeriesData] = useState('Yearly');
 
   const {
     studentInsights,

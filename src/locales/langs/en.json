@@ -155,5 +155,19 @@
   "students": "Students",
   "loading": "Loading...",
   "heat_map": "Heat Map",
-  "Trainers": "Trainers"
+  "Trainers": "Trainers",
+  "students_with_bookings": "Students with Bookings",
+  "registered_students": "Registered Students",
+  "session_count": "Session Count",
+  "current_year_revenue": "Current Year Revenue",
+  "last_year_revenue": "Last Year Revenue",
+  "pending_verification_requests": "Pending Verification Requests",
+  "loading_pending_requests": "Loading pending requests...",
+  "error_fetching_pending_requests": "Something went wrong while fetching pending requests. Please try again.",
+  "no_pending_requests": "No pending requests at the moment.",
+  "requested_time": "Requested Time",
+  "trainer_from": "Trainer from",
+  "n_a": "N/A",
+  "reject": "Reject",
+  "accept": "Accept"
 }
