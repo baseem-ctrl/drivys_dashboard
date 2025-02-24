@@ -259,7 +259,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       schoolSetValue(`session_titles[${index}]`, title.title);
     });
   }, [numberOfSessions, details, schoolSetValue]);
-
   const handleSessionTitleChange = (index, value) => {
     const updatedTitles = [...sessionTitles];
     updatedTitles[index].title = value;
@@ -574,12 +573,14 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
 
-              ...(details?.session_details
-                ?.slice(0, Math.floor(numberOfSessions / 2))
-                ?.map((sessionItem: any) => ({
-                  label: `Slot ${sessionItem.slot_number} Title`,
-                  value: sessionItem.translations?.[0]?.title ?? 'N/A',
-                })) || []),
+              ...((details?.number_of_sessions !== -1 &&
+                details?.session_details
+                  ?.slice(0, Math.floor(numberOfSessions / 2))
+                  ?.map((sessionItem: any) => ({
+                    label: `Slot ${sessionItem.slot_number} Title`,
+                    value: sessionItem.translations?.[0]?.title ?? 'N/A',
+                  }))) ||
+                []),
             ]?.map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
