@@ -76,9 +76,14 @@ export default function PackageDocumentDetails({
     title: Yup.string(),
     description: Yup.string(),
     file: Yup.mixed(),
-    session: Yup.number()
-      .max(sessionNumber, `Session number cannot exceed ${sessionNumber}.`)
-      .required('Session number is required'),
+    session_no: Yup.number().when([], {
+      is: () => sessionNumber === -1,
+      then: (schema) => schema.required('Session number is required'),
+      otherwise: (schema) =>
+        schema
+          .max(sessionNumber, `Session number cannot exceed ${sessionNumber}.`)
+          .required('Session number is required'),
+    }),
   });
 
   const defaultDocumentValues = (details: Document) => ({
