@@ -151,5 +151,9 @@
   "active_trainers": "Active Trainers",
   "inactive_trainers": "Inactive Trainers",
   "active_students": "Active Students",
-  "inactive_students": "Inactive Students"
+  "inactive_students": "Inactive Students",
+  "students": "Students",
+  "loading": "Loading...",
+  "heat_map": "Heat Map",
+  "Trainers": "Trainers"
 }
