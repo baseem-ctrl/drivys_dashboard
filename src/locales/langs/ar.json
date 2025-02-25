@@ -91,5 +91,9 @@
   "trainers": "المدربون",
   "trainer_list": "قائمة المدربين",
   "rewards": "المكافآت",
-  "trainer_notifications": "إشعارات المدرب"
+  "trainer_notifications": "إشعارات المدرب",
+  "Trainers": "المدربون",
+  "dashboard": "لوحة المعلومات",
+  "trainers_live_location": "الموقع المباشر للمدربين",
+  "Live_location": "الموقع المباشر للمدربين"
 }
