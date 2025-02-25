@@ -51,7 +51,7 @@ const HeatMap: React.FC = () => {
 
   const [trainers, setTrainers] = useState<Person[]>([]);
   const [students, setStudents] = useState<Person[]>([]);
-  const [selectedHeatmap, setSelectedHeatmap] = useState<'trainers' | 'students'>(t('trainers')); // State to toggle heatmap
+  const [selectedHeatmap, setSelectedHeatmap] = useState<'trainers' | 'students'>('trainers'); // State to toggle heatmap
 
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number }>({
     lat: defaultLatitude,

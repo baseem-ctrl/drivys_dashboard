@@ -171,5 +171,8 @@
   "trainer_from": "المدرب من",
   "n_a": "غير متاح",
   "reject": "رفض",
-  "accept": "قبول"
+  "accept": "قبول",
+  "completed_session": "الحصص المكتملة",
+  "sessions": "حصص:",
+  "total_bookings": "كل الحجوزات:"
 }
