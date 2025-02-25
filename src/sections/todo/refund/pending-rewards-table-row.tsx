@@ -5,6 +5,7 @@ import Label from 'src/components/label';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Box, Button, LinearProgress, Link, Popover, Switch, Typography } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
+import { useLocales } from 'src/locales';
 import { useSnackbar } from 'src/components/snackbar';
 import { paths } from 'src/routes/paths';
 import { useState } from 'react';
@@ -13,15 +14,11 @@ import { processTrainerReward } from 'src/api/loyality';
 
 // ----------------------------------------------------------------------
 
-export default function PendingRewardTableRow({
-  row,
-  selected,
-
-  reload,
-}: Props) {
+export default function PendingRewardTableRow({ row, selected, reload }: Props) {
   const router = useRouter();
   const methods = useForm();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useLocales();
 
   const { user } = row;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -55,10 +52,11 @@ export default function PendingRewardTableRow({
       const response = await processTrainerReward(formData);
       if (response) {
         reload();
-        enqueueSnackbar('Reward processed successfully!', { variant: 'success' });
+        enqueueSnackbar(t('reward_processed_successfully'), { variant: 'success' });
       } else {
-        enqueueSnackbar('Failed to process Reward!', { variant: 'error' });
+        enqueueSnackbar(t('failed_to_process_reward'), { variant: 'error' });
       }
+
       reload();
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -100,13 +98,13 @@ export default function PendingRewardTableRow({
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n_a')}
         </Link>
       </TableCell>
 
       <TableCell>
         <Typography fontSize="0.875rem">
-          {row?.reward_details?.reward_amount ?? 'N/A'} AED{' '}
+          {row?.reward_details?.reward_amount ?? t('n_a')} {t('aed')}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>
@@ -127,7 +125,7 @@ export default function PendingRewardTableRow({
           ? moment(row?.trainer_reward?.start_date)
               .local()
               .format('DD/MM/YY h:mm a')
-          : 'N/A'}
+          : t('n_a')}
       </TableCell>
       <TableCell>
         {' '}
@@ -135,9 +133,9 @@ export default function PendingRewardTableRow({
           ? moment(row?.trainer_reward?.end_date)
               .local()
               .format('DD/MM/YY h:mm a')
-          : 'N/A'}
+          : t('n_a')}
       </TableCell>
-      <TableCell>{row?.notes ? `${row?.notes}` : 'N/A'}</TableCell>
+      <TableCell>{row?.notes ? `${row?.notes}` : t('n_a')}</TableCell>
 
       <TableCell>
         {row?.achieved_date ? (
@@ -146,16 +144,16 @@ export default function PendingRewardTableRow({
               .local()
               .format('DD/MM/YY h:mm a')}
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-              Claimed At:{' '}
+              {t('claimed_at')}{' '}
               {row?.claimed_at
                 ? moment(row?.claimed_at)
                     .local()
                     .format('DD/MM/YY h:mm a')
-                : 'N/A'}
+                : t('n_a')}
             </Typography>
           </>
         ) : (
-          'N/A'
+          t('n_a')
         )}
       </TableCell>
 
@@ -166,8 +164,9 @@ export default function PendingRewardTableRow({
           sx={{ fontSize: '15px' }}
           onClick={handleRefundAmountClick}
         >
-          Send
+          {t('send')}
         </Button>
+
         <Popover
           id={id}
           open={open}
@@ -186,7 +185,7 @@ export default function PendingRewardTableRow({
             <FormProvider {...methods}>
               <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: 'primary.main' }}>
-                  Upload Proof of Payment
+                  {t('upload_proof_of_payment')}
                 </Typography>
 
                 <Box display="flex" flexDirection="column" gap={2}>
@@ -199,10 +198,11 @@ export default function PendingRewardTableRow({
                       onClick={handlePopoverClose}
                       disabled={loading}
                     >
-                      Cancel
+                      {t('cancel')}
                     </Button>
+
                     <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                      {loading ? 'Submitting...' : 'Submit'}
+                      {loading ? t('submitting') : t('submit')}
                     </Button>
                   </Box>
                 </Box>

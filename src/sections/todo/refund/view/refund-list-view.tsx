@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
 import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+import { useLocales } from 'src/locales';
 
 import {
   Container,
@@ -36,20 +37,6 @@ import { useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
 import RefundTableRow from '../refund-table-row';
 import RefundFilters from '../refund-filter';
 
-const TABLE_HEAD = [
-  { id: 'customerName', label: 'Customer Name', width: 180 },
-  { id: 'BookingId', label: 'Booking ID', width: 180 },
-  { id: 'packages', label: 'Package', width: 180 },
-  { id: 'orderStatus', label: 'Booking Status', width: 150 },
-  { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-  { id: 'paid', label: 'Amount Sanctioned', width: 220 },
-  { id: 'refunded', label: 'Amount to refund', width: 220 },
-  { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-  { id: 'reason', label: 'Reason', width: 200 },
-  { id: 'refundStatus', label: 'Refund Status', width: 250 },
-  { id: 'created', label: 'Created', width: 200 },
-];
-
 const defaultFilters = {
   city_id: null,
   category_id: null,
@@ -58,6 +45,7 @@ const defaultFilters = {
 
 export default function PendingRefundListView({ table, filters, setFilters, searchValue }) {
   const [statusFilter, setStatusFilter] = useState('all');
+  const { t } = useLocales();
 
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
@@ -75,7 +63,19 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
   const [refundedTableData, setRefundedTableData] = useState([]);
 
   const confirm = useBoolean();
-
+  const TABLE_HEAD = [
+    { id: 'customerName', label: t('customer_name'), width: 180 },
+    { id: 'BookingId', label: t('booking_id'), width: 180 },
+    { id: 'packages', label: t('package'), width: 180 },
+    { id: 'orderStatus', label: t('booking_status'), width: 150 },
+    { id: 'paymentStatus', label: t('payment_status'), width: 150 },
+    { id: 'paid', label: t('amount_sanctioned'), width: 220 },
+    { id: 'refunded', label: t('amount_to_refund'), width: 220 },
+    { id: 'paymentMethod', label: t('payment_method'), width: 150 },
+    { id: 'reason', label: t('reason'), width: 200 },
+    { id: 'refundStatus', label: t('refund_status'), width: 250 },
+    { id: 'created', label: t('created'), width: 200 },
+  ];
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -132,23 +132,23 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
     <>
       <Box ml="auto" width={200}>
         <FormControl fullWidth variant="outlined" size="small">
-          <InputLabel sx={{ mb: 0.5 }}>Status</InputLabel>
+          <InputLabel sx={{ mb: 0.5 }}>{t('status')}</InputLabel>
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             label="Status"
             sx={{ pt: 1, pb: 1 }}
           >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="approved">Approved</MenuItem>
+            <MenuItem value="all">{t('all')}</MenuItem>
+            <MenuItem value="pending">{t('pending')}</MenuItem>
+            <MenuItem value="approved">{t('approved')}</MenuItem>
           </Select>
         </FormControl>
       </Box>
       <Card sx={{ mb: 5 }}>
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
           <Typography variant="h6" sx={{ m: 2 }}>
-            Refund Requests
+            {t('refund_requests')}
           </Typography>
 
           <TableSelectedAction
@@ -162,7 +162,7 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
               )
             }
             action={
-              <Tooltip title="Delete">
+              <Tooltip title={t('delete')}>
                 <IconButton onClick={confirm.onTrue}>
                   <Iconify icon="solar:trash-bin-trash-bold" />
                 </IconButton>
@@ -208,7 +208,7 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
                   <TableRow>
                     <TableCell colSpan={TABLE_HEAD?.length} align="center">
                       <Typography variant="h6" color="textSecondary">
-                        No data available
+                        {t('no_data_available')}{' '}
                       </Typography>
                     </TableCell>
                   </TableRow>

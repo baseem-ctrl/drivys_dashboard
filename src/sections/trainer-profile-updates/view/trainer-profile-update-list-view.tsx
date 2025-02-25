@@ -24,20 +24,16 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { useLocales } from 'src/locales';
+
 // import BookingTableToolbar from '../booking-table-toolbar';
 import { paths } from 'src/routes/paths';
 import TrainerProfileUpdateRow from '../trainer-profile-update-table-row';
 import ProfileUpdateFilter from '../profile-update-filter';
 
-const TABLE_HEAD = [
-  { id: 'userName', label: 'Trainer', width: 180 },
-  { id: 'Updations Made', label: 'Updation Made', width: 380 },
-  { id: 'isVerified', label: 'Verified', width: 150 },
-  { id: 'Action', label: '', width: 150 },
-];
-
 export default function TrainerProfileUpdatesListView() {
   const openFilters = useBoolean();
+  const { t } = useLocales();
 
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const [filters, setFilters] = useState({
@@ -62,6 +58,12 @@ export default function TrainerProfileUpdatesListView() {
     }));
   }, [table.page, table.rowsPerPage]);
   const [tableData, setTableData] = useState([]);
+  const TABLE_HEAD = [
+    { id: 'userName', label: t('trainer'), width: 180 },
+    { id: 'Updations Made', label: t('updation_made'), width: 380 },
+    { id: 'isVerified', label: t('verified'), width: 150 },
+    { id: 'Action', label: '', width: 150 },
+  ];
 
   const confirm = useBoolean();
 
@@ -102,19 +104,17 @@ export default function TrainerProfileUpdatesListView() {
   return (
     <Card sx={{ mb: 5 }}>
       <CustomBreadcrumbs
-        heading="List"
+        heading={t('list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Trainer Profile Updates',
-            href: paths.dashboard.todo.trainerProfileUpdates,
-          },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainer_profile_updates'), href: paths.dashboard.todo.trainerProfileUpdates },
+          { name: t('list') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
+
       {renderFilters}
       <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
         <TableSelectedAction
@@ -128,7 +128,7 @@ export default function TrainerProfileUpdatesListView() {
             )
           }
           action={
-            <Tooltip title="Delete">
+            <Tooltip title={t('delete')}>
               <IconButton onClick={confirm.onTrue}>
                 <Iconify icon="solar:trash-bin-trash-bold" />
               </IconButton>
@@ -174,7 +174,7 @@ export default function TrainerProfileUpdatesListView() {
                 <TableRow>
                   <TableCell colSpan={TABLE_HEAD?.length} align="center">
                     <Typography variant="h6" color="textSecondary">
-                      No data available
+                      {t('no_data_available')}{' '}
                     </Typography>
                   </TableCell>
                 </TableRow>

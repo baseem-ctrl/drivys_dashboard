@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
 // types
 import { IJobFilters, IJobFilterValue } from 'src/types/job';
+import { useLocales } from 'src/locales';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -43,13 +45,15 @@ export default function TrainerRewardFilters({
   canReset,
   onResetFilters,
 }: Props) {
+  const { t } = useLocales();
+
   const { users, usersLoading } = useGetUsers({
     page: 0,
     limit: 1000,
     user_types: 'TRAINER',
   });
   const vendorOptions = usersLoading
-    ? [{ label: 'Loading...', value: '' }]
+    ? [{ label: t('loading'), value: '' }]
     : users.map((user) => ({
         label: user.name,
         value: user.id,
@@ -67,10 +71,10 @@ export default function TrainerRewardFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t('reset')}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -87,12 +91,13 @@ export default function TrainerRewardFilters({
   const renderTrainer = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Trainer
+        {t('trainer')}
       </Typography>
+
       <Autocomplete
         options={
           vendorOptions?.map((item) => ({
-            label: item.label || 'Unknown Trainer',
+            label: item.label || t('unknown_trainer'),
             value: item.value,
           })) ?? []
         }
@@ -102,7 +107,7 @@ export default function TrainerRewardFilters({
           handleFilterChange('trainer_id', newValue?.value || filters.trainer_id);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select Trainer" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('select_trainer')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -135,7 +140,7 @@ export default function TrainerRewardFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}{' '}
       </Button>
 
       <Drawer

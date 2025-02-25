@@ -1,7 +1,10 @@
 import { Box, TextField, Autocomplete, FormControlLabel, Switch } from '@mui/material';
 import { useGetUsers } from 'src/api/users';
+import { useLocales } from 'src/locales';
 
 export default function ProfileUpdateFilter({ filters, onFilters }: any) {
+  const { t } = useLocales();
+
   const { users: trainerUsers } = useGetUsers({
     page: 0,
     limit: 1000,
@@ -43,9 +46,11 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
             })) ?? []
           }
           value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
-          getOptionLabel={(option) => option.label || 'No Name'}
+          getOptionLabel={(option) => option.label || t('no_name')}
           isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Trainer" {...params} fullWidth />}
+          renderInput={(params) => (
+            <TextField placeholder={t('select_trainer')} {...params} fullWidth />
+          )}
           onChange={handleTrainerChange}
         />
       </Box>
@@ -58,7 +63,7 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
               color="primary"
             />
           }
-          label="Verified Trainer"
+          label={t('verified_trainer')}
         />
       </Box>
     </Box>
