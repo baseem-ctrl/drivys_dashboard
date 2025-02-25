@@ -15,10 +15,18 @@ import {
   MenuItem,
   SelectChangeEvent,
   CircularProgress,
+  IconButton,
+  InputAdornment,
+  Autocomplete,
+  FormLabel,
 } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+
 import { useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
+import { useGetSchool } from 'src/api/school';
 
 interface FormField {
   id: number;
@@ -30,6 +38,8 @@ interface FormField {
 const EditableForm: React.FC = () => {
   const { language } = useGetAllLanguage(0, 1000);
   const [selectedLocale, setSelectedLocale] = useState('En');
+  const [editedFields, setEditedFields] = useState<Record<number, boolean>>({});
+
   const {
     appSettings: data,
     appSettingsLoading,
@@ -37,7 +47,9 @@ const EditableForm: React.FC = () => {
     revalidateAppSettings,
     appSettingsError,
   } = useGetAllAppSettings(0, 1000, selectedLocale);
-
+  const { schoolList, schoolLoading } = useGetSchool({
+    limit: 1000,
+  });
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -58,24 +70,24 @@ const EditableForm: React.FC = () => {
     setFormData((prevData) =>
       prevData.map((item) => (item.id === id ? { ...item, value: newValue } : item))
     );
+    setEditedFields((prev) => ({ ...prev, [id]: true }));
   };
-  const handleSave = async () => {
+  const handleCancelEdit = (id) => {
+    setEditedFields((prev) => ({ ...prev, [id]: false }));
+    setFormData([...data]);
+  };
+
+  const handleSave = async (id: number) => {
     try {
-      const editedField = formData.find((item) => {
-        const original = data.find((d) => d.key === item.key);
-        return original && String(original.value) !== String(item.value);
-      });
+      const editedField = formData.find((item) => item.id === id);
+      if (!editedField) return;
 
-      const body = editedField
-        ? {
-            id: editedField.id,
-            key: editedField.key,
-            value: editedField.value,
-            locale: selectedLocale,
-          }
-        : null;
-
-      console.log('Final Payload:', body);
+      const body = {
+        id: editedField.id,
+        key: editedField.key,
+        value: editedField.value.toString(),
+        locale: selectedLocale,
+      };
 
       const updatedData = formData.map((item) => ({
         key: item.key,
@@ -88,6 +100,7 @@ const EditableForm: React.FC = () => {
           variant: 'success',
         });
         revalidateAppSettings();
+        setEditedFields((prev) => ({ ...prev, [id]: false }));
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -122,43 +135,111 @@ const EditableForm: React.FC = () => {
   }
 
   const renderInputField = (item: FormField) => {
+    if (item.key === 'DEFAULT_SCHOOL') {
+      const selectedSchool = schoolList.find((school) => school.id === item.value);
+
+      return (
+        <Box display="flex" alignItems="center" width="100%" gap={2}>
+          <Typography variant="body1" color="primary">
+            DEFAULT_SCHOOL
+          </Typography>
+          <Autocomplete
+            fullWidth
+            options={
+              schoolList?.map((school) => ({
+                label: school.vendor_translations
+                  .slice(0, 2)
+                  .map((translation) => translation.name)
+                  .join(' - '),
+                value: school.id,
+              })) ?? []
+            }
+            getOptionLabel={(option) => option.label}
+            value={
+              selectedSchool
+                ? {
+                    label: selectedSchool.vendor_translations
+                      .slice(0, 2)
+                      .map((translation) => translation.name)
+                      .join(' - '),
+                    value: selectedSchool.id,
+                  }
+                : null
+            }
+            onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
+            loading={schoolLoading}
+            renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+            renderOption={(props, option) => (
+              <li {...props} key={option.value}>
+                {option.label}
+              </li>
+            )}
+          />
+
+          {editedFields[item.id] && (
+            <>
+              <IconButton color="primary" onClick={() => handleSave(item.id)}>
+                <SaveIcon />
+              </IconButton>
+              <IconButton color="primary" onClick={() => handleCancelEdit(item.id)}>
+                <CloseIcon />
+              </IconButton>
+            </>
+          )}
+        </Box>
+      );
+    }
     if (typeof item.value === 'boolean') {
       return (
-        <FormControlLabel
-          control={
-            <Switch
-              checked={item.value}
-              onChange={(e) => handleChange(item.id, e.target.checked)}
-              color="primary"
-            />
-          }
-          label={item.key}
-        />
+        <Box display="flex" alignItems="center" width="100%">
+          {' '}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={item.value}
+                onChange={(e) => handleChange(item.id, e.target.checked)}
+                color="primary"
+              />
+            }
+            label={item.key}
+          />
+          {editedFields[item.id] && (
+            <>
+              <IconButton color="primary" onClick={() => handleSave(item.id)}>
+                <SaveIcon />
+              </IconButton>
+              <IconButton color="secondary" onClick={() => handleCancelEdit(item.id)}>
+                <CloseIcon />
+              </IconButton>
+            </>
+          )}
+        </Box>
       );
-    } else if (typeof item.value === 'number' || typeof item.value === 'string') {
-      if (item.value.toString().length > 20) {
-        return (
+    }
+    if (typeof item.value === 'number' || typeof item.value === 'string') {
+      return (
+        <Box display="flex" alignItems="center" width="100%">
           <TextField
             value={item.value}
             onChange={(e) => handleChange(item.id, e.target.value)}
             label={item.key}
-            multiline
-            rows={4}
             fullWidth
             variant="outlined"
             margin="normal"
+            multiline={item.value.toString().length > 20}
+            rows={item.value.toString().length > 20 ? 4 : 1}
           />
-        );
-      }
-      return (
-        <TextField
-          value={item.value}
-          onChange={(e) => handleChange(item.id, e.target.value)}
-          label={item.key}
-          fullWidth
-          variant="outlined"
-          margin="normal"
-        />
+          {editedFields[item.id] && (
+            <>
+              <IconButton color="primary" onClick={() => handleSave(item.id)}>
+                <SaveIcon />
+              </IconButton>
+              <IconButton color="secondary" onClick={() => handleCancelEdit(item.id)}>
+                <CloseIcon />
+              </IconButton>
+            </>
+          )}
+        </Box>
       );
     }
     return null;
@@ -166,8 +247,11 @@ const EditableForm: React.FC = () => {
 
   // Separate fields based on type (single-line, multi-line, switch)
   const singleLineFields = sortedFormData.filter(
-    (item) => typeof item.value === 'string' || typeof item.value === 'number'
+    (item) =>
+      (typeof item.value === 'string' && item.value.length < 20) ||
+      (typeof item.value === 'number' && item.value.toString().length < 20)
   );
+
   const multiLineFields = sortedFormData.filter(
     (item) => typeof item.value === 'string' && item.value.toString().length > 20
   );
@@ -236,23 +320,6 @@ const EditableForm: React.FC = () => {
                 </Grid>
               ))}
             </Grid>
-
-            {/* Save button */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleSave}
-                sx={{
-                  padding: '10px 20px',
-                  fontSize: '16px',
-                  borderRadius: 2,
-                  boxShadow: 2,
-                }}
-              >
-                Save
-              </Button>
-            </Box>
           </form>
         )}
       </Paper>
