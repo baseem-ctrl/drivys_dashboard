@@ -1,12 +1,12 @@
 import { Container, Grid } from '@mui/material';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
-import RefundListView from './view/refund-list-view';
 import PendingRequests from 'src/sections/overview/e-commerce/ecommerce-pending-trainer-request';
-import TodoListSearch from '../todo-pending-request-filter';
 import { useCallback, useState } from 'react';
 import { IUserTableFilterValue } from 'src/types/city';
 import { useTable } from 'src/components/table';
+import { useLocales } from 'src/locales';
+import TodoListSearch from '../todo-pending-request-filter';
 
 const defaultFilters = {
   customerName: '',
@@ -17,6 +17,7 @@ const defaultFilters = {
 };
 
 export default function ToDoListViewVerification() {
+  const { t } = useLocales();
   const [filters, setFilters] = useState(defaultFilters);
   const [searchValue, setSearchValue] = useState('');
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
@@ -37,9 +38,9 @@ export default function ToDoListViewVerification() {
       <CustomBreadcrumbs
         heading="To Do List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'To Do', href: paths.dashboard.todo.root },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('to_do'), href: paths.dashboard.todo.root },
+          { name: t('list') },
         ]}
         sx={{ mb: 3 }}
       />

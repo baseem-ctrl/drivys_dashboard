@@ -129,7 +129,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
     is_cash_pay_available: Yup.boolean(),
-
+    drivys_commision: Yup.mixed(),
     is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
@@ -144,6 +144,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       is_certificate_included: !!details?.is_certificate_included,
       is_cash_pay_available: !!details?.is_cash_pay_available,
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
+      drivys_commision: details?.drivys_commision || '',
       vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
         ?.vendor_translations[0]?.name,
       category_id:
@@ -154,6 +155,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
+  console.log('defaultVendorValues', defaultVendorValues, details);
   const Schoolmethods = useForm({
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,
@@ -278,6 +280,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         ],
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
+        drivys_commision: data?.drivys_commision || details?.drivys_commision,
         is_certificate_included: data?.is_certificate_included ? '1' : '0',
         is_cash_pay_available: data?.is_cash_pay_available ? '1' : '0',
         is_pickup_fee_included: data?.is_pickup_fee_included ? '1' : '0',
@@ -290,6 +293,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('is_published', payload.is_published);
       formData.append('is_certificate_included', payload.is_certificate_included);
       formData.append('is_cash_pay_available', payload.is_cash_pay_available);
+      formData.append('drivys_commision', payload.drivys_commision);
 
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
 
@@ -526,6 +530,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               ]) || []),
 
               { label: 'Number of sessions', value: details?.number_of_sessions ?? 'NA' },
+              { label: 'Drivys Commission', value: `${details?.drivys_commision ?? 'NA'} AED` },
+
               {
                 label: 'Category',
                 value: (() => {
@@ -699,6 +705,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_pickup_fee_included" label="Is Pickup fee included" />
                   </Stack>
+                  <RHFTextField
+                    name="drivys_commision"
+                    label="Drivys Commission"
+                    InputProps={{
+                      endAdornment: <Typography sx={{ ml: 1 }}>AED</Typography>,
+                    }}
+                  />
                 </Box>
                 <Box mt={2}>
                   {sessionTitles && sessionTitles.length > 0 && (
