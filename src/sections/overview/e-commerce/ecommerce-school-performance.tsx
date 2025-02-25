@@ -10,6 +10,7 @@ import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { Autocomplete, TextField } from '@mui/material';
+import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,8 @@ interface Props extends CardProps {
 }
 
 export default function SchoolPerformanceDetails({ title, subheader, tableData, ...other }: Props) {
+  const { t } = useLocales();
+
   const [selectedSchool, setSelectedSchool] = useState<RowProps | null>(null);
   const [seriesData, setSeriesData] = useState<string>('revenue');
   const popover = usePopover();
@@ -64,15 +67,15 @@ export default function SchoolPerformanceDetails({ title, subheader, tableData, 
   const chartData = {
     series: [
       {
-        name: 'Revenue',
+        name: t('revenue'),
         data: selectedSchool ? [selectedSchool.revenue] : [],
       },
       {
-        name: 'Bookings',
+        name: t('bookings'),
         data: selectedSchool ? [selectedSchool.bookings] : [],
       },
       {
-        name: 'Trainer Ratings',
+        name: t('trainer_ratings'),
         data: selectedSchool ? [selectedSchool.trainer_ratings || 0] : [],
       },
     ],

@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useLocales } from 'src/locales';
 import {
   Container,
   Typography,
@@ -64,6 +65,8 @@ export default function PendingRequests({
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+  const { t } = useLocales();
+
   const {
     pendingRequests,
     pendingRequestsError,
@@ -126,7 +129,7 @@ export default function PendingRequests({
       <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4 }}>
         <CircularProgress />
         <Typography variant="body1" sx={{ mt: 2 }}>
-          Loading pending requests...
+          {t('loading_pending_requests')}
         </Typography>
       </Container>
     );
@@ -136,9 +139,7 @@ export default function PendingRequests({
   if (pendingRequestsError) {
     return (
       <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4 }}>
-        <Alert severity="error">
-          Something went wrong while fetching pending requests. Please try again.
-        </Alert>
+        <Alert severity="error">{t('error_fetching_pending_requests')}</Alert>
       </Container>
     );
   }
@@ -148,10 +149,10 @@ export default function PendingRequests({
     return (
       <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Pending Requests
+          {t('pending_requests')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          No pending requests at the moment.
+          {t('no_pending_requests')}
         </Typography>
       </Container>
     );
@@ -161,8 +162,9 @@ export default function PendingRequests({
       {' '}
       <Container maxWidth="lg">
         <Typography variant="h6" gutterBottom sx={{ mb: 2, mt: 2 }}>
-          Pending Verification Requests
+          {t('pending_verification_requests')}
         </Typography>
+
         <Scrollbar>
           <Stack
             spacing={3}
@@ -209,7 +211,7 @@ export default function PendingRequests({
                       >
                         {request?.user?.name || 'N/A'}
                       </Typography>
-                      <Tooltip title={`School name`} arrow>
+                      <Tooltip title={t('school_name')} arrow>
                         {' '}
                         <Typography
                           variant="body2"
@@ -233,7 +235,7 @@ export default function PendingRequests({
                         </Typography>
                       </Tooltip>
 
-                      <Tooltip title={`Requested Time`} arrow>
+                      <Tooltip title={t('requested_time')} arrow>
                         <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
                           {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
                         </Typography>
@@ -267,7 +269,7 @@ export default function PendingRequests({
                       {loadingStates[`${request.id}-reject`] ? (
                         <CircularProgress size={24} />
                       ) : (
-                        'Reject'
+                        t('reject')
                       )}
                     </Button>
                     <Button
@@ -281,7 +283,7 @@ export default function PendingRequests({
                       {loadingStates[`${request.id}-accept`] ? (
                         <CircularProgress size={24} />
                       ) : (
-                        'Accept'
+                        t('accept')
                       )}
                     </Button>
                   </Box>

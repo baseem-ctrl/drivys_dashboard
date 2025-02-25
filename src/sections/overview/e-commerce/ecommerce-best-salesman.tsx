@@ -6,6 +6,8 @@ import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
 import Card, { CardProps } from '@mui/material/Card';
 import ListItemText from '@mui/material/ListItemText';
+import { useLocales } from 'src/locales';
+
 // utils
 import { fCurrency } from 'src/utils/format-number';
 //
@@ -69,6 +71,8 @@ type ProductItemProps = {
 
 function ProductItem({ product }: ProductItemProps) {
   const { package_translations, id } = product;
+  const { t } = useLocales();
+
   const CoverUrl = `${ASSETS_API}/assets/images/avatar/avatar_2.jpg`;
 
   return (
@@ -98,7 +102,7 @@ function ProductItem({ product }: ProductItemProps) {
             <Box
             // component="span"
             >
-              Total Bookings: {product?.total_bookings}
+              {t('total_bookings')} {product?.total_bookings}
             </Box>
           </>
         }

@@ -7,7 +7,9 @@ import {
   OverlayView,
 } from '@react-google-maps/api';
 import axios from 'axios';
+import { useLocales } from 'src/locales';
 import { useGoogleMaps } from './GoogleMapsProvider';
+
 import {
   Avatar,
   Box,
@@ -46,10 +48,11 @@ interface Person {
 
 const SchoolAdminMap: React.FC = () => {
   const { isLoaded } = useGoogleMaps();
+  const { t } = useLocales();
 
   const [trainers, setTrainers] = useState<Person[]>([]);
   const [students, setStudents] = useState<Person[]>([]);
-  const [selectedHeatmap, setSelectedHeatmap] = useState<'trainers' | 'students'>('trainers'); // State to toggle heatmap
+  const [selectedHeatmap, setSelectedHeatmap] = useState<'trainers' | 'students'>(t('trainers')); // State to toggle heatmap
 
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number }>({
     lat: defaultLatitude,
@@ -108,8 +111,9 @@ const SchoolAdminMap: React.FC = () => {
     }
   };
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div>{t('loading')}</div>;
   }
+
   // Convert locations to LatLng for Heatmap
   const trainerHeatmapData = trainers.map(
     (trainer) => new google.maps.LatLng(trainer.location.lat, trainer.location.lng)
@@ -127,7 +131,7 @@ const SchoolAdminMap: React.FC = () => {
         alignItems="center"
         sx={{ mb: 2, px: 2, pt: 2 }}
       >
-        <CardHeader title="Heat Map" />
+        <CardHeader title={t('heat_map')} />
 
         {/* Legend */}
         {/* <Box display="flex" alignItems="center" gap={2}>
@@ -146,8 +150,8 @@ const SchoolAdminMap: React.FC = () => {
           value={selectedHeatmap}
           onChange={(e) => setSelectedHeatmap(e.target.value as 'trainers' | 'students')}
         >
-          <FormControlLabel value="trainers" control={<Radio />} label="Trainers" />
-          {/* <FormControlLabel value="students" control={<Radio />} label="Students" /> */}
+          <FormControlLabel value="trainers" control={<Radio />} label={t('Trainers')} />
+          {/* <FormControlLabel value="students" control={<Radio />} label={t('Students')} /> */}
         </RadioGroup>
       </Box>
 
