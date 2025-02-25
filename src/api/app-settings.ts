@@ -10,19 +10,17 @@ import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo } from 'react';
 
-export function useGetAllAppSettings(page: number, limit: number) {
+export function useGetAllAppSettings(page: number, limit: number, locale?: string) {
   const getTheFullUrl = () => {
-    let queryPrams = {};
-    if (page) {
-      queryPrams = { ...queryPrams, page: page + 1 };
-    } else {
-      queryPrams = { ...queryPrams, page: 1 };
+    let queryPrams: Record<string, any> = {};
+
+    queryPrams.page = page ? page + 1 : 1;
+    queryPrams.limit = limit || 10;
+
+    if (locale) {
+      queryPrams.locale = locale;
     }
-    if (limit) {
-      queryPrams = { ...queryPrams, limit };
-    } else {
-      queryPrams = { ...queryPrams, limit: 10 };
-    }
+
     return `${endpoints.appSettings.list}?${new URLSearchParams(queryPrams)}`;
   };
 
@@ -39,10 +37,11 @@ export function useGetAllAppSettings(page: number, limit: number) {
     [data?.data, error, isLoading, isValidating]
   );
 
-  const revalidateLanguage = () => {
+  const revalidateAppSettings = () => {
     mutate(getTheFullUrl);
   };
-  return { ...memoizedValue, revalidateLanguage };
+
+  return { ...memoizedValue, revalidateAppSettings };
 }
 
 // ----------------------------------------------------------------------
