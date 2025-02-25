@@ -9,6 +9,7 @@ import {
 import Container from '@mui/material/Container';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { useLocales } from 'src/locales';
 
 import axios from 'axios';
 import {
@@ -43,6 +44,8 @@ interface Person {
 
 const TrainerLiveLocation: React.FC = () => {
   const { isLoaded } = useGoogleMaps();
+  const { t } = useLocales();
+
   const settings = useSettingsContext();
   const [trainers, setTrainers] = useState<Person[]>([]);
 
@@ -95,7 +98,7 @@ const TrainerLiveLocation: React.FC = () => {
     }
   };
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div>{t('Loading...')}</div>;
   }
 
   const mapOptions = {
@@ -113,18 +116,16 @@ const TrainerLiveLocation: React.FC = () => {
   return (
     <>
       <CustomBreadcrumbs
-        heading="Live Location"
+        heading={t('Live_location')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Trainers Live Location',
-            href: paths.dashboard.root,
-          },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainers_live_location'), href: paths.dashboard.root },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
-      />{' '}
+      />
+
       <Card>
         <GoogleMap
           mapContainerStyle={containerStyle}
