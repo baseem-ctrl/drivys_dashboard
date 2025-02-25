@@ -80,7 +80,7 @@ export const endpoints = {
   calendar: '/api/calendar',
   auth: {
     me: 'admin/auth/who-am-i',
-    login: 'admin/auth/all-login',
+    login: 'admin/auth/login',
     register: '/api/auth/register',
     update: 'admin/auth/update-profile', // To update user profile
     delete: 'admin/auth/delete-profile', // To delete user profile
