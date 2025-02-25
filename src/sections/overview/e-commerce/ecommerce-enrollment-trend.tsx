@@ -1,5 +1,6 @@
 import { ApexOptions } from 'apexcharts';
 import { useState, useCallback, useEffect } from 'react';
+import { useLocales } from 'src/locales';
 // @mui
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
@@ -42,6 +43,7 @@ export default function EnrollmentTrendsChart({
 }: Props) {
   const { colors, categories, options } = chart;
   const popover = usePopover();
+  const { t } = useLocales();
 
   const [seriesData, setSeriesData] = useState(new Date().getFullYear().toString());
   const [chartData, setChartData] = useState({
@@ -91,11 +93,11 @@ export default function EnrollmentTrendsChart({
       setChartData({
         series: [
           {
-            name: 'Students with Bookings',
+            name: t('students_with_bookings'),
             data: enrollmentData,
           },
           {
-            name: 'Registered Students ',
+            name: t('registered_students'),
             data: registeredStudentsData,
           },
         ],

@@ -391,7 +391,8 @@ export default function PackageTableRow({
             drivys_commision
           ) : (
             'N/A'
-          )}
+          )}{' '}
+          AED
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>

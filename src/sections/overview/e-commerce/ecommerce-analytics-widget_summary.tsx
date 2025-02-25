@@ -89,8 +89,11 @@ export default function AnalyticsWidgetSummary({
             position: 'absolute',
             top: 8,
             right: 8,
+            color:
+              percentageChange < 0
+                ? theme.palette.error.main
+                : theme.palette[color]?.main || '#000',
 
-            color: theme.palette[color]?.main || '#000',
             borderRadius: 1,
             px: 1,
             py: 0.5,

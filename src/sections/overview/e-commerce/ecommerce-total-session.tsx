@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card, { CardProps } from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import { useLocales } from 'src/locales';
 import Chart, { useChart } from 'src/components/chart';
 import { useGetTrainerInsights } from 'src/api/anlytics';
 import { Select, MenuItem, FormControl, InputLabel, Autocomplete, TextField } from '@mui/material';
@@ -14,6 +15,7 @@ interface Props extends CardProps {
 }
 
 export default function TotalTrainersSession({ title, subheader, ...other }: Props) {
+  const { t } = useLocales();
   const theme = useTheme();
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
   const sessionsPerTrainer = trainerInsights?.sessionsPerTrainer || [];
@@ -77,7 +79,7 @@ export default function TotalTrainersSession({ title, subheader, ...other }: Pro
     },
     yaxis: {
       title: {
-        text: 'Session Count',
+        text: t('session_count'),
       },
     },
     colors: [theme.palette.primary.main, theme.palette.warning.main, theme.palette.info.main],
