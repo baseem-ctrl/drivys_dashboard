@@ -40,9 +40,14 @@ export default function PackageDocumentCreateUpdate({
     title: Yup.string(),
     type: Yup.string(),
     status: Yup.string(),
-    session_no: Yup.number()
-      .max(sessionNumber, `Session number cannot exceed ${sessionNumber}.`)
-      .required('Session number is required'),
+    session_no: Yup.number().when([], {
+      is: () => sessionNumber === -1,
+      then: (schema) => schema.required('Session number is required'),
+      otherwise: (schema) =>
+        schema
+          .max(sessionNumber, `Session number cannot exceed ${sessionNumber}.`)
+          .required('Session number is required'),
+    }),
   });
 
   // Default values (populate for update if `currentDocument` exists)
