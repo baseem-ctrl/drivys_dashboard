@@ -215,5 +215,17 @@
   "submit": "إرسال",
   "submitting": "جارٍ الإرسال...",
   "unverify": "إلغاء التحقق",
-  "only_verified_users_can_be_unverified": "يمكن إلغاء التحقق فقط للمستخدمين الذين تم التحقق منهم."
+  "only_verified_users_can_be_unverified": "يمكن إلغاء التحقق فقط للمستخدمين الذين تم التحقق منهم.",
+  "yes": "نعم",
+  "no": "لا",
+  "filters": "الفلاتر",
+  "reset": "إعادة تعيين",
+  "unknown_trainer": "مدرب غير معروف",
+  "updated": "تم التحديث",
+  "reward_amount": "مقدار المكافأة",
+  "periodic": "دوري",
+  "start_date": "تاريخ البدء",
+  "end_date": "تاريخ الانتهاء",
+  "notes": "الملاحظات",
+  "achieved_date": "تاريخ الإنجاز"
 }
