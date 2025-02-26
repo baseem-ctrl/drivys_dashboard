@@ -72,7 +72,7 @@ export default function HomeListingDialog({
 
   const router = useRouter();
 
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
   const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
@@ -85,6 +85,22 @@ export default function HomeListingDialog({
     displayTypeOptions[0]?.value ?? ''
   );
   const { language } = useGetAllLanguage(0, 1000);
+  const [translations, setTranslations] = useState({});
+
+  // Handle locale selection change
+  const handleLocaleChange = (event: SelectChangeEvent) => {
+    const newLocale = event.target.value;
+
+    // Find translation from updateValue if available
+    const existingTranslation = updateValue?.translations?.find((t) => t.locale === newLocale);
+
+    setTranslations((prev) => ({
+      ...prev,
+      [newLocale]: existingTranslation ? { title: existingTranslation.title } : { title: '' },
+    }));
+
+    setSelectedLanguage(newLocale);
+  };
 
   // Fetch categories and products data
   const { users } = useGetUsers({
@@ -99,7 +115,16 @@ export default function HomeListingDialog({
 
   // Validation schema
   const NewProductSchema = Yup.object().shape({
-    title: Yup.string().required(t('title is required')),
+    translation: Yup.object().shape(
+      Object.fromEntries(
+        Object.keys(translations || {}).map((lang) => [
+          lang,
+          Yup.object().shape({
+            title: Yup.string().required(t('Title is required')),
+          }),
+        ])
+      )
+    ),
     display_order: Yup.string().required(t('Display order is required')),
     // type: Yup.string(),
     published: Yup.boolean(),
@@ -119,39 +144,57 @@ export default function HomeListingDialog({
     setSelectedDisplayType(event.target.value);
   };
   // Default values based on updateValue or initial form values
-  const defaultValues = useMemo(
-    () => ({
-      title: updateValue?.title || '',
+  const defaultValues = useMemo(() => {
+    // Ensure selectedLocale is always defined
+    const locale = selectedLanguage || updateValue?.translations?.[0]?.locale || 'En';
+
+    // Convert translations array into an object with locale keys
+    const translationMap =
+      updateValue?.translations?.reduce((acc, item) => {
+        acc[item.locale] = { title: item.title || '' };
+        return acc;
+      }, {}) || {};
+
+    // Create a lookup map for users to avoid multiple .find() calls
+    const userMap =
+      users?.reduce((map, user) => {
+        map[user.id] = { label: user.name, value: user.id };
+        return map;
+      }, {}) || {};
+
+    return {
+      locale,
+      translation: translationMap,
       display_order: updateValue?.display_order || '',
-      sliders: updateValue?.sliders[0] || [],
+      sliders: updateValue?.sliders?.[0] || [],
       display_type: updateValue?.display_type || '',
       is_active: updateValue?.is_active === 1,
       catalogue_type: updateValue?.catalogue_type || '',
-      trainers: users
-        ? updateValue?.trainers?.map((trainer) => {
-            const user = users.find((option) => option.id === trainer?.trainer?.id);
-            return {
-              user_id: user ? { label: user?.name, value: user?.id } : '',
-            };
-          })
-        : [],
-    }),
-    [updateValue, today, users]
-  );
+      trainers:
+        updateValue?.trainers?.map((trainer) => ({
+          user_id: userMap[trainer?.trainer?.id] || '',
+        })) || [],
+    };
+  }, [updateValue, selectedLanguage, users]);
+
   const methods = useForm({
     resolver: yupResolver(NewProductSchema) as any,
     defaultValues,
   });
-
+  console.log('defaultValues', defaultValues);
+  console.log('updateValue', updateValue);
   const {
     reset,
     handleSubmit,
     watch,
     setValue,
+    getValues,
     control,
     formState: { isSubmitting, errors },
   } = methods;
   const values = watch();
+  const watchLocale = watch('locale'); // Watch locale changes
+  const selectedTitle = watch(`translation.${watchLocale}.title`) || ''; // Get title dynamically
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
@@ -174,7 +217,7 @@ export default function HomeListingDialog({
     }
 
     const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage;
-
+    console.log('selectedLocale', selectedLocale);
     // setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
     setSelectedImageIds(
       updateValue?.pictures
@@ -192,11 +235,13 @@ export default function HomeListingDialog({
   }, [updateValue, reset, defaultValues, selectedLanguage]);
 
   useEffect(() => {
-    if (updateValue?.pictures) {
-      setSelectedLanguage(updateValue?.pictures[0]?.locale);
+    if (updateValue?.translations && !selectedLanguage) {
+      console.log('Hgahsgahs');
+      setSelectedLanguage(updateValue?.translations[0]?.locale);
     }
-  }, [updateValue]);
+  }, [updateValue, selectedLanguage]);
 
+  console.log('selected language', selectedLanguage);
   useEffect(() => {
     if (users) setUserOptions(mapOptionsUser(users));
 
@@ -217,16 +262,31 @@ export default function HomeListingDialog({
   }
   // Handle form submission
   const onSubmit = handleSubmit(async (data) => {
+    console.log('button clikced');
     try {
       const formData = new FormData();
       if (updateValue?.id) {
         formData.append('home_listing_id', updateValue?.id);
       }
-      formData.append('title', data.title || '');
+      // formData.append('title', data.title || '');
       formData.append('display_order', data.display_order || '');
       formData.append('display_type', selectedDisplayType || '');
       formData.append('catalogue_type', 'TRAINER' || '');
       formData.append('is_active', data.is_active ? 1 : 0);
+
+      console.log('translation in function', translations);
+      const currentTranslations = getValues('translation'); // Get translations from the form
+      console.log('currentTranslations', currentTranslations);
+      Object.entries(currentTranslations)
+        .filter(
+          ([locale, values]) =>
+            locale !== 'undefined' && locale.trim() !== '' && values?.title?.trim()
+        ) // ✅ Ensures title is not empty
+        .forEach(([locale, values], index) => {
+          formData.append(`translation[${index}][locale]`, locale);
+          formData.append(`translation[${index}][title]`, values.title);
+        });
+
       // if (selectedImageIds.length > 0) {
       //   selectedImageIds.forEach((id, index) =>
       //     formData.append(
@@ -300,7 +360,22 @@ export default function HomeListingDialog({
     onClose();
     reset();
   };
+  useEffect(() => {
+    const currentTranslations = getValues('translation') || {}; // Get latest form data
+    console.log('currentTranslations:', currentTranslations);
 
+    if (!currentTranslations[selectedLanguage]) {
+      setValue(`translation.${selectedLanguage}.title`, ''); // ✅ Update only the translation field
+    } else {
+      setValue(
+        `translation.${selectedLanguage}.title`,
+        currentTranslations[selectedLanguage].title
+      );
+    }
+  }, [selectedLanguage, setValue, getValues]);
+  // Depend on getValues
+
+  console.log('errors', errors);
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <DialogTitle>{updateValue?.id ? title : 'Create Home Listing '}</DialogTitle>
@@ -317,8 +392,56 @@ export default function HomeListingDialog({
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="title" label={t('Title')} />
-              <RHFTextField name="display_order" label={t('Display Order')} />
+              <Controller
+                name="locale"
+                control={control}
+                defaultValue={selectedLanguage} // Ensure a default value is set
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    value={
+                      language?.some((lang: any) => lang.language_culture === field.value)
+                        ? field.value
+                        : ''
+                    }
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                      handleLocaleChange(event);
+                    }}
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      Locale
+                    </MenuItem>
+                    {language?.map((lang: any) => (
+                      <MenuItem key={lang.id} value={lang.language_culture}>
+                        {lang.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              <Controller
+                name={`translation.${watchLocale}.title`}
+                control={control}
+                defaultValue={translations?.[watchLocale]?.title || ''} // Ensure it dynamically picks the correct locale title
+                rules={{ required: t('Title is required') }}
+                render={({ field, fieldState }) => (
+                  <RHFTextField
+                    {...field}
+                    label={t('Title')}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error ? fieldState.error.message : ''}
+                  />
+                )}
+              />
+
+              {/* <RHFTextField name="title" label={t('Title')} /> */}
+              <RHFTextField
+                name="display_order"
+                label={t('Display Order')}
+                InputLabelProps={{ shrink: true }}
+              />
               <RHFTextField
                 name="catalogue_type"
                 label={t('Catalogue Type')}
@@ -342,14 +465,12 @@ export default function HomeListingDialog({
                   </Select>
                 )}
               />
-
               {/* <RHFMultiSelectAuto
                 name="Category"
                 label="Category"
                 options={categoryOptions}
                 defaultValue={defaultValues.Category}
               /> */}
-
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
