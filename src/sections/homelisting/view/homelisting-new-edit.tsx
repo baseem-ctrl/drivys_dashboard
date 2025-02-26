@@ -44,7 +44,7 @@ interface Props {
   title?: string;
   open: boolean;
   onClose: () => void;
-  updateValue: any;
+
   onReload: any;
 }
 const catalogueOptions = [
@@ -60,24 +60,19 @@ const displayTypeOptions = [
   { label: 'LIST', value: 'LIST' },
   { label: 'GRID', value: 'GRID' },
 ];
-export default function HomeListingDialog({
-  title = 'Update Home Listing',
+export default function HomeListingNewEdit({
+  title = 'Create Home Listing',
   open,
   onClose,
   onReload,
-  updateValue,
 }: Props) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const router = useRouter();
-
-  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('En');
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
-  const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
+
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
-  const [categoryOptions, setCategoryOptions] = useState([]);
-  const [productOptions, setProductOptions] = useState([]);
   const [userOptions, setUserOptions] = useState([]);
   const [trainers, setTrainer] = useState<any>([]);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[1]?.value ?? '');
@@ -88,19 +83,6 @@ export default function HomeListingDialog({
   const [translations, setTranslations] = useState({});
 
   // Handle locale selection change
-  const handleLocaleChange = (event: SelectChangeEvent) => {
-    const newLocale = event.target.value;
-
-    // Find translation from updateValue if available
-    const existingTranslation = updateValue?.translations?.find((t) => t.locale === newLocale);
-
-    setTranslations((prev) => ({
-      ...prev,
-      [newLocale]: existingTranslation ? { title: existingTranslation.title } : { title: '' },
-    }));
-
-    setSelectedLanguage(newLocale);
-  };
 
   // Fetch categories and products data
   const { users } = useGetUsers({
@@ -110,8 +92,6 @@ export default function HomeListingDialog({
     is_verified: 1,
   });
   // const { products } = useGetProducts({ page: 0, limit: 1000 });
-
-  const today = moment().format('YYYY-MM-DD');
 
   // Validation schema
   const NewProductSchema = Yup.object().shape({
@@ -129,57 +109,15 @@ export default function HomeListingDialog({
     // type: Yup.string(),
     published: Yup.boolean(),
     sliders: Yup.array().nullable(),
-    trainers: Yup.mixed().test('is-required', 'Trainer is required', function (value) {
-      // Check if `value` is an object and has a valid `id`
-      if (value && typeof value === 'object') {
-        return true; // Pass validation
-      }
-      return this.createError({ path: this.path, message: 'Trainer is required' });
-    }),
   });
-  const handleChangeCatalogue = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedCatalogue(event.target.value);
-  };
+
   const handleChangeDisplayType = (event: { target: { value: SetStateAction<string> } }) => {
     setSelectedDisplayType(event.target.value);
   };
   // Default values based on updateValue or initial form values
-  const defaultValues = useMemo(() => {
-    // Ensure selectedLocale is always defined
-    const locale = selectedLanguage || updateValue?.translations?.[0]?.locale || 'En';
-
-    // Convert translations array into an object with locale keys
-    const translationMap =
-      updateValue?.translations?.reduce((acc, item) => {
-        acc[item.locale] = { title: item.title || '' };
-        return acc;
-      }, {}) || {};
-
-    // Create a lookup map for users to avoid multiple .find() calls
-    const userMap =
-      users?.reduce((map, user) => {
-        map[user.id] = { label: user.name, value: user.id };
-        return map;
-      }, {}) || {};
-
-    return {
-      locale,
-      translation: translationMap,
-      display_order: updateValue?.display_order || '',
-      sliders: updateValue?.sliders?.[0] || [],
-      display_type: updateValue?.display_type || '',
-      is_active: updateValue?.is_active === 1,
-      catalogue_type: updateValue?.catalogue_type || '',
-      trainers:
-        updateValue?.trainers?.map((trainer) => ({
-          user_id: userMap[trainer?.trainer?.id] || '',
-        })) || [],
-    };
-  }, [updateValue, selectedLanguage, users]);
 
   const methods = useForm({
     resolver: yupResolver(NewProductSchema) as any,
-    defaultValues,
   });
   const {
     reset,
@@ -190,9 +128,7 @@ export default function HomeListingDialog({
     control,
     formState: { isSubmitting, errors },
   } = methods;
-  const values = watch();
-  const watchLocale = watch('locale'); // Watch locale changes
-  const selectedTitle = watch(`translation.${watchLocale}.title`) || ''; // Get title dynamically
+  const watchLocale = watch('locale');
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
@@ -210,34 +146,7 @@ export default function HomeListingDialog({
     }));
 
   useEffect(() => {
-    if (updateValue) {
-      reset(defaultValues);
-    }
-
-    const selectedLocale = selectedLanguage?.language_culture ?? selectedLanguage;
-    // setSelectedImageIds(updateValue?.pictures?.map((item: { picture_id: any; }) => Number(item.picture_id)))
-    setSelectedImageIds(
-      updateValue?.pictures
-        ?.filter((item) => item?.locale === selectedLocale)
-        .map((item) => Number(item.picture_id))
-    );
-    setSelectedArrayIds(
-      updateValue?.pictures?.filter((item) => item?.locale === selectedLocale) // Filter for locale "en"
-    );
-
-    // selectedLanguage
-    setSelectedArrayIds(updateValue?.pictures);
-
-    setTrainer(updateValue?.trainers);
-  }, [updateValue, reset, defaultValues, selectedLanguage]);
-
-  useEffect(() => {
-    if (updateValue?.translations && !selectedLanguage) {
-      setSelectedLanguage(updateValue?.translations[0]?.locale);
-    }
-  }, [updateValue, selectedLanguage]);
-
-  useEffect(() => {
+    reset();
     if (users) setUserOptions(mapOptionsUser(users));
 
     // if (products) setProductOptions(mapOptions(products, 'product_translations'));
@@ -259,10 +168,7 @@ export default function HomeListingDialog({
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
-      if (updateValue?.id) {
-        formData.append('home_listing_id', updateValue?.id);
-      }
-      // formData.append('title', data.title || '');
+
       formData.append('display_order', data.display_order || '');
       formData.append('display_type', selectedDisplayType || '');
       formData.append('catalogue_type', 'TRAINER' || '');
@@ -279,29 +185,6 @@ export default function HomeListingDialog({
           formData.append(`translation[${index}][title]`, values.title);
         });
 
-      // if (selectedImageIds.length > 0) {
-      //   selectedImageIds.forEach((id, index) =>
-      //     formData.append(
-      //       `picture_ids[${index}][locale]`,
-      //       selectedLanguage?.language_culture ?? selectedLanguage
-      //     )
-      //   );
-      // }
-
-      // if (selectedImageIds && selectedImageIds.length > 0) {
-      //   selectedImageIds.forEach((id, index) =>
-      //     formData.append(`sliders[${index}]`, id.toString())
-      //   );
-      // }
-      //   if (selectedImageIds.length > 0) {
-      //     selectedImageIds.forEach((id, index) =>
-      //       formData.append(
-      //         `picture_ids[${index}][locale]`,
-      //         selectedLanguage?.language_culture ?? selectedLanguage
-      //       )
-      //     );
-      //   }
-
       if (data?.trainers?.length > 0) {
         data.trainers.forEach((trainerItem, index) => {
           const userId = trainerItem?.id?.value;
@@ -314,15 +197,10 @@ export default function HomeListingDialog({
       // Send form data to API
       const response = await createHomeListing(formData);
       if (response) {
-        if (updateValue?.id) {
-          enqueueSnackbar('Home Listing Updated successfully', {
-            variant: 'success',
-          });
-        } else {
-          enqueueSnackbar('Home Listing Created successfully', {
-            variant: 'success',
-          });
-        }
+        enqueueSnackbar('Home Listing Created successfully', {
+          variant: 'success',
+        });
+
         reset();
         onClose();
         onReload();
@@ -333,42 +211,33 @@ export default function HomeListingDialog({
         Object.values(error.errors).forEach((errorMessage: any) => {
           enqueueSnackbar(errorMessage[0], { variant: 'error' });
         });
-      } else {
-        if (data?.trainers?.length) {
-          data?.trainers?.map((items) => {
-            if (!items?.user_id)
-              return enqueueSnackbar('Please select a trainer', {
-                variant: 'error',
-              });
-          });
-        } else {
-          enqueueSnackbar(error.message, { variant: 'error' });
-        }
       }
+    } finally {
+      setValue('trainers', []);
+      setValue('display_order', '');
+      setValue('published', false);
+      setValue('sliders', null);
+      reset({
+        translation: {},
+        display_order: '',
+        published: false,
+        sliders: null,
+        trainers: null,
+      });
+
+      reset();
     }
   });
 
   const handleClose = () => {
     onClose();
+
     reset();
   };
-  useEffect(() => {
-    const currentTranslations = getValues('translation') || {};
-
-    if (!currentTranslations[selectedLanguage]) {
-      setValue(`translation.${selectedLanguage}.title`, '');
-    } else {
-      setValue(
-        `translation.${selectedLanguage}.title`,
-        currentTranslations[selectedLanguage].title
-      );
-    }
-  }, [selectedLanguage, setValue, getValues]);
-  // Depend on getValues
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>{updateValue?.id ? title : 'Create Home Listing '}</DialogTitle>
+      <DialogTitle> {title}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid xs={12} md={8}>
@@ -394,10 +263,6 @@ export default function HomeListingDialog({
                         ? field.value
                         : ''
                     }
-                    onChange={(event) => {
-                      field.onChange(event.target.value);
-                      handleLocaleChange(event);
-                    }}
                     displayEmpty
                   >
                     <MenuItem value="" disabled>
@@ -455,12 +320,7 @@ export default function HomeListingDialog({
                   </Select>
                 )}
               />
-              {/* <RHFMultiSelectAuto
-                name="Category"
-                label="Category"
-                options={categoryOptions}
-                defaultValue={defaultValues.Category}
-              /> */}
+
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
@@ -499,7 +359,7 @@ export default function HomeListingDialog({
 
             <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {updateValue?.id ? t('Save') : t('Create')}
+                {t('Create')}
               </LoadingButton>
             </Stack>
           </Grid>
