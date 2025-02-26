@@ -51,6 +51,7 @@ import { STATUS_OPTIONS } from 'src/_mock/_school';
 import { deleteHomeListing, useGetHomeListing } from 'src/api/homelisting';
 import { useGetAllLanguage } from 'src/api/language';
 import HomeListingDialog from '../home-listing-dailogue';
+import HomeListingNewEdit from './homelisting-new-edit';
 
 // ----------------------------------------------------------------------
 
@@ -326,7 +327,7 @@ export default function HomelistingListView() {
           />
         </Card>
       </Container>
-      <HomeListingDialog
+      <HomeListingNewEdit
         open={quickCreate.value}
         onClose={quickCreate.onFalse}
         onReload={revalidateHomeListing}

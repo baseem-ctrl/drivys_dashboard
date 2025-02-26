@@ -54,6 +54,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
   );
+  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 
@@ -244,7 +245,12 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               {/* Details Section */}
               <Stack spacing={2} sx={{ flex: 1 }}>
                 {[
-                  { label: 'Title', value: details?.title ?? 'N/A' },
+                  ...(details?.translations?.length
+                    ? details.translations.map((t) => ({
+                        label: `Title (${t.locale})`,
+                        value: t.title ?? 'N/A',
+                      }))
+                    : [{ label: 'Title', value: 'N/A' }]),
                   { label: 'Display Order', value: details?.display_order ?? 'NA' },
                   { label: 'Catalogue Type', value: details?.catalogue_type ?? 'NA' },
                   { label: 'Display Type', value: details?.display_type ?? 'NA' },

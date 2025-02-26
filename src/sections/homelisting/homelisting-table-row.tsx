@@ -70,7 +70,7 @@ export default function HomeListingTableRow({
   const [selectedDisplayType, setSelectedDisplayType] = useState(
     displayTypeOptions[0]?.value ?? ''
   );
-
+  console.log('row', row);
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();
@@ -185,7 +185,9 @@ export default function HomeListingTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{title || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.translations.length > 0 ? row.translations[0].title : 'N/A'}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.catalogue_type || 'N/A'}</TableCell>
 
