@@ -36,7 +36,7 @@ export default function ToDoListViewVerification() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="To Do List"
+        heading={t('to_do_list')}
         links={[
           { name: t('dashboard'), href: paths.dashboard.root },
           { name: t('to_do'), href: paths.dashboard.todo.root },
@@ -50,7 +50,7 @@ export default function ToDoListViewVerification() {
           onFilters={handleFilters}
           searchValue={searchValue}
           setSearchValue={setSearchValue}
-          placeholder="Search with trainer name, email, school name..."
+          placeholder={t('search_placeholder_to_list')}
         />
       </Grid>
       <Grid>

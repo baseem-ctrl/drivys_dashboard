@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
+import { useLocales } from 'src/locales';
 
 import {
   Card,
@@ -24,24 +25,13 @@ import { useGetEligibleRewardTrainerList } from 'src/api/loyality';
 import PendingRewardTableRow from '../pending-rewards-table-row';
 import TrainerRewardFilters from '../trainer-reward-filter';
 
-const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer', width: 180 },
-  { id: 'reward-amount', label: 'Reward Amount', width: 180 },
-  { id: 'is-periodic', label: 'Periodic', width: 220 },
-
-  { id: 'start-date', label: 'Start Date', width: 220 },
-  { id: 'end-date', label: 'End Date', width: 220 },
-  { id: 'notes', label: 'Notes', width: 180 },
-
-  { id: 'achieved-date', label: 'Achieved Date', width: 200 },
-  { id: 'notes', label: '', width: 250 },
-];
-
 const defaultFilters = {
   trainer_id: null,
 };
 
 export default function PendingRewardListView({ table, filters, setFilters, searchValue }) {
+  const { t } = useLocales();
+
   const {
     eligibleRewardTrainers,
     eligibleRewardTrainersLoading,
@@ -56,6 +46,17 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
     // ...(filters?.city_id && { city_id: filters.city_id }),
     ...(filters?.trainer_id && { trainer_id: filters.trainer_id }),
   });
+  const TABLE_HEAD = [
+    { id: 'trainer-name', label: t('trainer'), width: 180 },
+    { id: 'reward-amount', label: t('reward_amount'), width: 180 },
+    { id: 'is-periodic', label: t('periodic'), width: 220 },
+    { id: 'start-date', label: t('start_date'), width: 220 },
+    { id: 'end-date', label: t('end_date'), width: 220 },
+    { id: 'notes', label: t('notes'), width: 180 },
+    { id: 'achieved-date', label: t('achieved_date'), width: 200 },
+    { id: 'notes', label: '', width: 250 },
+  ];
+
   const openFilters = useBoolean();
 
   const [tableData, setTableData] = useState([]);
@@ -86,7 +87,6 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
-  console.log('filtered', filters);
   const canReset = !isEqual(defaultFilters, filters);
 
   const renderFilters = (
@@ -129,7 +129,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
             )
           }
           action={
-            <Tooltip title="Delete">
+            <Tooltip title={t('delete')}>
               <IconButton onClick={confirm.onTrue}>
                 <Iconify icon="solar:trash-bin-trash-bold" />
               </IconButton>
@@ -175,7 +175,7 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
                 <TableRow>
                   <TableCell colSpan={TABLE_HEAD?.length} align="center">
                     <Typography variant="h6" color="textSecondary">
-                      No data available
+                      {t('no_data_available')}
                     </Typography>
                   </TableCell>
                 </TableRow>

@@ -2,6 +2,7 @@ import moment from 'moment';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useLocales } from 'src/locales';
 import Label from 'src/components/label';
 import { usePopover } from 'src/components/custom-popover';
 import {
@@ -33,6 +34,7 @@ export default function RefundTableRow({
 }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useLocales();
 
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
@@ -247,7 +249,7 @@ export default function RefundTableRow({
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {refundStatus === 'approved' ? (
               <Button variant="outlined" color="primary" onClick={handleRefundAmountClick}>
-                Refund
+                {t('refund')}
               </Button>
             ) : (
               <Select
@@ -313,7 +315,7 @@ export default function RefundTableRow({
           .local()
           .format('DD/MM/YY h:mm a')}
         <Typography color="text.secondary" sx={{ fontSize: '0.925rem' }}>
-          Updated{' '}
+          {t('updated')}{' '}
           {moment(row?.updated_at)
             .local()
             .format('DD/MM/YY h:mm a')}

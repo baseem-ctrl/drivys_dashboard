@@ -5,6 +5,7 @@ import RefundListView from './view/refund-list-view';
 import PendingRequests from 'src/sections/overview/e-commerce/ecommerce-pending-trainer-request';
 import TodoListSearch from '../todo-pending-request-filter';
 import { useCallback, useState } from 'react';
+import { useLocales } from 'src/locales';
 import { useTable } from 'src/components/table';
 import { IUserTableFilterValue } from 'src/types/city';
 
@@ -17,6 +18,8 @@ const defaultFilters = {
 };
 
 export default function ToDoListViewRefund() {
+  const { t } = useLocales();
+
   const [filters, setFilters] = useState(defaultFilters);
   const [searchValue, setSearchValue] = useState('');
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
@@ -35,17 +38,17 @@ export default function ToDoListViewRefund() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="To Do List"
+        heading={t('to_do_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'To Do', href: paths.dashboard.todo.pendingRefund },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('to_do'), href: paths.dashboard.todo.root },
+          { name: t('list') },
         ]}
         sx={{ mb: 3 }}
       />
       <Grid item sx={{ mb: 3 }}>
         <TodoListSearch
-          placeholder="Search with student's name, driver's name, city's name, category's name..."
+          placeholder={t('search_placeholder_to_list_refund')}
           filters={filters}
           onFilters={handleFilters}
           searchValue={searchValue}

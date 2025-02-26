@@ -6,9 +6,12 @@ import { Button } from '@mui/material';
 import { Tooltip, Typography, Chip, Box } from '@mui/material';
 import { unverifyTrainerProfile } from 'src/api/trainerProfileUpdates';
 import { paths } from 'src/routes/paths';
+import { useLocales } from 'src/locales';
 
 export default function TrainerProfileUpdateRow({ row, selected, reload }) {
   const router = useRouter();
+  const { t } = useLocales();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const updatedFields = row?.updated_fields || {};
@@ -19,7 +22,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
 
     try {
       const response = await unverifyTrainerProfile(formData);
-      enqueueSnackbar(response.message ?? 'Trainer status changed successfully', {
+      enqueueSnackbar(response.message ?? t('trainer_status_changed_successfully'), {
         variant: 'success',
       });
 
@@ -125,8 +128,9 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                         {field.toLocaleUpperCase()}
                       </Typography>
                       <Typography variant="body2" component="span" sx={{ color: '#555' }}>
-                        changed from{' '}
+                        {t('changed_from')}{' '}
                       </Typography>
+
                       <Typography
                         variant="body2"
                         component="span"
@@ -140,8 +144,9 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                         {change.old || 'N/A'}
                       </Typography>
                       <Typography variant="body2" component="span" sx={{ color: '#555' }}>
-                        to{' '}
+                        {t('to')}
                       </Typography>
+
                       <Typography
                         variant="body2"
                         component="span"
@@ -156,7 +161,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                     </>
                   ) : (
                     <Typography variant="body2" component="span" sx={{ color: '#888' }}>
-                      No changes
+                      {t('no_changes')}
                     </Typography>
                   )}
                 </Box>
@@ -169,7 +174,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
       <TableCell>
         <Box display="flex" alignItems="center">
           <Chip
-            label={row?.user?.verified_at ? 'Yes' : 'No'}
+            label={row?.user?.verified_at ? t('yes') : t('no')}
             color={row?.user?.verified_at ? 'success' : 'error'}
             variant="contained"
           />
@@ -199,7 +204,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                   },
                 }}
               >
-                Unverify
+                {t('unverify')}{' '}
               </Button>
             </span>
           </Tooltip>

@@ -3,6 +3,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { paths } from 'src/routes/paths';
 import { useCallback, useState } from 'react';
 import { useTable } from 'src/components/table';
+import { useLocales } from 'src/locales';
 import { IUserTableFilterValue } from 'src/types/city';
 import PendingRewardListView from './view/pending-reward-list-view';
 
@@ -15,6 +16,8 @@ const defaultFilters = {
 };
 
 export default function ToDoListPendingReward() {
+  const { t } = useLocales();
+
   const [filters, setFilters] = useState(defaultFilters);
   const [searchValue, setSearchValue] = useState('');
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
@@ -33,14 +36,15 @@ export default function ToDoListPendingReward() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="To Do List"
+        heading={t('to_do_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'To Do', href: paths.dashboard.todo.trainerPendingRewards },
-          { name: 'Pending Trainer Rewards' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('to_do'), href: paths.dashboard.todo.trainerPendingRewards },
+          { name: t('pending_trainer_rewards') },
         ]}
         sx={{ mb: 3 }}
       />
+
       {/* <Grid item sx={{ mb: 3 }}>
         <TodoListSearch
           placeholder="Search with student's name, driver's name, city's name, category's name..."
