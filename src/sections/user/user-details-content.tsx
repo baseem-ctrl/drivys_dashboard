@@ -1831,7 +1831,7 @@ export default function UserDetailsContent({
                 <StudentDetailsContent id={details?.id} />
               )}
               {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
-                <TrainerWorkingHour userId={details?.id} />
+                <TrainerWorkingHour userId={details?.id} details={details} />
               )}
 
               {/*<----- For trainer user type with 3 tabs ----> */}

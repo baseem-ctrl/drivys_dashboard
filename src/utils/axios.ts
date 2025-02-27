@@ -221,6 +221,11 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    shift: {
+      create: 'admin/trainer-working-hours/shifts/set-shift-by-admin',
+      get: 'admin/trainer-working-hours/shifts/get-shifts-by-admin',
+      delete: 'admin/trainer-working-hours/shifts/delete-shift-by-admin',
+    },
     leaveDates: 'admin/leave/get-leave-list',
     noschool: 'admin/user/get-trainer-list-non-vendor',
   },

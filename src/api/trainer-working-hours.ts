@@ -107,3 +107,40 @@ export function useGetLeaveDatesByTrainerId(userId: number | string) {
 
   return { ...memoizedValue, revalidateLeaveDates };
 }
+// Function to create or update shift
+export function createShift(body: Record<string, any>) {
+  const response = drivysCreator([endpoints.trainer.shift.create, body]);
+  return response;
+}
+
+// ----------------------------------------------------------------------
+// Function to delete shift by ID
+export function deleteShiftById(trainer_id: number | string) {
+  const URL = `${endpoints.trainer.shift.delete}?id=${trainer_id}`;
+  const response = drivysSmasher(URL);
+  return response;
+}
+export function useGetShiftsByTrainerId(trainer_id: number | string) {
+  const getShiftsUrl = () => `${endpoints.trainer.shift.get}?trainer_id=${trainer_id}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    trainer_id ? getShiftsUrl() : null,
+    drivysFetcher
+  );
+
+  const memoizedValue = useMemo(
+    () => ({
+      shifts: data?.data || [],
+      shiftsLoading: isLoading,
+      shiftsError: error,
+      shiftsValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateShifts = () => {
+    mutate(getShiftsUrl);
+  };
+
+  return { ...memoizedValue, revalidateShifts };
+}
