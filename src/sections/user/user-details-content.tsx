@@ -492,6 +492,10 @@ export default function UserDetailsContent({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 { label: 'Name', value: details?.name ?? 'N/A' },
+                ...(details?.user_type === 'TRAINER'
+                  ? [{ label: 'Name(Ar)', value: details?.name_ar ?? 'N/A' }]
+                  : []),
+
                 { label: 'Email', value: details?.email ?? 'N/A' },
                 {
                   label: 'Phone Number',

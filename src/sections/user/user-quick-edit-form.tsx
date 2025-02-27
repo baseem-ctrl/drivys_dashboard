@@ -67,6 +67,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
   }, [enumData]);
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
+    name_ar: Yup.string(),
+
     email: Yup.string()
       .required('Email is required')
       .matches(/^[^@]+@[^@]+\.[^@]+$/, 'Email must be in the valid format'),
@@ -87,6 +89,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
+      name_ar: currentUser?.name_ar || '',
+
       email: currentUser?.email || '',
       password: '',
       phone: currentUser?.phone || '',
@@ -117,10 +121,14 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       reset(defaultValues);
     }
   }, [currentUser, defaultValues, reset]);
+  console.log('Heyyyy', currentUser?.user_type);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const body = new FormData();
       body.append('name', data?.name);
+      if (currentUser?.user_type) {
+        body.append('name_ar', data?.name_ar);
+      }
       body.append('email', data?.email);
       body.append('password', data?.password);
       body.append('phone', data?.phone);
@@ -190,6 +198,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 ))}
             </RHFSelect>
             <RHFTextField name="name" label="Full Name" />
+            {values.user_type === 'TRAINER' && (
+              <RHFTextField name="name_ar" label="Name (Ar)" />
+            )}{' '}
             <RHFTextField name="email" label="Email Address" />
             <RHFTextField
               name="password"
