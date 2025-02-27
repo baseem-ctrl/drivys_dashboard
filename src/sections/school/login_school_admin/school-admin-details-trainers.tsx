@@ -130,6 +130,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const defaultValues = useMemo(
     () => ({
       name: editDetails?.user?.name || '',
+      name_ar: editDetails?.user?.name_ar || '',
       email: editDetails?.user?.email || '',
       password: '',
 
@@ -184,6 +185,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   const onSubmit = async (data: any) => {
     const body: any = {
       name: data?.name,
+      name_ar: data?.name_ar,
       email: data?.email,
       password: data?.password,
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
@@ -228,6 +230,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     setTrainerMappingId(trainer?.id);
     setIndex(index);
   };
+  console.log('schoolTrainersList', schoolTrainersList);
   const handleRemove = async () => {
     try {
       if (trainerMappingId) {
@@ -271,7 +274,9 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       sm: 'repeat(2, 1fr)', // Use 2 columns on larger screens
                     }}
                   >
-                    <RHFTextField name="name" label="Full Name" fullWidth />
+                    <RHFTextField name="name" label="Name (En)" fullWidth />
+                    <RHFTextField name="name_ar" label="Name (Ar)" fullWidth />
+
                     <RHFTextField name="email" label="Email Address" fullWidth />
                     <RHFTextField
                       name="password"
@@ -471,7 +476,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                 </Stack>
                 <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                   {[
-                    // { label: 'Name', value: items?.name ?? 'N/A' },
+                    { label: 'Name (Ar)', value: trainer?.user?.name_ar ?? 'N/A' },
                     {
                       label: 'Phone Number',
                       value: trainer?.user?.country_code

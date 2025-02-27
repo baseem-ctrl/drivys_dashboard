@@ -148,6 +148,7 @@ export default function UserNewEditForm({
   // const [schoolOptions, setSchoolOptions] = useState();
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
+    name_ar: Yup.string(),
     email: Yup.string()
       .required('Email is required')
       .matches(/^[^@]+@[^@]+\.[^@]+$/, 'Email must be in the valid format'),
@@ -269,6 +270,7 @@ export default function UserNewEditForm({
       name: currentUser?.name || '',
       user_type: currentUser?.user_type || '',
       email: currentUser?.email || '',
+      name_ar: currentUser?.name_ar || '',
       password: '',
       phone: currentUser?.phone || '',
 
@@ -508,6 +510,7 @@ export default function UserNewEditForm({
         // if (data?.is_pickup_enabled)
         body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
         if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
+        if (data?.name_ar) body.append('name_ar', data?.name_ar);
         if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
         if (data?.min_price) body.append('min_price', data?.min_price);
         if (data?.school_commission_in_percentage)
@@ -736,6 +739,14 @@ export default function UserNewEditForm({
                 error={!!errors.name}
                 helperText={errors.name?.message || ''}
               />
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name="name_ar"
+                  label="Name (Ar)"
+                  error={!!errors.name_ar}
+                  helperText={errors.name_ar?.message || ''}
+                />
+              )}
               <RHFTextField
                 name="email"
                 label="Email Address"
@@ -788,6 +799,7 @@ export default function UserNewEditForm({
               {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               )}
+
               {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
                 <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
               )}

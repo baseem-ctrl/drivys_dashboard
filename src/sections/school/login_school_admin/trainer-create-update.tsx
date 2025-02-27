@@ -49,13 +49,15 @@ type Props = {
 export default function TrainerCreateEditForm({ currentUser, open, onClose, reload }: Props) {
   const { user } = useAuthContext();
   const [searchValue, setSearchValue] = useState('');
-
+  console.log('currentUser', currentUser);
   const { enqueueSnackbar } = useSnackbar();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
+    name_ar: Yup.string(),
+
     email: Yup.string()
       .required('Email is required')
       .matches(/^[^@]+@[^@]+\.[^@]+$/, 'Email must be in the valid format'),
@@ -112,6 +114,7 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
     () => ({
       name: currentUser?.user?.name || '',
       email: currentUser?.user?.email || '',
+      name_ar: currentUser?.user?.name_ar || '',
       password: '',
       phone: currentUser?.user?.phone || '',
       country_code: currentUser?.country_code || '',
@@ -162,6 +165,7 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
     try {
       const body = new FormData();
       body.append('name', data?.name);
+      body.append('name_ar', data?.name_ar);
       body.append('email', data?.email);
       body.append('password', data?.password);
       body.append('phone', data?.phone);
@@ -236,7 +240,8 @@ export default function TrainerCreateEditForm({ currentUser, open, onClose, relo
             }}
             pt={3}
           >
-            <RHFTextField name="name" label="Full Name" />
+            <RHFTextField name="name" label="Name (En)" />
+            <RHFTextField name="name_ar" label="Name (Ar)" />
             <RHFTextField name="email" label="Email Address" />
             <RHFTextField
               name="password"
