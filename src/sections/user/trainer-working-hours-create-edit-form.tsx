@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import moment from 'moment';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,6 +22,7 @@ type Props = {
   open: boolean;
   onClose: VoidFunction;
   currentWorkingHour?: any;
+  shifts?: any;
   reload: VoidFunction;
   userId: number | string;
 };
@@ -33,8 +34,10 @@ export default function WorkingHoursCreateEditForm({
   onClose,
   reload,
   userId,
+  shifts,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   // Validation schema
   const WorkingHoursSchema = Yup.object().shape({
@@ -182,26 +185,60 @@ export default function WorkingHoursCreateEditForm({
             {/* Is Full Day */}
           </Box>
           <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-            {predefinedTimeSlots.map((time, chipIndex) => (
-              <Button
-                key={chipIndex}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setValue(
-                    `working_hours.${fields.length - 1}.start_time`,
-                    moment(time.start, 'HH:mm').toDate()
+            {shifts &&
+              shifts.map((shift, index) => {
+                const startTime = moment(shift.shift_start_time, 'HH:mm:ss');
+                const endTime = moment(shift.shift_end_time, 'HH:mm:ss');
+                let timeSlots = [];
+
+                while (startTime.isBefore(endTime)) {
+                  const nextSlot = moment(startTime).add(90, 'minutes');
+                  if (nextSlot.isAfter(endTime)) break;
+
+                  timeSlots.push({
+                    start: startTime.format('HH:mm'),
+                    end: nextSlot.format('HH:mm'),
+                  });
+
+                  startTime.add(90, 'minutes');
+                }
+
+                return timeSlots.map((slot, slotIndex) => {
+                  const isSelected =
+                    selectedSlot &&
+                    selectedSlot.start === slot.start &&
+                    selectedSlot.end === slot.end;
+
+                  return (
+                    <Button
+                      key={`${index}-${slotIndex}`}
+                      variant={isSelected ? 'outlined' : 'contained'}
+                      color="primary"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedSlot(null);
+                          setValue(`working_hours.${fields.length - 1}.start_time`, null);
+                          setValue(`working_hours.${fields.length - 1}.end_time`, null);
+                        } else {
+                          setSelectedSlot(slot);
+                          setValue(
+                            `working_hours.${fields.length - 1}.start_time`,
+                            moment(slot.start, 'HH:mm').toDate()
+                          );
+                          setValue(
+                            `working_hours.${fields.length - 1}.end_time`,
+                            moment(slot.end, 'HH:mm').toDate()
+                          );
+                        }
+                      }}
+                    >
+                      {`${slot.start} - ${slot.end}`}
+                    </Button>
                   );
-                  setValue(
-                    `working_hours.${fields.length - 1}.end_time`,
-                    moment(time.end, 'HH:mm').toDate()
-                  );
-                }}
-              >
-                {`${time.label} ${time.start} - ${time.end}`}
-              </Button>
-            ))}
+                });
+              })}
           </Box>
+
           <RHFSwitch name="is_full_day" label="Is Full Day" />
 
           {/* Shifts */}
@@ -217,6 +254,7 @@ export default function WorkingHoursCreateEditForm({
                       label="Start Time"
                       ampm={false}
                       {...field}
+                      disabled
                       onChange={(newValue) => field.onChange(newValue)}
                     />
                   )}
@@ -228,6 +266,7 @@ export default function WorkingHoursCreateEditForm({
                     <TimePicker
                       label="End Time"
                       ampm={false}
+                      disabled
                       {...field}
                       onChange={(newValue) => field.onChange(newValue)}
                     />

@@ -742,7 +742,7 @@ export default function UserDetailsContentAdmin({
                 <StudentDetailsContent id={details?.id} />
               )}
               {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
-                <TrainerWorkingHour userId={details?.id} />
+                <TrainerWorkingHour userId={details?.id} details={details} />
               )}
               <Grid xs={12} md={12}>
                 {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (

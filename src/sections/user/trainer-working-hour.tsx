@@ -13,6 +13,8 @@ import {
   TableCell,
   Button,
   Chip,
+  Tooltip,
+  Alert,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -23,31 +25,39 @@ import Table from '@mui/material/Table';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import {
+  deleteShiftById,
   deleteWorkingHoursById,
   useGetLeaveDatesByTrainerId,
+  useGetShiftsByTrainerId,
   useGetWorkingHoursByUserId,
 } from 'src/api/trainer-working-hours';
 import Iconify from 'src/components/iconify';
 import { useState } from 'react';
 import WorkingHoursCreateEditForm from './trainer-working-hours-create-edit-form';
+import CreateTrainerShiftForm from './trainer-create-shift';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   userId: number | string;
+  details: any;
 };
 
-export default function TrainerWorkingHour({ userId }: Props) {
+export default function TrainerWorkingHour({ userId, details }: Props) {
   const { workingHours, workingHoursLoading, workingHoursError, revalidateWorkingHours } =
     useGetWorkingHoursByUserId(userId);
+  const { shifts, shiftsLoading, shiftsError, revalidateShifts } = useGetShiftsByTrainerId(userId);
   const { leaveDates, leaveDatesLoading, leaveDatesError, revalidateLeaveDates } =
     useGetLeaveDatesByTrainerId(userId);
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');
+  const deletePopover = usePopover();
+  const [selectedShift, setSelectedShift] = useState(null);
 
   const popover = usePopover();
   const confirm = useBoolean();
   const quickEdit = useBoolean();
+  const createShift = useBoolean();
 
   const handleDeleteWorkingHour = async (id: string) => {
     const response = await deleteWorkingHoursById(id);
@@ -88,9 +98,29 @@ export default function TrainerWorkingHour({ userId }: Props) {
       </Box>
     );
   }
+  const handleDeleteShift = async (id: string) => {
+    try {
+      await deleteShiftById(id);
+      enqueueSnackbar('Shift deleted successfully', { variant: 'success' });
+      revalidateShifts();
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage: any) => {
+          enqueueSnackbar(errorMessage[0], { variant: 'error' });
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    } finally {
+      deletePopover.onClose();
+    }
+  };
   const handleCreateWorkingHours = () => {
     setSelectedWorkingHour(null);
     quickEdit.onTrue();
+  };
+  const handleCreateShift = () => {
+    createShift.onTrue();
   };
   const groupedWorkingHours = (workingHours || []).reduce(
     (acc, hour) => {
@@ -120,28 +150,103 @@ export default function TrainerWorkingHour({ userId }: Props) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-          {!workingHours || workingHours.length === 0 ? (
-            <Box sx={{ textAlign: 'left', mt: 2 }}>
-              <Typography variant="body1" sx={{ color: '#CF5A0D' }}>
-                No working hours available. You can add using 'Add Work Hours'.
-              </Typography>
-            </Box>
-          ) : null}
+        <Grid item xs={12}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 1 }}>
+            <Button
+              sx={{ mb: 4, mt: 2 }}
+              variant="contained"
+              color="primary"
+              disabled={!details?.is_active}
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => handleCreateShift()}
+            >
+              Add Shift
+            </Button>
+          </Box>
 
-          <Button
-            sx={{ mb: 4, mt: 2 }}
-            variant="contained"
-            color="primary"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => handleCreateWorkingHours()}
-          >
-            Add Work Hours
-          </Button>
-        </Box>
+          {shifts.length > 0 && (
+            <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+              Trainer Shifts:
+            </Typography>
+          )}
+          {shiftsLoading ? (
+            <Typography>Loading shifts...</Typography>
+          ) : shiftsError ? (
+            <Typography color="error">Error loading shifts</Typography>
+          ) : shifts.length > 0 ? (
+            <Card>
+              <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Shift Start Time</TableCell>
+                      <TableCell>Shift End Time</TableCell>
+                      <TableCell>Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {shifts.map((shift) => (
+                      <TableRow key={shift.id}>
+                        <TableCell>{shift.shift_start_time}</TableCell>
+                        <TableCell>{shift.shift_end_time}</TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedShift(shift);
+                              deletePopover.onOpen(e);
+                            }}
+                          >
+                            <Iconify icon="eva:trash-2-outline" color="error" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Card>
+          ) : (
+            <Box display="flex" justifyContent="flex-start" alignItems="center" height="100%">
+              {details?.is_active ? (
+                <Typography variant="subtitle1" color="primary">
+                  No shifts available. Please create a shift
+                </Typography>
+              ) : (
+                <Typography variant="subtitle1" color="primary">
+                  Shift creation is disabled as the trainer is inactive.
+                </Typography>
+              )}
+            </Box>
+          )}
+        </Grid>
+        {shifts?.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4, gap: 1, mt: 2 }}>
+            {!workingHours || workingHours.length === 0 ? (
+              <Box sx={{ textAlign: 'left', mt: 2 }}>
+                <Typography variant="body1" sx={{ color: '#CF5A0D' }}>
+                  No working hours available. You can add using 'Add Work Hours'.
+                </Typography>
+              </Box>
+            ) : null}
+
+            <Button
+              sx={{ mb: 4, mt: 2 }}
+              variant="contained"
+              color="primary"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => handleCreateWorkingHours()}
+            >
+              Add Work Hours
+            </Button>
+          </Box>
+        )}
 
         {workingHours && workingHours.length > 0 && (
           <Card>
+            <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+              Trainer Working Hours:
+            </Typography>
             <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
               <Table>
                 <TableHead>
@@ -276,12 +381,38 @@ export default function TrainerWorkingHour({ userId }: Props) {
           </Button>
         }
       />
-
+      <ConfirmDialog
+        open={deletePopover.open}
+        onClose={deletePopover.onClose}
+        title="Delete"
+        content="Are you sure you want to delete?"
+        onConfirm={() => {
+          confirm.onFalse();
+          handleDeleteShift(selectedShift?.id);
+        }}
+        action={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleDeleteShift(selectedShift?.id)}
+          >
+            Delete
+          </Button>
+        }
+      />
       <WorkingHoursCreateEditForm
         currentWorkingHour={selectedWorkingHour}
+        shifts={shifts}
         userId={userId}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
+        reload={revalidateWorkingHours}
+      />
+      <CreateTrainerShiftForm
+        currentWorkingHour={selectedWorkingHour}
+        userId={userId}
+        open={createShift.value}
+        onClose={createShift.onFalse}
         reload={revalidateWorkingHours}
       />
     </Grid>
