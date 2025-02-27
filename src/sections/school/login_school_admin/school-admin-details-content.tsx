@@ -226,7 +226,6 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
   };
   const maxVisibleAddresses = 2;
   const [showAllAddresses, setShowAllAddresses] = useState(false);
-
   const renderAddress = (
     <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2, width: '100%' }}>
       <Scrollbar>
@@ -286,13 +285,19 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                       <Box>
                         {[
                           { label: 'Street Address', value: details?.street_address ?? 'N/A' },
-                          { label: 'City', value: details?.city ?? 'N/A' },
-                          { label: 'State', value: details?.state ?? 'N/A' },
+                          {
+                            label: 'City',
+                            value: details?.city?.city_translations[0]?.name ?? 'N/A',
+                          },
+                          {
+                            label: 'State',
+                            value: details?.state?.translations[0]?.name ?? 'N/A',
+                          },
                           { label: 'Country', value: details?.country ?? 'N/A' },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
                             <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
-                            <Box>{item.value}</Box>
+                            <Box>{item.value || 'N/A'}</Box>
                           </Box>
                         ))}
                       </Box>
