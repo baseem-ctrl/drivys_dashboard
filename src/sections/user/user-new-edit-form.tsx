@@ -329,6 +329,7 @@ export default function UserNewEditForm({
               currentUser?.user_preference?.state_province?.translations?.[0]?.name || 'Unknown',
           }
         : '',
+      vendor_commission_in_percentage: currentUser?.vendor_commission_in_percentage,
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage,
       price_per_km: currentUser?.user_preference?.price_per_km || '',
@@ -515,6 +516,8 @@ export default function UserNewEditForm({
         if (data?.min_price) body.append('min_price', data?.min_price);
         if (data?.school_commission_in_percentage)
           body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+        if (data?.vendor_commission_in_percentage)
+          body.append('vendor_commission_in_percentage', data?.vendor_commission_in_percentage);
         if (data?.certificate_commission_in_percentage)
           body.append(
             'certificate_commission_in_percentage',
@@ -532,8 +535,7 @@ export default function UserNewEditForm({
       if (data?.vehicle_number) body.append('vehicle_number', data?.vehicle_number);
 
       if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
-      if (data?.school_commission_in_percentage)
-        body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+
       if (data?.languages?.length > 0) {
         data?.languages.forEach((languageItem, index) => {
           body.append(`languages[${index}][id]`, languageItem?.id?.id);
@@ -847,7 +849,7 @@ export default function UserNewEditForm({
               {values.user_type === 'TRAINER' && (
                 <div>
                   <RHFTextField
-                    name="school_commission_in_percentage"
+                    name="vendor_commission_in_percentage"
                     label="School Commission (%)"
                     type="number"
                   />
@@ -1001,6 +1003,13 @@ export default function UserNewEditForm({
                             </MenuItem>
                           ))}
                       </RHFSelect>
+                    )}
+                    {values.user_type === 'TRAINER' && (
+                      <RHFTextField
+                        name="school_commission_in_percentage"
+                        label="School Commission (Trainer Preference) (%)"
+                        type="number"
+                      />
                     )}
                   </Box>
                   <Box

@@ -193,9 +193,9 @@ export default function UserDetailsContentAdmin({
                       {
                         label: 'School Commission',
                         value:
-                          details?.user_preference?.school_commission_in_percentage !== undefined &&
-                          details?.user_preference?.school_commission_in_percentage !== null
-                            ? `${details.user_preference.school_commission_in_percentage} %`
+                          details?.vendor_commission_in_percentage !== undefined &&
+                          details?.vendor_commission_in_percentage !== null
+                            ? `${details.vendor_commission_in_percentage} %`
                             : 'N/A',
                       },
                       {
