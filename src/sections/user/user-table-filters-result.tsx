@@ -4,6 +4,8 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack, { StackProps } from '@mui/material/Stack';
+import { useLocales } from 'src/locales';
+
 // types
 import { IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
 // components
@@ -29,6 +31,8 @@ export default function UserTableFiltersResult({
   results,
   ...other
 }: Props) {
+  const { t } = useLocales();
+
   const handleRemoveStatus = () => {
     onFilters('status', '');
   };
@@ -44,7 +48,7 @@ export default function UserTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          {t('results_found')}
         </Box>
       </Box>
 
@@ -56,7 +60,11 @@ export default function UserTableFiltersResult({
         )} */}
         {filters.status !== '' && (
           <Block label="Status:">
-            <Chip size="small" label={filters.status === "1" ? "Active" : "In Active"} onDelete={handleRemoveStatus} />
+            <Chip
+              size="small"
+              label={filters.status === '1' ? 'Active' : 'In Active'}
+              onDelete={handleRemoveStatus}
+            />
           </Block>
         )}
 
@@ -73,7 +81,7 @@ export default function UserTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Clear
+          {t('clear')}
         </Button>
       </Stack>
     </Stack>

@@ -16,6 +16,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // types
 import { IJobFilters, IJobFilterValue } from 'src/types/job';
+import { useLocales } from 'src/locales';
+
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -60,6 +62,7 @@ export default function TrainerFilters({
   statusOptions, // setParentId,
 }: Props) {
   const [searchCategory, setSearchCategory] = useState('');
+  const { t } = useLocales();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
@@ -143,7 +146,7 @@ export default function TrainerFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -163,7 +166,7 @@ export default function TrainerFilters({
   const renderStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Status
+        {t('status')}
       </Typography>
       {statusOptions.map((option) => (
         <FormControlLabel
@@ -184,8 +187,9 @@ export default function TrainerFilters({
   const renderVerify = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Verification Status
+        {t('verification_status')}
       </Typography>
+
       {verificationOptions.map((option) => (
         <FormControlLabel
           key={option}
@@ -209,8 +213,9 @@ export default function TrainerFilters({
   const renderCategory = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Category
+        {t('category')}
       </Typography>
+
       <Autocomplete
         options={
           category?.map((item: any) => ({
@@ -250,8 +255,9 @@ export default function TrainerFilters({
   const renderCity = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        City
+        {t('city')}
       </Typography>
+
       <Autocomplete
         options={
           city?.map((item: any) => ({
@@ -271,7 +277,7 @@ export default function TrainerFilters({
         onChange={(event, newValue) =>
           handleFilterChange('city_id', newValue ? newValue.value : null)
         }
-        renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('select_city')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -295,14 +301,15 @@ export default function TrainerFilters({
   const renderGear = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Gear Type
+        {t('gear_type')}
       </Typography>
+
       <Select
         value={filters.gear || ''}
         onChange={(e) => handleFilterChange('gear', e.target.value)}
       >
         {gearLoading ? (
-          <MenuItem disabled>Loading gears...</MenuItem>
+          <MenuItem disabled>{t('loading_gears')}</MenuItem>
         ) : (
           gearData?.map((gear: any) => (
             <MenuItem key={gear.id} value={gear.name}>
@@ -316,8 +323,9 @@ export default function TrainerFilters({
   const renderSchool = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        School
+        {t('school')}
       </Typography>
+
       <Autocomplete
         options={
           schoolList?.map((item: any) => ({
@@ -363,7 +371,7 @@ export default function TrainerFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}{' '}
       </Button>
 
       <Drawer

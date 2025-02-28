@@ -37,12 +37,23 @@ export default function CreateTrainerShiftForm({
   // Validation schema
   const ShiftHoursSchema = Yup.object().shape({
     is_24_shours: Yup.boolean(),
-    shift_start_time: Yup.date().required('Start time is required'),
-    shift_end_time: Yup.date().required('End time is required'),
+    shift_start_time: Yup.date().when('is_24_shours', {
+      is: false,
+      then: (schema) => schema.required('Start time is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    shift_end_time: Yup.date().when('is_24_shours', {
+      is: false,
+      then: (schema) => schema.required('End time is required'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
 
   const methods = useForm({
     resolver: yupResolver(ShiftHoursSchema) as any,
+    defaultValues: {
+      is_24_shours: false,
+    },
   });
 
   const {
@@ -59,6 +70,7 @@ export default function CreateTrainerShiftForm({
     control,
     name: 'working_hours',
   });
+
   const isOffDay = watch('is_off_day');
   const isFullDay = watch('is_full_day');
   useEffect(() => {
@@ -76,6 +88,8 @@ export default function CreateTrainerShiftForm({
       setValue('working_hours', [{ start_time: null, end_time: null }]);
     }
   }, [isOffDay, setValue]);
+  console.log('errors', errors);
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = {
@@ -141,14 +155,24 @@ export default function CreateTrainerShiftForm({
                 name="shift_start_time"
                 control={control}
                 render={({ field }) => (
-                  <TimePicker {...field} label="Shift Start Time" ampm={false} />
+                  <TimePicker
+                    {...field}
+                    label="Shift Start Time"
+                    ampm={false}
+                    disabled={watch('is_24_shours')}
+                  />
                 )}
               />
               <Controller
                 name="shift_end_time"
                 control={control}
                 render={({ field }) => (
-                  <TimePicker {...field} label="Shift End Time" ampm={false} />
+                  <TimePicker
+                    {...field}
+                    label="Shift End Time"
+                    ampm={false}
+                    disabled={watch('is_24_shours')}
+                  />
                 )}
               />
             </Box>

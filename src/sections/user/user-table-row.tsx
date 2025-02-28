@@ -12,6 +12,8 @@ import ListItemText from '@mui/material/ListItemText';
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
 import { IUserItem } from 'src/types/user';
+import { useLocales } from 'src/locales';
+
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -51,6 +53,7 @@ export default function UserTableRow({
   const { name, photo_url, dob, user_type, is_active, email, phone, country_code } = row;
 
   const confirm = useBoolean();
+  const { t } = useLocales();
 
   const quickEdit = useBoolean();
   const { enqueueSnackbar } = useSnackbar();
@@ -69,7 +72,8 @@ export default function UserTableRow({
       };
       const response = await updateUser(body);
       if (response) {
-        enqueueSnackbar('Trainer Verified Successfully');
+        enqueueSnackbar(t('trainer_verified_successfully'));
+
         reload();
       }
     } catch (error) {
@@ -104,13 +108,13 @@ export default function UserTableRow({
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  {name ?? 'NA'}
+                  {name ?? t('n_a')}
                   {user_type === 'TRAINER' && row?.verified_at && (
                     <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
                   )}
                 </Box>
               }
-              secondary={email ?? 'NA'}
+              secondary={email ?? t('n_a')}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
                 component: 'span',
@@ -124,11 +128,11 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {country_code ? `${country_code}-${phone}` : phone || 'NA'}
+          {country_code ? `${country_code}-${phone}` : phone || t('n_a')}
         </TableCell>
         {currentUserType !== 'TRAINER' && (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            {dob ? new Date(dob).toISOString().split('T')[0] : 'N/A'}
+            {dob ? new Date(dob).toISOString().split('T')[0] : t('n_a')}
           </TableCell>
         )}
         <TableCell>
@@ -144,12 +148,12 @@ export default function UserTableRow({
         {currentUserType === 'TRAINER' && (
           <>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
-              {row?.vendor?.vendor_translations[0]?.name ?? 'NA'}
+              {row?.vendor?.vendor_translations[0]?.name ?? t('n_a')}
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
-              {row?.max_cash_in_hand_allowed ?? 'NA'}
+              {row?.max_cash_in_hand_allowed ?? t('n_a')}
             </TableCell>
-            <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? 'NA'}</TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.cash_in_hand ?? t('n_a')}</TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
               <Label
                 variant="soft"
