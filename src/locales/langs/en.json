@@ -227,5 +227,21 @@
   "start_date": "Start Date",
   "end_date": "End Date",
   "notes": "Notes",
-  "achieved_date": "Achieved Date"
+  "achieved_date": "Achieved Date",
+  "name": "Name",
+  "phone_number": "Phone Number",
+  "dob": "Date of Birth",
+  "vendor": "Vendor",
+  "max_cash_allowed": "Max Cash Allowed",
+  "cash_in_hand": "Cash in Hand",
+  "suspended": "Suspended",
+  "delete_confirmation": "Are you sure you want to delete <strong>{{count}}</strong> items?",
+  "trainer_verified_successfully": "Trainer Verified Successfully",
+  "search_placeholder": "Search...",
+  "verification_status": "Verification Status",
+  "gear_type": "Gear Type",
+  "loading_gears": "Loading gears...",
+  "school": "School",
+  "new_user": "New User",
+  "results_found": "results found"
 }

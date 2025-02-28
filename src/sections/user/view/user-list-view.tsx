@@ -1,5 +1,7 @@
 import isEqual from 'lodash/isEqual';
 import { useState, useCallback, useEffect } from 'react';
+import { useLocales } from 'src/locales';
+
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -56,26 +58,6 @@ import { STATUS_OPTIONS, VERIFICATION_OPTIONS } from 'src/_mock/_trainer';
 
 // const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-const TABLE_HEAD = {
-  all: [
-    { id: 'name', label: 'Name', width: 200 },
-    { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-    { id: 'dob', label: 'DOB', width: 220 },
-    { id: 'status', label: 'Status', width: 100 },
-    { id: '', width: 88 },
-  ],
-  trainer: [
-    { id: 'name', label: 'Name' },
-    { id: 'phoneNumber', label: 'Phone Number' },
-    { id: 'status', label: 'Status' },
-    { id: 'vendor', label: 'School' },
-    { id: 'max_cash_in_hand_allowed', label: 'Max Cash Allowded' },
-    { id: 'cash_in_hand', label: 'Cash in Hand' },
-    { id: 'is_suspended', label: 'Suspended' },
-
-    { id: '', width: 88 },
-  ],
-};
 const defaultFilters: any = {
   name: '',
   role: [],
@@ -102,6 +84,7 @@ const gearTypeMapping = {
 export default function UserListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { user } = useAuthContext();
+  const { t } = useLocales();
   const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
 
@@ -114,6 +97,25 @@ export default function UserListView() {
   const [userTypeOptions, setUserTypeOptions] = useState<StatusOption[]>([]);
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const [filteredValues, setFilteredValues] = useState(enumData);
+  const TABLE_HEAD = {
+    all: [
+      { id: 'name', label: t('name'), width: 200 },
+      { id: 'phoneNumber', label: t('phone_number'), width: 180 },
+      { id: 'dob', label: t('dob'), width: 220 },
+      { id: 'status', label: t('status'), width: 100 },
+      { id: '', width: 88 },
+    ],
+    trainer: [
+      { id: 'name', label: t('name') },
+      { id: 'phoneNumber', label: t('phone_number') },
+      { id: 'status', label: t('status') },
+      { id: 'vendor', label: t('school') },
+      { id: 'max_cash_in_hand_allowed', label: t('max_cash_allowed') },
+      { id: 'cash_in_hand', label: t('cash_in_hand') },
+      { id: 'is_suspended', label: t('suspended') },
+      { id: '', width: 88 },
+    ],
+  };
   useEffect(() => {
     if (enumData?.length > 0) {
       const updatedValues =
@@ -266,11 +268,11 @@ export default function UserListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.list },
-            { name: 'List' },
+            { name: t('dashboard'), href: paths.dashboard.root },
+            { name: t('user'), href: paths.dashboard.user.list },
+            { name: t('list') },
           ]}
           action={
             <Button
@@ -279,7 +281,7 @@ export default function UserListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              {t('new_user')}
             </Button>
           }
           sx={{
@@ -412,11 +414,7 @@ export default function UserListView() {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
+        content={<>{t('delete_confirmation', { count: table.selected.length })}</>}
         action={
           <Button
             variant="contained"
