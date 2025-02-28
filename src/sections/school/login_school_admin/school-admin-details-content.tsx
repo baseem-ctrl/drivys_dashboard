@@ -55,8 +55,10 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
             // { label: 'Name', value: items?.name ?? 'N/A' },
             { label: 'Email', value: details?.email ?? 'NA' },
             { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
-            { label: 'Commission in (%)', value: details?.commission_in_percentage ?? 'NA' },
-
+            {
+              label: 'Certificate Certificate Commission in (%)',
+              value: `${details?.certificate_commission_in_percentage ?? 'NA'}%`,
+            },
             { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
             {
               label: 'License File',
@@ -102,7 +104,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
             },
           ].map((item, index) => (
             <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-              <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+              <Box component="span" sx={{ minWidth: '330px', fontWeight: 'bold' }}>
                 {item.label}
               </Box>
               <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>

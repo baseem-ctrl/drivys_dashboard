@@ -543,10 +543,11 @@ export default function UserDetailsContent({
                       {
                         label: 'School Commission',
                         value:
-                          details?.user_preference?.school_commission_in_percentage != null
-                            ? `${details.user_preference.school_commission_in_percentage} %`
+                          details?.vendor_commission_in_percentage != null
+                            ? `${details.vendor_commission_in_percentage} %`
                             : 'N/A',
                       },
+
                       {
                         label: 'Certificate Commission',
                         value:
@@ -558,7 +559,7 @@ export default function UserDetailsContent({
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                  <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
                     {item.label}
                   </Box>
                   <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
@@ -819,6 +820,13 @@ export default function UserDetailsContent({
               { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
               { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+              {
+                label: 'School Commission (Trainer Preference)',
+                value:
+                  details?.user_preference?.school_commission_in_percentage != null
+                    ? `${details?.user_preference?.school_commission_in_percentage} %`
+                    : 'N/A',
+              },
 
               {
                 label: 'Vehicle type',
@@ -837,7 +845,7 @@ export default function UserDetailsContent({
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box
                   component="span"
-                  sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '10px' }}
+                  sx={{ minWidth: '330px', fontWeight: 'bold', marginTop: '10px' }}
                 >
                   {item.label}
                 </Box>
