@@ -13,8 +13,6 @@ import {
   TableCell,
   Button,
   Chip,
-  Tooltip,
-  Alert,
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -35,6 +33,7 @@ import Iconify from 'src/components/iconify';
 import { useState } from 'react';
 import WorkingHoursCreateEditForm from './trainer-working-hours-create-edit-form';
 import CreateTrainerShiftForm from './trainer-create-shift';
+import { TablePaginationCustom, useTable } from 'src/components/table';
 
 // ----------------------------------------------------------------------
 
@@ -44,11 +43,17 @@ type Props = {
 };
 
 export default function TrainerWorkingHour({ userId, details }: Props) {
+  const table = useTable({ defaultRowsPerPage: 15 });
+
   const { workingHours, workingHoursLoading, workingHoursError, revalidateWorkingHours } =
     useGetWorkingHoursByUserId(userId);
   const { shifts, shiftsLoading, shiftsError, revalidateShifts } = useGetShiftsByTrainerId(userId);
-  const { leaveDates, leaveDatesLoading, leaveDatesError, revalidateLeaveDates } =
-    useGetLeaveDatesByTrainerId(userId);
+  const { leaveDates, totalLeaveDates, leaveDatesLoading } = useGetLeaveDatesByTrainerId(
+    userId,
+    table.page + 1,
+    table.rowsPerPage
+  );
+
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');
   const deletePopover = usePopover();
@@ -68,6 +73,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
       console.error('Error deleting working hour:', response.statusText);
     }
   };
+
   const workingHoursHeaders = [
     { key: 'day', label: 'Day' },
     { key: 'off_day', label: 'Off Day' },
@@ -333,6 +339,15 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             </TableContainer>
           </Card>
         )}
+        <TablePaginationCustom
+          count={totalLeaveDates}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          dense={table.dense}
+          onChangeDense={table.onChangeDense}
+        />
       </Grid>
 
       <CustomPopover

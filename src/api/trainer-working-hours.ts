@@ -83,8 +83,9 @@ export function useGetAllWorkingHours({
 
   return { ...memoizedValue, revalidateWorkingHours };
 }
-export function useGetLeaveDatesByTrainerId(userId: number | string) {
-  const getLeaveDatesUrl = () => `${endpoints.trainer.leaveDates}?trainer_id=${userId}`;
+export function useGetLeaveDatesByTrainerId(userId: number | string, page: number, limit: number) {
+  const getLeaveDatesUrl = () =>
+    `${endpoints.trainer.leaveDates}?trainer_id=${userId}&page=${page}&limit=${limit}`;
 
   const { data, isLoading, error, isValidating } = useSWR(
     userId ? getLeaveDatesUrl() : null,
@@ -94,11 +95,12 @@ export function useGetLeaveDatesByTrainerId(userId: number | string) {
   const memoizedValue = useMemo(
     () => ({
       leaveDates: data?.data as any,
+      totalLeaveDates: data?.total || 0,
       leaveDatesLoading: isLoading,
       leaveDatesError: error,
       leaveDatesValidating: isValidating,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [data?.data, data?.total, error, isLoading, isValidating]
   );
 
   const revalidateLeaveDates = () => {
@@ -107,6 +109,7 @@ export function useGetLeaveDatesByTrainerId(userId: number | string) {
 
   return { ...memoizedValue, revalidateLeaveDates };
 }
+
 // Function to create or update shift
 export function createShift(body: Record<string, any>) {
   const response = drivysCreator([endpoints.trainer.shift.create, body]);
