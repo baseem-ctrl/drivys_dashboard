@@ -373,7 +373,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               { label: 'Email', value: details?.email ?? 'NA' },
               { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
               {
-                label: 'Certificate Commission in (%)',
+                label: 'Certificate Certificate Commission in (%)',
                 value: `${details?.certificate_commission_in_percentage ?? 'NA'}%`,
               },
 
