@@ -44,6 +44,7 @@ import {
   TextField,
 } from '@mui/material';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
+import { useLocales } from 'src/locales';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -108,6 +109,7 @@ export default function UserDetailsContent({
   reload,
 }: Props) {
   const { reset, control } = useForm();
+  const { t } = useLocales();
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -237,17 +239,18 @@ export default function UserDetailsContent({
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
-    name: Yup.string().required('Name is required'),
-    contact_email: Yup.string().email('Invalid email'),
-    phone_number: Yup.string().matches(/^\d{1,15}$/, 'Phone number must be less that 15 digits'),
+    name: Yup.string().required(t('name_required')),
+    contact_email: Yup.string().email(t('invalid_email')),
+    phone_number: Yup.string().matches(/^\d{1,15}$/, t('invalid_phone_number')),
     commission_in_percentage: Yup.string(),
     license_expiry: Yup.string(),
-    website: Yup.string().url('Invalid URL'),
+    website: Yup.string().url(t('invalid_url')),
     status: Yup.string(),
     license_file: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
     user_id: Yup.string(),
   });
+
   const defaultVendorValues = useMemo(
     () => ({
       locale: selectedLocaleObject?.locale || '',
@@ -328,7 +331,7 @@ export default function UserDetailsContent({
       };
       const response = await updateUser(body);
       if (response) {
-        enqueueSnackbar('Trainer Verified Successfully');
+        enqueueSnackbar(t('trainer_verified_successfully'));
         reload();
       }
     } catch (error) {
@@ -349,7 +352,7 @@ export default function UserDetailsContent({
       };
       const response = await updateUser(body);
       if (response) {
-        enqueueSnackbar('Trainer Updated Successfully');
+        enqueueSnackbar(t('trainer_updated_successfully'));
         reload();
       }
     } catch (error) {
@@ -417,35 +420,35 @@ export default function UserDetailsContent({
           mb: 2,
         }}
       >
-        School Details
+        {t('school_details')}
       </Typography>
 
       {details?.school && (
         <Stack spacing={2}>
           {details.school?.vendor_translations?.[0]?.name && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>School:</strong>{' '}
-              {details.school.vendor_translations[0].name ?? 'Name Not Available'}
+              <strong>{t('school')}:</strong>{' '}
+              {details.school.vendor_translations[0].name ?? t('name_not_available')}
             </Typography>
           )}
           {details.school?.commission_in_percentage && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>Commission:</strong> {details.school.commission_in_percentage}%
+              <strong>{t('commission')}:</strong> {details.school.commission_in_percentage}%
             </Typography>
           )}
           {details.school?.status && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>Status:</strong> {details.school.status}
+              <strong>{t('status')}:</strong> {details.school.status}
             </Typography>
           )}
           {details.school?.phone_number && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>Contact:</strong> {details.school.phone_number}
+              <strong>{t('contact')}:</strong> {details.school.phone_number}
             </Typography>
           )}
           {details.school?.email && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>Email:</strong> {details.school.email}
+              <strong>{t('email')}:</strong> {details.school.email}
             </Typography>
           )}
         </Stack>
@@ -491,29 +494,29 @@ export default function UserDetailsContent({
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: 'Name', value: details?.name ?? 'N/A' },
+                { label: t('name'), value: details?.name ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER'
-                  ? [{ label: 'Name(Ar)', value: details?.name_ar ?? 'N/A' }]
+                  ? [{ label: t('name_ar'), value: details?.name_ar ?? 'N/A' }]
                   : []),
 
-                { label: 'Email', value: details?.email ?? 'N/A' },
+                { label: t('email'), value: details?.email ?? 'N/A' },
                 {
-                  label: 'Phone Number',
+                  label: t('phone_number'),
                   value: details?.country_code
                     ? `${details.country_code}-${details.phone}`
                     : details.phone ?? 'N/A',
                 },
-                { label: 'User Type', value: details?.user_type ?? 'N/A' },
-                { label: 'Date of Birth', value: details?.dob?.split('T')[0] ?? 'N/A' },
+                { label: t('user_type'), value: details?.user_type ?? 'N/A' },
+                { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
                 {
-                  label: 'Preferred Language',
+                  label: t('preferred_language'),
                   value: details?.locale !== 'undefined' ? details.locale : 'N/A',
                 },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'N/A' },
-                { label: 'Wallet Points', value: details?.wallet_points ?? 'N/A' },
+                { label: t('wallet_balance'), value: details?.wallet_balance ?? 'N/A' },
+                { label: t('wallet_points'), value: details?.wallet_points ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER' && details?.languages?.length
                   ? details?.languages.map((lang, index) => ({
-                      label: `Language ${index + 1}`,
+                      label: `${t('language')} ${index + 1}`,
                       value: lang?.dialect?.id
                         ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
                         : 'NA',
@@ -522,7 +525,7 @@ export default function UserDetailsContent({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'School Name',
+                        label: t('school_name'),
                         value: details?.vendor?.vendor_translations?.[0]?.name ? (
                           <Link
                             onClick={() => handleClickTrainer(details?.vendor?.id)}
@@ -541,7 +544,7 @@ export default function UserDetailsContent({
                         ),
                       },
                       {
-                        label: 'School Commission',
+                        label: t('school_commission'),
                         value:
                           details?.vendor_commission_in_percentage != null
                             ? `${details.vendor_commission_in_percentage} %`
@@ -549,7 +552,7 @@ export default function UserDetailsContent({
                       },
 
                       {
-                        label: 'Certificate Commission',
+                        label: t('certificate_commission'),
                         value:
                           details?.user_preference?.certificate_commission_in_percentage != null
                             ? `${details.user_preference.certificate_commission_in_percentage} %`
@@ -576,7 +579,7 @@ export default function UserDetailsContent({
                   <Grid item xs={12} sm={12} md={6}>
                     <Box sx={{ display: 'flex', width: '100%' }}>
                       <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                        Average Review
+                        {t('average_review')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
                         :
@@ -619,16 +622,18 @@ export default function UserDetailsContent({
         }}
       >
         <Grid item xs={12} sm={12} md={6}>
-          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
+            {t('account_status')}
+          </Typography>
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 {
-                  label: 'Active',
-                  tooltip: 'Indicates if the user is currently active.',
+                  label: t('active'),
+                  tooltip: t('active_tooltip'),
                   value: (
                     <Chip
-                      label={details?.is_active ? 'Yes' : 'No'}
+                      label={details?.is_active ? t('yes') : t('no')}
                       color={details?.is_active ? 'success' : 'error'}
                       variant="soft"
                     />
@@ -637,57 +642,46 @@ export default function UserDetailsContent({
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'Admin Suspended',
-                        tooltip: 'Indicates if the trainer is suspended by an admin.',
+                        label: t('admin_suspended'),
+                        tooltip: t('admin_suspended_tooltip'),
                         value: (
-                          <>
-                            {/* <Chip
-                              label={details?.is_suspended ? 'Yes' : 'No'}
-                              color={details?.is_suspended ? 'error' : 'error'}
-                              variant="soft"
-                            /> */}
-                            <Switch
-                              checked={!!details?.is_suspended}
-                              onChange={() => handleSuspend()}
-                              color="error"
-                            />
-                          </>
+                          <Switch
+                            checked={!!details?.is_suspended}
+                            onChange={() => handleSuspend()}
+                            color="error"
+                          />
                         ),
                       },
                       {
-                        label: 'Auto Suspended',
-                        tooltip:
-                          'Indicates if the trainer is automatically suspended due to exceeding cash limits.',
+                        label: t('auto_suspended'),
+                        tooltip: t('auto_suspended_tooltip'),
                         value: (
-                          <>
-                            <Chip
-                              label={
-                                details?.max_cash_in_hand_allowed
-                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                    ? 'Yes'
-                                    : 'No'
-                                  : 'No'
-                              }
-                              color={
-                                details?.max_cash_in_hand_allowed
-                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                    ? 'error'
-                                    : 'default'
+                          <Chip
+                            label={
+                              details?.max_cash_in_hand_allowed
+                                ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                  ? t('yes')
+                                  : t('no')
+                                : t('no')
+                            }
+                            color={
+                              details?.max_cash_in_hand_allowed
+                                ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                  ? 'error'
                                   : 'default'
-                              }
-                              variant="soft"
-                            />
-                          </>
+                                : 'default'
+                            }
+                            variant="soft"
+                          />
                         ),
                       },
                       {
-                        label: 'Verification',
-                        tooltip:
-                          'Indicates if the admin has verified the user. Displays the verification date if verified.',
+                        label: t('verification'),
+                        tooltip: t('verification_tooltip'),
                         value: !details?.verified_at ? (
                           <Box display="flex" alignItems="center" gap={2}>
                             <Chip
-                              label="Not Verified"
+                              label={t('not_verified')}
                               color="error"
                               icon={<ErrorOutlineIcon />}
                               variant="outlined"
@@ -700,12 +694,14 @@ export default function UserDetailsContent({
                               sx={{ padding: '6px 16px', minWidth: '100px' }}
                               onClick={handleVerify}
                             >
-                              Verify
+                              {t('verify')}
                             </Button>
                           </Box>
                         ) : (
                           <Chip
-                            label={`Verified on ${moment.utc(details?.verified_at).format('ll')}`}
+                            label={`${t('verified_on')} ${moment
+                              .utc(details?.verified_at)
+                              .format('ll')}`}
                             color="success"
                             icon={<CheckCircleIcon />}
                             variant="outlined"
@@ -732,7 +728,7 @@ export default function UserDetailsContent({
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                    {item.value ?? 'N/A'}
+                    {item.value ?? t('n/a')}
                   </Box>
                 </Box>
               ))}
@@ -743,27 +739,26 @@ export default function UserDetailsContent({
         {details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
             <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
-              School Financial Summary
+              {t('school_financial_summary')}
             </Typography>
             <Scrollbar>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
                 {[
                   {
-                    label: 'Max Cash Allowed in Hand',
-                    value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                    label: t('max_cash_allowed_in_hand'),
+                    value: details?.max_cash_in_hand_allowed ?? t('n/a'),
                   },
-                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                  { label: t('cash_in_hand'), value: details?.cash_in_hand ?? t('n/a') },
                   {
-                    label: 'Cash Clearance Date',
-                    value: details?.cash_clearance_date ?? 'N/A',
+                    label: t('cash_clearance_date'),
+                    value: details?.cash_clearance_date ?? t('n/a'),
                   },
                   {
-                    label: 'Last Booking At',
+                    label: t('last_booking_at'),
                     value: details?.last_booking_was
                       ? moment.utc(details?.last_booking_was).format('lll')
-                      : 'N/A',
+                      : t('n/a'),
                   },
-                  ,
                 ].map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                     <Box
@@ -779,7 +774,7 @@ export default function UserDetailsContent({
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1, marginTop: '15px' }}>
-                      {item.value ?? 'N/A'}
+                      {item.value ?? t('n/a')}
                     </Box>
                   </Box>
                 ))}
@@ -804,40 +799,39 @@ export default function UserDetailsContent({
       }}
     >
       <Grid item xs={12} sm={12} md={6}>
-        <Typography sx={{ fontWeight: '800' }}>User Preferences:</Typography>
+        <Typography sx={{ fontWeight: '800' }}>{t('user_preferences')}</Typography>
 
         <Scrollbar>
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
             {[
               {
-                label: 'City',
-                value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+                label: t('city'),
+                value: details?.user_preference?.city?.city_translations[0]?.name ?? t('n/a'),
               },
               {
-                label: 'Area',
-                value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
+                label: t('area'),
+                value: details?.user_preference?.state_province?.translations[0]?.name ?? t('n/a'),
               },
-              { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
-
-              { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+              { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
+              { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
               {
-                label: 'School Commission (Trainer Preference)',
+                label: t('school_commission_trainer'),
                 value:
                   details?.user_preference?.school_commission_in_percentage != null
                     ? `${details?.user_preference?.school_commission_in_percentage} %`
-                    : 'N/A',
+                    : t('n/a'),
               },
-
               {
-                label: 'Vehicle type',
+                label: t('vehicle_type'),
                 value:
-                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
+                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ??
+                  t('n/a'),
               },
               ...(details?.user_type === 'STUDENT'
                 ? [
                     {
-                      label: 'Trainer Language',
-                      value: details?.preferred_trainer_lang?.language_name ?? 'NA',
+                      label: t('trainer_language'),
+                      value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
                     },
                   ]
                 : []),
@@ -856,40 +850,38 @@ export default function UserDetailsContent({
                   :
                 </Box>
                 <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                  {item.value ?? 'N/A'}
+                  {item.value ?? t('n/a')}
                 </Box>
-                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
               </Box>
             ))}
           </Stack>
         </Scrollbar>
       </Grid>
+
       {currentTab === 'details' &&
         details?.bank_detail?.length > 0 &&
         details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800' }}>Bank Details:</Typography>
+            <Typography sx={{ fontWeight: '800' }}>{t('bank_details')}</Typography>
 
             <Scrollbar>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
                 {[
                   {
-                    label: 'Account Holder Name',
-                    value: details?.bank_detail[0]?.account_holder_name ?? 'N/A',
+                    label: t('account_holder_name'),
+                    value: details?.bank_detail[0]?.account_holder_name ?? t('n/a'),
                   },
                   {
-                    label: 'Account Number',
-                    value: details?.bank_detail[0]?.account_number ?? 'N/A',
+                    label: t('account_number'),
+                    value: details?.bank_detail[0]?.account_number ?? t('n/a'),
                   },
-                  { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? 'NA' },
-
-                  { label: 'IBAN', value: details?.bank_detail[0]?.iban_number ?? 'NA' },
-
+                  { label: t('bank_name'), value: details?.bank_detail[0]?.bank_name ?? t('n/a') },
+                  { label: t('iban'), value: details?.bank_detail[0]?.iban_number ?? t('n/a') },
                   {
-                    label: 'Active',
+                    label: t('active'),
                     value: (
                       <Chip
-                        label={details?.bank_detail[0]?.is_active ? 'Yes' : 'No'}
+                        label={details?.bank_detail[0]?.is_active ? t('yes') : t('no')}
                         color={details?.bank_detail[0]?.is_active ? 'success' : 'error'}
                         variant="soft"
                       />
@@ -898,8 +890,8 @@ export default function UserDetailsContent({
                   ...(details?.user_type === 'STUDENT'
                     ? [
                         {
-                          label: 'Trainer Language',
-                          value: details?.preferred_trainer_lang?.language_name ?? 'NA',
+                          label: t('trainer_language'),
+                          value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
                         },
                       ]
                     : []),
@@ -918,9 +910,8 @@ export default function UserDetailsContent({
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                      {item.value ?? 'N/A'}
+                      {item.value ?? t('n/a')}
                     </Box>
-                    {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                   </Box>
                 ))}
               </Stack>
@@ -929,6 +920,7 @@ export default function UserDetailsContent({
         )}
     </Stack>
   );
+
   const renderStudentTabs = (
     <Tabs
       value={studentTab}
@@ -984,7 +976,7 @@ export default function UserDetailsContent({
         setNewAddress(null);
         setEditingIndex(null);
         reload();
-        enqueueSnackbar('User address updated successfully!', { variant: 'success' });
+        enqueueSnackbar(t('user_address_updated'), { variant: 'success' });
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -1009,7 +1001,7 @@ export default function UserDetailsContent({
         setNewAddress(null);
         setEditingIndex(null);
         reload();
-        enqueueSnackbar('User address created successfully!', { variant: 'success' });
+        enqueueSnackbar(t('user_address_created'), { variant: 'success' });
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -1051,7 +1043,7 @@ export default function UserDetailsContent({
       const response = await deleteUserAddress(addressId);
 
       if (response) {
-        enqueueSnackbar('User address deleted successfully!', { variant: 'success' });
+        enqueueSnackbar(t('user_address_deleted'), { variant: 'success' });
         if (reloadData) reloadData();
       }
     } catch (error) {
@@ -1095,7 +1087,7 @@ export default function UserDetailsContent({
       };
       const response = await createNewAddressForUser(body);
       if (response) {
-        enqueueSnackbar('Address set to default');
+        enqueueSnackbar(t('address_set_to_default'));
         reload();
       }
     } catch (error) {
@@ -1125,7 +1117,7 @@ export default function UserDetailsContent({
             }}
             sx={{ mb: 2 }}
           >
-            Add New Address
+            {t('add_new_address')}
           </Button>
         </Box>
 
@@ -1188,12 +1180,14 @@ export default function UserDetailsContent({
                     )}
                   </GoogleMap>
                 ) : (
-                  <div>Loading Map...</div>
+                  <div>{t('loading_map')}</div>
                 )}
               </Box>
             )}
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-              {newAddress ? 'Add New Address' : `Edit Address ${(editingIndex ?? 0) + 1}`}
+              {newAddress
+                ? t('add_new_address')
+                : t('edit_address', { index: (editingIndex ?? 0) + 1 })}
             </Typography>
 
             {/* Form Fields in Rows */}
@@ -1202,7 +1196,7 @@ export default function UserDetailsContent({
             {/* Row 2 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
               <TextField
-                label="Street Address"
+                label={t('street_address')}
                 variant="outlined"
                 name="street"
                 value={addressForm.street}
@@ -1210,7 +1204,7 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
               <TextField
-                label="Building Name"
+                label={t('building_name')}
                 variant="outlined"
                 name="building_name"
                 value={addressForm.building_name}
@@ -1223,7 +1217,7 @@ export default function UserDetailsContent({
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="City"
+                    label={t('city')}
                     variant="outlined"
                     value={field.value || addressForm.city_id || ''}
                     onChange={(e) => {
@@ -1255,9 +1249,9 @@ export default function UserDetailsContent({
                     }}
                   >
                     {cityLoading ? (
-                      <MenuItem disabled>Loading cities...</MenuItem>
+                      <MenuItem disabled>{t('loading_cities')}</MenuItem>
                     ) : city?.length === 0 ? (
-                      <MenuItem disabled>No cities found</MenuItem>
+                      <MenuItem disabled>{t('no_cities_found')}</MenuItem>
                     ) : (
                       city.map((cityItem) => {
                         const cityNames = cityItem.city_translations.map(
@@ -1266,7 +1260,7 @@ export default function UserDetailsContent({
 
                         return (
                           <MenuItem key={cityItem.id} value={cityItem.id}>
-                            {cityNames.join(', ') || 'Unknown City'}
+                            {cityNames.join(', ') || t('unknown_city')}
                           </MenuItem>
                         );
                       })
@@ -1284,7 +1278,7 @@ export default function UserDetailsContent({
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Area"
+                    label={t('area')}
                     variant="outlined"
                     value={field.value || addressForm.state_province_id || ''}
                     onChange={(e) => {
@@ -1295,7 +1289,7 @@ export default function UserDetailsContent({
                       );
                       const selectedAreaName = selectedArea
                         ? selectedArea?.translations
-                            ?.map((translation) => translation?.name ?? 'Un known')
+                            ?.map((translation) => translation?.name ?? t('unknown'))
                             .join(', ')
                         : '';
 
@@ -1310,7 +1304,7 @@ export default function UserDetailsContent({
                     select
                     fullWidth
                     InputProps={{
-                      startAdornment: cityLoading ? (
+                      startAdornment: stateLoading ? (
                         <InputAdornment position="start">
                           <CircularProgress size={20} />
                         </InputAdornment>
@@ -1318,18 +1312,18 @@ export default function UserDetailsContent({
                     }}
                   >
                     {stateLoading ? (
-                      <MenuItem disabled>Loading cities...</MenuItem>
+                      <MenuItem disabled>{t('loading_cities')}</MenuItem>
                     ) : states?.length === 0 ? (
-                      <MenuItem disabled>No cities found</MenuItem>
+                      <MenuItem disabled>{t('no_cities_found')}</MenuItem>
                     ) : (
                       states?.map((cityItem) => {
                         const cityNames = cityItem?.translations?.map(
-                          (translation) => translation?.name ?? 'Unknown'
+                          (translation) => translation?.name ?? t('unknown')
                         );
 
                         return (
                           <MenuItem key={cityItem.id} value={cityItem.id}>
-                            {cityNames.join(', ') || 'Unknown City'}
+                            {cityNames.join(', ') || t('unknown_city')}
                           </MenuItem>
                         );
                       })
@@ -1338,7 +1332,7 @@ export default function UserDetailsContent({
                 )}
               />
               <TextField
-                label="Phone Number"
+                label={t('phone_number')}
                 variant="outlined"
                 name="phone_number"
                 value={addressForm.phone_number}
@@ -1350,7 +1344,7 @@ export default function UserDetailsContent({
               />
 
               <TextField
-                label="Plot Number"
+                label={t('plot_number')}
                 variant="outlined"
                 name="plot_number"
                 value={addressForm.plot_number}
@@ -1358,10 +1352,11 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
             </Box>
+
             {/* Row 4 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
               <TextField
-                label="Address"
+                label={t('address')}
                 variant="outlined"
                 name="address"
                 value={addressForm.address}
@@ -1369,7 +1364,7 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
               <TextField
-                label="Label"
+                label={t('label')}
                 variant="outlined"
                 fullWidth
                 name="label"
@@ -1378,11 +1373,11 @@ export default function UserDetailsContent({
                 onChange={handleChangeStoreAddress}
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               >
-                <MenuItem value="home">Home</MenuItem>
-                <MenuItem value="office">Office</MenuItem>
+                <MenuItem value="home">{t('home')}</MenuItem>
+                <MenuItem value="office">{t('office')}</MenuItem>
               </TextField>
               <TextField
-                label="Landmark"
+                label={t('landmark')}
                 variant="outlined"
                 name="landmark"
                 value={addressForm.landmark}
@@ -1394,7 +1389,7 @@ export default function UserDetailsContent({
             {/* Row 5 */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
               <TextField
-                label="Longitude"
+                label={t('longitude')}
                 variant="outlined"
                 type="number"
                 name="longitude"
@@ -1403,7 +1398,7 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
               <TextField
-                label="Latitude"
+                label={t('latitude')}
                 variant="outlined"
                 type="number"
                 name="latitude"
@@ -1412,9 +1407,10 @@ export default function UserDetailsContent({
                 sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
               />
             </Box>
+
             <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
               <Button variant="contained" type="submit" sx={{ flex: 1, mr: 1 }}>
-                Save
+                {t('save')}
               </Button>
               <Button
                 variant="outlined"
@@ -1425,7 +1421,7 @@ export default function UserDetailsContent({
                 }}
                 sx={{ flex: 1 }}
               >
-                Cancel
+                {t('cancel')}
               </Button>
             </Box>
           </Box>
@@ -1435,30 +1431,31 @@ export default function UserDetailsContent({
           {displayedAddresses.map((address, index) => (
             <Box key={index} sx={{ width: '100%' }}>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                Address Details {index + 1}
+                {t('address_details')} {index + 1}
               </Typography>
+
               {/* Address Details */}
               {[
-                { label: 'Address', value: address?.address ?? 'N/A' },
-                { label: 'Street', value: address?.street ?? 'N/A' },
-                { label: 'Building Name', value: address?.building_name ?? 'N/A' },
+                { label: t('address'), value: address?.address ?? 'N/A' },
+                { label: t('street'), value: address?.street ?? 'N/A' },
+                { label: t('building_name'), value: address?.building_name ?? 'N/A' },
                 {
-                  label: 'City',
+                  label: t('city'),
                   value:
                     address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
                 },
                 {
-                  label: 'Area',
+                  label: t('area'),
                   value: address?.state_province
                     ? address?.state_province?.translations?.[0]?.name
                     : 'N/A',
                 },
-                // { label: 'Country Code', value: address?.country_code ?? 'UAE' },
-                { label: 'Label', value: address?.label ?? 'N/A' },
-                { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
-                { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
-                { label: 'Country', value: address?.country ?? 'UAE' },
-                { label: 'Landmark', value: address?.landmark ?? 'N/A' },
+                // { label: t('country_code'), value: address?.country_code ?? 'UAE' },
+                { label: t('label'), value: address?.label ?? 'N/A' },
+                { label: t('phone_number'), value: address?.phone_number ?? 'N/A' },
+                { label: t('plot_number'), value: address?.plot_number ?? 'N/A' },
+                { label: t('country'), value: address?.country ?? 'UAE' },
+                { label: t('landmark'), value: address?.landmark ?? 'N/A' },
               ].map((item, idx) => (
                 <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -1490,7 +1487,7 @@ export default function UserDetailsContent({
                   }}
                   // sx={{ mt: 1 }}
                 >
-                  {showMapIndex === index ? 'Hide Map' : 'Show Map'}
+                  {showMapIndex === index ? t('hide_map') : t('show_map')}
                 </Button>
                 <Button
                   variant="contained"
@@ -1498,18 +1495,19 @@ export default function UserDetailsContent({
                     handleEditAddress(index, address);
                   }}
                 >
-                  Edit
+                  {t('edit')}
                 </Button>
                 <Button
                   variant="outlined"
                   color="error"
                   onClick={() => handleDeleteUserAddress(address.id, reload)}
                 >
-                  Delete
+                  {t('delete')}
                 </Button>
+
                 {!address?.is_default && (
                   <Button variant="outlined" onClick={() => handleSetDeafult(address.id)}>
-                    SetDefault
+                    {t('set_default')}
                   </Button>
                 )}
               </Box>
@@ -1536,7 +1534,7 @@ export default function UserDetailsContent({
                       )}
                     </GoogleMap>
                   ) : (
-                    <div>Loading Map...</div>
+                    <div>{t('loading_map')}</div>
                   )}
                 </Box>
               )}
@@ -1577,7 +1575,7 @@ export default function UserDetailsContent({
                   {/* Row 2 */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
                     <TextField
-                      label="Phone Number"
+                      label={t('phone_number')}
                       variant="outlined"
                       fullWidth
                       name="phone_number"
@@ -1594,7 +1592,7 @@ export default function UserDetailsContent({
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="City"
+                          label={t('city')}
                           variant="outlined"
                           value={field.value || addressForm?.city_id || ''}
                           onChange={(e) => {
@@ -1605,7 +1603,7 @@ export default function UserDetailsContent({
                             );
                             const selectedCityName = selectedCity
                               ? selectedCity?.city_translations
-                                  ?.map((translation) => translation?.name ?? 'Un Known')
+                                  ?.map((translation) => translation?.name ?? t('unknown'))
                                   .join(', ')
                               : '';
 
@@ -1628,18 +1626,18 @@ export default function UserDetailsContent({
                           }}
                         >
                           {cityLoading ? (
-                            <MenuItem disabled>Loading cities...</MenuItem>
+                            <MenuItem disabled>{t('loading_cities')}</MenuItem>
                           ) : city?.length === 0 ? (
-                            <MenuItem disabled>No cities found</MenuItem>
+                            <MenuItem disabled>{t('no_cities_found')}</MenuItem>
                           ) : (
                             city.map((cityItem) => {
                               const cityNames = cityItem?.city_translations?.map(
-                                (translation) => translation?.name ?? 'Un Known '
+                                (translation) => translation?.name ?? t('unknown')
                               );
 
                               return (
                                 <MenuItem key={cityItem?.id} value={cityItem.id}>
-                                  {cityNames.join(', ') || 'Unknown City'}
+                                  {cityNames.join(', ') || t('unknown_city')}
                                 </MenuItem>
                               );
                             })
@@ -1653,7 +1651,7 @@ export default function UserDetailsContent({
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="Area"
+                          label={t('area')}
                           variant="outlined"
                           value={field.value || addressForm.state_province_id || ''}
                           onChange={(e) => {
@@ -1664,7 +1662,7 @@ export default function UserDetailsContent({
                             );
                             const selectedAreaName = selectedArea
                               ? selectedArea?.translations
-                                  ?.map((translation) => translation?.name ?? 'Un known')
+                                  ?.map((translation) => translation?.name ?? t('unknown'))
                                   .join(', ')
                               : '';
 
@@ -1679,7 +1677,7 @@ export default function UserDetailsContent({
                           select
                           fullWidth
                           InputProps={{
-                            startAdornment: cityLoading ? (
+                            startAdornment: stateLoading ? (
                               <InputAdornment position="start">
                                 <CircularProgress size={20} />
                               </InputAdornment>
@@ -1687,18 +1685,18 @@ export default function UserDetailsContent({
                           }}
                         >
                           {stateLoading ? (
-                            <MenuItem disabled>Loading cities...</MenuItem>
+                            <MenuItem disabled>{t('loading_areas')}</MenuItem>
                           ) : states?.length === 0 ? (
-                            <MenuItem disabled>No cities found</MenuItem>
+                            <MenuItem disabled>{t('no_areas_found')}</MenuItem>
                           ) : (
                             states?.map((cityItem) => {
-                              const cityNames = cityItem?.translations?.map(
-                                (translation) => translation?.name ?? 'Unknown'
+                              const areaNames = cityItem?.translations?.map(
+                                (translation) => translation?.name ?? t('unknown')
                               );
 
                               return (
                                 <MenuItem key={cityItem.id} value={cityItem.id}>
-                                  {cityNames.join(', ') || 'Unknown City'}
+                                  {areaNames.join(', ') || t('unknown_area')}
                                 </MenuItem>
                               );
                             })
@@ -1711,7 +1709,7 @@ export default function UserDetailsContent({
                   {/* Row 3 */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
                     <TextField
-                      label="Label"
+                      label={t('label')}
                       variant="outlined"
                       fullWidth
                       name="label"
@@ -1720,11 +1718,11 @@ export default function UserDetailsContent({
                       onChange={handleChangeStoreAddress}
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     >
-                      <MenuItem value="home">Home</MenuItem>
-                      <MenuItem value="office">Office</MenuItem>
+                      <MenuItem value="home">{t('home')}</MenuItem>
+                      <MenuItem value="office">{t('office')}</MenuItem>
                     </TextField>
                     <TextField
-                      label="Address"
+                      label={t('address')}
                       variant="outlined"
                       fullWidth
                       name="address"
@@ -1733,7 +1731,7 @@ export default function UserDetailsContent({
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
                     <TextField
-                      label="Landmark"
+                      label={t('landmark')}
                       variant="outlined"
                       fullWidth
                       name="landmark"
@@ -1746,7 +1744,7 @@ export default function UserDetailsContent({
                   {/* Row 4 */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
                     <TextField
-                      label="Longitude"
+                      label={t('longitude')}
                       variant="outlined"
                       fullWidth
                       name="longitude"
@@ -1756,7 +1754,7 @@ export default function UserDetailsContent({
                       sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
                     />
                     <TextField
-                      label="Latitude"
+                      label={t('latitude')}
                       variant="outlined"
                       fullWidth
                       name="latitude"
@@ -1781,14 +1779,14 @@ export default function UserDetailsContent({
                       }
                       sx={{ flex: 1, mr: 1 }}
                     >
-                      Submit
+                      {t('submit')}
                     </Button>
                     <Button
                       variant="contained"
                       onClick={() => setEditingIndex('')}
                       sx={{ flex: 1 }}
                     >
-                      Cancel
+                      {t('cancel')}
                     </Button>
                   </Box>
                 </>
@@ -1798,7 +1796,7 @@ export default function UserDetailsContent({
         </Stack>
         {addresses.length > 2 && (
           <Button variant="outlined" onClick={toggleShowAll}>
-            {showAll ? 'Show Less' : 'Show More'}
+            {showAll ? t('show_less') : t('show_more')}
           </Button>
         )}
       </Scrollbar>

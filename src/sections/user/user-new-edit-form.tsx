@@ -64,6 +64,8 @@ import { useGetAllCity } from 'src/api/city';
 import { useGetAllDialect } from 'src/api/dialect';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetSchool } from 'src/api/school';
+import { useLocales } from 'src/locales';
+
 import moment from 'moment';
 import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
@@ -98,6 +100,7 @@ export default function UserNewEditForm({
   // const currentUser = currentUser ?? "";
   const router = useRouter();
   const { user } = useAuthContext();
+  const { t } = useLocales();
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -147,40 +150,37 @@ export default function UserNewEditForm({
   const [defaultOption, setDefaultOption] = useState<any>(null);
   // const [schoolOptions, setSchoolOptions] = useState();
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
+    name: Yup.string().required(t('name_required')),
     name_ar: Yup.string(),
     email: Yup.string()
-      .required('Email is required')
-      .matches(/^[^@]+@[^@]+\.[^@]+$/, 'Email must be in the valid format'),
+      .required(t('email_required'))
+      .matches(/^[^@]+@[^@]+\.[^@]+$/, t('email_invalid')),
     password: Yup.lazy(() => {
       // If `currentUser?.id` is not present, make the password required
       return currentUser?.id
         ? Yup.string() // No requirements if `currentUser.id` exists
         : Yup.string(); // Required if `currentUser.id` is not present
     }),
-    phone: Yup.string().matches(
-      /^5\d{0,8}$/,
-      'Phone number should start with 5 and not exceed 9 digits'
-    ),
+    phone: Yup.string().matches(/^5\d{0,8}$/, t('phone_invalid')),
     dob: Yup.string()
       .nullable()
       .when('user_type', {
         is: (value) => ['STUDENT', 'TRAINER'].includes(value?.toUpperCase()),
-        then: (schema) => schema.required('Date of birth is required for students and trainers.'),
+        then: (schema) => schema.required(t('dob_required')),
         otherwise: (schema) => schema,
       })
-      .test('is-valid-date', 'The dob field must be a valid date.', function (value) {
+      .test('is-valid-date', t('dob_invalid'), function (value) {
         if (!value) return true;
         const isValidDate = !isNaN(Date.parse(value));
         return isValidDate;
       })
-      .test('is-before-today', 'The dob field must be a date before today.', function (value) {
+      .test('is-before-today', t('dob_before_today'), function (value) {
         if (!value) return true;
         const today = new Date();
         const dob = new Date(value);
         return dob < today;
       })
-      .test('is-18-or-older', 'User must be 18 or older.', function (value) {
+      .test('is-18-or-older', t('dob_age_requirement'), function (value) {
         if (!value) return true;
         const today = new Date();
         const birthDate = new Date(value);
@@ -194,12 +194,12 @@ export default function UserNewEditForm({
         );
       }),
     locale: Yup.mixed().nullable(), // not required
-    user_type: Yup.string().required('User Type is required'),
+    user_type: Yup.string().required(t('user_type_required')),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
     gear: Yup.mixed()
       .nullable()
-      .test('gear-required-for-trainer', 'Gear is required for trainers', function (value) {
+      .test('gear-required-for-trainer', t('gear_required'), function (value) {
         const { user_type } = this.parent; // Access other fields in the form
         if (user_type === 'TRAINER') {
           return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
@@ -213,15 +213,15 @@ export default function UserNewEditForm({
     area_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
-        id: Yup.mixed().required('Language is required'), // Validate court add-on
+        id: Yup.mixed().required(t('language_required')), // Validate court add-on
         fluency_level: Yup.mixed()
           // .typeError("Number of Add Ons must be a number")
-          .required('Language fluency is required'), // Validate the number of add-ons
+          .required(t('fluency_required')), // Validate the number of add-ons
       })
     ),
     school_name: Yup.string()
       .nullable()
-      .test('school-name-required', 'School name is required for trainers', function (value) {
+      .test('school-name-required', t('school_name_required'), function (value) {
         const { user_type, vendor_id } = this.parent; // Access other fields in the form
         if (
           user_type === 'TRAINER' &&
@@ -244,7 +244,7 @@ export default function UserNewEditForm({
     school_commission_in_percentage: Yup.number().when('user_type', {
       is: 'TRAINER',
       then: (schema) =>
-        schema.required('School commission is required').when([], {
+        schema.required(t('school_commission_required')).when([], {
           is: () =>
             selectedSchool?.min_commision >= 0 &&
             selectedSchool?.max_commision >= 0 &&
@@ -253,13 +253,15 @@ export default function UserNewEditForm({
           then: (schema) =>
             schema
               .min(
-                selectedSchool?.min_commision,
-                `School commission must be greater than or equal to ${selectedSchool?.min_commision}%`
+                selectedSchool?.min_commision || 0,
+                t('school_commission_min', { min: selectedSchool?.min_commision })
               )
+
               .max(
-                selectedSchool?.max_commision,
-                `School commission must be less than or equal to ${selectedSchool?.max_commision}%`
+                selectedSchool?.max_commision || 100,
+                t('school_commission_max', { max: selectedSchool?.max_commision })
               ),
+
           otherwise: (schema) => schema,
         }),
       otherwise: (schema) => schema.notRequired(),
@@ -599,7 +601,7 @@ export default function UserNewEditForm({
     try {
       const response = await deleteUser(currentUser?.id);
       if (response) {
-        enqueueSnackbar(response?.message ?? 'User Deleted Successfully');
+        enqueueSnackbar(t(response?.message ?? 'user_deleted_successfully'));
         router.push(paths.dashboard.user.list);
       }
     } catch (error) {
@@ -659,7 +661,7 @@ export default function UserNewEditForm({
                   }
                   sx={{ position: 'absolute', top: 24, right: 24 }}
                 >
-                  {values.is_active ? 'Active' : 'In Active'}
+                  {values.is_active ? t('active') : t('inactive')}
                 </Label>
               )}
 
@@ -679,8 +681,7 @@ export default function UserNewEditForm({
                         color: 'text.disabled',
                       }}
                     >
-                      Allowed *.jpeg, *.jpg, *.png, *.gif
-                      <br /> max size of {fData(3145728)}
+                      {t('allowed_formats')} <br /> {t('max_size', { size: fData(3145728) })}
                     </Typography>
                   }
                 />
@@ -689,7 +690,7 @@ export default function UserNewEditForm({
               {currentUser && (
                 <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
                   <Button variant="soft" color="error" onClick={confirm.onTrue}>
-                    Delete User
+                    {t('delete_user')}
                   </Button>
                 </Stack>
               )}
@@ -708,7 +709,13 @@ export default function UserNewEditForm({
                   // mb={3}
                 >
                   {values.user_type === 'TRAINER' && (
-                    <RHFTextField name="bio" label="About you" multiline rows={4} type="text" />
+                    <RHFTextField
+                      name="bio"
+                      label={t('about_you')}
+                      multiline
+                      rows={4}
+                      type="text"
+                    />
                   )}
                 </Box>
               </Card>
@@ -727,7 +734,7 @@ export default function UserNewEditForm({
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFSelect name="user_type" label="User Type">
+              <RHFSelect name="user_type" label={t('user_type')}>
                 {filteredValues?.length > 0 &&
                   filteredValues?.map((option: any) => (
                     <MenuItem key={option?.value} value={option?.value}>
@@ -737,27 +744,27 @@ export default function UserNewEditForm({
               </RHFSelect>
               <RHFTextField
                 name="name"
-                label="Full Name"
+                label={t('full_name')}
                 error={!!errors.name}
                 helperText={errors.name?.message || ''}
               />
               {values.user_type === 'TRAINER' && (
                 <RHFTextField
                   name="name_ar"
-                  label="Name (Ar)"
+                  label={t('name_ar')}
                   error={!!errors.name_ar}
                   helperText={errors.name_ar?.message || ''}
                 />
               )}
               <RHFTextField
                 name="email"
-                label="Email Address"
+                label={t('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
               <RHFTextField
                 name="password"
-                label="Password"
+                label={t('password')}
                 type={password.value ? 'text' : 'password'}
                 InputProps={{
                   endAdornment: (
@@ -771,19 +778,28 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
+
               <Stack direction="row" spacing={1} alignItems="center">
-                <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} prefix="+971" />
-              </Stack>{' '}
+                <RHFTextField
+                  name="phone"
+                  label={t('phone_number')}
+                  sx={{ flex: 1 }}
+                  prefix="+971"
+                />
+              </Stack>
+
               <RHFTextField
                 name="dob"
-                label="Date of Birth"
+                label={t('date_of_birth')}
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
+
               {values.user_type === 'TRAINER' && (
-                <RHFSwitch name="is_pickup_enabled" label="Is Pickup Enabled" />
+                <RHFSwitch name="is_pickup_enabled" label={t('is_pickup_enabled')} />
               )}
-              {currentUser?.id && <RHFSwitch name="is_active" label="Is Active" />}
+
+              {currentUser?.id && <RHFSwitch name="is_active" label={t('is_active')} />}
             </Box>
 
             <Divider />
@@ -798,88 +814,83 @@ export default function UserNewEditForm({
               }}
               mt={3}
             >
-              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
-                <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
-              )}
-
-              {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled === true && (
-                <RHFTextField name="max_radius_in_km" label="Max Radius in Km" type="number" />
-              )}
               {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled && (
-                <RHFTextField name="min_price" label="Minimum Price" type="number" />
-              )}
-              {values.user_type === 'TRAINER' && (
-                <RHFAutocompleteSearch
-                  name="vendor_id"
-                  label="Select School"
-                  placeholder="Search School..."
-                  options={
-                    schoolList && schoolList.length > 0
-                      ? [
-                          ...schoolList.map((item) => ({
-                            label: `${item.vendor_translations?.[0]?.name}${
-                              item.email ? ` - ${item.email}` : ''
-                            }`,
-                            value: item.id,
-                          })),
-                          {
-                            label: 'OTHER',
-                            value: null,
-                          },
-                        ]
-                      : [
-                          {
-                            label: 'OTHER',
-                            value: null,
-                          },
-                        ]
-                  }
-                  setSearchOwner={(searchTerm) => setSearchValue(searchTerm)}
-                  disableClearable={false}
-                  loading={schoolLoading}
-                  value={defaultOption}
-                />
-              )}
-
-              {values.user_type === 'TRAINER' &&
-                typeof values.vendor_id === 'object' &&
-                (values.vendor_id?.value === undefined || values.vendor_id?.value === null) && (
-                  <RHFTextField name="school_name" label="School Name" />
-                )}
-              {values.user_type === 'TRAINER' && (
-                <div>
+                <>
+                  <RHFTextField name="price_per_km" label={t('price_per_km')} type="number" />
                   <RHFTextField
-                    name="vendor_commission_in_percentage"
-                    label="School Commission (%)"
+                    name="max_radius_in_km"
+                    label={t('max_radius_in_km')}
                     type="number"
                   />
-                  {selectedSchool?.min_commision && selectedSchool?.max_commision ? (
-                    <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
-                      School Commission must be in between {selectedSchool.min_commision || '0'}%
-                      and {selectedSchool.max_commision || '0'}%
-                    </FormHelperText>
-                  ) : (
-                    <></>
-                  )}
-                </div>
+                  <RHFTextField name="min_price" label={t('min_price')} type="number" />
+                </>
               )}
+
+              {values.user_type === 'TRAINER' && (
+                <>
+                  <RHFAutocompleteSearch
+                    name="vendor_id"
+                    label={t('select_school')}
+                    placeholder={t('search_school')}
+                    options={
+                      schoolList && schoolList.length > 0
+                        ? [
+                            ...schoolList.map((item) => ({
+                              label: `${item.vendor_translations?.[0]?.name}${
+                                item.email ? ` - ${item.email}` : ''
+                              }`,
+                              value: item.id,
+                            })),
+                            { label: t('other'), value: null },
+                          ]
+                        : [{ label: t('other'), value: null }]
+                    }
+                    setSearchOwner={(searchTerm) => setSearchValue(searchTerm)}
+                    disableClearable={false}
+                    loading={schoolLoading}
+                    value={defaultOption}
+                  />
+
+                  {typeof values.vendor_id === 'object' &&
+                    (values.vendor_id?.value === undefined || values.vendor_id?.value === null) && (
+                      <RHFTextField name="school_name" label={t('school_name')} />
+                    )}
+
+                  <div>
+                    <RHFTextField
+                      name="vendor_commission_in_percentage"
+                      label={t('school_commission')}
+                      type="number"
+                    />
+                    {selectedSchool?.min_commision && selectedSchool?.max_commision ? (
+                      <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                        {t('school_commission_range', {
+                          min: selectedSchool.min_commision || '0',
+                          max: selectedSchool.max_commision || '0',
+                        })}
+                      </FormHelperText>
+                    ) : null}
+                  </div>
+                </>
+              )}
+
               {values.user_type === 'TRAINER' && (
                 <>
                   <RHFTextField
                     name="certificate_commission_in_percentage"
-                    label="Certificate Commission (%)"
+                    label={t('certificate_commission')}
                     type="number"
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <Tooltip title="Commission for trainer from certificate" placement="top">
+                          <Tooltip title={t('certificate_commission_tooltip')} placement="top">
                             <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                           </Tooltip>
                         </InputAdornment>
                       ),
                     }}
                   />
-                  <RHFTextField name="vehicle_number" label="Vehicle Number" type="text" />
+                  <RHFTextField name="vehicle_number" label={t('vehicle_number')} type="text" />
                 </>
               )}
             </Box>
@@ -911,10 +922,10 @@ export default function UserNewEditForm({
                 <>
                   <RHFTextField
                     name="max_cash_in_hand_allowed"
-                    label="Max cash in hand allowded"
+                    label={t('max_cash_in_hand_allowed')}
                     type="number"
                   />
-                  <RHFTextField name="cash_in_hand" label="Cash in hand" type="number" />
+                  <RHFTextField name="cash_in_hand" label={t('cash_in_hand')} type="number" />
                 </>
               )}
             </Box>
@@ -928,10 +939,10 @@ export default function UserNewEditForm({
                 sx={{ mt: 3 }}
               >
                 <Button variant="outlined" onClick={handleCancel}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!currentUser ? 'Create User' : 'Save Changes'}
+                  {!currentUser ? t('create_user') : t('save_changes')}
                 </LoadingButton>
               </Stack>
             )}
@@ -942,7 +953,7 @@ export default function UserNewEditForm({
             <Card sx={{ p: 5, m: 2 }}>
               {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
                 <>
-                  <Typography sx={{ fontWeight: '700' }}> User Preferences:</Typography>
+                  <Typography sx={{ fontWeight: '700' }}>{t('user_preferences')}:</Typography>
                   <Box
                     rowGap={3}
                     columnGap={2}
@@ -955,38 +966,39 @@ export default function UserNewEditForm({
                   >
                     <RHFAutocompleteSearch
                       name="city_id"
-                      label="City"
+                      label={t('city')}
                       options={
                         city?.map((option: any) => ({
-                          value: option?.id ?? 'Unknown',
-                          label: option?.city_translations?.[0]?.name ?? 'Unknown',
+                          value: option?.id ?? 'unknown',
+                          label: option?.city_translations?.[0]?.name ?? t('unknown'),
                         })) ?? []
                       }
                       getOptionLabel={(option) => option?.label ?? ''}
                       renderOption={(props, option: any) => (
                         <li {...props} key={option?.value}>
-                          {option?.label ?? 'Unknown'}
-                        </li>
-                      )}
-                    />
-                    <RHFAutocompleteSearch
-                      name="area_id"
-                      label="Area"
-                      options={
-                        states?.map((option: any) => ({
-                          value: option?.id ?? 'Unknown',
-                          label: option?.translations?.[0]?.name ?? 'Unknown',
-                        })) ?? []
-                      }
-                      getOptionLabel={(option) => option?.label ?? ''}
-                      renderOption={(props, option: any) => (
-                        <li {...props} key={option?.value}>
-                          {option?.label ?? 'Unknown'}
+                          {option?.label ?? t('unknown')}
                         </li>
                       )}
                     />
 
-                    <RHFSelect name="gear" label="Gear">
+                    <RHFAutocompleteSearch
+                      name="area_id"
+                      label={t('area')}
+                      options={
+                        states?.map((option: any) => ({
+                          value: option?.id ?? 'unknown',
+                          label: option?.translations?.[0]?.name ?? t('unknown'),
+                        })) ?? []
+                      }
+                      getOptionLabel={(option) => option?.label ?? ''}
+                      renderOption={(props, option: any) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label ?? t('unknown')}
+                        </li>
+                      )}
+                    />
+
+                    <RHFSelect name="gear" label={t('gear')}>
                       {gearData?.length > 0 &&
                         gearData?.map((option: any) => (
                           <MenuItem key={option.value} value={option.value}>
@@ -994,8 +1006,9 @@ export default function UserNewEditForm({
                           </MenuItem>
                         ))}
                     </RHFSelect>
+
                     {values.user_type === 'TRAINER' && (
-                      <RHFSelect name="gender" label="Gender">
+                      <RHFSelect name="gender" label={t('gender')}>
                         {genderData?.length > 0 &&
                           genderData?.map((option: any) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -1007,7 +1020,7 @@ export default function UserNewEditForm({
                     {values.user_type === 'TRAINER' && (
                       <RHFTextField
                         name="school_commission_in_percentage"
-                        label="School Commission (Trainer Preference) (%)"
+                        label={t('school_commission_trainer')}
                         type="number"
                       />
                     )}
@@ -1024,14 +1037,14 @@ export default function UserNewEditForm({
                   >
                     <RHFAutocompleteSearch
                       name="vehicle_type_id"
-                      label="Select Category"
-                      placeholder="Search Category..."
+                      label={t('select_category')}
+                      placeholder={t('search_category')}
                       options={
                         category?.map((item: any) => ({
                           label: item?.category_translations
-                            ?.map((translation: any) => translation?.name ?? 'Unknown') // Extract all names
+                            ?.map((translation: any) => translation?.name ?? t('unknown')) // Extract all names
                             .join(' - '), // Display full name
-                          value: item?.id ?? 'Unknown',
+                          value: item?.id ?? t('unknown'),
                         })) ?? []
                       }
                       setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
@@ -1052,23 +1065,23 @@ export default function UserNewEditForm({
                           <Grid item xs={12} md={5}>
                             <RHFAutocomplete
                               name={`languages[${index}].id`}
-                              label={`Language ${index + 1}`}
+                              label={`${t('language')} ${index + 1}`}
                               getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
                               options={dialect ?? []}
                               renderOption={(props, option: any) => (
                                 <li {...props} key={option?.id}>
-                                  {option?.dialect_name ?? 'Unknown'}
+                                  {option?.dialect_name ?? t('unknown')}
                                 </li>
                               )}
                               defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
                             />
                           </Grid>
 
-                          {/* Value Field */}
+                          {/* Fluency Level Field */}
                           <Grid item xs={12} md={5}>
                             <RHFSelect
                               name={`languages[${index}].fluency_level`} // Dynamic name for react-hook-form
-                              label="Fluency level"
+                              label={t('fluency_level')}
                               defaultValue={languageItem.fluency_level}
                             >
                               {fluencyOptions.map((option: any) => (
@@ -1090,28 +1103,29 @@ export default function UserNewEditForm({
 
                       <Grid item xs={12} sx={{ mt: 2 }}>
                         <Button variant="contained" onClick={handleAddMore}>
-                          Add Language
+                          {t('add_language')}
                         </Button>
                       </Grid>
                     </>
                   )}
+
                   {values.user_type === 'TRAINER' && !currentUser?.id && (
                     <>
                       {licenseFields.map((docItem, index) => (
                         <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={index}>
                           <Grid item xs={12} md={5}>
                             <RHFFileUpload
-                              label="License File"
+                              label={t('license_file')}
                               name={`license[${index}].license_file`}
-                              helperText="Please upload a file (PDF, DOCX, etc.)"
+                              helperText={t('upload_helper_text')}
                             />
                           </Grid>
 
-                          {/* Value Field */}
+                          {/* Document Side Field */}
                           <Grid item xs={12} md={5}>
                             <RHFSelect
                               name={`license[${index}].doc_side`} // Dynamic name for react-hook-form
-                              label="Document Side"
+                              label={t('document_side')}
                               defaultValue={docItem.doc_side}
                             >
                               {docSideOptions.map((option: any) => (
@@ -1133,7 +1147,7 @@ export default function UserNewEditForm({
                       {licenseFields?.length < 2 && (
                         <Grid item xs={12} sx={{ mt: 2 }}>
                           <Button variant="contained" onClick={handleAddMoreFile}>
-                            Add Documnet
+                            {t('add_document')}
                           </Button>
                         </Grid>
                       )}
@@ -1149,10 +1163,10 @@ export default function UserNewEditForm({
                 sx={{ mt: 3 }}
               >
                 <Button variant="outlined" onClick={handleCancel}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!currentUser ? 'Create User' : 'Save Changes'}
+                  {!currentUser ? t('create_user') : t('save_changes')}
                 </LoadingButton>
               </Stack>
             </Card>
@@ -1162,15 +1176,15 @@ export default function UserNewEditForm({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content={<>Are you sure want to delete this user</>}
+        title={t('delete')}
+        content={<>{t('confirm_delete_user')}</>}
         onConfirm={() => {
           confirm.onFalse();
           handleDelete();
         }}
         action={
           <Button variant="contained" color="error">
-            Delete
+            {t('delete')}
           </Button>
         }
       />
