@@ -5,6 +5,8 @@ import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
+import { useLocales } from 'src/locales';
+
 // _mock
 import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
 // components
@@ -32,6 +34,8 @@ type Props = {
 
 export default function SchoolDetailsView({ id }: Props) {
   const settings = useSettingsContext();
+  const { t } = useLocales();
+
   const { details, detailsLoading, revalidateDetails } = useGetSchoolById(id);
 
   const currentJob = details;
@@ -84,18 +88,18 @@ export default function SchoolDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Schools Details"
+        heading={t('schools_details')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
             name: `${
               currentJob?.vendor_translations?.length > 0
                 ? currentJob?.vendor_translations[0]?.name
-                : 'School'
+                : t('school')
             }`,
             href: paths.dashboard.school.root,
           },
-          { name: 'Details' },
+          { name: t('details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -103,11 +107,12 @@ export default function SchoolDetailsView({ id }: Props) {
         action={
           currentTab === 'trainers' && (
             <Button onClick={quickCreate.onTrue} variant="contained">
-              Add Trainer
+              {t('add_trainer')}
             </Button>
           )
         }
       />
+
       {/* <JobDetailsToolbar
         backLink={paths.dashboard.job.root}
         editLink={paths.dashboard.job.edit(`${currentJob?.id}`)}
@@ -122,6 +127,7 @@ export default function SchoolDetailsView({ id }: Props) {
 
           {currentTab === 'details' && (
             <SchoolDetailsContent
+              t={t}
               details={currentJob}
               loading={detailsLoading}
               reload={revalidateDetails}
@@ -130,15 +136,16 @@ export default function SchoolDetailsView({ id }: Props) {
 
           {currentTab === 'trainers' && (
             <SchoolTrainers
+              t={t}
               candidates={details}
               create={quickCreate.value}
               onCreate={handleAddTrainer}
             />
           )}
-          {currentTab === 'package' && <SchoolPackageDetails id={id} />}
+          {currentTab === 'package' && <SchoolPackageDetails t={t} id={id} />}
         </>
       ) : !details ? (
-        <Stack>No School is Associated With, Please Contact System Admin To add a School</Stack>
+        <Stack>{t('no_school_associated')}</Stack>
       ) : (
         <Box
           sx={{

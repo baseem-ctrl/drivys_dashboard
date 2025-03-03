@@ -57,9 +57,10 @@ import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 type Props = {
   details: any;
   loading?: any;
+  t: any;
   reload: VoidFunction;
 };
-export default function SchoolDetailsContent({ details, loading, reload }: Props) {
+export default function SchoolDetailsContent({ details, loading, reload, t }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
@@ -116,12 +117,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
-    name: Yup.string().required('Name is required'),
+    name: Yup.string().required(t('validation.name_required')),
     about: Yup.string(),
 
     contact_email: Yup.string().test(
       'valid-email-format',
-      'Email must be in the valid format',
+      t('validation.invalid_email'),
       function (value) {
         // Only check format if value is present
         if (value) {
@@ -133,7 +134,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
     ),
     phone_number: Yup.string()
       .nullable() // Allow null values
-      .test('valid-phone', 'Phone number must be less than 15 digits', function (value) {
+      .test('valid-phone', t('validation.phone_number_limit'), function (value) {
         // Apply regex validation only if phone_number has a value
         if (value) {
           return /^\d{1,15}$/.test(value);
@@ -141,7 +142,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         return true; // No validation if the phone number is empty or null
       }),
     license_expiry: Yup.string(),
-    website: Yup.string().url('Invalid URL'),
+    website: Yup.string().url(t('validation.invalid_url')),
     status: Yup.string(),
     license_file: Yup.mixed().nullable(),
     is_active: Yup.boolean(),
@@ -198,13 +199,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
   const cityOptions =
     city?.map((cityItem) => ({
       value: cityItem.id,
-      label: cityItem.city_translations?.[0]?.name || 'Unnamed City',
+      label: cityItem.city_translations?.[0]?.name || t('unnamed_city'),
     })) || [];
   const stateOptions =
     states?.map((stateItem) => ({
       value: stateItem.id,
-      label: stateItem.translations?.[0]?.name || 'Unknown State',
-      cityName: stateItem.city?.city_translations?.[0]?.name || 'Unknown City',
+      label: stateItem.translations?.[0]?.name || t('unknown_state'),
+      cityName: stateItem.city?.city_translations?.[0]?.name || t('unknown_city'),
     })) || [];
 
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
@@ -366,18 +367,29 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
             {[
               ...(details?.vendor_translations?.flatMap((itm: any) => [
-                { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
-                { label: `About (${itm?.locale})`, value: itm?.about ?? 'N/A' },
-              ]) || []),
+                {
+                  label: t(`name_locale`, { locale: itm?.locale ?? t('unknown') }),
+                  value: itm?.name?.trim() || t('N/A'),
+                },
+                {
+                  label: t(`about_locale`, { locale: itm?.locale ?? t('unknown') }),
+                  value: itm?.about?.trim() || t('N/A'),
+                },
+              ]) ?? []),
+
               // { label: 'Name', value: items?.name ?? 'N/A' },
-              { label: 'Email', value: details?.email ?? 'NA' },
-              { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
+              { label: t('email'), value: details?.email ?? t('N/A') },
+              { label: t('phone_number'), value: details?.phone_number ?? t('N/A') },
+
               {
-                label: 'Certificate Certificate Commission in (%)',
-                value: `${details?.certificate_commission_in_percentage ?? 'NA'}%`,
+                label: t('certificate_commission_percentage'),
+                value: `${details?.certificate_commission_in_percentage ?? t('N/A')}%`,
+              },
+              {
+                label: t('license_expiry'),
+                value: details?.license_expiry ?? t('N/A'),
               },
 
-              { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
               {
                 label: 'Min. School Commission in (%)',
                 value: `${details?.min_commision ?? 'NA'}%`,
@@ -388,7 +400,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               },
 
               {
-                label: 'License File',
+                label: t('license_file'),
                 value: details?.license_file ? (
                   <a
                     href={details?.license_file}
@@ -399,11 +411,12 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     {details?.license_file}
                   </a>
                 ) : (
-                  'N/A'
+                  t('N/A')
                 ),
               },
+
               {
-                label: 'Website',
+                label: t('website'),
                 value: details?.website ? (
                   <a
                     href={details?.website}
@@ -417,12 +430,16 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     )}
                   </a>
                 ) : (
-                  'N/A'
+                  t('N/A')
                 ),
               },
-              { label: 'Status', value: details?.status ?? 'NA' },
+
               {
-                label: 'Is Active',
+                label: t('status'),
+                value: details?.status ?? t('N/A'),
+              },
+              {
+                label: t('is_active'),
                 value:
                   details?.is_active === 1 || details?.is_active === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -489,7 +506,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Name"
+                      label={t('name')}
                       {...field}
                       error={errors?.name?.message}
                       helperText={errors?.name ? errors?.name?.message : ''}
@@ -521,7 +538,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="contact_email"
                   control={schoolControl}
                   render={({ field }) => (
-                    <TextField label="Email" {...field} error={!!errors.contact_email} />
+                    <TextField label={t('email')} {...field} error={!!errors.contact_email} />
                   )}
                 />{' '}
                 <Controller
@@ -529,7 +546,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Phone Number"
+                      label={t('phone_number')}
                       type="number"
                       {...field}
                       error={!!errors.phone_number?.message}
@@ -542,14 +559,17 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Certificate Commission in (%)"
+                      label={t('certificate_commission')}
                       {...field}
                       error={!!errors.certificate_commission_in_percentage}
                       type="number"
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip title="Commission for drivys from certificate" placement="top">
+                            <Tooltip
+                              title={t('commission_for_drivers_from_certificate')}
+                              placement="top"
+                            >
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -563,7 +583,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="License Expiry"
+                      label={t('license_expiry')}
                       {...field}
                       error={!!errors.license_expiry}
                       type="date"
@@ -576,7 +596,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Mininum Vendor Commission in (%)"
+                      label={t('min_vendor_commission')}
                       {...field}
                       InputLabelProps={{ shrink: true }}
                       error={!!errors.min_commision}
@@ -584,10 +604,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip
-                              title="Enter the minimum commission rate that schools can assign."
-                              placement="top"
-                            >
+                            <Tooltip title={t('min_vendor_commission_tooltip')} placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -601,7 +618,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <TextField
-                      label="Maximum Vendor Commission in (%)"
+                      label={t('max_vendor_commission')}
                       {...field}
                       error={!!errors.max_commision}
                       type="number"
@@ -609,10 +626,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Tooltip
-                              title="Enter the maximum commission rate that schools can assign."
-                              placement="top"
-                            >
+                            <Tooltip title={t('max_vendor_commission_tooltip')} placement="top">
                               <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                             </Tooltip>
                           </InputAdornment>
@@ -628,7 +642,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   render={({ field }) => (
                     <>
                       <TextField
-                        label="License File"
+                        label={t('license_file')}
                         error={!!errors.license_file}
                         type="file"
                         InputLabelProps={{ shrink: true }}
@@ -644,7 +658,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {uploadedFileUrl && (
                         <Box>
                           <TextField
-                            label="Uploaded File URL"
+                            label={t('uploaded_file_url')}
                             value={uploadedFileUrl}
                             InputProps={{
                               readOnly: true,
@@ -661,7 +675,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   name="website"
                   control={schoolControl}
                   render={({ field }) => (
-                    <TextField label="Website" {...field} error={!!errors.website} />
+                    <TextField label={t('website')} {...field} error={!!errors.website} />
                   )}
                 />
                 <Controller
@@ -669,12 +683,14 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field, fieldState: { error } }) => (
                     <TextField {...field} select SelectProps={{ native: true }} error={!!error}>
-                      <option value="">Select Status</option>
-                      <option value="active">Active</option>
-                      <option value="suspended">Suspended</option>
-                      <option value="pending_for_verification">Pending for Verification</option>
-                      <option value="expired">Expired</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="">{t('select_status')}</option>
+                      <option value="active">{t('active')}</option>
+                      <option value="suspended">{t('suspended')}</option>
+                      <option value="pending_for_verification">
+                        {t('pending_for_verification')}
+                      </option>
+                      <option value="expired">{t('expired')}</option>
+                      <option value="cancelled">{t('cancelled')}</option>
                     </TextField>
                   )}
                 />
@@ -709,11 +725,11 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     return (
                       <Select {...field} value={selectedValue} displayEmpty>
                         <MenuItem value="" disabled>
-                          Select School Owner
+                          {t('select_school_owner')}
                         </MenuItem>
 
                         {schoolAdmins.admins.length === 0 ? (
-                          <MenuItem disabled>No users available</MenuItem>
+                          <MenuItem disabled>{t('no_users_available')}</MenuItem>
                         ) : (
                           schoolAdmins.admins.map((option: any) => (
                             <MenuItem
@@ -736,7 +752,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                   control={schoolControl}
                   render={({ field }) => (
                     <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="body1">Is Active</Typography>
+                      <Typography variant="body1">{t('is_active')}</Typography>
                       <Switch {...field} error={!!errors.is_active} checked={field.value} />
                     </Box>
                   )}
@@ -747,22 +763,22 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 control={schoolControl}
                 render={({ field }) => (
                   <TextField
-                    label="About"
+                    label={t('about')}
                     multiline
                     rows={3}
                     {...field}
-                    error={errors?.name?.message}
-                    helperText={errors?.name ? errors?.name?.message : ''}
+                    error={!!errors?.about}
+                    helperText={errors?.about ? errors?.about?.message : ''}
                   />
                 )}
               />
             </Box>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
               <Button variant="outlined" color="error" onClick={handleCancel}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" variant="contained">
-                Save
+                {t('save')}
               </Button>
             </Stack>
           </Box>
@@ -917,7 +933,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
             }}
             sx={{ mb: 2 }}
           >
-            Add New Address
+            {t('add_new_address')}
           </Button>
         </Box>
 
@@ -938,7 +954,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                     const cityId = cityItem?.city_translations?.[0]?.city_id?.toString();
                     const detailsCity = details?.city?.id.toString();
                     return cityId === detailsCity;
-                  })?.city_translations?.[0]?.name || 'N/A';
+                  })?.city_translations?.[0]?.name || t('n/a');
 
                 const translatedStateName =
                   stateList?.find((stateItem) => {
@@ -946,13 +962,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       stateItem?.translations?.[0]?.state_province_id?.toString();
                     const detailsState = details?.state?.id.toString();
                     return stateProvinceId === detailsState;
-                  })?.translations?.[0]?.name || 'N/A';
+                  })?.translations?.[0]?.name || t('n/a');
 
                 return (
                   <Box key={details.id} sx={{ width: '100%' }}>
                     {/* Address Section Title */}
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      Branch {index + 1}
+                      {t('branch')} {index + 1}
                     </Typography>
 
                     {/* Address Details and Map */}
@@ -976,10 +992,13 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       {/* Address Details */}
                       <Box>
                         {[
-                          { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                          {
+                            label: 'Street Address',
+                            value: details?.street_address ?? t('n/a'),
+                          },
                           { label: 'City', value: translatedCityName },
-                          { label: 'Area', value: translatedStateName ?? 'N/A' },
-                          { label: 'Country', value: details?.country ?? 'N/A' },
+                          { label: 'Area', value: translatedStateName ?? t('n/a') },
+                          { label: 'Country', value: details?.country ?? t('n/a') },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
                             <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
@@ -999,7 +1018,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                             <Marker position={defaultCenter} />
                           </GoogleMap>
                         ) : (
-                          <div>Loading Map...</div>
+                          <div>{t('loading_map')}</div>
                         )}
                       </Box>
                       <Button
@@ -1010,7 +1029,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                         }}
                         sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
                       >
-                        Edit
+                        {t('edit')}
                       </Button>
                     </Box>
                   </Box>
@@ -1022,17 +1041,18 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {(newAddress || editingIndex !== null) && (
           <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-              {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
+              {newAddress ? t('add_new_address') : t('edit_address', { index: editingIndex + 1 })}
             </Typography>
+
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 {[
-                  { label: 'Street Address', name: 'street_address' },
-                  { label: 'City', name: 'city', isDropdown: true, options: cityOptions },
-                  { label: 'Area', name: 'state', isDropdown: true, options: stateOptions },
-                  { label: 'Country', name: 'country' },
-                  { label: 'Latitude', name: 'latitude' },
-                  { label: 'Longitude', name: 'longitude' },
+                  { label: t('street_address'), name: 'street_address' },
+                  { label: t('city'), name: 'city', isDropdown: true, options: cityOptions },
+                  { label: t('area'), name: 'state', isDropdown: true, options: stateOptions },
+                  { label: t('country'), name: 'country' },
+                  { label: t('latitude'), name: 'latitude' },
+                  { label: t('longitude'), name: 'longitude' },
                 ].map((item, idx) => (
                   <Controller
                     key={idx}
@@ -1057,14 +1077,16 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                           value={item.name === 'city' ? selectedCity : selectedState}
                         >
                           {item.name === 'city' && cityLoading ? (
-                            <MenuItem value="">
-                              <CircularProgress size={24} />
-                              Loading Cities...
+                            <MenuItem value="" disabled>
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <CircularProgress size={20} />
+                                {t('loading_cities')}
+                              </Box>
                             </MenuItem>
                           ) : item.name === 'state' && stateLoading ? (
                             <MenuItem value="">
                               <CircularProgress size={24} />
-                              Loading Areas...
+                              {t('loading_areas')}
                             </MenuItem>
                           ) : (
                             (item.name === 'city' ? cityOptions : stateOptions).map(
@@ -1089,7 +1111,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                 ))}
                 <Box sx={{ mt: 2 }}>
                   <Button variant="contained" type="submit" sx={{ mr: 1 }}>
-                    Save
+                    {t('save')}
                   </Button>
                   <Button
                     variant="outlined"
@@ -1099,7 +1121,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       setEditingIndex(null);
                     }}
                   >
-                    Cancel
+                    {t('cancel')}
                   </Button>
                 </Box>
               </Grid>
@@ -1107,8 +1129,9 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
               {/* Map Section */}
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Select Location on Map
+                  {t('select_location_on_map')}
                 </Typography>
+
                 <Box sx={{ height: 300 }}>
                   {isLoaded && load ? (
                     <GoogleMap
@@ -1150,7 +1173,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
                       )}
                     </GoogleMap>
                   ) : (
-                    <div>Loading Map...</div>
+                    <div>{t('loading_map')}</div>
                   )}
                 </Box>
               </Grid>
@@ -1161,7 +1184,7 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
         {details?.vendor_addresses?.length > maxVisibleAddresses && (
           <Box sx={{ mt: 3 }}>
             <Button variant="outlined" onClick={() => setShowAllAddresses(!showAllAddresses)}>
-              {showAllAddresses ? 'Show Less' : 'Show More'}
+              {showAllAddresses ? t('show_less') : t('show_more')}
             </Button>
           </Box>
         )}
@@ -1214,36 +1237,38 @@ export default function SchoolDetailsContent({ details, loading, reload }: Props
       <Stack spacing={1}>
         {details?.vendor_user?.user?.name && (
           <Typography variant="subtitle1">
-            {details?.vendor_user?.user?.name ?? 'Name Not Availbale'}
+            {details?.vendor_user?.user?.name ?? t('name_not_available')}
           </Typography>
         )}
         {details?.vendor_user?.user?.email && (
           <Typography variant="body2">
-            {details?.vendor_user?.user?.email ?? 'Email Not Availbale'}
+            {details?.vendor_user?.user?.email ?? t('email_not_available')}
           </Typography>
         )}
         {details?.vendor_user?.user?.phone && (
           <Typography variant="body2">
             {details?.vendor_user?.user?.country_code
-              ? details?.vendor_user?.user?.country_code + '-' + details?.vendor_user?.user?.phone
-              : details?.vendor_user?.user?.phone || 'Phone_Not_Available'}
+              ? `${details?.vendor_user?.user?.country_code}-${details?.vendor_user?.user?.phone}`
+              : details?.vendor_user?.user?.phone || t('phone_not_available')}
           </Typography>
         )}
         {details?.vendor_user?.user?.user_type && (
-          <Typography variant="body2">{details?.vendor_user?.user?.user_type ?? 'NA'}</Typography>
+          <Typography variant="body2">
+            {details?.vendor_user?.user?.user_type ?? t('n/a')}
+          </Typography>
         )}
         {details?.vendor_user?.user?.dob && (
           <Typography variant="body2">
-            {details?.vendor_user?.user?.dob?.split('T')[0] ?? 'NA'}
+            {details?.vendor_user?.user?.dob?.split('T')[0] ?? t('n/a')}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_balance !== 0 && (
           <Typography variant="body2">
-            Wallet Balance-{details?.vendor_user?.user?.dob ?? 'NA'}
+            {t('wallet_balance')}: {details?.vendor_user?.user?.dob ?? t('n/a')}
           </Typography>
         )}
         {details?.vendor_user?.user?.wallet_points !== 0 && (
-          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? 'NA'}</Typography>
+          <Typography variant="body2">{details?.vendor_user?.user?.dob ?? t('n/a')}</Typography>
         )}
       </Stack>
     </Stack>

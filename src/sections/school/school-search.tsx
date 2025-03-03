@@ -6,6 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useLocales } from 'src/locales';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 // routes
 import { useRouter } from 'src/routes/hooks';
@@ -26,6 +27,8 @@ type Props = {
 };
 
 export default function SchoolSearch({ query, results, onSearch, hrefItem, loading }: Props) {
+  const { t } = useLocales();
+
   return (
     <TextField
       fullWidth
@@ -33,7 +36,7 @@ export default function SchoolSearch({ query, results, onSearch, hrefItem, loadi
       onChange={(e) => {
         onSearch('name', e.target.value);
       }}
-      placeholder="Search..."
+      placeholder={t('search_placeholder')}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
