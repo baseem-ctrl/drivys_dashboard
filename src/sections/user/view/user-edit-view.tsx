@@ -37,7 +37,7 @@ export default function UserEditView({ id }: Props) {
             name: t('user'),
             href: paths.dashboard.user.list,
           },
-          { name: currentUser?.name || t('userDetails') }, // Fallback to 'User Details' if name is null
+          { name: currentUser?.name || t('user_details') }, // Fallback to 'User Details' if name is null
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

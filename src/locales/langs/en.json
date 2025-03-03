@@ -120,6 +120,7 @@
   "male_trainers": "Mens",
   "female_trainers": "Womens",
   "gender_not_specified": "Gender Not Specified",
+  "not_specified": "Not Specified",
   "student_analytics": "Student Analytics",
   "no_students_available": "No students available at the moment.",
   "school_performance": "School Performance",

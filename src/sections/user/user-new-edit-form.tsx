@@ -321,14 +321,14 @@ export default function UserNewEditForm({
       city_id: currentUser?.user_preference?.city_id
         ? {
             value: currentUser?.user_preference?.city_id,
-            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || 'Unknown',
+            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || t('unknown'),
           }
         : '',
       area_id: currentUser?.user_preference?.state_province
         ? {
             value: currentUser?.user_preference?.state_province_id,
             label:
-              currentUser?.user_preference?.state_province?.translations?.[0]?.name || 'Unknown',
+              currentUser?.user_preference?.state_province?.translations?.[0]?.name || t('unknown'),
           }
         : '',
       vendor_commission_in_percentage: currentUser?.vendor_commission_in_percentage,
