@@ -227,5 +227,20 @@
   "start_date": "تاريخ البدء",
   "end_date": "تاريخ الانتهاء",
   "notes": "الملاحظات",
-  "achieved_date": "تاريخ الإنجاز"
+  "achieved_date": "تاريخ الإنجاز",
+  "status_update_success": "تم تحديث الحالة بنجاح",
+  "parent_category": "الفئة الرئيسية",
+  "save": "حفظ",
+  "published": "تم النشر",
+  "unpublished": "غير منشور",
+  "select_images": "اختر الصور",
+  "new_category": "فئة جديدة",
+  "publish_status": "حالة النشر",
+  "phone_number": "رقم الهاتف",
+  "dob": "تاريخ الميلاد",
+  "name": "الاسم",
+  "unknown": "غير معروف",
+  "not_specified": "غير محدد",
+  "category_list": "قائمة الفئات",
+  "search_placeholder": "بحث..."
 }

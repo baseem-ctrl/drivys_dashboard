@@ -251,5 +251,6 @@
   "unpublished": "Unpublished",
   "select_images": "Select images",
   "new_category": "New Category",
-  "publish_status": "Publish Status"
+  "publish_status": "Publish Status",
+  "category_list": "Category List"
 }
