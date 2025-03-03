@@ -271,13 +271,9 @@ const EditableForm: React.FC = () => {
           <Typography variant="h5" component="h1" color="primary">
             App Settings
           </Typography>
-          <FormControl sx={{ minWidth: 250, mb: 4 }}>
-            <InputLabel>Locale</InputLabel>
-            <Select
-              value={selectedLocale}
-              onChange={handleLocaleChange}
-              InputLabelProps={{ shrink: true }}
-            >
+          <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
+            <InputLabel shrink={!!selectedLocale}>Locale</InputLabel>
+            <Select value={selectedLocale} onChange={handleLocaleChange} label="Locale">
               {localeOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
