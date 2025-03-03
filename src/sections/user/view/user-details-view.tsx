@@ -5,6 +5,8 @@ import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
+import { useLocales } from 'src/locales';
+
 // _mock
 import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS, USER_DETAILS_TABS } from 'src/_mock';
 // components
@@ -33,6 +35,8 @@ type Props = {
 };
 
 export default function UserDetailsView({ id }: Props) {
+  const { t } = useLocales();
+
   const settings = useSettingsContext();
   const userId = Number(window.location.pathname.split('/').pop());
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
@@ -86,11 +90,11 @@ export default function UserDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
-        heading="User Details"
+        heading={t('user_details')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Users', href: paths.dashboard.user.list },
-          { name: `${details?.user?.name ?? 'Details'}` },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('users'), href: paths.dashboard.user.list },
+          { name: `${details?.user?.name ?? t('details')}` },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
