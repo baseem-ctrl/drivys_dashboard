@@ -228,6 +228,7 @@
   "end_date": "تاريخ الانتهاء",
   "notes": "الملاحظات",
   "achieved_date": "تاريخ الإنجاز",
+
   "user_details": "تفاصيل المستخدم",
   "users": "المستخدمين",
   "name_required": "الاسم مطلوب",
@@ -367,5 +368,7 @@
   "phone_number": "رقم الهاتف",
   "dob": "تاريخ الميلاد",
   "name": "الاسم",
+  "category_list": "قائمة الفئات",
+  "search_placeholder": "بحث...",
   "not_specified": "غير محدد"
 }

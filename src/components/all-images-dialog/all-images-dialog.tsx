@@ -30,6 +30,7 @@ import FormProvider, {
   RHFUpload,
 } from 'src/components/hook-form';
 import { createImageMultiple, useGetAllImages } from 'src/api/all-image';
+import { useLocales } from 'src/locales';
 import { TablePaginationCustom, useTable } from '../table';
 import { CircularProgress, Grid, TableCell } from '@mui/material';
 import ImageTableRow from './image-table-row';
@@ -59,6 +60,7 @@ export default function AllImagesForm({
   isSubmitting,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useLocales();
 
   const NewUserSchema = Yup.object().shape({
     images: Yup.mixed().nullable(),
@@ -173,7 +175,7 @@ export default function AllImagesForm({
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Select images</DialogTitle>
+        <DialogTitle>{t('select_images')}</DialogTitle>
 
         <DialogContent>
           <Grid container spacing={3} sx={{ p: 2 }}>
@@ -221,11 +223,11 @@ export default function AllImagesForm({
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t('cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Create
+            {t('create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>
