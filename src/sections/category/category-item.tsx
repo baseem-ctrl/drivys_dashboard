@@ -33,6 +33,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { CATEGORY_PUBLISH_OPTIONS } from 'src/_mock';
 // types
 import { IJobItem } from 'src/types/job';
+import { useLocales } from 'src/locales';
+
 // utils
 import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
@@ -84,6 +86,7 @@ export default function JobItem({
   const allImages = useBoolean();
   const viewImages = useBoolean();
   const deletecustomer = useBoolean();
+  const { t } = useLocales();
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -238,7 +241,7 @@ export default function JobItem({
 
     try {
       const res = await createCategory(payload);
-      enqueueSnackbar('Status update successfully', { variant: 'success' });
+      enqueueSnackbar(t('status_update_success'), { variant: 'success' });
       reload();
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -352,10 +355,10 @@ export default function JobItem({
         display="grid"
         gridTemplateColumns={{
           xs: 'repeat(1, 1fr)', // On smaller screens, both take 100%
-          sm: '75% 25% ', // On medium and larger screens, 30% for the select and 70% for the text field
+          sm: '75% 25%', // On medium and larger screens, 75% for text field, 25% for select
         }}
       >
-        <RHFTextField name="name" label="Name" borderRadius="0px" />
+        <RHFTextField name="name" label={t('name')} borderRadius="0px" />
 
         <RHFSelect
           value={selectedLanguage}
@@ -382,7 +385,7 @@ export default function JobItem({
         name="parent_id"
         // borderRadius="0px"
         sx={{ mt: 2 }}
-        label="Parent Category"
+        label={t('parent_category')}
         options={parentCategoryOptions || []}
         onInput={(e) => searchCategory(e.target.value)}
       />
@@ -394,7 +397,7 @@ export default function JobItem({
           variant="outlined"
           loading={isSubmitting}
         >
-          {isCreateCategory ? 'Create' : 'Save'}
+          {t(isCreateCategory ? 'create' : 'save')}
         </LoadingButton>
         <LoadingButton
           onClick={() => {
@@ -409,7 +412,7 @@ export default function JobItem({
           variant="outlined"
           sx={{ width: '100%' }}
         >
-          {isCreateCategory ? 'Cancel' : 'Delete'}
+          {t(isCreateCategory ? 'cancel' : 'delete')}
         </LoadingButton>
       </Box>
     </FormProvider>
@@ -426,7 +429,7 @@ export default function JobItem({
           {!isCreateCategory && (
             <LoadingButton
               variant="outlined"
-              loadingIndicator="Loading…"
+              loadingIndicator={t('loading')}
               endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
               onClick={popover.onOpen}
               sx={{
@@ -436,13 +439,13 @@ export default function JobItem({
                 fontSize: '13px',
                 mt: 2,
                 color: category?.published ? '#CF5A0D' : 'inherit',
-                borderColor: category?.published ? '#CF5A0D' : 'inherit', // Change border color too
+                borderColor: category?.published ? '#CF5A0D' : 'inherit',
                 '&:hover': {
-                  borderColor: category?.published ? '#CF5A0D' : 'inherit', // Ensure hover color is consistent
+                  borderColor: category?.published ? '#CF5A0D' : 'inherit',
                 },
               }}
             >
-              {category?.published ? 'Published' : 'Un Published'}
+              {category?.published ? t('published') : t('unpublished')}
             </LoadingButton>
           )}
         </Stack>
@@ -631,8 +634,8 @@ export default function JobItem({
       <ConfirmDialog
         open={deletecustomer.value}
         onClose={handleCloseDelete}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t('delete')}
+        content={t('delete_confirmation')}
         onConfirm={() => {
           deletecustomer.onFalse();
           handleDeleteCategoryById();

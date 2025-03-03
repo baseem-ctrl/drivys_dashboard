@@ -243,5 +243,13 @@
   "loading_gears": "Loading gears...",
   "school": "School",
   "new_user": "New User",
-  "results_found": "results found"
+  "results_found": "results found",
+  "status_update_success": "Status updated successfully",
+  "parent_category": "Parent Category",
+  "save": "Save",
+  "published": "Published",
+  "unpublished": "Unpublished",
+  "select_images": "Select images",
+  "new_category": "New Category",
+  "publish_status": "Publish Status"
 }

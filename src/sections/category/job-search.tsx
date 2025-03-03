@@ -7,6 +7,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
+import { useLocales } from 'src/locales';
+
 // routes
 import { useRouter } from 'src/routes/hooks';
 // components
@@ -26,6 +28,8 @@ type Props = {
 };
 
 export default function CategorySearch({ query, results, onSearch, hrefItem, loading }: Props) {
+  const { t } = useLocales();
+
   return (
     <TextField
       fullWidth
@@ -33,7 +37,7 @@ export default function CategorySearch({ query, results, onSearch, hrefItem, loa
       onChange={(e) => {
         onSearch('name', e.target.value);
       }}
-      placeholder="Search..."
+      placeholder={t('search_placeholder')}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

@@ -20,6 +20,7 @@ import { IJobFilters, IJobFilterValue } from 'src/types/job';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useGetAllCategory } from 'src/api/category';
+import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -66,6 +67,8 @@ export default function CategoryFilters({
   publishOptions,
   setParentId,
 }: Props) {
+  const { t } = useLocales();
+
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
@@ -123,7 +126,7 @@ export default function CategoryFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -143,8 +146,9 @@ export default function CategoryFilters({
   const renderPublish = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Publish Status
+        {t('publish_status')}
       </Typography>
+
       {publishOptions.map((option) => (
         <FormControlLabel
           key={option}
@@ -168,14 +172,15 @@ export default function CategoryFilters({
   const renderRoles = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Parent Category
+        {t('parent_category')}
       </Typography>
+
       <Autocomplete
         options={parentCategoryOptions?.map((option) => option)}
         getOptionLabel={(option) => option.label}
         value={filters.parent_id}
         onChange={(event, newValue) => handleFilterParent(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('select_category')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -208,7 +213,7 @@ export default function CategoryFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}
       </Button>
 
       <Drawer

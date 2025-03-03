@@ -8,6 +8,8 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useLocales } from 'src/locales';
+
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // _mock
@@ -64,6 +66,7 @@ const isPublishMap = {
 
 export default function CategoryListView() {
   const settings = useSettingsContext();
+  const { t } = useLocales();
 
   const openFilters = useBoolean();
 
@@ -211,25 +214,24 @@ export default function CategoryListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Category List"
+        heading={t('category_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Category',
+            name: t('category'),
             href: paths.dashboard.category.root,
           },
-          { name: 'List' },
+          { name: t('list') },
         ]}
         action={
           <Button
             component={RouterLink}
-            // href={paths.dashboard.job.new}
             onClick={() => handleAddNewCategory()}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
             disabled={addOnlyOneCategory}
           >
-            New Category
+            {t('new_category')}
           </Button>
         }
         sx={{
