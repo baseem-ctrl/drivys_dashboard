@@ -369,34 +369,34 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
               ...(details?.vendor_translations?.flatMap((itm: any) => [
                 {
                   label: t(`name_locale`, { locale: itm?.locale ?? t('unknown') }),
-                  value: itm?.name?.trim() || t('N/A'),
+                  value: itm?.name?.trim() || t('n/a'),
                 },
                 {
                   label: t(`about_locale`, { locale: itm?.locale ?? t('unknown') }),
-                  value: itm?.about?.trim() || t('N/A'),
+                  value: itm?.about?.trim() || t('n/a'),
                 },
               ]) ?? []),
 
               // { label: 'Name', value: items?.name ?? 'N/A' },
-              { label: t('email'), value: details?.email ?? t('N/A') },
-              { label: t('phone_number'), value: details?.phone_number ?? t('N/A') },
+              { label: t('email'), value: details?.email ?? t('n/a') },
+              { label: t('phone_number'), value: details?.phone_number ?? t('n/a') },
 
               {
                 label: t('certificate_commission_percentage'),
-                value: `${details?.certificate_commission_in_percentage ?? t('N/A')}%`,
+                value: `${details?.certificate_commission_in_percentage ?? t('n/a')}%`,
               },
               {
                 label: t('license_expiry'),
-                value: details?.license_expiry ?? t('N/A'),
+                value: details?.license_expiry ?? t('n/a'),
               },
 
               {
-                label: 'Min. School Commission in (%)',
-                value: `${details?.min_commision ?? 'NA'}%`,
+                label: t('min_school_commission'),
+                value: `${details?.min_commision ?? t('na')}%`,
               },
               {
-                label: 'Max. School Commission in (%)',
-                value: `${details?.max_commision ?? 'NA'}%`,
+                label: t('max_school_commission'),
+                value: `${details?.max_commision ?? t('na')}%`,
               },
 
               {
@@ -411,7 +411,7 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
                     {details?.license_file}
                   </a>
                 ) : (
-                  t('N/A')
+                  t('n/a')
                 ),
               },
 
@@ -430,13 +430,13 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
                     )}
                   </a>
                 ) : (
-                  t('N/A')
+                  t('n/a')
                 ),
               },
 
               {
                 label: t('status'),
-                value: details?.status ?? t('N/A'),
+                value: details?.status ?? t('n/a'),
               },
               {
                 label: t('is_active'),
@@ -456,7 +456,7 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
                   :
                 </Box>
                 <Box component="span" sx={{ flex: 1 }}>
-                  {item.value ?? 'N/A'}
+                  {item.value ?? 'n/a'}
                 </Box>
                 {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
               </Box>
@@ -993,12 +993,12 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
                       <Box>
                         {[
                           {
-                            label: 'Street Address',
+                            label: t('street_address'),
                             value: details?.street_address ?? t('n/a'),
                           },
-                          { label: 'City', value: translatedCityName },
-                          { label: 'Area', value: translatedStateName ?? t('n/a') },
-                          { label: 'Country', value: details?.country ?? t('n/a') },
+                          { label: t('city'), value: translatedCityName },
+                          { label: t('area'), value: translatedStateName ?? t('n/a') },
+                          { label: t('country'), value: details?.country ?? t('n/a') },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
                             <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>

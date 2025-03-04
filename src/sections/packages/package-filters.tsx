@@ -189,7 +189,7 @@ export default function ProductFilters({
   const renderVendorType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Vendor Type
+        School Type
       </Typography>
       <Autocomplete
         options={schoolsOptions?.map((option) => option)}

@@ -4,6 +4,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
+import { useLocales } from 'src/locales';
+
 import { createSchool, useGetAllSchoolAdmin, useGetSchoolAdmin } from 'src/api/school';
 import { useGetAllLanguage } from 'src/api/language';
 // @mui
@@ -46,6 +48,7 @@ export default function SchoolCreateForm({
   revalidateDeliverey,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useLocales();
   const { language } = useGetAllLanguage(0, 1000);
   const { revalidateSearch } = useGetSchoolAdmin(1000, 1);
   const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
@@ -62,7 +65,7 @@ export default function SchoolCreateForm({
   const DeliverySchema = Yup.object().shape({
     contact_email: Yup.string().test(
       'valid-email-format',
-      'Email must be in the valid format',
+      t('email_invalid_format'),
       function (value) {
         // Only check format if value is present
         if (value) {
@@ -74,7 +77,7 @@ export default function SchoolCreateForm({
     ),
     contact_phone_number: Yup.number()
       .nullable() // Allow null values
-      .test('valid-phone', 'Phone number must be  9 digits', function (value) {
+      .test('valid-phone', t('phone_number_invalid_length'), function (value) {
         // Apply regex validation only if phone_number has a value
         if (value) {
           return /^\d{1,9}$/.test(value);
@@ -82,16 +85,17 @@ export default function SchoolCreateForm({
         return true; // No validation if the phone number is empty or null
       }),
     certificate_commission_in_percentage: Yup.string().typeError(
-      'commission_in_percentage must be a number'
+      t('commission_in_percentage_invalid') // Localization key
     ),
+
     status: Yup.string(),
-    name: Yup.string().required('Name is required'),
+    name: Yup.string().required(t('name_required')),
     about: Yup.string(),
-    locale: Yup.string().required('Locale is required'),
+    locale: Yup.string().required(t('locale_required')),
     is_active: Yup.boolean(),
     create_new_user: Yup.boolean(),
     user_id: Yup.mixed()
-      .test('user_id-required', 'User ID is required', function (value) {
+      .test('user_id-required', t('user_id_required'), function (value) {
         const { create_new_user } = this.parent;
         if (!create_new_user) {
           return !!value; // Ensures user_id is filled if create_new_user is false
@@ -99,22 +103,24 @@ export default function SchoolCreateForm({
         return true; // No validation if create_new_user is true
       })
       .nullable(),
-    user_name: Yup.string().test('user_name-required', 'Username is required', function (value) {
+
+    user_name: Yup.string().test('user_name-required', t('user_name_required'), function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
         return !!value; // Ensures user_name is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
+
     user_email: Yup.string()
-      .test('user_email-required', 'Email is required', function (value) {
+      .test('user_email-required', t('user_email_required'), function (value) {
         const { create_new_user } = this.parent;
         if (create_new_user) {
           return !!value; // Ensures user_email is filled if create_new_user is true
         }
         return true; // No validation if create_new_user is false
       })
-      .test('valid-email-format', 'Email must be in the valid format', function (value) {
+      .test('valid-email-format', t('invalid_email_format'), function (value) {
         // Only check format if value is present
         if (value) {
           const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
@@ -122,24 +128,21 @@ export default function SchoolCreateForm({
         }
         return true; // Skip format check if value is empty
       }),
-    password: Yup.string().test('password-required', 'Password is required', function (value) {
+    password: Yup.string().test('password-required', t('password_required'), function (value) {
       const { create_new_user } = this.parent;
       if (create_new_user) {
         return !!value; // Ensures password is filled if create_new_user is true
       }
       return true; // No validation if create_new_user is false
     }),
-    phone: Yup.string().test(
-      'Maximum 9 digit',
-      'Maximum 9 digit and start with 5',
-      function (value) {
-        const { create_new_user } = this.parent;
-        if (create_new_user) {
-          return value && value.length === 9 && /^5\d{0,8}$/.test(value); // Ensures password is filled if create_new_user is true
-        }
-        return true; // No validation if create_new_user is false
+    phone: Yup.string().test('Maximum 9 digit', t('phone_max_digits'), function (value) {
+      const { create_new_user } = this.parent;
+      if (create_new_user) {
+        return value && value.length === 9 && /^5\d{0,8}$/.test(value); // Ensures phone is filled if create_new_user is true
       }
-    ),
+      return true; // No validation if create_new_user is false
+    }),
+
     country_code: Yup.string(),
   });
 
@@ -228,7 +231,6 @@ export default function SchoolCreateForm({
     saveCurrentLocaleTranslation();
 
     const formData = new FormData();
-    console.log('data', data);
     formData.append('contact_email', data?.contact_email);
     formData.append('contact_phone_number', data?.contact_phone_number);
     formData.append('min_commision', data?.min_commision);
@@ -288,7 +290,7 @@ export default function SchoolCreateForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Create School</DialogTitle>
+        <DialogTitle>{t('create_school')}</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
@@ -301,8 +303,8 @@ export default function SchoolCreateForm({
               }}
             >
               <RHFSelect
-                name="locale (Language)"
-                label="Locale"
+                name="locale"
+                label={t('locale')}
                 value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
@@ -312,7 +314,8 @@ export default function SchoolCreateForm({
                   </MenuItem>
                 ))}
               </RHFSelect>
-              <RHFTextField name="name" label="Name" />
+
+              <RHFTextField name="name" label={t('name')} />
             </Box>
             {/* <RHFTextField name="description" label="Description" /> */}
           </Box>
@@ -321,12 +324,12 @@ export default function SchoolCreateForm({
 
           <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
             <Grid item xs={6}>
-              <RHFTextField name="contact_email" label="Email" type="email" />
+              <RHFTextField name="contact_email" label={t('email')} type="email" />
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
                 name="contact_phone_number"
-                label="Contact Number"
+                label={t('contact_number')}
                 placeholder="503445679"
                 type="number"
                 prefix="+971"
@@ -345,25 +348,28 @@ export default function SchoolCreateForm({
                     error={!!error}
                     helperText={error?.message}
                   >
-                    <option value="">Select Status</option>
-                    <option value="active">Active</option>
-                    <option value="suspended">Suspended</option>
-                    <option value="pending_for_verification">Pending for Verification</option>
-                    <option value="expired">Expired</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="">{t('select_status')}</option>
+                    <option value="active">{t('active')}</option>
+                    <option value="suspended">{t('suspended')}</option>
+                    <option value="pending_for_verification">
+                      {t('pending_for_verification')}
+                    </option>
+                    <option value="expired">{t('expired')}</option>
+                    <option value="cancelled">{t('cancelled')}</option>
                   </RHFTextField>
                 )}
               />
             </Grid>
+
             <Grid item xs={6} mt={2}>
               <RHFTextField
                 name="certificate_commission_in_percentage"
-                label="Certificate Commission in (%)"
+                label={t('certificate_commission_in_percentage')}
                 type="number"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title="Commission for drivys from certificate" placement="top">
+                      <Tooltip title={t('certificate_commission_tooltip')} placement="top">
                         <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
                       </Tooltip>
                     </InputAdornment>
@@ -371,15 +377,16 @@ export default function SchoolCreateForm({
                 }}
               />
             </Grid>
+
             <RHFTextField
               name="min_commision"
-              label="Min School Commission in (%)"
+              label={t('min_school_commission')}
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Tooltip title="Enter the minimum commission rate that the school can assign.">
+                    <Tooltip title={t('min_commission_tooltip')}>
                       <IconButton>
                         <InfoOutlined />
                       </IconButton>
@@ -393,13 +400,13 @@ export default function SchoolCreateForm({
 
             <RHFTextField
               name="max_commision"
-              label="Max School Commission in (%)"
+              label={t('max_school_commission')}
               fullWidth
               sx={{ mt: 2 }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Tooltip title="Enter the maximum commission rate that the school can assign.">
+                    <Tooltip title={t('max_commission_tooltip')}>
                       <IconButton>
                         <InfoOutlined />
                       </IconButton>
@@ -416,23 +423,25 @@ export default function SchoolCreateForm({
               variant="body1"
               sx={{ fontSize: '17px', fontWeight: '600', ml: 1, mt: 4, mb: 1 }}
             >
-              About:
+              {t('about')}
             </Typography>
             <RHFEditor name="about" fullWidth />
           </Grid>
+
           <Grid item xs={6} mt={2} mb={2}>
-            <RHFCheckbox name="is_active" label="Active" />
+            <RHFCheckbox name="is_active" label={t('active')} />
           </Grid>
           <Grid item xs={6} mt={2} mb={2}>
             <Typography variant="body1" sx={{ fontWeight: '600' }}>
-              Choose a School Admin: Create New or Select Existing
+              {t('choose_school_admin')}
             </Typography>
-            <RHFCheckbox name="create_new_user" label="Create New School Admin" />
+            <RHFCheckbox name="create_new_user" label={t('create_new_school_admin')} />
           </Grid>
+
           {!values?.create_new_user ? (
             <RHFAutocomplete
               name="user_id"
-              label="Select School Admin"
+              label={t('select_school_admin')}
               options={schoolAdminList.map(({ name, email, id }) => ({
                 label: `${name}[${email}]`,
                 value: id,
@@ -443,7 +452,7 @@ export default function SchoolCreateForm({
           ) : (
             <Box>
               <Divider sx={{ my: 2 }} />
-              Create New User
+              {t('create_new_user')}
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(2, 1fr)"
@@ -451,11 +460,11 @@ export default function SchoolCreateForm({
                 mt={2}
                 rowGap={3}
               >
-                <RHFTextField name="user_name" label="User Name" />
-                <RHFTextField name="user_email" label="User Email" />
+                <RHFTextField name="user_name" label={t('user_name')} />
+                <RHFTextField name="user_email" label={t('user_email')} />
                 <RHFTextField
                   name="password"
-                  label="Password"
+                  label={t('password')}
                   type={password.value ? 'text' : 'password'}
                   InputProps={{
                     endAdornment: (
@@ -469,37 +478,7 @@ export default function SchoolCreateForm({
                     ),
                   }}
                 />
-                {/* <RHFAutocomplete
-                  name="country_code"
-                  label="Country Code"
-                  options={countries}
-                  getOptionLabel={(option) => {
-                    return option ? `${option.phone} ${option.label}` : '';
-                  }}
-                  isOptionEqualToValue={(option, value) => option.countryCode === value.countryCode}
-                  filterOptions={(options, state) => {
-                    return options.filter(
-                      (option) =>
-                        // Check if the input matches either countryCode or label
-                        option.phone.toLowerCase().includes(state.inputValue.toLowerCase()) ||
-                        option.label.toLowerCase().includes(state.inputValue.toLowerCase())
-                    );
-                  }}
-                  renderOption={(props, option) => {
-                    return (
-                      <li {...props} key={option.label}>
-                        <Iconify
-                          key={option.label}
-                          icon={`circle-flags:${option.code.toLowerCase()}`}
-                          width={28}
-                          sx={{ mr: 1 }}
-                        />
-                        {option.phone} {option.label}
-                      </li>
-                    );
-                  }}
-                /> */}
-                <RHFTextField name="phone" label="Phone Number" prefix="+971" />
+                <RHFTextField name="phone" label={t('phone_number')} prefix="+971" />
               </Box>
             </Box>
           )}
@@ -507,10 +486,10 @@ export default function SchoolCreateForm({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t('cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Create
+            {t('create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

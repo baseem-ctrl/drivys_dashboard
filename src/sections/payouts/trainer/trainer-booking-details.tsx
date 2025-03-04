@@ -265,7 +265,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Vendor Earning
+            Total School Earning
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>

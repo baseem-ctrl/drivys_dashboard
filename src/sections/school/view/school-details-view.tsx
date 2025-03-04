@@ -16,7 +16,6 @@ import { useSettingsContext } from 'src/components/settings';
 import JobDetailsToolbar from '../job-details-toolbar';
 import JobDetailsContent from '../school-details-content';
 import JobDetailsCandidates from '../school-details-trainers';
-import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import SchoolDetailsContent from '../school-details-content';
 import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
@@ -41,6 +40,11 @@ export default function SchoolDetailsView({ id }: Props) {
   const currentJob = details;
 
   const [publish, setPublish] = useState(currentJob?.publish);
+  const SCHOOL_DETAILS_TABS = [
+    { value: 'details', label: t('school_details') },
+    { value: 'trainers', label: t('trainers') },
+    { value: 'package', label: t('packages') },
+  ];
 
   const [currentTab, setCurrentTab] = useState('details');
 
