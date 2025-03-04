@@ -56,7 +56,7 @@ export default function JwtLoginView() {
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
-    // defaultValues,
+    defaultValues,
   });
 
   const {
@@ -76,7 +76,7 @@ export default function JwtLoginView() {
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
-      reset();
+      reset(defaultValues);
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
