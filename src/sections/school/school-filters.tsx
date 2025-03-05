@@ -55,6 +55,7 @@ type Props = {
   selectedRows: any;
   handleToggleSelect: any;
   reload: any;
+  t: any;
 };
 
 export default function ProductFilters({
@@ -75,6 +76,7 @@ export default function ProductFilters({
   setIsBulkEdit,
   setSelectedRows,
   selectedRows,
+  t,
   reload,
 }: Props) {
   const handleFilterStocks = (newValue: string) => {
@@ -91,7 +93,7 @@ export default function ProductFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -111,8 +113,9 @@ export default function ProductFilters({
   const renderStock = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Status
+        {t('status')}
       </Typography>
+
       {statusOptions.map((option) => (
         <FormControlLabel
           key={option.value}
@@ -175,7 +178,7 @@ export default function ProductFilters({
   );
   const renderRating = (
     <Stack spacing={2} alignItems="flex-start">
-      <Typography variant="subtitle2">Rating</Typography>
+      <Typography variant="subtitle2">{t('rating')}</Typography>
 
       {activeOptions?.map((item, index) => (
         <Stack
@@ -222,7 +225,7 @@ export default function ProductFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}{' '}
       </Button>
       <IconButton onClick={popover.onOpen}>
         <Iconify icon="eva:more-vertical-fill" />
@@ -266,7 +269,7 @@ export default function ProductFilters({
           }}
         >
           <Iconify icon="lineicons:hand-taking-dollar" style={{ width: '2em', height: '2em' }} />
-          Add Bulk Commission
+          {t('add_bulk_commission')}
         </MenuItem>
       </CustomPopover>
       <BulkSchoolCommission

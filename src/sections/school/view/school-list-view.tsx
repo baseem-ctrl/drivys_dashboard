@@ -35,6 +35,8 @@ import {
 } from 'src/components/table';
 // types
 import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { useLocales } from 'src/locales';
+
 //
 import { deleteSchool, useGetSchool } from 'src/api/school';
 import { IDeliveryItem } from 'src/types/product';
@@ -52,23 +54,6 @@ import JobFiltersResult from 'src/sections/category/job-filters-result';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  // { id: '', label: '' },
-
-  { id: 'locale', label: 'Language' },
-  { id: 'name', label: 'Name' },
-  { id: 'email', label: 'Email' },
-  { id: 'phone_number', label: 'Phone Number' },
-  { id: 'commission_in_percentage', label: 'Commission (in %)' },
-
-  { id: 'status', label: 'Status' },
-  { id: 'is_active', label: 'Active Status ' },
-  { id: 'vendor_user', label: 'School Owner' },
-  { id: 'action', label: 'Action' },
-
-  // { id: '' },
-];
-
 const defaultFilters: any = {
   name: '',
   role: [],
@@ -82,6 +67,7 @@ const defaultFilters: any = {
 
 export default function SchoolListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { t } = useLocales();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -99,6 +85,17 @@ export default function SchoolListView() {
   const [filters, setFilters] = useState(defaultFilters);
   const [bulkEditIds, setBulkEditIds] = useState<string[]>([]);
   const [isBulkEdit, setIsBulkEdit] = useState(false);
+  const TABLE_HEAD = [
+    { id: 'locale', label: t('language') },
+    { id: 'name', label: t('name') },
+    { id: 'email', label: t('email') },
+    { id: 'phone_number', label: t('phone_number') },
+    { id: 'commission_in_percentage', label: t('commission_percentage') },
+    { id: 'status', label: t('status') },
+    { id: 'is_active', label: t('active_status') },
+    { id: 'vendor_user', label: t('school_owner') },
+    { id: 'action', label: t('action') },
+  ];
 
   const {
     schoolList,
@@ -204,6 +201,7 @@ export default function SchoolListView() {
           onOpen={openFilters.onTrue}
           onClose={openFilters.onFalse}
           filters={filters}
+          t={t}
           onFilters={handleFilters}
           canReset={canReset}
           onResetFilters={handleResetFilters}
@@ -229,11 +227,11 @@ export default function SchoolListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="Schools List"
+          heading={t('schools_list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'School', href: paths.dashboard.school.root },
-            { name: 'List' },
+            { name: t('dashboard'), href: paths.dashboard.root },
+            { name: t('school'), href: paths.dashboard.school.root },
+            { name: t('list') },
           ]}
           action={
             <Button
@@ -241,13 +239,14 @@ export default function SchoolListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New School
+              {t('new_school')}
             </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
+
         <Stack
           spacing={2.5}
           sx={{

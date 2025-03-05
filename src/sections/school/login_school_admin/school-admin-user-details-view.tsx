@@ -13,7 +13,6 @@ import { useSettingsContext } from 'src/components/settings';
 //
 
 import JobDetailsCandidates from '../school-details-trainers';
-import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';

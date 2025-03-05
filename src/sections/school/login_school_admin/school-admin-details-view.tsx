@@ -3,6 +3,8 @@ import { useState, useCallback } from 'react';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
+import { useLocales } from 'src/locales';
+
 // routes
 import { paths } from 'src/routes/paths';
 // _mock
@@ -12,7 +14,6 @@ import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
 
-import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import { useGetSchoolByIdAdmin } from 'src/api/school';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { Box, Button, CircularProgress, Stack } from '@mui/material';
@@ -28,6 +29,13 @@ type Props = {
 };
 
 export default function SchoolAdminDetailsView({ id }: Props) {
+  const { t } = useLocales();
+
+  const SCHOOL_DETAILS_TABS = [
+    { value: 'details', label: t('school_details') },
+    { value: 'trainers', label: t('trainers') },
+    { value: 'package', label: t('packages') },
+  ];
   const settings = useSettingsContext();
   const { details, detailsLoading, revalidateDetails } = useGetSchoolByIdAdmin(id);
 

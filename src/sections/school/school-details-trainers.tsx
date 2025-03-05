@@ -44,9 +44,10 @@ type Props = {
   candidates: any;
   create: Boolean;
   onCreate: Function;
+  t: any;
 };
 
-export default function SchoolTrainers({ candidates, create, onCreate }: Props) {
+export default function SchoolTrainers({ candidates, create, onCreate, t }: Props) {
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
     cash_in_hand: Yup.string().nullable(),
 
     vendor_commission_in_percentage: Yup.number()
-      .required('vendor commission is required')
+      .required(t('vendor_commission_required'))
       .when([], {
         is: () =>
           candidates?.min_commision >= 0 &&
@@ -91,11 +92,11 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           schema
             .min(
               candidates?.min_commision,
-              `School commission must be greater than or equal to ${candidates?.min_commision}%`
+              t('school_commission_min', { min: candidates?.min_commision ?? 0 })
             )
             .max(
               candidates?.max_commision,
-              `School commission must be less than or equal to ${candidates?.max_commision}%`
+              t('school_commission_max', { max: candidates?.max_commision ?? 100 })
             ),
         otherwise: (schema) => schema,
       }),
@@ -149,7 +150,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       setLoadingButton(true);
       const response = await addTrainer(body);
       if (response) {
-        enqueueSnackbar(response?.message ?? 'Trainer Added Successfully');
+        enqueueSnackbar(response?.message ?? t('trainer_added_successfully'));
         onCreate();
         revalidateTrainers();
         reset(defaultValues);
@@ -177,7 +178,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       if (trainerMappingId) {
         const response = await RemoveTrainerFromSchool(trainerMappingId);
         if (response) {
-          enqueueSnackbar(response?.message ?? 'Trainer Removed Successfully');
+          enqueueSnackbar(response?.message ?? t('trainer_removed_successfully'));
           setTrainerId('');
           revalidateTrainers();
         }
@@ -204,13 +205,14 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       {create && (
         <Stack component={Card} direction="column" spacing={2} sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
-            Add New Trainer
+            {t('add_new_trainer')}
           </Typography>
+
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
               <RHFAutocomplete
                 name="trainer_id"
-                label="Trainer"
+                label={t('trainer')}
                 options={users} // Use the full list of user objects as options
                 getOptionLabel={(option) => (option ? `${option.name}` : '')} // Display only the name in the input field
                 isOptionEqualToValue={(option, value) => option.id === value.id} // Compare based on IDs
@@ -226,7 +228,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Search Trainer"
+                    label={t('search_trainer')}
                     variant="outlined"
                     InputProps={{
                       ...params.InputProps,
@@ -242,22 +244,24 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
               />
               <RHFTextField
                 name="cash_clearance_date"
-                label="Cash Clearance Date "
+                label={t('cash_clearance_date')}
                 type="date"
                 InputLabelProps={{ shrink: true }}
               />
-              <RHFTextField name="cash_in_hand" label="Cash in Hand" />
+              <RHFTextField name="cash_in_hand" label={t('cash_in_hand')} />
               <div>
                 <RHFTextField
                   name="vendor_commission_in_percentage"
-                  label="School Commission (%)"
+                  label={t('school_commission')}
                 />
                 <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
-                  School Commission must be in between {candidates.min_commision || '0'}% and{' '}
-                  {candidates.max_commision || '0'}%
+                  {t('school_commission_range', {
+                    min: candidates.min_commision || '0',
+                    max: candidates.max_commision || '0',
+                  })}
                 </FormHelperText>
               </div>
-              <RHFTextField name="max_cash_in_hand_allowed" label="Max Cash Allowded" />
+              <RHFTextField name="max_cash_in_hand_allowed" label={t('max_cash_allowed')} />
             </Box>
 
             <Box sx={{ mt: 2, display: 'flex', gap: '15px' }}>
@@ -267,7 +271,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                 variant="outlined"
                 loading={schoolTrainersLoading}
               >
-                {'Save'}
+                {t('save')}
               </LoadingButton>
               <LoadingButton
                 onClick={() => {
@@ -277,7 +281,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                 variant="outlined"
                 sx={{ width: '100%' }}
               >
-                {'Cancel'}
+                {t('cancel')}
               </LoadingButton>
             </Box>
           </FormProvider>
@@ -328,21 +332,28 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
                 {[
                   // { label: 'Name', value: items?.name ?? 'N/A' },
                   {
-                    label: 'Phone Number',
+                    label: t('phone_number'),
                     value: trainer?.user?.country_code
                       ? `${trainer?.user?.country_code}-${trainer?.user?.phone}`
-                      : trainer?.user?.phone ?? 'NA',
+                      : trainer?.user?.phone ?? t('n/a'),
                   },
-                  { label: 'Hand Cash Allowed', value: trainer?.max_cash_in_hand_allowed ?? 'NA' },
 
-                  { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? 'NA' },
                   {
-                    label: 'Cash Clearance Date',
-                    value: trainer?.cash_clearance_date ?? 'NA',
+                    label: t('hand_cash_allowed'),
+                    value: trainer?.max_cash_in_hand_allowed ?? t('n/a'),
                   },
                   {
-                    label: 'Last Booking',
-                    value: trainer?.last_booking_was ?? 'NA',
+                    label: t('cash_in_hand'),
+                    value: trainer?.cash_in_hand ?? t('n/a'),
+                  },
+
+                  {
+                    label: t('cash_clearance_date'),
+                    value: trainer?.cash_clearance_date ?? t('n/a'),
+                  },
+                  {
+                    label: t('last_booking'),
+                    value: trainer?.last_booking_was ?? t('n/a'),
                   },
                 ].map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -361,7 +372,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
         ) : (
           !create && (
             <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-              No trainer under this school
+              {t('no_trainer_under_this_school')}
             </Typography>
           )
         )
@@ -390,18 +401,19 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t('delete')}
+        content={t('confirm_delete_message')}
         onConfirm={() => {
           confirm.onFalse();
           handleRemove();
         }}
         action={
           <Button variant="contained" color="error">
-            Delete
+            {t('delete')}
           </Button>
         }
       />
+
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -415,7 +427,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          {t('view')}
         </MenuItem>
 
         <MenuItem
@@ -426,7 +438,7 @@ export default function SchoolTrainers({ candidates, create, onCreate }: Props) 
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Remove
+          {t('remove')}
         </MenuItem>
       </CustomPopover>
     </Box>

@@ -17,7 +17,6 @@ import { useSettingsContext } from 'src/components/settings';
 import JobDetailsToolbar from '../job-details-toolbar';
 import JobDetailsContent from '../user-details-content';
 import JobDetailsCandidates from '../school-details-trainers';
-import { SCHOOL_DETAILS_TABS } from 'src/_mock/_school';
 import SchoolDetailsContent from '../user-details-content';
 import SchoolTrainers from '../school-details-trainers';
 import { useGetSchoolById } from 'src/api/school';
