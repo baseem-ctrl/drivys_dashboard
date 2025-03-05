@@ -245,18 +245,6 @@ const EditableForm: React.FC = () => {
     return null;
   };
 
-  // Separate fields based on type (single-line, multi-line, switch)
-  const singleLineFields = sortedFormData.filter(
-    (item) =>
-      (typeof item.value === 'string' && item.value.length < 20) ||
-      (typeof item.value === 'number' && item.value.toString().length < 20)
-  );
-
-  const multiLineFields = sortedFormData.filter(
-    (item) => typeof item.value === 'string' && item.value.toString().length > 20
-  );
-  const switchFields = sortedFormData.filter((item) => typeof item.value === 'boolean');
-
   return (
     <Container maxWidth="xl">
       <Paper sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
@@ -290,32 +278,16 @@ const EditableForm: React.FC = () => {
           </Box>
         ) : (
           <form>
-            {/* Render single-line fields */}
-            <Grid container spacing={2}>
-              {singleLineFields.map((item, index) => (
-                <Grid item xs={6} key={item.id}>
-                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Render multi-line fields */}
-            <Grid container spacing={2}>
-              {multiLineFields.map((item, index) => (
-                <Grid item xs={6} key={item.id}>
-                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Render switch fields */}
-            <Grid container spacing={2}>
-              {switchFields.map((item, index) => (
-                <Grid item xs={6} key={item.id}>
-                  <Box sx={{ marginBottom: 2 }}>{renderInputField(item)} </Box>
-                </Grid>
-              ))}
-            </Grid>
+            <form>
+              <Grid container spacing={2}>
+                {formData &&
+                  formData.map((item) => (
+                    <Grid item xs={6} key={item.id}>
+                      <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+                    </Grid>
+                  ))}
+              </Grid>
+            </form>
           </form>
         )}
       </Paper>
