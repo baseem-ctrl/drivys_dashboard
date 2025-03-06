@@ -7,6 +7,7 @@ import { useLocales } from 'src/locales';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 
 // ----------------------------------------------------------------------
 
@@ -358,22 +359,39 @@ export function useNavData() {
       ],
     },
   ];
+  const collectorRoutes = [
+    {
+      title: t('dashboard'),
+      path: paths.dashboard.collector.overview,
+      icon: ICONS.school,
+    },
+    // {
+    //   title: t('dashboard'),
+    //   path: paths.dashboard.collector.overview,
+    //   icon: ICONS.dashboard,
+    //   children: [{ title: t('overview'), path: paths.dashboard.collector.overview }],
+    // },
+  ];
+
+  console.log('Collector Routes:', collectorRoutes);
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
     switch (userType) {
       case 'SCHOOL_ADMIN':
         return schooladminRoutes;
+      case 'COLLECTOR':
+        return collectorRoutes;
       default:
         return allroutes;
     }
   })();
 
-  const data = useMemo(
-    () => [
-      // OVERVIEW
-      // ----------------------------------------------------------------------
-      {
+  const data = useMemo(() => {
+    const menuItems = [];
+
+    if (userType !== 'COLLECTOR') {
+      menuItems.push({
         subheader: t('overview'),
         items: [
           {
@@ -387,19 +405,17 @@ export function useNavData() {
             icon: ICONS.map,
           },
         ],
-      },
+      });
+    }
 
-      // MANAGEMENT
-      // ----------------------------------------------------------------------
-      {
-        subheader: t(userType === 'SCHOOL_ADMIN' ? 'management' : 'management'),
-        items: routes,
-      },
+    // MANAGEMENT section (always included)
+    menuItems.push({
+      subheader: t(userType === 'SCHOOL_ADMIN' ? 'management' : 'management'),
+      items: routes,
+    });
 
-      // DEMO MENU STATES
-    ],
-    [t]
-  );
+    return menuItems;
+  }, [t, userType, routes]);
 
   return data;
 }
