@@ -13,7 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 // routes
 import { useSearchParams, useRouter } from 'src/routes/hooks';
 // config
-import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_AFTER_LOGIN, PATH_AFTER_LOGIN_COLLECTOR } from 'src/config-global';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // auth
@@ -24,6 +24,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Tab, Tabs } from '@mui/material';
 import Logo from 'src/components/logo';
+import { CollectorLogin } from 'src/api/auth';
 
 // ----------------------------------------------------------------------
 
@@ -68,9 +69,16 @@ export default function JwtLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (selectedTab === 0) {
-        await login?.(data.email, data.password);
-      } else {
+        await login?.(data.email, data.password, 'ADMIN');
+      } else if (selectedTab === 1) {
         await login?.(data.email, data.password, 'SCHOOL_ADMIN');
+      } else {
+        await CollectorLogin({
+          email: data.email,
+          password: data.password,
+          user_type: 'COLLECTOR',
+        });
+        router.push(PATH_AFTER_LOGIN_COLLECTOR);
       }
 
       router.push(returnTo || PATH_AFTER_LOGIN);
@@ -160,6 +168,7 @@ export default function JwtLoginView() {
         >
           <Tab label="Login As Admin" />
           <Tab label="Login As School" />
+          <Tab label="Login As Collector" />
         </Tabs>
       </Box>
 

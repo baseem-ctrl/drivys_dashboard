@@ -214,6 +214,7 @@ export const paths = {
       trainerPendingRewards: `${ROOTS.DASHBOARD}/todo/trainer-pending-rewards`,
       todoPendingCertificates: `${ROOTS.DASHBOARD}/todo/awaiting-certificate`,
     },
+
     school: {
       root: `${ROOTS.DASHBOARD}/school`,
       list: `${ROOTS.DASHBOARD}/school/list`,
@@ -238,6 +239,9 @@ export const paths = {
       detailsadmin: (id: string) => `${ROOTS.DASHBOARD}/homelisting/admin/${id}`,
       admin: (id: string) => `${ROOTS.DASHBOARD}/homelisting/admin`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/homelisting/${id}/edit`,
+    },
+    collector: {
+      trainer: `${ROOTS.DASHBOARD}/collector/trainer`,
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,

@@ -358,12 +358,25 @@ export function useNavData() {
       ],
     },
   ];
+  const collectorRoutes = [
+    {
+      title: t('trainers'),
+      path: paths.dashboard.collector.trainer,
+      icon: ICONS.tour,
+      children: [
+        { title: t('trainers'), path: paths.dashboard.collector.trainer },
+        // { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
+      ],
+    },
+  ];
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {
     switch (userType) {
       case 'SCHOOL_ADMIN':
         return schooladminRoutes;
+      case 'COLLECTOR':
+        return collectorRoutes;
       default:
         return allroutes;
     }

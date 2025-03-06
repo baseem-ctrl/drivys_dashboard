@@ -6,7 +6,11 @@ export function Login(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
-
+export function CollectorLogin(body: any) {
+  const URL = endpoints.auth.collectorLogin;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
 // Function to update user profile
 export async function UpdateProfile(body: any) {
   const URL = endpoints.auth.update;

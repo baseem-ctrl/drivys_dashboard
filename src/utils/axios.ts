@@ -84,6 +84,7 @@ export const endpoints = {
     register: '/api/auth/register',
     update: 'admin/auth/update-profile', // To update user profile
     delete: 'admin/auth/delete-profile', // To delete user profile
+    collectorLogin: 'consumer/auth/login',
   },
   mail: {
     list: '/api/mail/list',
