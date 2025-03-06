@@ -86,7 +86,10 @@ export function AuthProvider({ children }: Props) {
     try {
       const accessToken = localStorage.getItem(STORAGE_KEY);
       if (accessToken) {
-        const res = await axios.get(endpoints.auth.me);
+        const res =
+          localStorage.getItem('user_type') === 'COLLECTOR'
+            ? await axios.get(endpoints.auth.meCollector)
+            : await axios.get(endpoints.auth.me);
 
         const user = res.data?.data;
         dispatch({

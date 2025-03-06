@@ -387,11 +387,11 @@ export function useNavData() {
     }
   })();
 
-  const data = useMemo(
-    () => [
-      // OVERVIEW
-      // ----------------------------------------------------------------------
-      {
+  const data = useMemo(() => {
+    const menuItems = [];
+
+    if (userType !== 'COLLECTOR') {
+      menuItems.push({
         subheader: t('overview'),
         items: [
           {
@@ -405,19 +405,17 @@ export function useNavData() {
             icon: ICONS.map,
           },
         ],
-      },
+      });
+    }
 
-      // MANAGEMENT
-      // ----------------------------------------------------------------------
-      {
-        subheader: t(userType === 'SCHOOL_ADMIN' ? 'management' : 'management'),
-        items: routes,
-      },
+    // MANAGEMENT section (always included)
+    menuItems.push({
+      subheader: t(userType === 'SCHOOL_ADMIN' ? 'management' : 'management'),
+      items: routes,
+    });
 
-      // DEMO MENU STATES
-    ],
-    [t]
-  );
+    return menuItems;
+  }, [t, userType, routes]);
 
   return data;
 }
