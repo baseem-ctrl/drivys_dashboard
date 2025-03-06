@@ -73,16 +73,12 @@ export default function JwtLoginView() {
       } else if (selectedTab === 1) {
         await login?.(data.email, data.password, 'SCHOOL_ADMIN');
       } else {
-        await CollectorLogin({
-          email: data.email,
-          password: data.password,
-          user_type: 'COLLECTOR',
-        });
+        await login?.(data.email, data.password, 'COLLECTOR');
       }
-      if (selectedTab === 2) {
+      if (localStorage.getItem('user_type') === 'COLLECTOR') {
         router.push(PATH_AFTER_LOGIN_COLLECTOR);
       } else {
-        router.push(returnTo || PATH_AFTER_LOGIN);
+        router.push(returnTo || PATH_AFTER_LOGIN_COLLECTOR);
       }
     } catch (error) {
       console.error(error);

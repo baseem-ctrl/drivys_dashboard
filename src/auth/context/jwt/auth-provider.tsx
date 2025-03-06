@@ -137,16 +137,18 @@ export function AuthProvider({ children }: Props) {
       };
     }
 
-    const res = await axios.post(endpoints.auth.login, data);
-
+    const res =
+      user_type === 'COLLECTOR'
+        ? await axios.post(endpoints.auth.collectorLogin, data)
+        : await axios.post(endpoints.auth.login, data);
+    console.log('resresres', res);
     const { accessToken, user } = res.data;
 
     const token = res.data.data.authorization.token;
 
     setSession(accessToken);
     localStorage.setItem('token', token);
-    localStorage.setItem('user_type', user_type ?? "");
-
+    localStorage.setItem('user_type', user_type ?? '');
 
     dispatch({
       type: Types.LOGIN,

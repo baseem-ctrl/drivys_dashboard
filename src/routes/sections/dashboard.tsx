@@ -375,15 +375,13 @@ const schooladminRoutes = [
 const collectorRoutes = [
   {
     path: 'collector',
-    children: [
-      { element: <OverviewCollectorPage />, index: true },
-      { path: 'overview', element: <OverviewCollectorPage /> },
-    ],
+    children: [{ path: 'overview', element: <OverviewCollectorPage /> }],
   },
 ];
 
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
+  console.log('userType', userType);
   switch (userType) {
     case 'SCHOOL_ADMIN':
       return schooladminRoutes;

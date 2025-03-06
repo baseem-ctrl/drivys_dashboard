@@ -36,4 +36,4 @@ export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN_SCHOOL_ADMIN = paths.dashboard.school.details('1');
-export const PATH_AFTER_LOGIN_COLLECTOR = paths.dashboard.collector.trainer;
+export const PATH_AFTER_LOGIN_COLLECTOR = paths.dashboard.collector.overview;

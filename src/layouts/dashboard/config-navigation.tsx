@@ -362,10 +362,15 @@ export function useNavData() {
   const collectorRoutes = [
     {
       title: t('dashboard'),
-      path: 'collector',
-      icon: ICONS.dashboard,
-      children: [{ title: t('overview'), path: 'overview' }],
+      path: paths.dashboard.collector.overview,
+      icon: ICONS.school,
     },
+    // {
+    //   title: t('dashboard'),
+    //   path: paths.dashboard.collector.overview,
+    //   icon: ICONS.dashboard,
+    //   children: [{ title: t('overview'), path: paths.dashboard.collector.overview }],
+    // },
   ];
 
   console.log('Collector Routes:', collectorRoutes);
