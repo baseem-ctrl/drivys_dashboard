@@ -7,6 +7,7 @@ import { useLocales } from 'src/locales';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 
 // ----------------------------------------------------------------------
 
@@ -360,15 +361,14 @@ export function useNavData() {
   ];
   const collectorRoutes = [
     {
-      title: t('trainers'),
-      path: paths.dashboard.collector.trainer,
-      icon: ICONS.tour,
-      children: [
-        { title: t('trainers'), path: paths.dashboard.collector.trainer },
-        // { title: t('pending refund'), path: paths.dashboard.todo.pendingRefund },
-      ],
+      title: t('dashboard'),
+      path: 'collector',
+      icon: ICONS.dashboard,
+      children: [{ title: t('overview'), path: 'overview' }],
     },
   ];
+
+  console.log('Collector Routes:', collectorRoutes);
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {

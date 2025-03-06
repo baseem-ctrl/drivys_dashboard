@@ -241,7 +241,7 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/homelisting/${id}/edit`,
     },
     collector: {
-      trainer: `${ROOTS.DASHBOARD}/collector/trainer`,
+      trainer: `${ROOTS.DASHBOARD}/collector/overview`,
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,

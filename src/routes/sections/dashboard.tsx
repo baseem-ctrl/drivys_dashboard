@@ -51,6 +51,7 @@ import CertificateCommissionDrivys from 'src/sections/certificate-commission/vie
 import TrainerCommission from 'src/sections/trainer-commission/view/trainer-commission-list-view';
 import ToDoListPendingReward from 'src/sections/todo/refund/to-do-list-pending-rewards';
 import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-program-details';
+import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 
 // ----------------------------------------------------------------------
 
@@ -371,12 +372,23 @@ const schooladminRoutes = [
   //   ],
   // },
 ];
+const collectorRoutes = [
+  {
+    path: 'collector',
+    children: [
+      { element: <OverviewCollectorPage />, index: true },
+      { path: 'overview', element: <OverviewCollectorPage /> },
+    ],
+  },
+];
 
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
   switch (userType) {
     case 'SCHOOL_ADMIN':
       return schooladminRoutes;
+    case 'COLLECTOR':
+      return collectorRoutes;
     default:
       return allroutes;
   }

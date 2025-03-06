@@ -78,10 +78,12 @@ export default function JwtLoginView() {
           password: data.password,
           user_type: 'COLLECTOR',
         });
-        router.push(PATH_AFTER_LOGIN_COLLECTOR);
       }
-
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      if (selectedTab === 2) {
+        router.push(PATH_AFTER_LOGIN_COLLECTOR);
+      } else {
+        router.push(returnTo || PATH_AFTER_LOGIN);
+      }
     } catch (error) {
       console.error(error);
       reset(defaultValues);
