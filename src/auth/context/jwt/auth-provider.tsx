@@ -196,6 +196,7 @@ export function AuthProvider({ children }: Props) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+
     dispatch({
       type: Types.LOGOUT,
     });

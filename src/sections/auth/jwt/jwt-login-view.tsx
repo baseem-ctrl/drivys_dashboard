@@ -22,7 +22,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { alpha, useTheme } from '@mui/material/styles';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, MenuItem, Select } from '@mui/material';
 import Logo from 'src/components/logo';
 import { CollectorLogin } from 'src/api/auth';
 
@@ -30,21 +30,18 @@ import { CollectorLogin } from 'src/api/auth';
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
-
   const router = useRouter();
-
   const [errorMsg, setErrorMsg] = useState('');
-
   const searchParams = useSearchParams();
-
   const returnTo = searchParams.get('returnTo');
-
   const password = useBoolean();
   const theme = useTheme();
-  const [selectedTab, setSelectedTab] = useState(0); // 0 = Admin, 1 = School
-  const handleTabChange = (event, newValue) => {
-    setSelectedTab(newValue);
+
+  const [selectedTab, setSelectedTab] = useState(0);
+  const handleTabChange = (event) => {
+    setSelectedTab(event.target.value);
   };
+
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
     password: Yup.string().required('Password is required'),
@@ -76,9 +73,10 @@ export default function JwtLoginView() {
         await login?.(data.email, data.password, 'COLLECTOR');
       }
       if (localStorage.getItem('user_type') === 'COLLECTOR') {
+        console.log('PATH_AFTER_LOGIN_COLLECTOR', PATH_AFTER_LOGIN_COLLECTOR);
         router.push(PATH_AFTER_LOGIN_COLLECTOR);
       } else {
-        router.push(returnTo || PATH_AFTER_LOGIN_COLLECTOR);
+        router.push(returnTo || PATH_AFTER_LOGIN);
       }
     } catch (error) {
       console.error(error);
@@ -143,33 +141,34 @@ export default function JwtLoginView() {
   );
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      {/* {renderLogo} */}
       {renderHead}
-
       <Alert severity="info" sx={{ mb: 3 }}>
         Use email : <strong>admin@drivys.com</strong> / password :<strong> mvp@12345</strong>
       </Alert>
-      <Box sx={{ borderColor: 'divider', mb: 4 }}>
-        <Tabs
+      <Box sx={{ borderColor: 'divider', mb: 2, width: '100%' }}>
+        <Select
+          fullWidth
           value={selectedTab}
           onChange={handleTabChange}
-          aria-label="login tabs"
-          TabIndicatorProps={{
-            style: {
-              backgroundColor: '#cf5a0d', // Change the underline color to #cf5a0d
+          displayEmpty
+          sx={{
+            backgroundColor: '#fff',
+            color: '#000',
+            fontWeight: '600',
+            height: 56,
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#cf5a0d',
+            },
+            '& .MuiSelect-select': {
+              padding: '14px',
             },
           }}
-          sx={{
-            '.MuiTab-root': { color: '#000' }, // Set default tab text color
-            '.Mui-selected': { color: '#cf5a0d', fontWeight: '800' }, // Set selected tab text color
-          }}
         >
-          <Tab label="Login As Admin" />
-          <Tab label="Login As School" />
-          <Tab label="Login As Collector" />
-        </Tabs>
+          <MenuItem value={0}>Login As Admin</MenuItem>
+          <MenuItem value={1}>Login As School</MenuItem>
+          <MenuItem value={2}>Login As Collector</MenuItem>
+        </Select>
       </Box>
-
       {renderForm}
     </FormProvider>
   );
