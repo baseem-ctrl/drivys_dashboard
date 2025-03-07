@@ -102,7 +102,7 @@ export default function TrainerProfileUpdatesListView() {
     </Stack>
   );
   return (
-    <Card sx={{ mb: 5 }}>
+    <Card sx={{ mb: 5, padding: 3 }}>
       <CustomBreadcrumbs
         heading={t('list')}
         links={[
@@ -116,7 +116,7 @@ export default function TrainerProfileUpdatesListView() {
       />
 
       {renderFilters}
-      <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+      <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
         <TableSelectedAction
           dense={table.dense}
           numSelected={table.selected.length}
