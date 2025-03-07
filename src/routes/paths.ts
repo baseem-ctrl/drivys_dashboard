@@ -242,6 +242,7 @@ export const paths = {
     },
     collector: {
       overview: `${ROOTS.DASHBOARD}/collector/overview`,
+      trainerCashInHand: `${ROOTS.DASHBOARD}/collector/cash_in_hand`,
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,

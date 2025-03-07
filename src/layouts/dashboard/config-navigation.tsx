@@ -365,6 +365,11 @@ export function useNavData() {
       path: paths.dashboard.collector.overview,
       icon: ICONS.school,
     },
+    {
+      title: t('cash_in_hand'),
+      path: paths.dashboard.collector.trainerCashInHand,
+      icon: ICONS.commission,
+    },
     // {
     //   title: t('dashboard'),
     //   path: paths.dashboard.collector.overview,
@@ -372,8 +377,6 @@ export function useNavData() {
     //   children: [{ title: t('overview'), path: paths.dashboard.collector.overview }],
     // },
   ];
-
-  console.log('Collector Routes:', collectorRoutes);
 
   const userType = localStorage.getItem('user_type');
   const routes = (() => {

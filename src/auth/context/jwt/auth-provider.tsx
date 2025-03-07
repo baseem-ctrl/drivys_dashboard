@@ -144,7 +144,6 @@ export function AuthProvider({ children }: Props) {
       user_type === 'COLLECTOR'
         ? await axios.post(endpoints.auth.collectorLogin, data)
         : await axios.post(endpoints.auth.login, data);
-    console.log('resresres', res);
     const { accessToken, user } = res.data;
 
     const token = res.data.data.authorization.token;
