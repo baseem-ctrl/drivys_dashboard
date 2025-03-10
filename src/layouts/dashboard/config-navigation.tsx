@@ -360,6 +360,11 @@ export function useNavData() {
     },
   ];
   const collectorRoutes = [
+    // {
+    //   title: t('dashboard'),
+    //   path: paths.dashboard.root,
+    //   icon: ICONS.school,
+    // },
     {
       title: t('dashboard'),
       path: paths.dashboard.collector.overview,

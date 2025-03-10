@@ -375,12 +375,15 @@ const schooladminRoutes = [
 ];
 const collectorRoutes = [
   {
-    path: 'collector',
-    children: [{ path: 'overview', element: <OverviewCollectorPage /> }],
+    path: 'ecommerce',
+    element: <OverviewCollectorPage />,
   },
   {
     path: 'collector',
-    children: [{ path: 'cash_in_hand', element: <TrainerCashInHand /> }],
+    children: [
+      { path: 'overview', element: <OverviewCollectorPage /> },
+      { path: 'cash_in_hand', element: <TrainerCashInHand /> },
+    ],
   },
 ];
 

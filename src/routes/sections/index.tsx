@@ -14,6 +14,7 @@ import { PATH_AFTER_LOGIN_SCHOOL_ADMIN, PATH_AFTER_LOGIN } from 'src/config-glob
 import { paths } from '../paths';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { DummyRedirect } from './dummyRedirect';
 // ----------------------------------------------------------------------
 
 export default function Router({ is_user_type_school_admin }: any) {
@@ -55,6 +56,6 @@ export default function Router({ is_user_type_school_admin }: any) {
     ...componentsRoutes,
 
     // No match 404
-    { path: '*', element: <Navigate to="/404" replace /> },
+    // { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
