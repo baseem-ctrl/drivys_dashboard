@@ -22,7 +22,8 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Tooltip from '@mui/material/Tooltip';
 import { useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
@@ -39,7 +40,17 @@ const EditableForm: React.FC = () => {
   const { language } = useGetAllLanguage(0, 1000);
   const [selectedLocale, setSelectedLocale] = useState('En');
   const [editedFields, setEditedFields] = useState<Record<number, boolean>>({});
-
+  const fieldTooltips: Record<string, string> = {
+    DEFAULT_MAX_CASH_IN_HAND_ALLOWED:
+      'The maximum amount of cash a trainer is allowed to hold for transactions.',
+    REWARD_FEE: 'The commission deducted from the reward given to the trainer by the student.',
+    TAX_RATE: 'The percentage of tax applied to the booking amount.',
+    CANCELLATION_FEE: 'The fee charged when a student cancels a booking.',
+    MINIMUM_KM:
+      'The minimum distance covered that determines the base price for the pickup option.',
+    SLOT_DURATION: 'The duration of each booking slot.',
+    CASH_FEE: 'Additional fee applied when the payment method is cash.',
+  };
   const {
     appSettings: data,
     appSettingsLoading,
@@ -137,7 +148,6 @@ const EditableForm: React.FC = () => {
   const renderInputField = (item: FormField) => {
     if (item.key === 'DEFAULT_SCHOOL') {
       const selectedSchool = schoolList.find((school) => school.id === item.value);
-
       return (
         <Box display="flex" alignItems="center" width="100%" gap={2}>
           <Typography variant="body1" color="primary">
@@ -217,6 +227,8 @@ const EditableForm: React.FC = () => {
       );
     }
     if (typeof item.value === 'number' || typeof item.value === 'string') {
+      const tooltipText = fieldTooltips[item.key] || '';
+
       return (
         <Box display="flex" alignItems="center" width="100%">
           <TextField
@@ -228,6 +240,17 @@ const EditableForm: React.FC = () => {
             margin="normal"
             multiline={item.value.toString().length > 20}
             rows={item.value.toString().length > 20 ? 4 : 1}
+            InputProps={{
+              endAdornment: tooltipText ? (
+                <InputAdornment position="end">
+                  <Tooltip title={tooltipText} arrow>
+                    <IconButton>
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              ) : null,
+            }}
           />
           {editedFields[item.id] && (
             <>

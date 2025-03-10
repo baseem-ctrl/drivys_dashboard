@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-
 import { Typography, Button, TextField } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
 import { useAuthContext } from 'src/auth/hooks';
 import { updateCommission } from 'src/api/commission';
+import { useGetSchoolById } from 'src/api/school';
+
 // ----------------------------------------------------------------------
 
 export default function TrainerCommissionRow({ reload, row }) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
-
   const router = useRouter();
+
   const {
     vendor_session_commission_in_percentage,
     trainer_name = [],
@@ -23,19 +24,35 @@ export default function TrainerCommissionRow({ reload, row }) {
     vendor_name,
     trainer_id,
   } = row;
+
+  const { details } = useGetSchoolById(vendor_id);
+  const minCommission = details?.min_commision ?? null;
+  const maxCommission = details?.max_commision ?? null;
   const [newCommission, setNewCommission] = useState(vendor_session_commission_in_percentage);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState('');
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCommission(event.target.value);
+    const value = event.target.value;
+    setNewCommission(value);
+
+    if (minCommission !== null && maxCommission !== null) {
+      if (value < minCommission || value > maxCommission) {
+        setError(`Commission must be between ${minCommission}% and ${maxCommission}%.`);
+      } else {
+        setError('');
+      }
+    }
   };
 
   const handleSaveClick = async () => {
+    if (error) return;
+
     setIsUpdating(true);
     try {
       const body = {
@@ -101,6 +118,16 @@ export default function TrainerCommissionRow({ reload, row }) {
             value={newCommission}
             onChange={handleInputChange}
             variant="outlined"
+            error={!!error}
+            helperText={
+              <Typography sx={{ color: error ? 'error.main' : 'primary.main', fontSize: 14 }}>
+                {' '}
+                {error ||
+                  `School Commission must be between ${
+                    minCommission !== null ? `${minCommission}%` : 'N/A'
+                  } and ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+              </Typography>
+            }
           />
         ) : (
           `${vendor_session_commission_in_percentage}%`

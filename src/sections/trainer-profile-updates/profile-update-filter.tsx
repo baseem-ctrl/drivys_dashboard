@@ -11,18 +11,28 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
     user_types: 'TRAINER',
   });
 
+  const trainerOptions =
+    trainerUsers?.map((item: any) => ({
+      label: item?.name ?? t('no_name'),
+      value: item.id,
+    })) ?? [];
+
+  const selectedTrainer = trainerOptions.find((item) => item.value === filters.trainer_id) || null;
+
   const handleTrainerChange = (event: any, value: any) => {
     onFilters((prevFilters: any) => ({
       ...prevFilters,
       trainer_id: value?.value || null,
     }));
   };
+
   const handleVerifiedToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     onFilters((prevFilters: any) => ({
       ...prevFilters,
       is_verified: event.target.checked ? 1 : 0,
     }));
   };
+
   return (
     <Box
       display="flex"
@@ -39,15 +49,10 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
       <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
           fullWidth
-          options={
-            trainerUsers?.map((item: any) => ({
-              label: `${item?.name ?? 'No Name'}`,
-              value: item.id,
-            })) ?? []
-          }
-          value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
-          getOptionLabel={(option) => option.label || t('no_name')}
-          isOptionEqualToValue={(option, value) => option.value === value}
+          options={trainerOptions}
+          value={selectedTrainer}
+          getOptionLabel={(option) => option?.label ?? t('no_name')}
+          isOptionEqualToValue={(option, value) => option?.value === value?.value}
           renderInput={(params) => (
             <TextField placeholder={t('select_trainer')} {...params} fullWidth />
           )}
