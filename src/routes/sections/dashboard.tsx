@@ -52,6 +52,7 @@ import TrainerCommission from 'src/sections/trainer-commission/view/trainer-comm
 import ToDoListPendingReward from 'src/sections/todo/refund/to-do-list-pending-rewards';
 import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-program-details';
 import OverviewCollectorPage from 'src/sections/collector/overview-collector';
+import TrainerCashInHand from 'src/sections/collector/trainer-cash-in-hand/view/trainer-cash-in-hand-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -374,8 +375,15 @@ const schooladminRoutes = [
 ];
 const collectorRoutes = [
   {
+    path: 'ecommerce',
+    element: <OverviewCollectorPage />,
+  },
+  {
     path: 'collector',
-    children: [{ path: 'overview', element: <OverviewCollectorPage /> }],
+    children: [
+      { path: 'overview', element: <OverviewCollectorPage /> },
+      { path: 'cash_in_hand', element: <TrainerCashInHand /> },
+    ],
   },
 ];
 

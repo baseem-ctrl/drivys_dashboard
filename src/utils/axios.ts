@@ -363,4 +363,7 @@ export const endpoints = {
     listAdminTrainerCommission: 'admin/trainers/get-school-trainer-commission-list',
     updateCommission: 'admin/trainers/set-school-trainer-commission',
   },
+  collector: {
+    getCashInHand: 'collector/cash/get-trainer-cash-in-hand-list',
+  },
 };
