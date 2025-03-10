@@ -73,12 +73,11 @@ export default function JwtLoginView() {
         await login?.(data.email, data.password, 'COLLECTOR');
       }
       if (localStorage.getItem('user_type') === 'COLLECTOR') {
-        console.log('PATH_AFTER_LOGIN_COLLECTOR', PATH_AFTER_LOGIN_COLLECTOR);
-        // alert('Collector');
-        // router.push(PATH_AFTER_LOGIN_COLLECTOR);
+        router.push(PATH_AFTER_LOGIN_COLLECTOR);
       } else {
-        // router.push(returnTo || PATH_AFTER_LOGIN);
+        router.push(returnTo || PATH_AFTER_LOGIN);
       }
+      window.location.reload();
     } catch (error) {
       console.error(error);
       reset(defaultValues);
