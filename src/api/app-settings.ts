@@ -12,16 +12,16 @@ import React, { useEffect, useMemo } from 'react';
 
 export function useGetAllAppSettings(page: number, limit: number, locale?: string) {
   const getTheFullUrl = () => {
-    let queryPrams: Record<string, any> = {};
+    let queryParams: Record<string, any> = {};
 
-    queryPrams.page = page ? page + 1 : 1;
-    queryPrams.limit = limit || 10;
+    queryParams.page = page ? page + 1 : 1;
+    queryParams.limit = limit || 10;
 
-    if (locale) {
-      queryPrams.locale = locale;
-    }
+    queryParams.sort_order = 'asc';
+    queryParams.sort_by = 'display_order';
+    queryParams.locale = locale || 'en';
 
-    return `${endpoints.appSettings.list}?${new URLSearchParams(queryPrams)}`;
+    return `${endpoints.appSettings.list}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
