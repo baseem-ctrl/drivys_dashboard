@@ -22,7 +22,7 @@ const icon = (name: string) => (
 const ICONS = {
   job: icon('ic_job'),
   commission: icon('ic_commission'),
-
+  trainers: icon('ic_trainers_list'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
   mail: icon('ic_mail'),
@@ -366,14 +366,14 @@ export function useNavData() {
     //   icon: ICONS.school,
     // },
     {
-      title: t('dashboard'),
+      title: t('profile'),
       path: paths.dashboard.collector.overview,
-      icon: ICONS.school,
+      icon: ICONS.user,
     },
     {
-      title: t('cash_in_hand'),
+      title: t('trainers list'),
       path: paths.dashboard.collector.trainerCashInHand,
-      icon: ICONS.commission,
+      icon: ICONS.trainers,
     },
     // {
     //   title: t('dashboard'),
