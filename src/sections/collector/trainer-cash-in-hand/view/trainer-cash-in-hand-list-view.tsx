@@ -76,14 +76,14 @@ export default function TrainerCashInHand() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainers Cash In Hand"
+        heading="Trainers Lists"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Profile', href: paths.dashboard.root },
           {
             name: 'Collector',
             href: paths.dashboard.commission.certificateCommissionDrivys,
           },
-          { name: 'Cash In Hand' },
+          { name: 'Trainers' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
