@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+
 import {
   TextField,
   Switch,
@@ -28,6 +30,9 @@ import { useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
 import { useGetSchool } from 'src/api/school';
+import { RHFEditor } from 'src/components/hook-form';
+import Editor from 'src/components/editor';
+import TermsAndConditions from './terms-and-conditions';
 
 interface FormField {
   id: number;
@@ -39,6 +44,7 @@ interface FormField {
 const EditableForm: React.FC = () => {
   const { language } = useGetAllLanguage(0, 1000);
   const [selectedLocale, setSelectedLocale] = useState('En');
+  const methods = useForm();
   const [editedFields, setEditedFields] = useState<Record<number, boolean>>({});
   const fieldTooltips: Record<string, string> = {
     DEFAULT_MAX_CASH_IN_HAND_ALLOWED:
@@ -61,6 +67,7 @@ const EditableForm: React.FC = () => {
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
   });
+  console.log('data', data);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -146,6 +153,22 @@ const EditableForm: React.FC = () => {
   }
 
   const renderInputField = (item: FormField) => {
+    if (item.key === 'PRIVACY POLICY') {
+      return (
+        <Box width="100%" display="flex" flexDirection="column">
+          <Typography variant="body1" color="primary" gutterBottom>
+            Privacy policy
+          </Typography>
+          <TermsAndConditions
+            item={item}
+            selectedLocale={selectedLocale}
+            formData={formData}
+            revalidateAppSettings={revalidateAppSettings}
+            setEditedFields={setEditedFields}
+          />
+        </Box>
+      );
+    }
     if (item.key === 'DEFAULT_SCHOOL') {
       const selectedSchool = schoolList.find((school) => school.id === item.value);
       return (
@@ -300,18 +323,18 @@ const EditableForm: React.FC = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <form>
+          <FormProvider {...methods}>
             <form>
               <Grid container spacing={2}>
                 {formData &&
                   formData.map((item) => (
-                    <Grid item xs={6} key={item.id}>
+                    <Grid item xs={item.key === 'TERMS AND CONDITIONS' ? 12 : 6} key={item.id}>
                       <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
                     </Grid>
                   ))}
               </Grid>
             </form>
-          </form>
+          </FormProvider>
         )}
       </Paper>
     </Container>
