@@ -23,3 +23,8 @@ export function useGetTermsAndConditions() {
 
   return { ...memoizedValue, revalidateTermsAndConditions };
 }
+export function updateCreateTC(body: any) {
+  const URL = endpoints.termsAndConditions.createUpdate;
+  const response = drivysCreator([URL, body]);
+  return response;
+}

@@ -368,5 +368,6 @@ export const endpoints = {
   },
   termsAndConditions: {
     getList: 'admin/appSetting/get-tc',
+    createUpdate: 'admin/appSetting/createUpdateTC',
   },
 };
