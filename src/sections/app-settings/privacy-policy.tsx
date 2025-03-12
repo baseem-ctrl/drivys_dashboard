@@ -6,7 +6,7 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-const TermsAndConditions = ({
+const PrivacyPolicy = ({
   item,
   selectedLocale,
   formData,
@@ -17,43 +17,18 @@ const TermsAndConditions = ({
   const [isEditing, setIsEditing] = useState(false);
   const [backupData, setBackupData] = useState(formData); // Store backup for cancel
 
-  const formattedContent = item.value
-    .map(
-      (section) => `
-        <h6>${section.heading}</h6>
-        <p>${section.content.replace(/\n/g, '<br/>')}</p>
-      `
-    )
-    .join('');
-
-  const handleEditorChange = (newContent, sectionIndex) => {
-    console.log('editing');
+  const handleEditorChange = (newContent) => {
     setIsEditing(true);
-    setEditedData((prevData) =>
-      prevData.map((section, index) =>
-        index === sectionIndex ? { ...section, content: newContent } : section
-      )
-    );
+    setEditedData(newContent);
   };
 
   const handleSave = async (id) => {
-    console.log('saving');
-
     try {
-      const editedField = editedData.find((item) => item.id === id);
-      console.log('editedField', editedField);
-
       const body = {
-        appsetting: [
-          {
-            key: item.key,
-            value: editedData,
-            locale: selectedLocale,
-            display_order: item?.display_order,
-          },
-        ],
+        key: item.key,
+        value: editedData,
+        locale: selectedLocale,
       };
-
       const response = await updateValue(body);
       if (response) {
         enqueueSnackbar(response.message, { variant: 'success' });
@@ -82,10 +57,9 @@ const TermsAndConditions = ({
       padding="10px"
       position="relative"
     >
-      {/* Editor */}
       <Editor
         id="terms-and-conditions-editor"
-        defaultValue={formattedContent}
+        defaultValue={item.value}
         onChange={(content) => handleEditorChange(content, 0, item.id)}
       />
 
@@ -103,4 +77,4 @@ const TermsAndConditions = ({
   );
 };
 
-export default TermsAndConditions;
+export default PrivacyPolicy;

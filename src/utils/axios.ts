@@ -366,4 +366,7 @@ export const endpoints = {
   collector: {
     getCashInHand: 'collector/cash/get-trainer-cash-in-hand-list',
   },
+  termsAndConditions: {
+    getList: 'admin/appSetting/get-tc',
+  },
 };

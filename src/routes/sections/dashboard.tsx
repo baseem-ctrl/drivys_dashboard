@@ -53,6 +53,7 @@ import ToDoListPendingReward from 'src/sections/todo/refund/to-do-list-pending-r
 import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-program-details';
 import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 import TrainerCashInHand from 'src/sections/collector/trainer-cash-in-hand/view/trainer-cash-in-hand-list-view';
+import TermsPageList from 'src/sections/terms-and-conditions/terms-and-condition-list';
 
 // ----------------------------------------------------------------------
 
@@ -260,6 +261,8 @@ const allroutes = [
       { path: 'city/:id', element: <CityDetailsView /> },
       { path: 'state', element: <StateListPage /> },
       { path: 'appsettings', element: <AppSettingsListPage /> },
+      { path: 'terms-conditions', element: <TermsPageList /> },
+
       { path: 'dialect', element: <DialectListPage /> },
       { path: 'pickup', element: <PickupListPage /> },
       // { path: ':id', element: <JobDetailsPage /> },

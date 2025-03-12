@@ -20,7 +20,6 @@ import {
   IconButton,
   InputAdornment,
   Autocomplete,
-  FormLabel,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,9 +29,8 @@ import { useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
 import { useGetSchool } from 'src/api/school';
-import { RHFEditor } from 'src/components/hook-form';
-import Editor from 'src/components/editor';
-import TermsAndConditions from './terms-and-conditions';
+
+import PrivacyPolicy from './privacy-policy';
 
 interface FormField {
   id: number;
@@ -159,7 +157,7 @@ const EditableForm: React.FC = () => {
           <Typography variant="body1" color="primary" gutterBottom>
             Privacy policy
           </Typography>
-          <TermsAndConditions
+          <PrivacyPolicy
             item={item}
             selectedLocale={selectedLocale}
             formData={formData}
@@ -328,7 +326,7 @@ const EditableForm: React.FC = () => {
               <Grid container spacing={2}>
                 {formData &&
                   formData.map((item) => (
-                    <Grid item xs={item.key === 'TERMS AND CONDITIONS' ? 12 : 6} key={item.id}>
+                    <Grid item xs={item.key === 'PRIVACY POLICY' ? 12 : 6} key={item.id}>
                       <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
                     </Grid>
                   ))}
