@@ -171,9 +171,6 @@ const EditableForm: React.FC = () => {
       const selectedSchool = schoolList.find((school) => school.id === item.value);
       return (
         <Box display="flex" alignItems="center" width="100%" gap={2}>
-          <Typography variant="body1" color="primary">
-            DEFAULT_SCHOOL
-          </Typography>
           <Autocomplete
             fullWidth
             options={
@@ -199,7 +196,9 @@ const EditableForm: React.FC = () => {
             }
             onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
             loading={schoolLoading}
-            renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+            renderInput={(params) => (
+              <TextField {...params} label="Default School" placeholder="Select School" />
+            )}
             renderOption={(props, option) => (
               <li {...props} key={option.value}>
                 {option.label}
@@ -232,7 +231,7 @@ const EditableForm: React.FC = () => {
                 color="primary"
               />
             }
-            label={item.key}
+            label={item.key.replace(/_/g, ' ')}
           />
           {editedFields[item.id] && (
             <>
@@ -255,7 +254,7 @@ const EditableForm: React.FC = () => {
           <TextField
             value={item.value}
             onChange={(e) => handleChange(item.id, e.target.value)}
-            label={item.key}
+            label={item.key.replace(/_/g, ' ')}
             fullWidth
             variant="outlined"
             margin="normal"
