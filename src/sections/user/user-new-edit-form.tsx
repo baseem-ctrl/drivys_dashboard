@@ -488,7 +488,7 @@ export default function UserNewEditForm({
           }
         }
       }
-      if (data?.vendor_id) {
+      if (data?.vendor_id && data?.user_type !== 'COLLECTOR') {
         const matchedVendor = schoolList.find(
           (school) => school.vendor_translations[0]?.name === data.vendor_id
         );
@@ -499,7 +499,10 @@ export default function UserNewEditForm({
           body.append('vendor_id', data.vendor_id.value);
         }
       }
-      if (data?.vendor_id?.value === undefined || data?.vendor_id?.value === null) {
+      if (
+        (data?.vendor_id?.value === undefined || data?.vendor_id?.value === null) &&
+        data?.user_type !== 'COLLECTOR'
+      ) {
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
@@ -552,7 +555,8 @@ export default function UserNewEditForm({
       }
       if (data?.max_cash_in_hand_allowed)
         body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
-      if (data?.cash_in_hand) body.append('cash_in_hand', data?.cash_in_hand);
+      if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR')
+        body.append('cash_in_hand', data?.cash_in_hand);
 
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
