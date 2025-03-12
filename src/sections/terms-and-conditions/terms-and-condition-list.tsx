@@ -123,7 +123,7 @@ const TermsPageList: React.FC = () => {
             >
               Add T&C
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => handleOpen(true)}>
+            <Button variant="outlined" color="primary" onClick={() => handleOpen(true)}>
               Update T&C
             </Button>
           </Box>
