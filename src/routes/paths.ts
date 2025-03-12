@@ -267,6 +267,7 @@ export const paths = {
       edit: `${ROOTS.DASHBOARD}/system/city/edit`,
       viewDetails: (cityId: string) => `${paths.dashboard.system.city}/${cityId}`,
       appsettings: `${ROOTS.DASHBOARD}/system/appsettings`,
+      termsConditions: `${ROOTS.DASHBOARD}/system/terms-conditions`,
     },
     awatingCertificate: `${ROOTS.DASHBOARD}/awaiting-certificate`,
     approvedCertificate: `${ROOTS.DASHBOARD}/approved-certificate`,

@@ -281,6 +281,7 @@ export function useNavData() {
         { title: t('dialect'), path: paths.dashboard.system.dialect },
         { title: t('pickup'), path: paths.dashboard.system.pickup },
         { title: t('app_settings'), path: paths.dashboard.system.appsettings },
+        { title: t('terms & conditions'), path: paths.dashboard.system.termsConditions },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
