@@ -232,10 +232,23 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                 loading={schoolLoading}
               />
             )}
-            <Stack direction="row" spacing={1} alignItems="center">
-              <RHFTextField name="country_code" label="Country" sx={{ maxWidth: 100 }} prefix="+" />
-              <RHFTextField name="phone" label="Phone Number" sx={{ flex: 1 }} />
-            </Stack>{' '}
+            <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={1}>
+              <RHFTextField
+                name="country_code"
+                label="Country"
+                sx={{ maxWidth: 100 }}
+                prefix="+"
+                error={!!errors.country_code}
+                helperText={errors.country_code?.message}
+              />
+              <RHFTextField
+                name="phone"
+                label="Phone Number"
+                sx={{ flex: 1 }}
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+              />
+            </Box>
             <RHFSwitch name="is_active" label="Is Active" />{' '}
           </Box>
         </DialogContent>
