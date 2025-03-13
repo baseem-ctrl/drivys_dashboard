@@ -186,9 +186,9 @@ export const BookingDetailsTable: React.FC<{}> = () => {
         <Tooltip
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
-              <Typography variant="body1">{details?.name ?? 'User Name'}</Typography>
+              <Typography variant="body1">{details?.name ?? 'N/A'}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {details?.email ?? 'user@example.com'}
+                {details?.email ?? 'N/A'}
               </Typography>
             </Box>
           }
