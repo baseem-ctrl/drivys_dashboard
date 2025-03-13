@@ -25,16 +25,17 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { ITourItem, ITourFilters, ITourFilterValue } from 'src/types/tour';
 //
 import PayoutSort from '../payout-sort';
-import PayoutSearch from '../payout-search';
+import PayoutSearch from './payout-search';
 // import TourFilters from '../tour-filters';
 import PayoutFiltersResult from '../payout-filters-result';
 import { useGetSchoolPayouts, useGetTrainerPayouts } from 'src/api/payouts';
-import { Box, Card, CardContent, Chip, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Tooltip, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetSchool } from 'src/api/school';
 import { useRouter } from 'src/routes/hooks';
 import { useGetUsers } from 'src/api/users';
+import PayoutCreateForm from './payout-create-form';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,9 @@ export default function SchoolPayoutPage() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const router = useRouter();
   const openFilters = useBoolean();
+  const quickCreate = useBoolean();
+  const [vendorId, setVendorId] = useState(false);
+  const [amount, setAmount] = useState(false);
 
   const [sortBy, setSortBy] = useState('');
 
@@ -67,11 +71,11 @@ export default function SchoolPayoutPage() {
   const [searchValue, setSearchValue] = useState('');
 
   const [filters, setFilters] = useState(defaultFilters);
-  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages } =
+  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, revalidatePayouts } =
     useGetSchoolPayouts({
       page: table?.page + 1,
       limit: table?.rowsPerPage,
-      vendor_id: filters?.trainer_id,
+      vendor_id: filters?.vendor_id,
       sort_dir: table.order,
       sorting_by: sortBy,
     });
@@ -169,6 +173,8 @@ export default function SchoolPayoutPage() {
     />
   );
   const renderLargeScreenContent = (item: any) => {
+    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
@@ -195,9 +201,24 @@ export default function SchoolPayoutPage() {
       {
         label: 'Action',
         value: (
-          <Button variant="contained" color="primary">
-            Payouts
-          </Button>
+          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+            <span>
+              {' '}
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!isPayoutAvailable}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  quickCreate.onTrue();
+                  setVendorId(item?.vendor_id);
+                  setAmount(item?.amount_required_from_admin);
+                }}
+              >
+                Payouts
+              </Button>
+            </span>
+          </Tooltip>
         ),
       },
     ];
@@ -241,6 +262,8 @@ export default function SchoolPayoutPage() {
   };
 
   const renderSmallScreenContent = (item: any) => {
+    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
@@ -267,9 +290,24 @@ export default function SchoolPayoutPage() {
       {
         label: 'Action',
         value: (
-          <Button variant="contained" color="primary">
-            Payouts
-          </Button>
+          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+            <span>
+              {' '}
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!isPayoutAvailable} // Disable button if no payout
+                onClick={(e) => {
+                  e.stopPropagation();
+                  quickCreate.onTrue();
+                  setVendorId(item?.vendor_id);
+                  setAmount(item?.amount_required_from_admin);
+                }}
+              >
+                Payouts
+              </Button>
+            </span>
+          </Tooltip>
         ),
       },
     ];
@@ -292,9 +330,14 @@ export default function SchoolPayoutPage() {
       </Box>
     );
   };
-  const handleCardClick = (id) => {
-    router.push(paths.dashboard.payouts.schoolDetails(id));
+  const handleCardClick = (id, isPayoutDisabled, amount) => {
+    setAmount(amount);
+    router.push(paths.dashboard.payouts.schoolDetails(id), {
+      disablePayout: isPayoutDisabled ? '1' : '0',
+      amount: amount,
+    });
   };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -337,7 +380,12 @@ export default function SchoolPayoutPage() {
               cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
             }}
             onClick={() =>
-              tour.total_paid_and_completed_booking > 0 && handleCardClick(tour.vendor_id)
+              tour.total_paid_and_completed_booking > 0 &&
+              handleCardClick(
+                tour.vendor_id,
+                tour.amount_required_from_admin > 0,
+                tour.amount_required_from_admin
+              )
             }
 
             // onClick={() => handleView(tour.id)}
@@ -360,7 +408,13 @@ export default function SchoolPayoutPage() {
           </Card>
         ))}
       </Box>
-
+      <PayoutCreateForm
+        open={quickCreate.value}
+        onClose={quickCreate.onFalse}
+        vendorId={vendorId}
+        reload={revalidatePayouts}
+        amount={amount}
+      />
       <TablePaginationCustom
         count={totalPages}
         page={table.page}

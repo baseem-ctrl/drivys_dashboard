@@ -169,6 +169,10 @@ export function processPayoutToTrainer(body: Record<string, any>) {
   const URL = `${endpoints.payouts.payToTrainer}`;
   return drivysCreator([URL, body]);
 }
+export function processPayoutToSchool(body: Record<string, any>) {
+  const URL = `${endpoints.payouts.payToSchool}`;
+  return drivysCreator([URL, body]);
+}
 export function useGetPayoutHistory({
   limit,
   page,
