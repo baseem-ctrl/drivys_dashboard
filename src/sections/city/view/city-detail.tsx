@@ -190,6 +190,32 @@ export default function CityDetails({ onEdit, city }) {
                               </Typography>
                             </Box>
                           </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Price Per Km
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city.price_per_km ? city?.price_per_km : 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Minimum Price
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              <Typography variant="body2">
+                                {city.min_price ? city?.min_price : 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
                         </Stack>
                       </Box>
                     </Stack>

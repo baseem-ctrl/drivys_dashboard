@@ -39,6 +39,8 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     is_certificate_available: Yup.boolean(),
     certificate_price: Yup.string(),
     certificate_link: Yup.string(),
+    price_per_km: Yup.string(),
+    min_price: Yup.string(),
     reschedule_fee: Yup.mixed(),
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
@@ -55,6 +57,8 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       certificate_price: city?.certificate_price || 0,
       certificate_link: city?.certificate_link || '',
       reschedule_fee: city?.reschedule_fee ?? '',
+      price_per_km: city?.price_per_km || 0,
+      min_price: city?.min_price || 0,
       free_reschedule_before: city?.free_reschedule_before ?? '',
       free_reschedule_before_type: city?.free_reschedule_before_type ?? '',
     },
@@ -117,6 +121,12 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       }
       if (city?.reschedule_fee) {
         formData.append('reschedule_fee', city.reschedule_fee ?? '0');
+      }
+      if (city?.price_per_km) {
+        formData.append('price_per_km', city.price_per_km ?? '0');
+      }
+      if (city?.min_price) {
+        formData.append('min_price', city.min_price ?? '0');
       }
       formData.append('free_reschedule_before', city.free_reschedule_before ?? '0');
 
@@ -185,6 +195,8 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
                 type="number"
               />
               <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
+              <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
+              <RHFTextField name="min_price" label="Min. Price" type="number" />
               <RHFTextField
                 name="reschedule_fee"
                 label="Reschedule Fee"

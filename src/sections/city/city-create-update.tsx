@@ -41,6 +41,10 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     is_certificate_available: Yup.boolean(),
     certificate_price: Yup.string(),
     certificate_link: Yup.string(),
+    price_per_km: Yup.string(),
+
+    min_price: Yup.string(),
+
     reschedule_fee: Yup.mixed(),
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
@@ -58,6 +62,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       published: currentCity?.is_published === 1 ? true : false,
       is_certificate_available: !!currentCity?.is_certificate_available ?? false,
       certificate_price: currentCity?.certificate_price || 0,
+      price_per_km: currentCity?.price_per_km || 0,
+      min_price: currentCity?.min_price || 0,
+
       certificate_link: currentCity?.certificate_link || '',
       reschedule_fee: currentCity?.reschedule_fee ?? '',
       free_reschedule_before: currentCity?.free_reschedule_before ?? '',
@@ -121,6 +128,12 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       }
       if (data?.reschedule_fee) {
         formData.append('reschedule_fee', data.reschedule_fee ?? '0');
+      }
+      if (data?.price_per_km) {
+        formData.append('price_per_km', data.price_per_km ?? '0');
+      }
+      if (data?.min_price) {
+        formData.append('min_price', data.min_price ?? '0');
       }
       if (data?.free_reschedule_before) {
         formData.append('free_reschedule_before', data.free_reschedule_before ?? '0');
@@ -233,6 +246,8 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               type="number"
               inputProps={{ min: 2, max: 999999 }}
             />
+            <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
+            <RHFTextField name="min_price" label="Min. Price" type="number" />
             <Box display="flex" alignItems="center" gap={1}>
               <RHFSelect name="free_reschedule_before_type" label="Free Reschedule Before Type">
                 <MenuItem value={1}>Day</MenuItem>
