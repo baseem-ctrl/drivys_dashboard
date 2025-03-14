@@ -13,6 +13,8 @@ import {
   Paper,
   Card,
   Tooltip,
+  Popover,
+  TextField,
 } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { Done, Close } from '@mui/icons-material'; // Import different icons
@@ -66,6 +68,10 @@ export default function PendingRequests({
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { t } = useLocales();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [expiryDate, setExpiryDate] = useState('');
+  const [expiryError, setExpiryError] = useState(false);
 
   const {
     pendingRequests,
@@ -86,6 +92,24 @@ export default function PendingRequests({
     router.push(paths.dashboard.school.details(userId));
   };
 
+  const handleAcceptClick = (event, request) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRequest(request);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedRequest(null);
+    setExpiryDate('');
+    setExpiryError(false);
+  };
+
+  const handleConfirmAccept = () => {
+    if (selectedRequest) {
+      handleVerifyRequest({ ...selectedRequest, expiryDate }, 1);
+      handleClose();
+    }
+  };
   const handleVerifyRequest = async (request: any, status: any) => {
     const action = status === 1 ? 'accept' : 'reject';
 
@@ -104,6 +128,7 @@ export default function PendingRequests({
         const body = {
           mapping_id: request?.id,
           verify: status,
+          certificate_expiry_date: expiryDate,
         };
         response = await updateUserVerificationAdmin(body);
       }
@@ -277,7 +302,7 @@ export default function PendingRequests({
                       sx={{ flex: 1, ml: 1 }}
                       variant="contained"
                       color="success"
-                      onClick={() => handleVerifyRequest(request, 1)}
+                      onClick={(e) => handleAcceptClick(e, request)}
                       disabled={loadingStates[`${request.id}-accept`]}
                     >
                       {loadingStates[`${request.id}-accept`] ? (
@@ -302,6 +327,36 @@ export default function PendingRequests({
             />
           </Stack>
         </Scrollbar>
+        <Popover
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="subtitle1">{t('Enter Certificate Expiry Date')}</Typography>
+            <TextField
+              type="date"
+              value={expiryDate}
+              onChange={(e) => {
+                setExpiryDate(e.target.value);
+                setExpiryError(false);
+              }}
+              InputLabelProps={{ shrink: true }}
+              error={expiryError}
+              helperText={expiryError ? 'Expiry date is required!' : ''}
+            />
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleConfirmAccept}
+              disabled={!expiryDate}
+            >
+              {t('Confirm')}
+            </Button>
+          </Box>
+        </Popover>
       </Container>
     </Card>
   );
