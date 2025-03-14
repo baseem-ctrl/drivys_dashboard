@@ -451,5 +451,7 @@
   "select_school_admin": "Select School Admin",
   "create_new_user": "Create New User",
   "user_name": "User Name",
-  "user_email": "User Email"
+  "user_email": "User Email",
+  "min_certificate_commission": "Min Certificate Commission",
+  "max_certificate_commission": "Max Certificate Commission"
 }

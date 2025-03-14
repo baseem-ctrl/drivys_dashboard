@@ -163,6 +163,8 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
       status: details?.status || '',
       is_active: true,
       user_id: details?.vendor_user?.user_id || '',
+      certificate_min_commision: details?.certificate_min_commision || '0',
+      certificate_max_commision: details?.certificate_max_commision || '0',
     }),
     [selectedLocaleObject, details, editMode]
   );
@@ -246,6 +248,8 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
         status: details?.status || '',
         is_active: !!details?.is_active,
         user_id: details?.vendor_user?.user_id || '',
+        certificate_min_commision: details?.certificate_min_commision || '0',
+        certificate_max_commision: details?.certificate_max_commision || '0',
       };
       schoolReset(defaultVendorValues);
     }
@@ -274,6 +278,8 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
         user_id: data?.user_id,
         vendor_id: details?.id,
         website: data?.website,
+        certificate_min_commision: data?.certificate_min_commision || 0,
+        certificate_max_commision: data?.certificate_max_commision || 0,
       };
       let formData = new FormData();
 
@@ -293,6 +299,8 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
       formData.append('user_id', payload.user_id || '');
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('website', payload.website || '');
+      formData.append('certificate_min_commision', payload.certificate_min_commision || '0');
+      formData.append('certificate_max_commision', payload.certificate_max_commision || '0');
 
       // Handle `vendor_translations` (assumes only one translation)
       if (payload.vendor_translations && payload.vendor_translations.length > 0) {
@@ -397,6 +405,14 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
               {
                 label: t('max_school_commission'),
                 value: `${details?.max_commision ?? t('na')}%`,
+              },
+              {
+                label: t('min_certificate_commission'),
+                value: `${details?.certificate_min_commision ?? t('na')}%`,
+              },
+              {
+                label: t('max_certificate_commission'),
+                value: `${details?.certificate_max_commision ?? t('na')}%`,
               },
 
               {
@@ -669,6 +685,32 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
                         </Box>
                       )}
                     </>
+                  )}
+                />
+                <Controller
+                  name="certificate_min_commision"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label={t('min_certificate_commission')}
+                      {...field}
+                      InputLabelProps={{ shrink: true }}
+                      error={!!errors.certificate_min_commision}
+                      type="number"
+                    />
+                  )}
+                />
+                <Controller
+                  name="certificate_max_commision"
+                  control={schoolControl}
+                  render={({ field }) => (
+                    <TextField
+                      label={t('max_certificate_commission')}
+                      {...field}
+                      InputLabelProps={{ shrink: true }}
+                      error={!!errors.certificate_max_commision}
+                      type="number"
+                    />
                   )}
                 />
                 <Controller
