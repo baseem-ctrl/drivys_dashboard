@@ -235,6 +235,18 @@ export function useNavData() {
         { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
+    {
+      title: t('report'),
+      path: paths.dashboard.report.booking,
+      icon: ICONS.file,
+      children: [
+        { title: t('bookings'), path: paths.dashboard.report.booking },
+        { title: t('revenue'), path: paths.dashboard.report.revenue },
+        { title: t('trainer'), path: paths.dashboard.report.trainer },
+        { title: t('student'), path: paths.dashboard.report.student },
+        { title: t('school'), path: paths.dashboard.report.school },
+      ],
+    },
 
     // TOUR
     // {

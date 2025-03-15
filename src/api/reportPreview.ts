@@ -1,0 +1,150 @@
+import useSWR, { mutate } from 'swr';
+import { drivysFetcher, endpoints } from 'src/utils/axios';
+
+export function useGetBookingReports(
+  locale?: string,
+  start_date?: string,
+  end_date?: string,
+  page?: number,
+  limit?: number
+) {
+  const getTheFullUrl = () => {
+    let queryParams: Record<string, any> = {};
+
+    if (locale) queryParams.locale = locale;
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+    if (limit) queryParams.limit = limit;
+    if (page) queryParams.page = page;
+
+    return `${endpoints.reportSessionPreview.booking}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = {
+    bookingReports: data?.data as any,
+    bookingReportsLoading: isLoading,
+    bookingReportsError: error,
+    bookingReportsValidating: isValidating,
+    totalRecords: data?.total || 0,
+  };
+
+  const revalidateBookingReports = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateBookingReports };
+}
+
+export function useGetRevenueReports(locale?: string, start_date?: string, end_date?: string) {
+  const getTheFullUrl = () => {
+    let queryParams: Record<string, any> = {};
+
+    if (locale) queryParams.locale = locale;
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+
+    return `${endpoints.reportSessionPreview.revenue}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = {
+    revenueReports: data?.data as any,
+    revenueReportsLoading: isLoading,
+    revenueReportsError: error,
+    revenueReportsValidating: isValidating,
+    totalRecords: data?.total || 0,
+  };
+
+  const revalidateRevenueReports = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateRevenueReports };
+}
+
+export function useGetTrainerReports(locale?: string, start_date?: string, end_date?: string) {
+  const getTheFullUrl = () => {
+    let queryParams: Record<string, any> = {};
+
+    if (locale) queryParams.locale = locale;
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+
+    return `${endpoints.reportSessionPreview.trainer}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = {
+    trainerReports: data?.data as any,
+    trainerReportsLoading: isLoading,
+    trainerReportsError: error,
+    trainerReportsValidating: isValidating,
+    totalRecords: data?.total || 0,
+  };
+
+  const revalidateTrainerReports = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateTrainerReports };
+}
+
+export function useGetStudentReports(locale?: string, start_date?: string, end_date?: string) {
+  const getTheFullUrl = () => {
+    let queryParams: Record<string, any> = {};
+
+    if (locale) queryParams.locale = locale;
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+
+    return `${endpoints.reportSessionPreview.student}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = {
+    studentReports: data?.data as any,
+    studentReportsLoading: isLoading,
+    studentReportsError: error,
+    studentReportsValidating: isValidating,
+    totalRecords: data?.total || 0,
+  };
+
+  const revalidateStudentReports = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateStudentReports };
+}
+
+export function useGetSchoolReports(locale?: string, start_date?: string, end_date?: string) {
+  const getTheFullUrl = () => {
+    let queryParams: Record<string, any> = {};
+
+    if (locale) queryParams.locale = locale;
+    if (start_date) queryParams.start_date = start_date;
+    if (end_date) queryParams.end_date = end_date;
+
+    return `${endpoints.reportSessionPreview.school}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = {
+    schoolReports: data?.data as any,
+    schoolReportsLoading: isLoading,
+    schoolReportsError: error,
+    schoolReportsValidating: isValidating,
+    totalRecords: data?.total || 0,
+  };
+
+  const revalidateSchoolReports = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateSchoolReports };
+}

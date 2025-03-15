@@ -300,5 +300,12 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/notifications`,
       details: (id: string) => `${ROOTS.DASHBOARD}/notifications/${id}`,
     },
+    report: {
+      booking: `${ROOTS.DASHBOARD}/report/bookings`,
+      revenue: `${ROOTS.DASHBOARD}/report/revenue`,
+      trainer: `${ROOTS.DASHBOARD}/report/trainer`,
+      student: `${ROOTS.DASHBOARD}/report/student`,
+      school: `${ROOTS.DASHBOARD}/report/school`,
+    },
   },
 };

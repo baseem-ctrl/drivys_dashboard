@@ -54,6 +54,7 @@ import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-pr
 import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 import TrainerCashInHand from 'src/sections/collector/trainer-cash-in-hand/view/trainer-cash-in-hand-list-view';
 import TermsPageList from 'src/sections/terms-and-conditions/terms-and-condition-list';
+import BookingReportListView from 'src/sections/booking-report/view/booking-report-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -268,6 +269,16 @@ const allroutes = [
       // { path: ':id', element: <JobDetailsPage /> },
       // { path: 'new', element: <JobCreatePage /> },
       // { path: ':id/edit', element: <JobEditPage /> },
+    ],
+  },
+  {
+    path: 'report',
+    children: [
+      { path: 'bookings', element: <BookingReportListView /> },
+      { path: 'revenue', element: <BookingReportListView /> },
+      { path: 'trainer', element: <BookingReportListView /> },
+      { path: 'student', element: <BookingReportListView /> },
+      { path: 'school', element: <BookingReportListView /> },
     ],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
