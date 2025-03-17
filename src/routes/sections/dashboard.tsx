@@ -54,6 +54,11 @@ import LoyaltyProgramDetails from 'src/sections/loyality-program/view/loyalty-pr
 import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 import TrainerCashInHand from 'src/sections/collector/trainer-cash-in-hand/view/trainer-cash-in-hand-list-view';
 import TermsPageList from 'src/sections/terms-and-conditions/terms-and-condition-list';
+import BookingReportListView from 'src/sections/booking-report/view/booking-report-list-view';
+import RevenueReportListView from 'src/sections/revenue-report/view/revenue-report-list-view';
+import TrainerReportListView from 'src/sections/trainer-report/view/trainer-report-list-view';
+import StudentReportListView from 'src/sections/student-report/view/student-report-list-view';
+import SchoolReportListView from 'src/sections/school-report/view/school-report-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -270,6 +275,16 @@ const allroutes = [
       // { path: ':id/edit', element: <JobEditPage /> },
     ],
   },
+  {
+    path: 'report',
+    children: [
+      { path: 'bookings', element: <BookingReportListView /> },
+      { path: 'revenue', element: <RevenueReportListView /> },
+      { path: 'trainer', element: <TrainerReportListView /> },
+      { path: 'student', element: <StudentReportListView /> },
+      { path: 'school', element: <SchoolReportListView /> },
+    ],
+  },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
   { path: 'loyality/:id', element: <LoyaltyProgramDetails /> },
 
@@ -392,7 +407,6 @@ const collectorRoutes = [
 
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
-  console.log('userType', userType);
   switch (userType) {
     case 'SCHOOL_ADMIN':
       return schooladminRoutes;

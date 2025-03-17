@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -24,70 +24,77 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { useGetAllCertificateRequests } from 'src/api/certificate';
-import { useLocation } from 'react-router-dom';
-
 // types
 
 import { useGetAllLanguage } from 'src/api/language';
-import CertificateFilters from '../certificate-filters';
-import CertificateRow from '../certificate-table-row';
-import CertificateSearch from '../certificate-search';
-import { ICityTableFilters } from 'src/types/city';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetSchoolReports, useGetStudentReports } from 'src/api/reportPreview';
+
+import SchoolReportsRow from '../school-report-table-row';
+import SchoolReportFilter from '../school-report-filters';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'city', label: 'City', width: 180 },
-
-  { id: 'gear', label: 'Gear', width: 180 },
-  { id: 'request_date', label: 'Request Date', width: 180 },
-  { id: 'certificate_url', label: 'Certificate URL', width: 180 },
-  { id: 'status', label: 'Status', width: 180 },
-  { id: 'trainer', label: 'Trainer', width: 180 },
-  { id: 'txn', label: 'Transaction ID', width: 180 },
-  { id: 'user', label: 'User', width: 180 },
-  { id: 'vehicle_type', label: 'Vehicle Type', width: 180 },
-  { id: 'comments', label: 'Comments', width: 180 },
-  { id: 'actions', label: '', width: 180 },
+  { id: 'school-name', label: 'School Name', width: 200 },
+  { id: 'bookings', label: 'Bookings Details', width: 200 },
+  { id: 'revenue', label: 'Revenue', width: 200 },
+  { id: 'trainers-count', label: 'Trainers Count', width: 200 },
+  { id: 'avg-rating', label: 'Average Rating', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function CertificateListView() {
+export default function SchoolReportListView() {
+  const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
-  const location = useLocation();
-  const path = location.pathname.split('/').pop();
   const confirm = useBoolean();
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
-  const [filters, setFilters] = useState('');
+  const [filters, setFilters] = useState({
+    school_id: null,
+    startDate: null,
+    endDate: null,
+  });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [locale, setLocale] = useState<string | undefined>(undefined);
+  const [startDate, setStartDate] = useState<string | undefined>(undefined);
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
-  const { certificateRequests, certificateLoading, totalpages, revalidateCertificateRequests } =
-    useGetAllCertificateRequests(
-      table.page,
-      table.rowsPerPage,
-      searchQuery,
-      path === 'approved-certificate' ? 'APPROVED' : 'PENDING'
-    );
+  const {
+    schoolReports,
+    schoolReportsLoading,
+    schoolReportsError,
+    revalidateSchoolReports,
+    totalRecords,
+  } = useGetSchoolReports(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.school_id
+  );
 
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
   const { language } = useGetAllLanguage(0, 1000);
+
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
   }));
   useEffect(() => {
-    if (certificateRequests?.length) {
-      setTableData(certificateRequests);
+    if (schoolReports?.length) {
+      setTableData(schoolReports);
     } else {
       setTableData([]);
     }
-  }, [certificateRequests]);
+  }, [schoolReports]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -96,14 +103,13 @@ export default function CertificateListView() {
   };
 
   const handleFilters = useCallback(
-    (name: string, value: ICityTableFilters) => {
-      setSearchQuery(value);
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
+    // (name: string) => {
+    //   table.onResetPage();
+    //   setFilters((prevState) => ({
+    //     ...prevState,
+    //     [name]: value,
+    //   }));
+    // },
     [table]
   );
 
@@ -123,18 +129,12 @@ export default function CertificateListView() {
   };
   // const canReset = !isEqual(defaultFilters, filters);
 
-  const handleFiltersChange = (name, value) => {
-    // setFilters((prevFilters) => ({
-    //   ...prevFilters,
-    //   [name]: value,
-    // }));
-  };
-
   const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
+    setFilters({
+      school_id: null,
+      startDate: null,
+      endDate: null,
+    });
   }, []);
 
   const renderFilters = (
@@ -146,13 +146,14 @@ export default function CertificateListView() {
       sx={{ marginBottom: 3 }}
     >
       <Stack direction="row" spacing={1} flexShrink={0}>
-        <CertificateFilters
+        <SchoolReportFilter
           open={openFilters.value}
           onOpen={openFilters.onTrue}
           onClose={openFilters.onFalse}
           handleOrderChange={handleOrderChange}
           selectedOrder={selectedOrder}
           filters={filters}
+          setFilters={setFilters}
           onFilters={handleFiltersChange}
           // canReset={canReset}
           onResetFilters={handleResetFilters}
@@ -165,29 +166,34 @@ export default function CertificateListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="School Report List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: path === 'awaiting-certificate' ? 'Awaiting Certificate' : 'Approved Certificate',
-            href: paths.dashboard.school.certificate,
+            name: 'Report',
+            href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
+          { name: 'School Report' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-      <CertificateSearch query={searchQuery} onSearch={handleFilters} />
-
-      {/* {renderFilters} */}
-      <Card
-        sx={{
-          mt: 2,
-        }}
-      >
+      {renderFilters}
+      {Object.values(filters).some((value) => value) && (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleResetFilters}
+          sx={{ mb: 2, ml: 2 }}
+        >
+          Clear Filters
+        </Button>
+      )}
+      <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -219,39 +225,23 @@ export default function CertificateListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {tableData.length > 0 ? (
-                    <>
-                      {tableData.map((row) => (
-                        <CertificateRow
-                          key={row.id}
+                  {schoolReportsLoading
+                    ? Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData?.map((row) => (
+                        <SchoolReportsRow
+                          userType={user?.user?.user_type}
                           row={row}
-                          path={path}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateCertificateRequests}
+                          reload={revalidateSchoolReports}
                         />
                       ))}
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={TABLE_HEAD.length}
-                        sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
-                      >
-                        Nothing to show
-                      </TableCell>
-                    </TableRow>
-                  )}
-
-                  {/* Skeleton loading state */}
-                  {certificateLoading &&
-                    Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -260,7 +250,7 @@ export default function CertificateListView() {
 
         {viewMode === 'table' && (
           <TablePaginationCustom
-            count={totalpages}
+            count={totalRecords}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
