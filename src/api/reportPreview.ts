@@ -37,13 +37,21 @@ export function useGetBookingReports(
   return { ...memoizedValue, revalidateBookingReports };
 }
 
-export function useGetRevenueReports(locale?: string, start_date?: string, end_date?: string) {
+export function useGetRevenueReports(
+  locale?: string,
+  start_date?: string,
+  end_date?: string,
+  page?: number,
+  limit?: number
+) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
     if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
+    if (limit) queryParams.limit = limit;
+    if (page) queryParams.page = page;
 
     return `${endpoints.reportSessionPreview.revenue}?${new URLSearchParams(queryParams)}`;
   };

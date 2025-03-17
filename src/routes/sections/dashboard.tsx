@@ -55,6 +55,7 @@ import OverviewCollectorPage from 'src/sections/collector/overview-collector';
 import TrainerCashInHand from 'src/sections/collector/trainer-cash-in-hand/view/trainer-cash-in-hand-list-view';
 import TermsPageList from 'src/sections/terms-and-conditions/terms-and-condition-list';
 import BookingReportListView from 'src/sections/booking-report/view/booking-report-list-view';
+import RevenueReportListView from 'src/sections/revenue-report/view/revenue-report-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -275,7 +276,7 @@ const allroutes = [
     path: 'report',
     children: [
       { path: 'bookings', element: <BookingReportListView /> },
-      { path: 'revenue', element: <BookingReportListView /> },
+      { path: 'revenue', element: <RevenueReportListView /> },
       { path: 'trainer', element: <BookingReportListView /> },
       { path: 'student', element: <BookingReportListView /> },
       { path: 'school', element: <BookingReportListView /> },
