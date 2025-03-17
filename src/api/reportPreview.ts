@@ -6,7 +6,9 @@ export function useGetBookingReports(
   start_date?: string,
   end_date?: string,
   page?: number,
-  limit?: number
+  limit?: number,
+  booking_status?: any,
+  payment_method?: any
 ) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
@@ -16,6 +18,8 @@ export function useGetBookingReports(
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
+    if (booking_status) queryParams.booking_status = booking_status;
+    if (payment_method !== undefined) queryParams.payment_method = payment_method;
 
     return `${endpoints.reportSessionPreview.booking}?${new URLSearchParams(queryParams)}`;
   };
@@ -73,13 +77,21 @@ export function useGetRevenueReports(
   return { ...memoizedValue, revalidateRevenueReports };
 }
 
-export function useGetTrainerReports(locale?: string, start_date?: string, end_date?: string) {
+export function useGetTrainerReports(
+  locale?: string,
+  start_date?: string,
+  end_date?: string,
+  page?: number,
+  limit?: number
+) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
     if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
+    if (limit) queryParams.limit = limit;
+    if (page) queryParams.page = page;
 
     return `${endpoints.reportSessionPreview.trainer}?${new URLSearchParams(queryParams)}`;
   };
@@ -101,13 +113,21 @@ export function useGetTrainerReports(locale?: string, start_date?: string, end_d
   return { ...memoizedValue, revalidateTrainerReports };
 }
 
-export function useGetStudentReports(locale?: string, start_date?: string, end_date?: string) {
+export function useGetStudentReports(
+  locale?: string,
+  start_date?: string,
+  end_date?: string,
+  page?: number,
+  limit?: number
+) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
     if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
+    if (limit) queryParams.limit = limit;
+    if (page) queryParams.page = page;
 
     return `${endpoints.reportSessionPreview.student}?${new URLSearchParams(queryParams)}`;
   };
@@ -129,13 +149,21 @@ export function useGetStudentReports(locale?: string, start_date?: string, end_d
   return { ...memoizedValue, revalidateStudentReports };
 }
 
-export function useGetSchoolReports(locale?: string, start_date?: string, end_date?: string) {
+export function useGetSchoolReports(
+  locale?: string,
+  start_date?: string,
+  end_date?: string,
+  page?: number,
+  limit?: number
+) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
     if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
+    if (limit) queryParams.limit = limit;
+    if (page) queryParams.page = page;
 
     return `${endpoints.reportSessionPreview.school}?${new URLSearchParams(queryParams)}`;
   };

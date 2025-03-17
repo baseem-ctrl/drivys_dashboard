@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -28,25 +28,23 @@ import {
 
 import { useGetAllLanguage } from 'src/api/language';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetBookingReports } from 'src/api/reportPreview';
-import ReportBookingRow from '../booking-report-table-row';
-import BookingReportFilter from '../booking-report-filters';
+import { useGetRevenueReports, useGetTrainerReports } from 'src/api/reportPreview';
+
+import TrainerReportRow from '../trainer-report-table-row';
+import TrainerReportFilter from '../trainer-report-filters';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'school-name', label: 'School', width: 200 },
-  { id: 'top-booking-times', label: 'Top Booking Times', width: 200 },
-  { id: 'total-cancelled-session', label: 'Cancelled Sessions', width: 200 },
-  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
-  { id: 'total-pending-session', label: 'Pending Sessions', width: 200 },
-  { id: 'total-rescheduled-session', label: 'Rescheduled Sessions', width: 200 },
-  { id: 'total-booked-session', label: 'Total Bookings', width: 200 },
+  { id: 'trainer-name', label: 'Trainer', width: 200 },
+  { id: 'cancellation-rate', label: 'Cancellation Rate', width: 200 },
+  { id: 'total-sessions', label: 'Total Session', width: 200 },
+  { id: 'avg-rating', label: 'Average Rating', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function BookingReportListView() {
+export default function TrainerReportListView() {
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -55,34 +53,23 @@ export default function BookingReportListView() {
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
-  const [filters, setFilters] = useState<{
-    startDate?: string;
-    endDate?: string;
-    booking_status?: string;
-    payment_method?: number;
-  }>({});
-
+  const [filters, setFilters] = useState({
+    student_id: null,
+    trainer_id: null,
+  });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
   const {
-    bookingReports,
-    bookingReportsLoading,
-    bookingReportsError,
-    revalidateBookingReports,
+    trainerReports,
+    trainerReportsLoading,
+    trainerReportsError,
+    revalidateTrainerReports,
     totalRecords,
-  } = useGetBookingReports(
-    locale,
-    filters.startDate,
-    filters.endDate,
-    table.page + 1,
-    table.rowsPerPage,
-    filters.booking_status,
-    filters.payment_method
-  );
-  console.log('filters', filters);
+  } = useGetTrainerReports(locale, startDate, endDate, table.page + 1, table.rowsPerPage);
+
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -93,12 +80,12 @@ export default function BookingReportListView() {
     label: lang.name,
   }));
   useEffect(() => {
-    if (bookingReports?.length) {
-      setTableData(bookingReports);
+    if (trainerReports?.length) {
+      setTableData(trainerReports);
     } else {
       setTableData([]);
     }
-  }, [bookingReports]);
+  }, [trainerReports]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -139,14 +126,7 @@ export default function BookingReportListView() {
     setLocaleFilter('');
     // setFilters(defaultFilters);
   }, []);
-  const handleClearAllFilters = () => {
-    handleFiltersChange({
-      student_id: null,
-      trainer_id: null,
-      startDate: undefined,
-      endDate: undefined,
-    });
-  };
+
   const renderFilters = (
     <Stack
       spacing={3}
@@ -156,7 +136,7 @@ export default function BookingReportListView() {
       sx={{ marginBottom: 3 }}
     >
       <Stack direction="row" spacing={1} flexShrink={0}>
-        <BookingReportFilter
+        <TrainerReportFilter
           open={openFilters.value}
           onOpen={openFilters.onTrue}
           onClose={openFilters.onFalse}
@@ -165,10 +145,6 @@ export default function BookingReportListView() {
           filters={filters}
           setFilters={setFilters}
           onFilters={handleFiltersChange}
-          startDate={startDate}
-          endDate={endDate}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
           // canReset={canReset}
           onResetFilters={handleResetFilters}
           localeOptions={localeOptions}
@@ -177,11 +153,10 @@ export default function BookingReportListView() {
       </Stack>
     </Stack>
   );
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Booking Report List"
+        heading="Trainer Report List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
@@ -191,28 +166,13 @@ export default function BookingReportListView() {
               setViewMode('table');
             },
           },
-          { name: 'Booking Report' },
+          { name: 'Trainer Report' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
       {renderFilters}
-      {Object.values(filters).some((value) => value) && (
-        <Button
-          variant="outlined"
-          onClick={handleClearAllFilters}
-          sx={{
-            color: '#d32f2f',
-            borderColor: '#d32f2f',
-            marginBottom: 2,
-            ml: 2,
-          }}
-        >
-          Clear All
-        </Button>
-      )}
-
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -245,7 +205,7 @@ export default function BookingReportListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {bookingReportsLoading
+                  {trainerReportsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
                           <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -254,12 +214,12 @@ export default function BookingReportListView() {
                         </TableRow>
                       ))
                     : tableData?.map((row) => (
-                        <ReportBookingRow
+                        <TrainerReportRow
                           userType={user?.user?.user_type}
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateBookingReports}
+                          reload={revalidateTrainerReports}
                         />
                       ))}
                 </TableBody>

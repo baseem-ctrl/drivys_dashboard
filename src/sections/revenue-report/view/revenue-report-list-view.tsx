@@ -154,17 +154,17 @@ export default function RevenueReportListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Review List"
+        heading="Revenue Report List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Review',
-            href: paths.dashboard.review.root,
+            name: 'Report',
+            href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Trainer Review' },
+          { name: 'Revenue Report' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
