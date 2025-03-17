@@ -407,7 +407,6 @@ const collectorRoutes = [
 
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
-  console.log('userType', userType);
   switch (userType) {
     case 'SCHOOL_ADMIN':
       return schooladminRoutes;

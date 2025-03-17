@@ -230,7 +230,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     setTrainerMappingId(trainer?.id);
     setIndex(index);
   };
-  console.log('schoolTrainersList', schoolTrainersList);
   const handleRemove = async () => {
     try {
       if (trainerMappingId) {

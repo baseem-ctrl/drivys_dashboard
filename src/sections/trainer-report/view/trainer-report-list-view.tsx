@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -54,13 +54,14 @@ export default function TrainerReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    student_id: null,
+    city_id: null,
     trainer_id: null,
+    startDate: null,
+    endDate: null,
   });
+
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
   const {
     trainerReports,
@@ -68,7 +69,15 @@ export default function TrainerReportListView() {
     trainerReportsError,
     revalidateTrainerReports,
     totalRecords,
-  } = useGetTrainerReports(locale, startDate, endDate, table.page + 1, table.rowsPerPage);
+  } = useGetTrainerReports(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.city_id,
+    filters.trainer_id
+  );
 
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -103,7 +112,6 @@ export default function TrainerReportListView() {
     // },
     [table]
   );
-
   const handleOrderChange = (event) => {
     const value = event.target.value;
 
@@ -121,10 +129,10 @@ export default function TrainerReportListView() {
   // const canReset = !isEqual(defaultFilters, filters);
 
   const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
+    setFilters({
+      city_id: null,
+      trainer_id: null,
+    });
   }, []);
 
   const renderFilters = (
@@ -173,6 +181,18 @@ export default function TrainerReportListView() {
         }}
       />
       {renderFilters}
+
+      {Object.values(filters).some((value) => value) && (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleResetFilters}
+          sx={{ mb: 2, ml: 2 }}
+        >
+          Clear Filters
+        </Button>
+      )}
+
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>

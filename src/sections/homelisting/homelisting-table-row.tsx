@@ -70,7 +70,6 @@ export default function HomeListingTableRow({
   const [selectedDisplayType, setSelectedDisplayType] = useState(
     displayTypeOptions[0]?.value ?? ''
   );
-  console.log('row', row);
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();

@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -54,20 +54,29 @@ export default function StudentReportListView() {
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
     student_id: null,
-    trainer_id: null,
+    city_id: null,
+    startDate: null,
+    endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
-
   const {
     studentReports,
     studentReportsLoading,
     studentReportsError,
     revalidateStudentReports,
     totalRecords,
-  } = useGetStudentReports(locale, startDate, endDate, table.page + 1, table.rowsPerPage);
+  } = useGetStudentReports(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.student_id,
+    filters.city_id
+  );
 
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -118,14 +127,14 @@ export default function StudentReportListView() {
     setLocaleFilter(locale);
   };
   // const canReset = !isEqual(defaultFilters, filters);
-
   const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
+    setFilters({
+      city_id: null,
+      student_id: null,
+      startDate: null,
+      endDate: null,
+    });
   }, []);
-
   const renderFilters = (
     <Stack
       spacing={3}
@@ -152,6 +161,7 @@ export default function StudentReportListView() {
       </Stack>
     </Stack>
   );
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -172,6 +182,17 @@ export default function StudentReportListView() {
         }}
       />
       {renderFilters}
+      {Object.values(filters).some((value) => value) && (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleResetFilters}
+          sx={{ mb: 2, ml: 2 }}
+        >
+          Clear Filters
+        </Button>
+      )}
+
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>

@@ -155,7 +155,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
-  console.log('defaultVendorValues', defaultVendorValues, details);
   const Schoolmethods = useForm({
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,

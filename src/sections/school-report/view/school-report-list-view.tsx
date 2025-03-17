@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -55,8 +55,9 @@ export default function SchoolReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    student_id: null,
-    trainer_id: null,
+    school_id: null,
+    startDate: null,
+    endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
@@ -69,7 +70,14 @@ export default function SchoolReportListView() {
     schoolReportsError,
     revalidateSchoolReports,
     totalRecords,
-  } = useGetSchoolReports(locale, startDate, endDate, table.page + 1, table.rowsPerPage);
+  } = useGetSchoolReports(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.school_id
+  );
 
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -122,10 +130,11 @@ export default function SchoolReportListView() {
   // const canReset = !isEqual(defaultFilters, filters);
 
   const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
+    setFilters({
+      school_id: null,
+      startDate: null,
+      endDate: null,
+    });
   }, []);
 
   const renderFilters = (
@@ -174,6 +183,16 @@ export default function SchoolReportListView() {
         }}
       />
       {renderFilters}
+      {Object.values(filters).some((value) => value) && (
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleResetFilters}
+          sx={{ mb: 2, ml: 2 }}
+        >
+          Clear Filters
+        </Button>
+      )}
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>

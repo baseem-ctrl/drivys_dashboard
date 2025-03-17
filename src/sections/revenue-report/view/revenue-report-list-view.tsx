@@ -51,15 +51,15 @@ export default function RevenueReportListView() {
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
-  const [filters, setFilters] = useState({
-    student_id: null,
-    trainer_id: null,
-  });
+
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
-
+  const [filters, setFilters] = useState<{
+    startDate?: string;
+    endDate?: string;
+  }>({});
   const {
     revenueReports,
     revenueReportsLoading,
@@ -67,7 +67,13 @@ export default function RevenueReportListView() {
     revenueReportsValidating,
     totalRecords,
     revalidateRevenueReports,
-  } = useGetRevenueReports(locale, startDate, endDate, table.page + 1, table.rowsPerPage);
+  } = useGetRevenueReports(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage
+  );
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -128,8 +134,7 @@ export default function RevenueReportListView() {
   const renderFilters = (
     <Stack
       spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      justifyContent="flex-end"
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ marginBottom: 3 }}
     >

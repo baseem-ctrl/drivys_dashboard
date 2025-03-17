@@ -82,7 +82,6 @@ export default function BookingReportListView() {
     filters.booking_status,
     filters.payment_method
   );
-  console.log('filters', filters);
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };

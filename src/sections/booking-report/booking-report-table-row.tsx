@@ -30,7 +30,6 @@ import EditIcon from '@mui/icons-material/Edit';
 
 export default function ReportBookingRow({ reload, row, userType }) {
   const { enqueueSnackbar } = useSnackbar();
-  console.log('row', row);
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
 
