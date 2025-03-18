@@ -334,9 +334,7 @@ export default function UserNewEditForm({
       vendor_commission_in_percentage: currentUser?.vendor_commission_in_percentage,
       school_commission_in_percentage:
         currentUser?.user_preference?.school_commission_in_percentage,
-      price_per_km: currentUser?.user_preference?.price_per_km || '',
       doc_side: currentUser?.user_preference?.doc_side || '',
-      min_price: currentUser?.user_preference?.min_price || '',
       max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
       is_pickup_enabled: !!currentUser?.user_preference?.is_pickup_enabled,
       certificate_commission_in_percentage:
@@ -515,10 +513,8 @@ export default function UserNewEditForm({
       if (data?.user_type === 'TRAINER') {
         // if (data?.is_pickup_enabled)
         body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
-        if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
         if (data?.name_ar) body.append('name_ar', data?.name_ar);
         if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
-        if (data?.min_price) body.append('min_price', data?.min_price);
         if (data?.school_commission_in_percentage)
           body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
         if (data?.vendor_commission_in_percentage)
@@ -536,10 +532,7 @@ export default function UserNewEditForm({
         body.append('photo_url', data?.photo_url);
       }
 
-      if (data?.min_price) body.append('min_price', data?.min_price);
       if (data?.vehicle_number) body.append('vehicle_number', data?.vehicle_number);
-
-      if (data?.price_per_km) body.append('price_per_km', data?.price_per_km);
 
       if (data?.languages?.length > 0) {
         data?.languages.forEach((languageItem, index) => {
@@ -820,13 +813,11 @@ export default function UserNewEditForm({
             >
               {values.user_type === 'TRAINER' && !!values?.is_pickup_enabled && (
                 <>
-                  <RHFTextField name="price_per_km" label={t('price_per_km')} type="number" />
                   <RHFTextField
                     name="max_radius_in_km"
                     label={t('max_radius_in_km')}
                     type="number"
                   />
-                  <RHFTextField name="min_price" label={t('min_price')} type="number" />
                 </>
               )}
 
