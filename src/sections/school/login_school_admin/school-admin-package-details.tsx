@@ -1,6 +1,6 @@
 import { Card, Typography, Box, Grid, Stack } from '@mui/material';
 import { useGetPackageBySchool } from 'src/api/school';
-import Iconify from 'src/components/Iconify';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
