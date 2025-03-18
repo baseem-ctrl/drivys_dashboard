@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 // types
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +68,8 @@ export default function ProductFilters({
   activeOptions,
   localeOptions,
 }: Props) {
+
+  const { t } = useTranslation()
   const handleFilterActive = (newValue: string) => {
     onFilters('is_active', newValue);
   };
@@ -89,7 +92,7 @@ export default function ProductFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
       <Tooltip title="Reset">
@@ -148,7 +151,7 @@ export default function ProductFilters({
   const renderActive = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Active Status
+        {t("Active Status")}
       </Typography>
       {activeOptions.map((option) => (
         <FormControlLabel
@@ -159,7 +162,7 @@ export default function ProductFilters({
               onClick={() => handleFilterActive(option?.value)}
             />
           }
-          label={option.label}
+          label={t(option.label)}
         />
       ))}
     </Stack>
@@ -168,7 +171,7 @@ export default function ProductFilters({
   const renderDisplayOrder = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Display Order
+        {t("Display Order")}
       </Typography>
       <InputBase
         value={filters?.display_order || ''}
@@ -181,7 +184,7 @@ export default function ProductFilters({
           py: 0.5,
           width: '100%',
         }}
-        placeholder="Enter display order"
+        placeholder={t("Enter display order")}
       />
     </Stack>
   );
@@ -197,7 +200,7 @@ export default function ProductFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer

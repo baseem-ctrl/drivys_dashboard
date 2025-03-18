@@ -15,6 +15,7 @@ import { UploadProps } from './types';
 import RejectionFiles from './errors-rejection-files';
 import MultiFilePreview from './preview-multi-file';
 import SingleFilePreview from './preview-single-file';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ export default function Upload({
   sx,
   ...other
 }: UploadProps) {
+  const { t } = useTranslation();
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple,
     disabled,
@@ -52,9 +54,9 @@ export default function Upload({
     <Stack spacing={3} alignItems="center" justifyContent="center" flexWrap="wrap">
       <UploadIllustration sx={{ width: 1, maxWidth: 200 }} />
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6">Drop or Select file</Typography>
+        <Typography variant="h6">{t("Drop or Select file")}</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Drop files here or click
+          {t("Drop files here or click")}
           <Box
             component="span"
             sx={{
@@ -63,12 +65,12 @@ export default function Upload({
               textDecoration: 'underline',
             }}
           >
-            browse
+            {t("browse")}
           </Box>
-          through your machine
+          {t("through your machine")}
         </Typography>
         <Typography variant="body2" sx={{ color: 'error.main' }}>
-          Maximum file size: 3MB
+          {t("Maximum file size: 3MB")}
         </Typography>
       </Stack>
     </Stack>

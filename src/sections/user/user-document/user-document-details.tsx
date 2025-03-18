@@ -30,6 +30,7 @@ import UserDocumentCreateUpdate from './user-document-create-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { LoadingButton } from '@mui/lab';
+import { useTranslation } from 'react-i18next';
 
 type Document = {
   doc_type: string;
@@ -58,6 +59,7 @@ const docSideOptions = [
   { value: 'BACK', label: 'BACK' },
 ];
 export default function UserDocumentDetails({ id, documents, reload }: Props) {
+  const { t } = useTranslation();
   const [editMode, setEditMode] = useState<number | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -211,9 +213,9 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
       const response = await deleteUserDocumentById(id);
 
       if (response) {
-        enqueueSnackbar('Document deleted successfully!', { variant: 'success' });
+        enqueueSnackbar(t('Document deleted successfully!'), { variant: 'success' });
       } else {
-        enqueueSnackbar('Failed to delete document!', { variant: 'error' });
+        enqueueSnackbar(t('Failed to delete document!'), { variant: 'error' });
       }
     } catch (error: any) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -297,15 +299,15 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleOpenDialog}
         >
-          Add user document
+          {t("Add user document")}
         </Button>
       </Box>
 
       <Stack spacing={1} sx={{ p: 3 }}>
         <Scrollbar>
           {documents &&
-          documents[0]?.user?.user_docs &&
-          documents[0]?.user?.user_docs.length > 0 ? (
+            documents[0]?.user?.user_docs &&
+            documents[0]?.user?.user_docs.length > 0 ? (
             <Grid spacing={3} container>
               {documents[0].user.user_docs.map((doc, index) => (
                 <Grid item xs={12} sm={6} key={doc.id} sx={{ fontSize: '12px' }}>
@@ -355,7 +357,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             alignSelf: 'flex-start',
                           }}
                         >
-                          Document Details:
+                          {t("Document Details:")}
                         </Typography>
                         <Stack
                           spacing={2}
@@ -374,7 +376,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Approved at
+                              {t("Approved at")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -401,7 +403,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Approved by
+                              {t("Approved by")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -429,7 +431,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Created at
+                              {t("Created at")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -458,7 +460,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Document File
+                              {t("Document File")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -490,7 +492,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Document Side
+                              {t("Document Side")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -516,7 +518,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Document Type
+                              {t("Document Type")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -542,7 +544,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Approved
+                              {t("Approved")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -584,7 +586,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               <Grid item xs={6}>
                                 <RHFSelect
                                   name="doc_type"
-                                  label="Select Documnet Type"
+                                  label={t("Select Documnet Type")}
                                   fullWidth
                                   disabled
                                 >
@@ -596,7 +598,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                 </RHFSelect>
                               </Grid>
                               <Grid item xs={6}>
-                                <RHFSelect name="doc_side" label="Select Doc Side" fullWidth>
+                                <RHFSelect name="doc_side" label={t("Select Doc Side")} fullWidth>
                                   {docSideOptions.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                       {option.label}
@@ -607,7 +609,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               <Grid item xs={6}>
                                 <RHFTextField
                                   name="expiry"
-                                  label="Expiry Date"
+                                  label={t("Expiry Date")}
                                   type="date"
                                   fullWidth
                                   InputLabelProps={{ shrink: true }}
@@ -616,7 +618,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                               <Grid item xs={6} sx={{ mb: 1 }}>
                                 <RHFTextField
                                   name="doc_file"
-                                  label="File"
+                                  label={t("File")}
                                   fullWidth
                                   type={values.file_type === 'file' ? 'file' : 'url'}
                                   InputLabelProps={{ shrink: true }}
@@ -637,7 +639,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                                           color="primary"
                                         />
                                         <Typography sx={{ ml: 1 }}>
-                                          {values.file_type === 'file' ? 'File' : 'URL'}
+                                          {values.file_type === 'file' ? t('File') : t('URL')}
                                         </Typography>
                                       </InputAdornment>
                                     ),
@@ -653,10 +655,10 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
                             sx={{ mt: 2 }}
                           >
                             <Button variant="outlined" onClick={handleClose}>
-                              Cancel
+                              {t("Cancel")}
                             </Button>
                             <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                              {'Update'}
+                              {t("Update")}
                             </LoadingButton>
                           </Stack>
                         </FormProvider>
@@ -668,7 +670,7 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
             </Grid>
           ) : (
             <Typography variant="h8" sx={{ textAlign: 'teft', ml: 2, color: '#CF5A0D' }}>
-              No documents found for this user. You can add a document by clicking on Add Document.
+              {t("No documents found for this user. You can add a document by clicking on Add Document.")}
             </Typography>
           )}
         </Scrollbar>
@@ -682,22 +684,22 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={handleClickEdit}>Edit</MenuItem>
-        <MenuItem onClick={() => openDeleteDialog(docID)}>Delete</MenuItem>
+        <MenuItem onClick={handleClickEdit}>{t("Edit")}</MenuItem>
+        <MenuItem onClick={() => openDeleteDialog(docID)}>{t("Delete")}</MenuItem>
       </Menu>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={() => setConfirm({ ...confirm, value: false })}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           handleDelete(confirm.id);
           setConfirm({ ...confirm, value: false });
         }}
         action={
           <Button variant="contained" color="error" onClick={() => handleDelete(confirm.id)}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

@@ -8,6 +8,7 @@ import { usePopover } from 'src/components/custom-popover';
 import { Link, Typography } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
 
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
@@ -30,6 +31,7 @@ export default function BookingTableRow({
   onDeleteRow,
   reload,
 }: Props) {
+  const { t } = useTranslation();
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -95,12 +97,12 @@ export default function BookingTableRow({
             row?.booking_status === 'PENDING'
               ? 'info'
               : row?.booking_status === 'CANCELLED'
-              ? 'error'
-              : row?.booking_status === 'IN PROGRESS'
-              ? 'warning'
-              : row?.booking_status === 'CONFIRMED'
-              ? 'secondary'
-              : 'success'
+                ? 'error'
+                : row?.booking_status === 'IN PROGRESS'
+                  ? 'warning'
+                  : row?.booking_status === 'CONFIRMED'
+                    ? 'secondary'
+                    : 'success'
           }
         >
           {row?.booking_status || 'N/A'}
@@ -113,12 +115,12 @@ export default function BookingTableRow({
             row.payment_status === 'PENDING'
               ? 'info'
               : row.payment_status === 'REFUNDED'
-              ? 'warning'
-              : row.payment_status === 'PARTIALLY PAID'
-              ? 'default'
-              : row.payment_status === 'FAILED'
-              ? 'error'
-              : 'success'
+                ? 'warning'
+                : row.payment_status === 'PARTIALLY PAID'
+                  ? 'default'
+                  : row.payment_status === 'FAILED'
+                    ? 'error'
+                    : 'success'
           }
         >
           {row.payment_status || 'N/A'}
@@ -126,7 +128,7 @@ export default function BookingTableRow({
       </TableCell>
       <TableCell>{row?.sub_total}</TableCell>
       <TableCell>{row?.payment_method}</TableCell>
-      <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
+      <TableCell>{row.coupon_code ? row.coupon_code : t('No Coupon')}</TableCell>
       <TableCell onClick={() => handleRowClick(row.id)}>
         {moment(row?.created_at)
           .local()

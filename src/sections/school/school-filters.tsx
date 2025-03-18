@@ -20,6 +20,7 @@ import { MenuItem } from '@mui/material';
 import { AddBulkSchoolCommision } from 'src/api/school';
 import BulkSchoolCommission from './commission-bulk';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -125,7 +126,7 @@ export default function ProductFilters({
               onClick={() => handleFilterStocks(option?.value)}
             />
           }
-          label={option.label}
+          label={t(option.label)}
           sx={{
             ...(option.label === 'all' && {
               textTransform: 'capitalize',
@@ -149,7 +150,7 @@ export default function ProductFilters({
               onClick={() => handleFilterActive(option?.value)}
             />
           }
-          label={option.label}
+          label={t(option.label)}
         />
       ))}
     </Stack>
@@ -157,7 +158,7 @@ export default function ProductFilters({
   const renderPrice = (
     <Stack>
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Commission
+        {t("Commission")}
       </Typography>
 
       <Stack direction="row" spacing={5} sx={{ my: 2 }}>
@@ -293,6 +294,9 @@ type InputRangeProps = {
 };
 
 function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
+
+  const { t } = useTranslation();
+
   const handleMinChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
     onFilters('min_commission', value); // Call the function with min value
@@ -314,7 +318,7 @@ function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
           fontWeight: 'fontWeightSemiBold',
         }}
       >
-        {`${type} ($)`}
+        {`${t(type)} ($)`}
       </Typography>
 
       <InputBase

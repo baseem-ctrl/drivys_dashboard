@@ -32,19 +32,21 @@ import TrainerReviewRow from '../review-table-row';
 import ReviewFilters from '../review-filters';
 import StudentReviewRow from '../review-table-row';
 import { useAuthContext } from 'src/auth/hooks';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'student-name', label: 'Student', width: 180 },
-  { id: 'student-email', label: 'Student Email', width: 180 },
-  { id: 'student-phone', label: 'Student Phone', width: 180 },
-  { id: 'reviews', label: 'Reviews', width: 180 },
-];
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function StudentReviewListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'student-name', label: t('Student'), width: 180 },
+    { id: 'student-email', label: t('Student Email'), width: 180 },
+    { id: 'student-phone', label: t('Student Phone'), width: 180 },
+    { id: 'reviews', label: t('Reviews'), width: 180 },
+  ];
+
+  // ----------------------------------------------------------------------
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -149,17 +151,17 @@ export default function StudentReviewListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Student Review List"
+        heading={t("Student Review List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Review',
+            name: t('Review'),
             href: paths.dashboard.review.root,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Student Review' },
+          { name: t('Student Review') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -180,7 +182,7 @@ export default function StudentReviewListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -200,21 +202,21 @@ export default function StudentReviewListView() {
                 <TableBody>
                   {studentReviewsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <StudentReviewRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateStudentReviews}
-                        />
-                      ))}
+                      <StudentReviewRow
+                        userType={user?.user?.user_type}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateStudentReviews}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

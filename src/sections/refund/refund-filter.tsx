@@ -20,6 +20,7 @@ import { useGetAllCategory } from 'src/api/category';
 import { useGetAllCity } from 'src/api/city';
 import { useGetGearEnum, useGetUsers } from 'src/api/users';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ export default function RefundFilters({
   canReset,
   onResetFilters,
 }: Props) {
+  const { t } = useTranslation()
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,
@@ -62,11 +64,11 @@ export default function RefundFilters({
     user_types: 'TRAINER',
   });
   const vendorOptions = usersLoading
-    ? [{ label: 'Loading...', value: '' }]
+    ? [{ label: t('Loading...'), value: '' }]
     : users.map((user) => ({
-        label: user.name,
-        value: user.id,
-      }));
+      label: user.name,
+      value: user.id,
+    }));
 
   const handleFilterChange = (field, value) => {
     onFilters(field, value);
@@ -80,10 +82,10 @@ export default function RefundFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t("Reset")}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -100,7 +102,7 @@ export default function RefundFilters({
   const renderCategory = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Category
+        {t("Category")}
       </Typography>
       <Autocomplete
         options={
@@ -115,20 +117,20 @@ export default function RefundFilters({
         value={
           filters.category_id
             ? {
-                label:
-                  category
-                    ?.find((item: any) => item.id === filters.category_id)
-                    ?.category_translations?.map((translation: any) => translation.name)
-                    .join(' - ') || 'Unknown Category',
-                value: filters.category_id,
-              }
+              label:
+                category
+                  ?.find((item: any) => item.id === filters.category_id)
+                  ?.category_translations?.map((translation: any) => translation.name)
+                  .join(' - ') || 'Unknown Category',
+              value: filters.category_id,
+            }
             : null
         }
         onChange={(event, newValue) => {
           handleFilterChange('category_id', newValue?.value);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t("Select Category")} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -152,12 +154,12 @@ export default function RefundFilters({
   const renderTrainer = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Trainer
+        {t("Trainer")}
       </Typography>
       <Autocomplete
         options={
           vendorOptions?.map((item) => ({
-            label: item.label || 'Unknown Trainer',
+            label: item.label || t('Unknown Trainer'),
             value: item.value,
           })) ?? []
         }
@@ -166,11 +168,11 @@ export default function RefundFilters({
           filters.driver_id
             ? vendorOptions?.find((item) => item.value === filters.driver_id)
               ? {
-                  label:
-                    vendorOptions?.find((item) => item.value === filters.driver_id)?.label ||
-                    'Unknown Trainer',
-                  value: filters.driver_id,
-                }
+                label:
+                  vendorOptions?.find((item) => item.value === filters.driver_id)?.label ||
+                  t('Unknown Trainer'),
+                value: filters.driver_id,
+              }
               : null
             : null
         }
@@ -178,7 +180,7 @@ export default function RefundFilters({
           handleFilterChange('driver_id', newValue?.value);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select Trainer" {...params} />}
+        renderInput={(params) => <TextField placeholder={t("Select Trainer")} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -202,13 +204,13 @@ export default function RefundFilters({
   const renderCity = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        City
+        {t("City")}
       </Typography>
       <Autocomplete
         options={
           city?.map((city: any) => ({
             label:
-              city.city_translations?.length > 0 ? city.city_translations[0].name : 'Unknown City',
+              city.city_translations?.length > 0 ? city.city_translations[0].name : t('Unknown City'),
             value: city.id,
           })) ?? []
         }
@@ -216,18 +218,18 @@ export default function RefundFilters({
         value={
           filters.city_id
             ? {
-                label:
-                  city.find((item: any) => item.id === filters.city_id)?.city_translations?.[0]
-                    ?.name || 'Unknown City',
-                value: filters.city_id,
-              }
+              label:
+                city.find((item: any) => item.id === filters.city_id)?.city_translations?.[0]
+                  ?.name || t('Unknown City'),
+              value: filters.city_id,
+            }
             : null
         }
         onChange={(event, newValue) => {
           handleFilterChange('city_id', newValue?.value);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+        renderInput={(params) => <TextField placeholder={t("Select City")} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -260,7 +262,7 @@ export default function RefundFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer

@@ -23,19 +23,21 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { TableHeadCustom, useTable } from 'src/components/table';
 import PendingRewardTableRow from 'src/sections/todo/refund/pending-rewards-table-row';
 import RewardTableRow from '../reward-table-row';
-
-const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer', width: 180 },
-  { id: 'reward-amount', label: 'Reward Amount', width: 180 },
-  { id: 'is-periodic', label: 'Periodic', width: 220 },
-  { id: 'start-date', label: 'Start Date', width: 220 },
-  { id: 'end-date', label: 'End Date', width: 220 },
-  { id: 'notes', label: 'Notes', width: 250 },
-  { id: 'achieved-date', label: 'Achieved Date', width: 200 },
-  { id: 'action', label: '', width: 250 },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function LoyaltyProgramDetails() {
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    { id: 'trainer-name', label: t('Trainer'), width: 180 },
+    { id: 'reward-amount', label: t('Reward Amount'), width: 180 },
+    { id: 'is-periodic', label: t('Periodic'), width: 220 },
+    { id: 'start-date', label: t('Start Date'), width: 220 },
+    { id: 'end-date', label: t('End Date'), width: 220 },
+    { id: 'notes', label: t('Notes'), width: 250 },
+    { id: 'achieved-date', label: t('Achieved Date'), width: 200 },
+    { id: 'action', label: '', width: 250 },
+  ];
   const table = useTable({ defaultRowsPerPage: 15 });
   const { id } = useParams<{ id: string }>();
   const [tabIndex, setTabIndex] = useState(0);
@@ -57,10 +59,10 @@ export default function LoyaltyProgramDetails() {
   return (
     <Box sx={{ p: 3 }}>
       <CustomBreadcrumbs
-        heading="Loyalty Program Details"
+        heading={t("Loyalty Program Details")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Loyalty', href: paths.dashboard.loyality.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
+          { name: t('Loyalty'), href: paths.dashboard.loyality.root },
           {
             name: `${eligibleRewardTrainers[0]?.trainer_reward?.trainer_reward_translation[0]?.name}`,
           },
@@ -69,8 +71,8 @@ export default function LoyaltyProgramDetails() {
       />
 
       <Tabs value={tabIndex} onChange={(e, newIndex) => setTabIndex(newIndex)}>
-        <Tab label="Pending Requests" />
-        <Tab label="Claimed Requests" />
+        <Tab label={t("Pending Requests")} />
+        <Tab label={t("Claimed Requests")} />
       </Tabs>
 
       {eligibleRewardTrainersLoading ? (

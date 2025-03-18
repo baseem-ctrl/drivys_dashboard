@@ -14,6 +14,7 @@ import Iconify from 'src/components/iconify';
 import SearchNotFound from 'src/components/search-not-found';
 // types
 import { IProductItem } from 'src/types/product';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +27,8 @@ type Props = {
 };
 
 export default function SchoolSearch({ query, results, onSearch, hrefItem, loading }: Props) {
+
+  const { t } = useTranslation();
   return (
     <TextField
       fullWidth
@@ -33,7 +36,7 @@ export default function SchoolSearch({ query, results, onSearch, hrefItem, loadi
       onChange={(e) => {
         onSearch('name', e.target.value);
       }}
-      placeholder="Search..."
+      placeholder={t("Search...")}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

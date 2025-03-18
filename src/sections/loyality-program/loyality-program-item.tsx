@@ -26,6 +26,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetAllLanguage } from 'src/api/language';
 import { createOrUpdateLoyaltyProgram, deleteLoyaltyProgramById } from 'src/api/loyality';
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -53,6 +54,8 @@ export default function LoyalityProgramItem({
 }: Props) {
   const deletecustomer = useBoolean();
 
+  const { t } = useTranslation()
+
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
@@ -79,11 +82,11 @@ export default function LoyalityProgramItem({
       // Ensure newLocales is an array
       const newLocales = Array.isArray(category?.trainer_reward_translation)
         ? category?.trainer_reward_translation
-            ?.map((category: any) => category.locale)
-            ?.filter(
-              (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
-            )
-            ?.map((locale: any) => ({ label: locale, value: locale }))
+          ?.map((category: any) => category.locale)
+          ?.filter(
+            (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
+          )
+          ?.map((locale: any) => ({ label: locale, value: locale }))
         : [];
 
       setLocaleOptions([...initialLocaleOptions, ...newLocales]);
@@ -240,7 +243,7 @@ export default function LoyalityProgramItem({
         }}
         sx={{ mb: 2 }}
       >
-        <RHFTextField name="name" label="Name" borderRadius="0px" />
+        <RHFTextField name="name" label={t("Name")} borderRadius="0px" />
 
         <RHFSelect
           value={selectedLanguage}
@@ -260,7 +263,7 @@ export default function LoyalityProgramItem({
 
       <RHFTextField
         name="no_of_sessions_required"
-        label="Number of Sessions Required"
+        label={t("Number of Sessions Required")}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{
@@ -278,7 +281,7 @@ export default function LoyalityProgramItem({
                 <Box sx={{ flex: 1 }}>
                   <DatePicker
                     {...field}
-                    label="Start Date"
+                    label={t("Start Date")}
                     format="yyyy-MM-dd"
                     value={field.value ? new Date(field.value) : null}
                     onChange={(date) => {
@@ -308,7 +311,7 @@ export default function LoyalityProgramItem({
                 <Box sx={{ flex: 1 }}>
                   <DatePicker
                     {...field}
-                    label="End Date"
+                    label={t("End Date")}
                     format="yyyy-MM-dd"
                     value={field.value ? new Date(field.value) : null}
                     onChange={(date) => {
@@ -337,7 +340,7 @@ export default function LoyalityProgramItem({
 
       <RHFTextField
         name="reward_amount"
-        label="Reward Amount"
+        label={t("Reward Amount")}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{
@@ -356,7 +359,7 @@ export default function LoyalityProgramItem({
                 onChange={(e) => field.onChange(e.target.checked ? 1 : 0)}
               />
             }
-            label="Is Periodic"
+            label={t("Is Periodic")}
             sx={{ mb: 2 }}
           />
         )}
@@ -368,7 +371,7 @@ export default function LoyalityProgramItem({
           control={methods.control}
           defaultValue=""
           rules={{
-            required: 'Period is required when Is Periodic is enabled.',
+            required: t('Period is required when Is Periodic is enabled.'),
           }}
           render={({ field, fieldState: { error } }) => (
             <Box sx={{ mb: 2 }}>
@@ -391,7 +394,7 @@ export default function LoyalityProgramItem({
           variant="outlined"
           loading={isSubmitting}
         >
-          {isCreateCategory ? 'Create' : 'Save'}
+          {isCreateCategory ? t('Create') : t('Save')}
         </LoadingButton>
         <LoadingButton
           onClick={() => {
@@ -406,7 +409,7 @@ export default function LoyalityProgramItem({
           variant="outlined"
           sx={{ width: '100%' }}
         >
-          {isCreateCategory ? 'Cancel' : 'Delete'}
+          {isCreateCategory ? t('Cancel') : t('Delete')}
         </LoadingButton>
       </Box>
     </FormProvider>

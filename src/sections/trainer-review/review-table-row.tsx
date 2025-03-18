@@ -25,10 +25,12 @@ import { deleteReview, updateReview } from 'src/api/review';
 import { useSnackbar } from 'src/components/snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function TrainerReviewRow({ reload, row, userType }) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { trainer_name, trainer_email, trainer_phone, avg_rating, reviews = [] } = row;
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
@@ -63,7 +65,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
       const response = await updateReview(body);
 
       if (response.status === 'success') {
-        enqueueSnackbar('Comment deleted successfully.');
+        enqueueSnackbar(t('Comment deleted successfully.'));
         setEditingState((prevState) => ({
           ...prevState,
           [session_id]: { isEditing: false, editedComment: '' },
@@ -100,7 +102,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
       });
 
       if (response.status === 'success') {
-        enqueueSnackbar('Comment deleted successfully.');
+        enqueueSnackbar(t('Comment deleted successfully.'));
         reload();
       }
     } catch (error) {
@@ -141,16 +143,16 @@ export default function TrainerReviewRow({ reload, row, userType }) {
           <Box display="flex" alignItems="center">
             {avg_rating
               ? Array.from({ length: 5 }).map((_, index) =>
-                  index < avg_rating ? (
-                    <StarIcon key={index} style={{ color: '#CF5A0D' }} />
-                  ) : (
-                    <StarBorderIcon key={index} style={{ color: '#CF5A0D' }} />
-                  )
+                index < avg_rating ? (
+                  <StarIcon key={index} style={{ color: '#CF5A0D' }} />
+                ) : (
+                  <StarBorderIcon key={index} style={{ color: '#CF5A0D' }} />
                 )
-              : 'No Ratings'}
+              )
+              : t('No Ratings')}
           </Box>
         </TableCell>
-        <TableCell>{reviews.length} Reviews</TableCell>
+        <TableCell>{reviews.length} {t("Reviews")}</TableCell>
       </TableRow>
 
       {isReviewsVisible && (
@@ -162,17 +164,17 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                 gutterBottom
                 sx={{ color: 'primary.main', mt: 3, fontSize: '22px' }}
               >
-                Reviews:
+                {t("Reviews")}:
               </Typography>
 
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ borderTopLeftRadius: '12px' }}>Session ID</TableCell>
-                    <TableCell>Booking ID</TableCell>
-                    <TableCell>Student Name</TableCell>
-                    <TableCell>Rating</TableCell>
-                    <TableCell>Comments</TableCell>
+                    <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t("Session ID")}</TableCell>
+                    <TableCell>{t("Booking ID")}</TableCell>
+                    <TableCell>{t("Student Name")}</TableCell>
+                    <TableCell>{t("Rating")}</TableCell>
+                    <TableCell>{t("Comments")}</TableCell>
                     <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                   </TableRow>
                 </TableHead>
@@ -241,7 +243,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                             fullWidth
                           />
                         ) : (
-                          review.user_comments || 'No Comments'
+                          review.user_comments || t('No Comments')
                         )}
                       </TableCell>
 
@@ -250,7 +252,7 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                           <Box display="flex" alignItems="center">
                             <Tooltip
                               title={
-                                review.user_comments ? 'Delete Comment' : 'No comments to delete'
+                                review.user_comments ? t('Delete Comment') : t('No comments to delete')
                               }
                               arrow
                             >
@@ -267,8 +269,8 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                             <Tooltip
                               title={
                                 editingState[review.session_id]?.isEditing
-                                  ? 'Save Comment'
-                                  : 'Edit Comment'
+                                  ? t('Save Comment')
+                                  : t('Edit Comment')
                               }
                               arrow
                             >

@@ -40,7 +40,7 @@ export default function BookingDetailsToolbar({
 }: Props) {
   const popover = usePopover();
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <>
@@ -53,7 +53,7 @@ export default function BookingDetailsToolbar({
       >
         <Stack spacing={1} direction="row" alignItems="flex-start">
           <IconButton component={RouterLink} href={backLink}>
-            <Iconify icon="eva:arrow-ios-back-fill" />
+            {i18n.language === 'en' ? <Iconify icon="eva:arrow-ios-back-fill" /> : <Iconify icon="eva:arrow-ios-back-fill" sx={{ transform: 'rotate(180deg)' }} />}
           </IconButton>
 
           <Stack spacing={0.5}>

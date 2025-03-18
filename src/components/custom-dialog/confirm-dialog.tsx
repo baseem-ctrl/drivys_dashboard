@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 //
 import { ConfirmDialogProps } from './types';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,7 @@ export default function ConfirmDialog({
   onConfirm,
   ...other
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
@@ -26,11 +28,11 @@ export default function ConfirmDialog({
 
       <DialogActions>
         <Button variant="contained" color="error" onClick={onConfirm}>
-          Delete
+          {t("Delete")}
         </Button>
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {t("Cancel")}
         </Button>
       </DialogActions>
     </Dialog>

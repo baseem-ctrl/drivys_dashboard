@@ -15,6 +15,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { createUserDocument } from 'src/api/user-document';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -33,6 +34,7 @@ export default function UserDocumentCreateUpdate({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
+  const { t } = useTranslation()
   const DocumentSchema = Yup.object().shape({
     doc_type: Yup.string(),
     doc_side: Yup.string(),
@@ -79,7 +81,7 @@ export default function UserDocumentCreateUpdate({
 
       const response = await createUserDocument(body);
       if (response) {
-        enqueueSnackbar('Document created successfully!', { variant: 'success' });
+        enqueueSnackbar(t('Document created successfully!'), { variant: 'success' });
         reload();
         onClose();
         reset();
@@ -131,13 +133,13 @@ export default function UserDocumentCreateUpdate({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{currentDocument ? 'Update Document' : 'Create Document'}</DialogTitle>
+        <DialogTitle>{currentDocument ? t('Update Document') : t('Create Document')}</DialogTitle>
 
         <DialogContent>
           <Box mt={2}>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <RHFSelect name="doc_type" label="Select Documnet Type" fullWidth>
+                <RHFSelect name="doc_type" label={t("Select Documnet Type")} fullWidth>
                   {docTypeOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -146,7 +148,7 @@ export default function UserDocumentCreateUpdate({
                 </RHFSelect>
               </Grid>
               <Grid item xs={6}>
-                <RHFSelect name="doc_side" label="Select Doc Side" fullWidth>
+                <RHFSelect name="doc_side" label={t("Select Doc Side")} fullWidth>
                   {docSideOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -157,7 +159,7 @@ export default function UserDocumentCreateUpdate({
               <Grid item xs={6}>
                 <RHFTextField
                   name="expiry"
-                  label="Expiry Date"
+                  label={t("Expiry Date")}
                   type="date"
                   fullWidth
                   InputLabelProps={{ shrink: true }}
@@ -165,7 +167,7 @@ export default function UserDocumentCreateUpdate({
               </Grid>
               {!(values?.doc_type === 'OTHER' || values?.doc_type === 'IBAN') && (
                 <Grid item xs={6}>
-                  <RHFSelect name="file_type" label="Select File Type" fullWidth>
+                  <RHFSelect name="file_type" label={t("Select File Type")} fullWidth>
                     {fileOptions.map((option) => (
                       <MenuItem key={option.value} value={option.value}>
                         {option.label}
@@ -178,7 +180,7 @@ export default function UserDocumentCreateUpdate({
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFTextField
                   name="doc_file"
-                  label="File"
+                  label={t("File")}
                   fullWidth
                   type={values?.file_type}
                   InputLabelProps={{ shrink: true }}
@@ -191,10 +193,10 @@ export default function UserDocumentCreateUpdate({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentDocument ? 'Update' : 'Create'}
+            {currentDocument ? t("Update") : t("Create")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

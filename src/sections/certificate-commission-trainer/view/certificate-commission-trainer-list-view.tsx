@@ -30,13 +30,15 @@ import { useGetAllLanguage } from 'src/api/language';
 
 import CertificateCommissionRow from '../certificate-commission-trainer-table-row';
 import { useGetAllVendorCommissionList } from 'src/api/commission';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer Name', width: 180 },
-  { id: 'vendor-name', label: 'School Name', width: 180 },
-  { id: 'trainer-certificate-commission', label: 'Trainer Certificate Commission', width: 180 },
+  { id: 'trainer-name', label: t('Trainer Name'), width: 180 },
+  { id: 'vendor-name', label: t('School Name'), width: 180 },
+  { id: 'trainer-certificate-commission', label: t('Trainer Certificate Commission'), width: 180 },
   { id: 'action', label: '', width: 180 },
 ];
 
@@ -44,6 +46,7 @@ const TABLE_HEAD = [
 
 export default function CertificateCommissionTrainer() {
   const table = useTable({ defaultRowsPerPage: 15 });
+  const { t } = useTranslation();
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
@@ -69,14 +72,14 @@ export default function CertificateCommissionTrainer() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Certificate Commission"
+        heading={t("Trainer Certificate Commission")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Commission',
+            name: t('Commission'),
             href: paths.dashboard.commission.root,
           },
-          { name: 'Trainer Certificate Commission' },
+          { name: t('Trainer Certificate Commission') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -96,7 +99,7 @@ export default function CertificateCommissionTrainer() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -116,20 +119,20 @@ export default function CertificateCommissionTrainer() {
                 <TableBody>
                   {commissionsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <CertificateCommissionRow
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateVendorCommissions}
-                        />
-                      ))}
+                      <CertificateCommissionRow
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateVendorCommissions}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

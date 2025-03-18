@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TablePagination, { TablePaginationProps } from '@mui/material/TablePagination';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,8 @@ export default function TablePaginationCustom({
   sx,
   ...other
 }: Props & TablePaginationProps) {
+
+  const { t } = useTranslation();
   return (
     <Box sx={{ position: 'relative', ...sx }}>
       <TablePagination
@@ -34,7 +37,7 @@ export default function TablePaginationCustom({
 
       {onChangeDense && (
         <FormControlLabel
-          label="Dense"
+          label={t("Dense")}
           control={<Switch checked={dense} onChange={onChangeDense} />}
           sx={{
             pl: 2,

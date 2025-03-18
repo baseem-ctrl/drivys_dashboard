@@ -46,20 +46,23 @@ import HomeSliderDialog from './home-slider-dialog';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'DisplayOrder', label: 'Display Order' },
-  { id: 'picture', label: 'Picture' },
-  { id: 'name', label: 'Name' },
 
-  { id: 'published', label: 'Published' },
-  // { id: 'ISMonthly', label: 'Is Monthly' },
-  { id: 'show_until', label: 'Show until' },
-  { id: 'actions', label: '' },
-];
 
 // ----------------------------------------------------------------------
 
 export default function HomeSliderListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'DisplayOrder', label: t('Display Order') },
+    { id: 'picture', label: t('Picture') },
+    { id: 'name', label: t('Name') },
+
+    { id: 'published', label: t('Published') },
+    // { id: 'ISMonthly', label: 'Is Monthly' },
+    { id: 'show_until', label: t('Show until') },
+    { id: 'actions', label: '' },
+  ];
   const router = useRouter();
   const table = useTable({ defaultRowsPerPage: 5 });
   const [tableData, setTableData] = useState<ISliderItem[]>([]);
@@ -118,8 +121,6 @@ export default function HomeSliderListView() {
 
   const settings = useSettingsContext();
 
-  const { t } = useTranslation();
-
   const reorder = (list: [], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -153,7 +154,7 @@ export default function HomeSliderListView() {
       {homeSliderError ? (
         <div>{homeSliderError?.message}</div>
       ) : (
-        <Container maxWidth={settings.themeStretch ? false : 'xxl'}>
+        <Container maxWidth={settings.themeStretch ? false : 'xl'}>
           <CustomBreadcrumbs
             heading={t('Home Slider List')}
             links={[
@@ -184,7 +185,7 @@ export default function HomeSliderListView() {
                   </TableHead>
                   <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="droppable">
-                      {(provided) => (
+                      {(provided: any) => (
                         <TableBody {...provided.droppableProps} ref={provided.innerRef}>
                           {/* Top Section (is_hero === 1) */}
                           <TableRow>
@@ -195,7 +196,7 @@ export default function HomeSliderListView() {
                                 color: '#B76E00',
                               }}
                             >
-                              <span>Top Banners</span>
+                              <span>{t("Top Banners")}</span>
                             </TableCell>
                           </TableRow>
 
@@ -203,7 +204,7 @@ export default function HomeSliderListView() {
                           {tableData.filter((row) => row.is_hero === true).length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                                No data available for the Top section.
+                                {t("No data available for the Top section.")}
                               </TableCell>
                             </TableRow>
                           ) : (
@@ -215,7 +216,7 @@ export default function HomeSliderListView() {
                                   draggableId={row.id.toString()}
                                   index={index}
                                 >
-                                  {(provided) => (
+                                  {(provided: any) => (
                                     <TableRow
                                       hover
                                       ref={provided.innerRef}
@@ -237,7 +238,7 @@ export default function HomeSliderListView() {
                                           variant="soft"
                                           color={row.published ? 'success' : 'warning'}
                                         >
-                                          {row.published ? 'Yes' : 'No'}
+                                          {row.published ? t('Yes') : t('No')}
                                         </Label>
                                       </TableCell>
                                       <TableCell>{row?.show_until}</TableCell>
@@ -269,7 +270,7 @@ export default function HomeSliderListView() {
                                 color: '#B76E00',
                               }}
                             >
-                              <span>Bottom Banners</span>
+                              <span>{t("Bottom Banners")}</span>
                             </TableCell>
                           </TableRow>
 
@@ -277,7 +278,7 @@ export default function HomeSliderListView() {
                           {tableData.filter((row) => row.is_hero === false).length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                                No data available for the Bottom section.
+                                {t("No data available for the Bottom section.")}
                               </TableCell>
                             </TableRow>
                           ) : (
@@ -289,7 +290,7 @@ export default function HomeSliderListView() {
                                   draggableId={row.id.toString()}
                                   index={index}
                                 >
-                                  {(provided) => (
+                                  {(provided: any) => (
                                     <TableRow
                                       hover
                                       ref={provided.innerRef}

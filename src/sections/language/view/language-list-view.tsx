@@ -44,19 +44,11 @@ import LanguageTableRow from '../language-table-row';
 import { deleteLanguage, useGetAllLanguage } from 'src/api/language';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import LanguageCreateEditForm from '../language-create-update';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'language_culture', label: 'Language culture', width: 180 },
-  { id: 'flag_id', label: 'Flag', width: 220 },
-  { id: 'published', label: 'Published', width: 180 },
-  { id: 'display_order', label: 'Display order', width: 180 },
-  { id: '', width: 88 },
-];
 
 const defaultFilters: IUserTableFilters = {
   name: '',
@@ -67,6 +59,18 @@ const defaultFilters: IUserTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function LanguageListView() {
+
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    { id: 'name', label: t('Name') },
+    { id: 'language_culture', label: t('Language culture'), width: 180 },
+    { id: 'flag_id', label: t('Flag'), width: 220 },
+    { id: 'published', label: t('Published'), width: 180 },
+    { id: 'display_order', label: t('Display order'), width: 180 },
+    { id: '', width: 88 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
@@ -173,11 +177,11 @@ export default function LanguageListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t("List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Language', href: paths.dashboard.system.language },
-            { name: 'List' },
+            { name: t('Dashboard'), href: paths.dashboard.root },
+            { name: t('Language'), href: paths.dashboard.system.language },
+            { name: t('List') },
           ]}
           action={
             <Button
@@ -188,7 +192,7 @@ export default function LanguageListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Language
+              {t("New Language")}
             </Button>
           }
           sx={{
@@ -228,7 +232,7 @@ export default function LanguageListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -245,12 +249,12 @@ export default function LanguageListView() {
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(
-                  //     checked,
-                  //     tableData.map((row) => row.id)
-                  //   )
-                  // }
+                // onSelectAllRows={(checked) =>
+                //   table.onSelectAllRows(
+                //     checked,
+                //     tableData.map((row) => row.id)
+                //   )
+                // }
                 />
 
                 <TableBody>

@@ -14,6 +14,7 @@ import {
   Skeleton,
 } from '@mui/material';
 import { useGetBookingByTrainerId } from 'src/api/booking';
+import { useTranslation } from 'react-i18next';
 
 // Define the props type for the component
 interface BookingTableProps {
@@ -34,6 +35,7 @@ interface BookingTableProps {
 // Define the functional component
 const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
   const { bookingTrainerDetails, bookingLoading } = useGetBookingByTrainerId(id);
+  const { t } = useTranslation();
   const bookingDetails = bookingTrainerDetails.bookings;
 
   return (
@@ -41,14 +43,14 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Total Sessions</TableCell>
-            <TableCell align="center">Total Sessions Booked</TableCell>
-            <TableCell align="center">Completed Sessions</TableCell>
-            <TableCell align="center">Booking Status</TableCell>
-            <TableCell align="center">Payment Status</TableCell>
+            <TableCell>{t("User")}</TableCell>
+            <TableCell>{t("Email")}</TableCell>
+            <TableCell align="center">{t("Total")}</TableCell>
+            <TableCell align="center">{t("Total Sessions")}</TableCell>
+            <TableCell align="center">{t("Total Sessions Booked")}</TableCell>
+            <TableCell align="center">{t("Completed Sessions")}</TableCell>
+            <TableCell align="center">{t("Booking Status")}</TableCell>
+            <TableCell align="center">{t("Payment Status")}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -93,12 +95,12 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.booking_status === 'PENDING'
                         ? 'info'
                         : booking?.booking_status === 'CANCELLED'
-                        ? 'error'
-                        : booking?.booking_status === 'IN PROGRESS'
-                        ? 'warning'
-                        : booking?.booking_status === 'CONFIRMED'
-                        ? 'secondary'
-                        : 'success'
+                          ? 'error'
+                          : booking?.booking_status === 'IN PROGRESS'
+                            ? 'warning'
+                            : booking?.booking_status === 'CONFIRMED'
+                              ? 'secondary'
+                              : 'success'
                     }
                     variant="soft"
                   />
@@ -110,12 +112,12 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.payment_status === 'PENDING'
                         ? 'info'
                         : booking?.payment_status === 'FAILED'
-                        ? 'error'
-                        : booking?.payment_status === 'REFUNDED'
-                        ? 'warning'
-                        : booking?.payment_status === 'PARTIALLY PAID'
-                        ? 'primary'
-                        : 'success'
+                          ? 'error'
+                          : booking?.payment_status === 'REFUNDED'
+                            ? 'warning'
+                            : booking?.payment_status === 'PARTIALLY PAID'
+                              ? 'primary'
+                              : 'success'
                     }
                     variant="soft"
                   />
@@ -127,7 +129,7 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
               <TableCell colSpan={6} align="center">
                 <Box sx={{ py: 2 }}>
                   <Typography variant="h6" color="textSecondary">
-                    No bookings available under this trainer
+                    {t("No bookings available under this trainer")}
                   </Typography>
                 </Box>
               </TableCell>

@@ -8,6 +8,7 @@ import { useSettingsContext } from 'src/components/settings';
 import PackageDetails from '../package-details-content';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { useGetPackageById } from 'src/api/package';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ type Props = {
 
 export default function PackageDetailsView({ id }: Props) {
   const settings = useSettingsContext();
+  const { t } = useTranslation();
   const { details, detailsLoading, revalidateDetails } = useGetPackageById(id);
 
   const currentPackage = details;
@@ -24,11 +26,11 @@ export default function PackageDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Package Details"
+        heading={t("Package Details")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Package', href: paths.dashboard.package.root },
-          { name: 'Details' },
+          { name: t('Dashboard'), href: paths.dashboard.root },
+          { name: t('Package'), href: paths.dashboard.package.root },
+          { name: t('Details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

@@ -117,7 +117,7 @@ export default function TotalTrainersSession({ title, subheader, ...other }: Pro
               value={selectedTrainer}
               onChange={(event, newValue) => setSelectedTrainer(newValue || '')}
               options={sessionsPerTrainer.map((trainer) => trainer.trainer_name)}
-              renderInput={(params) => <TextField {...params} label="Select Trainer" />}
+              renderInput={(params) => <TextField {...params} label={t("Select Trainer")} />}
               isOptionEqualToValue={(option, value) => option === value}
               disableClearable
             />

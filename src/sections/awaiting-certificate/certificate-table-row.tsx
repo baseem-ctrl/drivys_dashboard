@@ -12,10 +12,12 @@ import MenuItem from '@mui/material/MenuItem';
 import CertificateStatusUpdateForm from './certificate-status-update-form';
 import Tooltip from '@mui/material/Tooltip';
 import Label from 'src/components/label';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function CertificateRow({ row, reload, path }) {
+  const { t } = useTranslation();
   const { city, comments, gear, request_date, status, trainer, txn, user, vehicle_type = [] } = row;
   const router = useRouter();
   const popover = usePopover();
@@ -83,20 +85,20 @@ export default function CertificateRow({ row, reload, path }) {
               status === 'PENDING'
                 ? 'warning'
                 : status === 'REJECTED'
-                ? 'error'
-                : status === 'APPROVED'
-                ? 'success'
-                : 'default'
+                  ? 'error'
+                  : status === 'APPROVED'
+                    ? 'success'
+                    : 'default'
             }
             style={{ cursor: 'pointer' }}
           >
             {status === 'PENDING'
               ? 'Pending'
               : status === 'REJECTED'
-              ? 'Rejected'
-              : status === 'APPROVED'
-              ? 'Approved'
-              : 'N/A'}
+                ? 'Rejected'
+                : status === 'APPROVED'
+                  ? 'Approved'
+                  : 'N/A'}
           </Label>
         </TableCell>
 
@@ -140,7 +142,7 @@ export default function CertificateRow({ row, reload, path }) {
           </Typography>
         </TableCell>
 
-        <TableCell>{comments || 'No Comments'}</TableCell>
+        <TableCell>{comments || t('No Comments')}</TableCell>
 
         {path !== 'approved-certificate' ? (
           <TableCell align="right">
@@ -185,7 +187,7 @@ export default function CertificateRow({ row, reload, path }) {
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Update Status
+          {t("Update Status")}
         </MenuItem>
       </CustomPopover>
     </>

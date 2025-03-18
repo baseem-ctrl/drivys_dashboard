@@ -9,6 +9,7 @@ import { Chip, IconButton, InputAdornment } from '@mui/material';
 import Iconify from 'src/components/iconify'; // Assuming you have the Iconify component
 import { useState } from 'react';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 type Props = {
@@ -26,6 +27,7 @@ export default function PayoutSearch({
   setSearchValue,
   usersLoading,
 }: Props) {
+  const { t } = useTranslation();
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
   };
@@ -111,7 +113,7 @@ export default function PayoutSearch({
           loading={schoolLoading}
           renderInput={(params) => (
             <TextField
-              placeholder="Select School"
+              placeholder={t("Select School")}
               {...params}
               InputProps={{
                 ...params.InputProps,

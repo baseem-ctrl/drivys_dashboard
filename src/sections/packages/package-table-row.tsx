@@ -30,6 +30,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { createUpdatePackage } from 'src/api/package';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +68,7 @@ export default function PackageTableRow({
     drivys_commision,
     vendor_id,
   } = row;
+  const { t } = useTranslation()
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { category } = useGetAllCategory({
@@ -319,7 +321,7 @@ export default function PackageTableRow({
                 (is_published === 1 && 'success') || (is_published === 0 && 'error') || 'default'
               }
             >
-              {is_published === 0 ? 'Un Published' : 'Published'}
+              {is_published === 0 ? t('Un Published') : t('Published')}
             </Label>
           )}
         </TableCell>
@@ -437,7 +439,7 @@ export default function PackageTableRow({
               loading={isSubmitting}
               onClick={onSubmit}
             >
-              {'Save'}
+              {t('Save')}
             </LoadingButton>
           ) : (
             // <Button
@@ -472,15 +474,15 @@ export default function PackageTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />
@@ -497,7 +499,7 @@ export default function PackageTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          {t("View")}
         </MenuItem>
 
         <MenuItem
@@ -507,7 +509,7 @@ export default function PackageTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
 
         <MenuItem
@@ -518,7 +520,7 @@ export default function PackageTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
       </CustomPopover>
     </>

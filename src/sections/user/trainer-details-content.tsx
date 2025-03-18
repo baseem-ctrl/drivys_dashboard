@@ -56,6 +56,7 @@ import { useGetPackagesDetailsByTrainer } from 'src/api/trainer';
 import Divider from '@mui/material/Divider';
 import { createPackageTrainer, deletePackageTrainerById } from 'src/api/package-trainer';
 import TrainerPackageCreateEditForm from './trainer-package-create-edit-form';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -66,6 +67,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
     Trainerdetails?.id
   );
+  const { t } = useTranslation()
   const quickEdit = useBoolean();
   const confirm = useBoolean();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -180,24 +182,24 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      {
-                        label: 'Max Cash Allowded in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                      },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                      {
-                        label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
-                      },
-                      {
-                        label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
-                      },
-                      {
-                        label: 'School Commission',
-                        value: details?.vendor_commission_in_percentage ?? 'N/A',
-                      },
-                    ]
+                    {
+                      label: 'Max Cash Allowded in Hand',
+                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                    },
+                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                    {
+                      label: 'Cash Clearance Date',
+                      value: details?.cash_clearance_date ?? 'N/A',
+                    },
+                    {
+                      label: 'Last Booking At',
+                      value: details?.last_booking_was ?? 'N/A',
+                    },
+                    {
+                      label: 'School Commission',
+                      value: details?.vendor_commission_in_percentage ?? 'N/A',
+                    },
+                  ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -302,7 +304,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
       {details?.length < 1 && (
         <Grid item xs={12}>
           <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-            No packages available. Click Add Package to create a new one.
+            {t("No packages available. Click Add Package to create a new one.")}
           </Typography>
         </Grid>
       )}
@@ -324,7 +326,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               },
             }}
           >
-            Add Package
+            {t("Add Package")}
           </Button>
         </Grid>
       </Grid>
@@ -395,7 +397,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                       </Box>
 
                       <Typography sx={{ fontSize: '16px', fontWeight: '700' }}>
-                        What's included
+                        {t("What's included")}
                       </Typography>
 
                       <Stack direction="row" spacing={1}>
@@ -404,7 +406,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                           dangerouslySetInnerHTML={{
                             __html:
                               item?.package?.package_translations?.[0]?.session_inclusions ||
-                              'No inclusions available',
+                              t('No inclusions available'),
                           }}
                         />
                       </Stack>
@@ -419,13 +421,13 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
       )}
       <>
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
-          <DialogTitle>Delete Package</DialogTitle>
+          <DialogTitle>{t("Delete Package")}</DialogTitle>
           <DialogContent>
-            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+            <DialogContentText>{t("Are you sure you want to delete this package?")}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={confirm.onFalse} color="primary">
-              Cancel
+              {t("Cancel")}
             </Button>
 
             <LoadingButton
@@ -434,7 +436,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
-              Delete
+              {t("Delete")}
             </LoadingButton>
           </DialogActions>
         </Dialog>
@@ -444,7 +446,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               handleEditPackage(selectedPackage);
             }}
           >
-            Edit Package
+            {t("Edit Package")}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -452,7 +454,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               handleClose();
             }}
           >
-            Delete Package
+            {t("Delete Package")}
           </MenuItem>
         </Menu>
         <TrainerPackageCreateEditForm

@@ -22,6 +22,7 @@ import { updateRefundRequestStatus, updateRequestStatus } from 'src/api/refund';
 import { useGetPaymentRefundStatusEnum, useGetRefundRequestStatusEnum } from 'src/api/enum';
 import { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ export default function RefundTableRow({
 }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
@@ -63,9 +65,9 @@ export default function RefundTableRow({
       const response = await updateRefundRequestStatus(payload);
       if (response) {
         reload();
-        enqueueSnackbar('Refund Status updated successfully!', { variant: 'success' });
+        enqueueSnackbar(t('Refund Status updated successfully!'), { variant: 'success' });
       } else {
-        enqueueSnackbar('Failed to update Refund Status!', { variant: 'error' });
+        enqueueSnackbar(t('Failed to update Refund Status!'), { variant: 'error' });
       }
       reload();
     } catch (error) {
@@ -116,9 +118,9 @@ export default function RefundTableRow({
       const response = await updateRequestStatus(payload);
       if (response) {
         reload();
-        enqueueSnackbar('Refund Status updated successfully!', { variant: 'success' });
+        enqueueSnackbar(t('Refund Status updated successfully!'), { variant: 'success' });
       } else {
-        enqueueSnackbar('Failed to update Refund Status!', { variant: 'error' });
+        enqueueSnackbar(t('Failed to update Refund Status!'), { variant: 'error' });
       }
       reload();
     } catch (error) {
@@ -216,8 +218,8 @@ export default function RefundTableRow({
             row?.booking_status === 'PENDING'
               ? 'info'
               : row?.booking_status === 'CANCELLED'
-              ? 'error'
-              : 'success'
+                ? 'error'
+                : 'success'
           }
         >
           {row?.booking?.booking_status || 'N/A'}
@@ -230,8 +232,8 @@ export default function RefundTableRow({
             row.payment_status === 'PENDING'
               ? 'warning'
               : row.payment_status === 'FAILED'
-              ? 'error'
-              : 'success'
+                ? 'error'
+                : 'success'
           }
         >
           {row.booking?.payment_status || 'N/A'}
@@ -243,11 +245,11 @@ export default function RefundTableRow({
       <TableCell>{row?.booking?.payment_method}</TableCell>
       <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
       <TableCell>
-        <Tooltip title={refundStatus === 'approved' ? 'You can process the refund now' : ''} arrow>
+        <Tooltip title={refundStatus === 'approved' ? t('You can process the refund now') : ''} arrow>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {refundStatus === 'approved' ? (
               <Button variant="outlined" color="primary" onClick={handleRefundAmountClick}>
-                Refund
+                {t("Refund")}
               </Button>
             ) : (
               <Select
@@ -288,7 +290,7 @@ export default function RefundTableRow({
         >
           <div style={{ padding: 16 }}>
             <TextField
-              label="Refund Amount"
+              label={t("Refund Amount")}
               value={refundAmount}
               onChange={handleRefundAmountChange}
               type="number"
@@ -302,7 +304,7 @@ export default function RefundTableRow({
               onClick={handleRefundSubmit}
               disabled={!refundAmount || Number(refundAmount) <= 0}
             >
-              Submit Refund
+              {t("Submit Refund")}
             </Button>
           </div>
         </Popover>
@@ -313,7 +315,7 @@ export default function RefundTableRow({
           .local()
           .format('DD/MM/YY h:mm a')}
         <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-          Updated{' '}
+          {t("Updated")} {' '}
           {moment(row?.updated_at)
             .local()
             .format('DD/MM/YY h:mm a')}

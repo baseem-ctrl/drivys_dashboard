@@ -22,6 +22,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { useTable } from 'src/components/table';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -92,14 +93,14 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
     setSelectedPackage(null);
     quickEdit.onTrue();
   };
-
+  const { t } = useTranslation();
   return (
     <Box>
       <Grid container justifyContent="flex-end" sx={{ marginBottom: '20px' }}>
         {Array.isArray(packageDetails) && packageDetails.length <= 0 && (
           <Grid item xs={12}>
             <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-              No packages available. Click Add Package to create a new one.
+              {t("No packages available. Click Add Package to create a new one.")}
             </Typography>
           </Grid>
         )}
@@ -117,7 +118,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
               },
             }}
           >
-            Add Package
+            {t("Add Package")}
           </Button>
         </Grid>
       </Grid>
@@ -145,7 +146,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     <Typography variant="h5" color="#CF5A0D">
                       {packageItem?.package?.package_translations
                         ? packageItem?.package?.package_translations[0]?.name.toUpperCase()
-                        : 'NA' || 'UNNAMED PACKAGE'}
+                        : 'NA' || t('UNNAMED PACKAGE')}
                     </Typography>
                     {packageItem?.package?.number_of_sessions ?? '0'} Sessions
                   </Box>
@@ -167,13 +168,13 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                     {/* <Typography variant="h6">{' AED'}</Typography> */}
                     <Typography variant="h6">
                       {packageItem?.min_price ? parseFloat(packageItem?.min_price) : '0'}
-                      {'AED '}- {packageItem?.max_price ? parseFloat(packageItem?.max_price) : '0'}{' '}
-                      {'AED '}
+                      {t('AED ')}- {packageItem?.max_price ? parseFloat(packageItem?.max_price) : '0'}{' '}
+                      {t('AED ')}
                     </Typography>
                   </Box>
 
                   <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
-                    What's included
+                    {t("What's included")}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" /> */}
@@ -192,20 +193,20 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
           ))}
 
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
-          <DialogTitle>Delete Package</DialogTitle>
+          <DialogTitle>{t("Delete Package")}</DialogTitle>
           <DialogContent>
-            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+            <DialogContentText>{t("Are you sure you want to delete this package?")}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={confirm.onFalse} color="primary">
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               variant="contained"
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
-              Delete
+              {t("Delete")}
             </Button>
           </DialogActions>
         </Dialog>
@@ -217,7 +218,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
             handleEditPackage(selectedPackage);
           }}
         >
-          Edit Package
+          {t("Edit Package")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -225,7 +226,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
             handleClose();
           }}
         >
-          Delete Package
+          {t("Delete Package")}
         </MenuItem>
       </Menu>
       <PackageCreateEditForm

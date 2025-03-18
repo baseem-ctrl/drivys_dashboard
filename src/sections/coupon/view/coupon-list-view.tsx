@@ -54,23 +54,13 @@ import { Stack } from '@mui/system';
 import CouponFilters from '../coupon-filters';
 import CouponFiltersResult from '../coupon-filters-result';
 import CategorySearch from '../category-search';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'coupon_code', label: 'Coupon code', width: 180 },
-  { id: 'discount_type_id', label: 'Discount type', width: 220 },
-  { id: 'value', label: 'Value', width: 180 },
-  { id: 'starting_date', label: 'Starting date', width: 180 },
-  { id: 'ending_date', label: 'Ending date', width: 180 },
-  { id: 'limitation_times', label: 'Limitation times', width: 180 },
-  { id: 'is_active', label: 'Is Active', width: 180 },
 
-  { id: '', width: 88 },
-];
 
 const defaultFilters: ICouponFilter = {
   name: '',
@@ -85,6 +75,22 @@ const defaultFilters: ICouponFilter = {
 // ----------------------------------------------------------------------
 
 export default function CouponListView() {
+
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'name', label: t('Name') },
+    { id: 'coupon_code', label: t('Coupon code'), width: 180 },
+    { id: 'discount_type_id', label: t('Discount type'), width: 220 },
+    { id: 'value', label: t('Value'), width: 180 },
+    { id: 'starting_date', label: t('Starting date'), width: 180 },
+    { id: 'ending_date', label: t('Ending date'), width: 180 },
+    { id: 'limitation_times', label: t('Limitation times'), width: 180 },
+    { id: 'is_active', label: t('Is Active'), width: 180 },
+
+    { id: '', width: 88 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
@@ -255,12 +261,12 @@ export default function CouponListView() {
           dateError={dateError}
           discountOptions={_discount_types}
           activeOptions={[...ACTIVE_OPTIONS.map((option) => option.label)]}
-          //
-          // locationOptions={countries}
-          // roleOptions={_roles}
-          // benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
-          // stockOptions={STOCK_OPTIONS}
-          // employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
+        //
+        // locationOptions={countries}
+        // roleOptions={_roles}
+        // benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
+        // stockOptions={STOCK_OPTIONS}
+        // employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
         />
       </Stack>
     </Stack>
@@ -281,11 +287,11 @@ export default function CouponListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Coupon List"
+          heading={t("Coupon List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Coupon', href: paths.dashboard.coupon.list },
-            { name: 'List' },
+            { name: t('Dashboard'), href: paths.dashboard.root },
+            { name: t('Coupon'), href: paths.dashboard.coupon.list },
+            { name: t('List') },
           ]}
           action={
             <Button
@@ -296,7 +302,7 @@ export default function CouponListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Coupon
+              {t("New Coupon")}
             </Button>
           }
           sx={{
@@ -345,33 +351,33 @@ export default function CouponListView() {
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(
-                  //     checked,
-                  //     tableData.map((row) => row.id)
-                  //   )
-                  // }
+                // onSelectAllRows={(checked) =>
+                //   table.onSelectAllRows(
+                //     checked,
+                //     tableData.map((row) => row.id)
+                //   )
+                // }
                 />
                 <TableBody>
                   {couponLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <CouponTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          reload={revalidateCoupon}
-                        />
-                      ))}
+                      <CouponTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        reload={revalidateCoupon}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

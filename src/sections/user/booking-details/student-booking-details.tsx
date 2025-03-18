@@ -16,6 +16,7 @@ import {
   Skeleton,
 } from '@mui/material';
 import { useGetBookingByStudentId } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // Define the props type for the component
 interface BookingTableProps {
@@ -38,20 +39,22 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
   const { bookingDetails, bookingError, bookingLoading, revalidateBookingDetails } =
     useGetBookingByStudentId(id);
 
+  const { t } = useTranslation()
+
   return (
     <TableContainer component={Card}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Trainer Name</TableCell>
-            <TableCell>Trainer Email</TableCell>
-            <TableCell align="center">Total</TableCell>
-            <TableCell align="center">Total Sessions</TableCell>
-            <TableCell align="center">Total Sessions Booked</TableCell>
-            <TableCell align="center">Completed Sessions</TableCell>
-            <TableCell align="center">Booking Status</TableCell>
-            <TableCell align="center">Payment Status</TableCell>
-            <TableCell align="center">Payment Method</TableCell>
+            <TableCell>{t("Trainer Name")}</TableCell>
+            <TableCell>{t("Trainer Email")}</TableCell>
+            <TableCell align="center">{t("Total")}</TableCell>
+            <TableCell align="center">{t("Total Sessions")}</TableCell>
+            <TableCell align="center">{t("Total Sessions Booked")}</TableCell>
+            <TableCell align="center">{t("Completed Sessions")}</TableCell>
+            <TableCell align="center">{t("Booking Status")}</TableCell>
+            <TableCell align="center">{t("Payment Status")}</TableCell>
+            <TableCell align="center">{t("Payment Method")}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -97,12 +100,12 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.booking_status === 'PENDING'
                         ? 'info'
                         : booking?.booking_status === 'CANCELLED'
-                        ? 'error'
-                        : booking?.booking_status === 'IN PROGRESS'
-                        ? 'warning'
-                        : booking?.booking_status === 'CONFIRMED'
-                        ? 'secondary'
-                        : 'success'
+                          ? 'error'
+                          : booking?.booking_status === 'IN PROGRESS'
+                            ? 'warning'
+                            : booking?.booking_status === 'CONFIRMED'
+                              ? 'secondary'
+                              : 'success'
                     }
                     variant="soft"
                   />
@@ -114,12 +117,12 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.payment_status === 'PENDING'
                         ? 'info'
                         : booking?.payment_status === 'FAILED'
-                        ? 'error'
-                        : booking?.payment_status === 'REFUNDED'
-                        ? 'warning'
-                        : booking?.payment_status === 'PARTIALLY PAID'
-                        ? 'primary'
-                        : 'success'
+                          ? 'error'
+                          : booking?.payment_status === 'REFUNDED'
+                            ? 'warning'
+                            : booking?.payment_status === 'PARTIALLY PAID'
+                              ? 'primary'
+                              : 'success'
                     }
                     variant="soft"
                   />
@@ -132,7 +135,7 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
               <TableCell colSpan={6} align="center">
                 <Box sx={{ py: 2 }}>
                   <Typography variant="h6" color="textSecondary">
-                    No bookings available under this student
+                    {t("No bookings available under this student")}
                   </Typography>
                 </Box>
               </TableCell>

@@ -34,6 +34,7 @@ import { useState } from 'react';
 import WorkingHoursCreateEditForm from './trainer-working-hours-create-edit-form';
 import CreateTrainerShiftForm from './trainer-create-shift';
 import { TablePaginationCustom, useTable } from 'src/components/table';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +45,7 @@ type Props = {
 
 export default function TrainerWorkingHour({ userId, details }: Props) {
   const table = useTable({ defaultRowsPerPage: 15 });
-
+  const { t } = useTranslation();
   const { workingHours, workingHoursLoading, workingHoursError, revalidateWorkingHours } =
     useGetWorkingHoursByUserId(userId);
   const { shifts, shiftsLoading, shiftsError, revalidateShifts } = useGetShiftsByTrainerId(userId);
@@ -165,29 +166,27 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
               disabled={!details?.is_active}
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => handleCreateShift()}
-            >
-              Add Shift
-            </Button>
+            >{t("Add Shift")}</Button>
           </Box>
 
           {shifts.length > 0 && (
             <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-              Trainer Shifts:
+              {t("Trainer Shifts:")}
             </Typography>
           )}
           {shiftsLoading ? (
-            <Typography>Loading shifts...</Typography>
+            <Typography>{t("Loading shifts..")}.</Typography>
           ) : shiftsError ? (
-            <Typography color="error">Error loading shifts</Typography>
+            <Typography color="error">{t("Error loading shifts")}</Typography>
           ) : shifts.length > 0 ? (
             <Card>
               <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Shift Start Time</TableCell>
-                      <TableCell>Shift End Time</TableCell>
-                      <TableCell>Action</TableCell>
+                      <TableCell>{t("Shift Start Time")}</TableCell>
+                      <TableCell>{t("Shift End Time")}</TableCell>
+                      <TableCell>{t("Action")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -216,11 +215,11 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             <Box display="flex" justifyContent="flex-start" alignItems="center" height="100%">
               {details?.is_active ? (
                 <Typography variant="subtitle1" color="primary">
-                  No shifts available. Please create a shift
+                  {t("No shifts available. Please create a shift")}
                 </Typography>
               ) : (
                 <Typography variant="subtitle1" color="primary">
-                  Shift creation is disabled as the trainer is inactive.
+                  {t("Shift creation is disabled as the trainer is inactive.")}
                 </Typography>
               )}
             </Box>
@@ -231,7 +230,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             {!workingHours || workingHours.length === 0 ? (
               <Box sx={{ textAlign: 'left', mt: 2 }}>
                 <Typography variant="body1" sx={{ color: '#CF5A0D' }}>
-                  No working hours available. You can add using 'Add Work Hours'.
+                  {t("No working hours available. You can add using 'Add Work Hours'.")}
                 </Typography>
               </Box>
             ) : null}
@@ -243,7 +242,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => handleCreateWorkingHours()}
             >
-              Add Work Hours
+              {t("Add Work Hours")}
             </Button>
           </Box>
         )}
@@ -251,7 +250,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
         {workingHours && workingHours.length > 0 && (
           <Card>
             <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-              Trainer Working Hours:
+              {t("Trainer Working Hours:")}
             </Typography>
             <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
               <Table>
@@ -280,7 +279,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                       {/* Conditionally render shift time or full day */}
                       <TableCell>
                         {groupedWorkingHours[day][0]?.is_full_day ? (
-                          <Chip label="Full Day" color="primary" />
+                          <Chip label={t("Full Day")} color="primary" />
                         ) : (
                           // <TableCell align="center">
                           groupedWorkingHours[day].map((hour, index) => (
@@ -303,20 +302,20 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
         {leaveDates && leaveDates.length > 0 && (
           <Card sx={{ mt: 4 }}>
             <Typography variant="h6" sx={{ p: 2, borderBottom: '1px solid #ddd' }}>
-              Leave Dates
+              {t("Leave Dates")}
             </Typography>
             <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>
-                      <Typography>Date</Typography>
+                      <Typography>{t("Date")}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>Type</Typography>
+                      <Typography>{t("Type")}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>Time</Typography>
+                      <Typography>{t("Time")}</Typography>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -330,7 +329,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                         <Typography variant="body2">{leave.label}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body2">{leave.time || 'Full Day'}</Typography>
+                        <Typography variant="body2">{leave.time || t('Full Day')}</Typography>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -364,7 +363,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
         {/* <MenuItem
           onClick={() => {
@@ -380,8 +379,8 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           handleDeleteWorkingHour(workingHourID);
@@ -399,8 +398,8 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
       <ConfirmDialog
         open={deletePopover.open}
         onClose={deletePopover.onClose}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           handleDeleteShift(selectedShift?.id);
@@ -411,7 +410,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             color="error"
             onClick={() => handleDeleteShift(selectedShift?.id)}
           >
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

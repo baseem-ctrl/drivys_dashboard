@@ -46,47 +46,49 @@ import BookingTableToolbar from '../booking-table-tool-bar';
 import { useGetUsers } from 'src/api/users';
 import BookingDetailsComponent from './booking-details-view';
 import BookingFilters from '../booking-filter';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 const TABLE_HEAD = {
   all: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   confirmed: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   cancelled: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   pending: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
 };
 
@@ -103,6 +105,7 @@ const defaultFilters = {
 };
 
 export default function BookingListView() {
+  const { t } = useTranslation()
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
   const openFilters = useBoolean();
@@ -172,9 +175,9 @@ export default function BookingListView() {
   const vendorOptions = usersLoading
     ? [{ label: 'Loading...', value: '' }]
     : users.map((user) => ({
-        label: user.name,
-        value: user.id,
-      }));
+      label: user.name,
+      value: user.id,
+    }));
   useEffect(() => {
     if (bookings?.bookings?.length > 0) {
       setTableData(bookings.bookings);
@@ -242,11 +245,11 @@ export default function BookingListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Bookings"
+        heading={t("Bookings")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Booking', href: paths.dashboard.booking.root },
-          { name: 'List' },
+          { name: t('Dashboard'), href: paths.dashboard.booking.root },
+          { name: t('Booking'), href: paths.dashboard.booking.root },
+          { name: t('List') },
         ]}
         sx={{ mb: 3 }}
       />
@@ -277,7 +280,7 @@ export default function BookingListView() {
             value="all"
             label={
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span>All</span>
+                <span>{t("All")}</span>
                 <Typography
                   sx={{
                     backgroundColor: '#f0f0f0',
@@ -316,7 +319,7 @@ export default function BookingListView() {
                 }}
                 label={
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{tab.name}</span>
+                    <span>{t(tab.name)}</span>
                     <Typography
                       sx={{
                         backgroundColor: backgroundColor,
@@ -411,8 +414,8 @@ export default function BookingListView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => handleRowClick(row)}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
+                    // onDeleteRow={() => handleDeleteRow(row.id)}
+                    // onEditRow={() => handleEditRow(row.id)}
                     />
                   ))}
 

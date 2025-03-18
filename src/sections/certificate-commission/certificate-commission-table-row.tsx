@@ -9,6 +9,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { updateCommission } from 'src/api/commission';
 import { createSchool } from 'src/api/school';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 interface RowProps {
@@ -32,7 +33,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
     vendor_id,
   } = row;
   const { user } = useAuthContext();
-
+  const { t } = useTranslation()
   const { enqueueSnackbar } = useSnackbar();
   const [newCommission, setNewCommission] = useState(certificate_commission_in_percentage);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,11 +50,11 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
       };
 
       await createSchool(body);
-      enqueueSnackbar('Commission updated successfully', { variant: 'success' });
+      enqueueSnackbar(t('Commission updated successfully'), { variant: 'success' });
       setIsEditing(false);
       reload();
     } catch (error) {
-      enqueueSnackbar('Failed to update commission', { variant: 'error' });
+      enqueueSnackbar(t('Failed to update commission'), { variant: 'error' });
     } finally {
       setIsUpdating(false);
     }
@@ -105,7 +106,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               disabled={isUpdating}
               sx={{ marginRight: '10px' }}
             >
-              Save
+              {t("Save")}
             </Button>
             <Button
               variant="outlined"
@@ -116,7 +117,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               }}
               disabled={isUpdating}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           </>
         ) : (
@@ -126,7 +127,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
             onClick={() => setIsEditing(true)}
             disabled={isUpdating}
           >
-            {isUpdating ? 'Updating...' : 'Update Commission'}
+            {isUpdating ? t('Updating...') : t('Update Commission')}
           </Button>
         )}
       </TableCell>

@@ -38,34 +38,7 @@ import { useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
 import RefundTableRow from '../refund-table-row';
 import RefundFilters from '../refund-filter';
 import RefundedTableRow from '../refunded-table-row';
-
-const TABLE_HEAD = {
-  all: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'BookingId', label: 'Booking ID', width: 180 },
-    { id: 'packages', label: 'Package', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'paid', label: 'Amount Sanctioned', width: 220 },
-    { id: 'refunded', label: 'Amount to refund', width: 220 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'reason', label: 'Reason', width: 200 },
-    { id: 'refundStatus', label: 'Refund Status', width: 250 },
-    { id: 'created', label: 'Created', width: 200 },
-  ],
-  refunded: [
-    { id: 'customerName', label: 'Customer Name', width: 180 },
-    { id: 'vendorName', label: 'Driver Name', width: 180 },
-    { id: 'packages', label: 'Package', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-
-    { id: 'reason', label: 'Reason', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
-  ],
-};
+import { useTranslation } from 'react-i18next';
 
 const defaultFilters = {
   city_id: null,
@@ -74,6 +47,36 @@ const defaultFilters = {
 };
 
 export default function RefundListView() {
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = {
+    all: [
+      { id: 'customerName', label: t('Customer Name'), width: 180 },
+      { id: 'BookingId', label: t('Booking ID'), width: 180 },
+      { id: 'packages', label: t('Package'), width: 180 },
+      { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+      { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+      { id: 'paid', label: t('Amount Sanctioned'), width: 220 },
+      { id: 'refunded', label: t('Amount to refund'), width: 220 },
+      { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+      { id: 'reason', label: t('Reason'), width: 200 },
+      { id: 'refundStatus', label: t('Refund Status'), width: 250 },
+      { id: 'created', label: t('Created'), width: 200 },
+    ],
+    refunded: [
+      { id: 'customerName', label: t('Customer Name'), width: 180 },
+      { id: 'vendorName', label: t('Driver Name'), width: 180 },
+      { id: 'packages', label: t('Package'), width: 180 },
+      { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+      { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+      { id: 'price', label: t('Price'), width: 120 },
+      { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+
+      { id: 'reason', label: t('Reason'), width: 200 },
+      { id: 'created', label: t('Created'), width: 200 },
+    ],
+  };
+
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -223,11 +226,11 @@ export default function RefundListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Refund List"
+        heading={t("Refund List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Refund', href: paths.dashboard.booking.refund },
-          { name: 'List' },
+          { name: t('Dashboard'), href: paths.dashboard.root },
+          { name: t('Refund'), href: paths.dashboard.booking.refund },
+          { name: t('List') },
         ]}
         sx={{ mb: 3 }}
       />
@@ -245,7 +248,7 @@ export default function RefundListView() {
           }}
         >
           {['Refund Requests', 'Refunded Requests'].map((label) => (
-            <Tab key={label} sx={tabStyles} label={label} />
+            <Tab key={label} sx={tabStyles} label={t(label)} />
           ))}
         </Tabs>
 
@@ -325,8 +328,8 @@ export default function RefundListView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => handleRowClick(row)}
                         reload={revalidateRefundRequests}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={() => handleEditRow(row.id)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
@@ -411,8 +414,8 @@ export default function RefundListView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => handleRowClick(row)}
                         reload={revalidateRefundedRequestsList}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={() => handleEditRow(row.id)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
