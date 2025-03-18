@@ -124,33 +124,35 @@ export default function RevenueReportListView() {
   const handleDownloadClick = async () => {
     try {
       if (downloadReportsLoading) {
-        console.warn('Revenue reports are still loading...');
+        console.warn('Reports are still loading...');
         return;
       }
 
-      if (downloadReportsData.length === 0) {
+      if (!downloadReportsData || downloadReportsData.length === 0) {
         console.error('No valid CSV data available to download.');
         return;
       }
 
-      // Convert revenue data to CSV format
-      const csvContent =
-        'data:text/csv;charset=utf-8,' +
-        [
-          Object.keys(downloadReportsData[0]).join(','), // CSV header
-          ...downloadReportsData.map((row) => Object.values(row).join(',')), // CSV rows
-        ].join('\n');
+      const headers = Object.keys(downloadReportsData[0]).join(',');
 
-      // Create and download CSV file
-      const encodedUri = encodeURI(csvContent);
+      // Convert data to CSV format
+      const csvRows = downloadReportsData.map((row) =>
+        Object.values(row)
+          .map((value) => `"${value}"`)
+          .join(',')
+      );
+
+      const csvContent = [headers, ...csvRows].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
       const link = document.createElement('a');
-      link.href = encodedUri;
+      link.href = URL.createObjectURL(blob);
       link.download = 'revenue_report.csv';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error in downloading revenue report:', error);
+      console.error('Error in downloading report:', error);
     }
   };
 

@@ -96,7 +96,7 @@ export default function TrainerReportListView() {
   const handleDownloadClick = async () => {
     try {
       if (downloadReportsLoading) {
-        console.warn('Booking reports are still loading...');
+        console.warn('Reports are still loading...');
         return;
       }
 
@@ -105,14 +105,21 @@ export default function TrainerReportListView() {
         return;
       }
 
-      // Convert data to CSV format
-      const csvContent = downloadReportsData.map((row) => Object.values(row).join(',')).join('\n');
+      const headers = Object.keys(downloadReportsData[0]).join(',');
 
-      // Create and download CSV file
+      // Convert data to CSV format
+      const csvRows = downloadReportsData.map((row) =>
+        Object.values(row)
+          .map((value) => `"${value}"`)
+          .join(',')
+      );
+
+      const csvContent = [headers, ...csvRows].join('\n');
+
       const blob = new Blob([csvContent], { type: 'text/csv' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'booking_report.csv';
+      link.download = 'trainer_report.csv';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

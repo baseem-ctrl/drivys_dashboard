@@ -179,7 +179,7 @@ export function useGetTrainerReportsDownload(
   return { ...memoizedValue, revalidateTrainerReports, downloadExcel };
 }
 
-export function useGetStudentReports(
+export function useGetStudentReportsDownload(
   locale?: string,
   start_date?: string,
   end_date?: string,
@@ -237,8 +237,7 @@ export function useGetStudentReports(
 
   return { ...memoizedValue, revalidateStudentReports, downloadExcel };
 }
-
-export function useGetSchoolReports(
+export function useGetSchoolReportsDownload(
   locale?: string,
   start_date?: string,
   end_date?: string,
@@ -264,10 +263,21 @@ export function useGetSchoolReports(
   let parsedData: any[] = [];
   if (data) {
     try {
-      parsedData = Papa.parse(data, {
+      const parsedCSV = Papa.parse(data, {
         header: true,
         skipEmptyLines: true,
-      }).data;
+        delimiter: ',',
+        quoteChar: '"',
+        transformHeader: (header) => header.trim(), // Ensure headers are correctly formatted
+      });
+
+      // If the first row is invalid, remove it
+      if (parsedCSV.data.length > 0 && !parsedCSV.data[0]['School ID']) {
+        parsedCSV.data.shift();
+      }
+
+      parsedData = parsedCSV.data; // Extract the parsed data
+      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }

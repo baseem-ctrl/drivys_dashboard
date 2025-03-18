@@ -8,6 +8,7 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -28,7 +29,8 @@ import {
 
 import { useGetAllLanguage } from 'src/api/language';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetSchoolReports, useGetStudentReports } from 'src/api/reportPreview';
+import { useGetSchoolReports } from 'src/api/reportPreview';
+import { useGetSchoolReportsDownload } from 'src/api/reportDownload';
 
 import SchoolReportsRow from '../school-report-table-row';
 import SchoolReportFilter from '../school-report-filters';
@@ -78,6 +80,55 @@ export default function SchoolReportListView() {
     table.rowsPerPage,
     filters.school_id
   );
+  const {
+    schoolReports: downloadReportsData,
+    revalidateSchoolReports: revalidateDownloadReports,
+    schoolReportsLoading: downloadReportsLoading,
+  } = useGetSchoolReportsDownload(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.school_id
+  );
+  const handleDownloadClick = async () => {
+    try {
+      if (downloadReportsLoading) {
+        console.warn('Booking reports are still loading...');
+        return;
+      }
+
+      if (!downloadReportsData || downloadReportsData.length === 0) {
+        console.error('No valid CSV data available to download.');
+        return;
+      }
+
+      // Extract headers from the first object keys
+      const headers = Object.keys(downloadReportsData[0]).join(',');
+
+      // Convert data to CSV format
+      const csvRows = downloadReportsData.map((row) =>
+        Object.values(row)
+          .map((value) => `"${value}"`)
+          .join(',')
+      );
+
+      // Combine headers with data
+      const csvContent = [headers, ...csvRows].join('\n');
+
+      // Create and download CSV file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'school_report.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error in downloading report:', error);
+    }
+  };
 
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -196,6 +247,22 @@ export default function SchoolReportListView() {
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="outlined"
+                onClick={handleDownloadClick}
+                sx={{
+                  color: '#d32f2f',
+                  borderColor: '#d32f2f',
+                  marginBottom: 2,
+                  mr: 3,
+                  mt: 3,
+                }}
+                startIcon={<DownloadIcon />}
+              >
+                Download
+              </Button>
+            </Box>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
