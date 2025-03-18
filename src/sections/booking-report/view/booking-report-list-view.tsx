@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+
 // @mui
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -8,6 +9,7 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -31,6 +33,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetBookingReports } from 'src/api/reportPreview';
 import ReportBookingRow from '../booking-report-table-row';
 import BookingReportFilter from '../booking-report-filters';
+import { useGetBookingReportsDownload } from 'src/api/reportDownload';
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +85,19 @@ export default function BookingReportListView() {
     filters.booking_status,
     filters.payment_method
   );
+  const {
+    bookingReports: downloadReportsData,
+    revalidateBookingReports: revalidateDownloadReports,
+    bookingReportsLoading: downloadReportsLoading,
+  } = useGetBookingReportsDownload(
+    locale,
+    filters.startDate,
+    filters.endDate,
+    table.page + 1,
+    table.rowsPerPage,
+    filters.booking_status,
+    filters.payment_method
+  );
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -115,6 +131,41 @@ export default function BookingReportListView() {
     // },
     [table]
   );
+
+  const handleDownloadClick = async () => {
+    try {
+      if (downloadReportsLoading) {
+        console.warn('Reports are still loading...');
+        return;
+      }
+
+      if (!downloadReportsData || downloadReportsData.length === 0) {
+        console.error('No valid CSV data available to download.');
+        return;
+      }
+
+      const headers = Object.keys(downloadReportsData[0]).join(',');
+
+      // Convert data to CSV format
+      const csvRows = downloadReportsData.map((row) =>
+        Object.values(row)
+          .map((value) => `"${value}"`)
+          .join(',')
+      );
+
+      const csvContent = [headers, ...csvRows].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'booking_report.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error in downloading report:', error);
+    }
+  };
 
   const handleOrderChange = (event) => {
     const value = event.target.value;
@@ -215,6 +266,23 @@ export default function BookingReportListView() {
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+            <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="outlined"
+                onClick={handleDownloadClick}
+                sx={{
+                  color: '#d32f2f',
+                  borderColor: '#d32f2f',
+                  marginBottom: 2,
+                  mr: 3,
+                  mt: 3,
+                }}
+                startIcon={<DownloadIcon />}
+              >
+                Download
+              </Button>
+            </Box>
+
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
