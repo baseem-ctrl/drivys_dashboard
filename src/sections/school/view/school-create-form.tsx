@@ -144,6 +144,8 @@ export default function SchoolCreateForm({
     }),
 
     country_code: Yup.string(),
+    certificate_min_commision: Yup.string(),
+    certificate_max_commision: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -165,6 +167,8 @@ export default function SchoolCreateForm({
       country_code: '971',
       min_commision: '',
       max_commision: '',
+      certificate_min_commision: '',
+      certificate_max_commision: '',
     }),
     []
   );
@@ -235,6 +239,8 @@ export default function SchoolCreateForm({
     formData.append('contact_phone_number', data?.contact_phone_number);
     formData.append('min_commision', data?.min_commision);
     formData.append('max_commision', data?.max_commision);
+    formData.append('certificate_min_commision', data?.certificate_min_commision);
+    formData.append('certificate_max_commision', data?.certificate_max_commision);
 
     formData.append(
       'certificate_commission_in_percentage',
@@ -417,7 +423,20 @@ export default function SchoolCreateForm({
               error={!!errors.max_commision}
               helperText={errors.max_commision?.message}
             />
+            <RHFTextField
+              sx={{ mt: 2 }}
+              name="certificate_min_commision"
+              label={t('min_certificate_commission')}
+              type="number"
+            />
+            <RHFTextField
+              sx={{ mt: 2 }}
+              name="certificate_max_commision"
+              label={t('max_certificate_commission')}
+              type="number"
+            />
           </Box>
+
           <Grid item xs={12} mt={2} mb={2}>
             <Typography
               variant="body1"

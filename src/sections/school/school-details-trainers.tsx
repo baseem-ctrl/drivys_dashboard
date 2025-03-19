@@ -100,6 +100,30 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
             ),
         otherwise: (schema) => schema,
       }),
+    certificate_commission_in_percentage: Yup.number()
+      .required(t('certificate_commission_required'))
+      .when([], {
+        is: () =>
+          candidates?.certificate_min_commision >= 0 &&
+          candidates?.certificate_max_commision >= 0 &&
+          candidates?.certificate_max_commision &&
+          candidates?.certificate_min_commision,
+        then: (schema) =>
+          schema
+            .min(
+              candidates?.certificate_min_commision,
+              t('min_certificate_commission_error', {
+                min: candidates?.certificate_min_commision ?? 0,
+              })
+            )
+            .max(
+              candidates?.certificate_max_commision,
+              t('max_certificate_commission_error', {
+                max: candidates?.certificate_max_commision ?? 100,
+              })
+            ),
+        otherwise: (schema) => schema,
+      }),
     trainer_id: Yup.mixed().required(),
     max_cash_in_hand_allowed: Yup.string().nullable(), // not required
   });
@@ -109,6 +133,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
       cash_clearance_date: '',
       cash_in_hand: '',
       vendor_commission_in_percentage: '',
+      certificate_commission_in_percentage: '',
       password: '',
       phone: '',
       trainer_id: '',
@@ -142,6 +167,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
       trainer_id: data?.trainer_id?.id,
       vendor_id: candidates?.id,
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
+      certificate_commission_in_percentage: data?.certificate_commission_in_percentage,
       cash_in_hand: data?.cash_in_hand,
       max_cash_in_hand_allowed: data?.max_cash_in_hand_allowed,
       cash_clearance_date: data?.cash_clearance_date,
@@ -258,6 +284,18 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
                   {t('school_commission_range', {
                     min: candidates.min_commision || '0',
                     max: candidates.max_commision || '0',
+                  })}
+                </FormHelperText>
+              </div>
+              <div>
+                <RHFTextField
+                  name="certificate_commission_in_percentage"
+                  label={t('certificate_commission')}
+                />
+                <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                  {t('certificate_commission_range', {
+                    min: candidates.certificate_min_commision || '0',
+                    max: candidates.certificate_max_commision || '0',
                   })}
                 </FormHelperText>
               </div>

@@ -365,6 +365,7 @@
   "search_school": "Search School...",
   "other": "OTHER",
   "school_commission_range": "School Commission must be between {{min}}% and {{max}}%.",
+  "certificate_commission_range": "Certificate Commission must be between {{min}}% and {{max}}%.",
   "certificate_commission_tooltip": "Commission for trainer from certificate",
   "vehicle_number": "Vehicle Number",
   "max_cash_in_hand_allowed": "Max Cash in Hand Allowed",
@@ -451,5 +452,10 @@
   "select_school_admin": "Select School Admin",
   "create_new_user": "Create New User",
   "user_name": "User Name",
-  "user_email": "User Email"
+  "user_email": "User Email",
+  "min_certificate_commission": "Min Certificate Commission",
+  "max_certificate_commission": "Max Certificate Commission",
+  "certificate_commission_required": "Certificate commission is required",
+  "min_certificate_commission_error": "Certificate commission must be greater than Min Certificate Commission",
+  "max_certificate_commission_error": "Certificate commission must be less than Max Certificate Commission"
 }
