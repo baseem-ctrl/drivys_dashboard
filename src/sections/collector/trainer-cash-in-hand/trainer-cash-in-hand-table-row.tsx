@@ -38,12 +38,10 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
         </TableCell>
       </TableCell>
       <TableCell>{row?.cash_in_hand.toFixed(2) ?? 'N/A'}</TableCell>
-      <TableCell>{row?.no_of_sessions_completed ?? 'N/A'}</TableCell>
       <TableCell>{row?.number_of_bookings ?? 'N/A'}</TableCell>
       <TableCell>
         {row?.cash_clearance_date ? moment(row.cash_clearance_date).format('DD-MM-YYYY') : 'N/A'}
       </TableCell>{' '}
-      <TableCell>{row?.admin_fees ?? 'N/A'}</TableCell>
     </TableRow>
   );
 }

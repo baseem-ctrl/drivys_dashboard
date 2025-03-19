@@ -1,6 +1,6 @@
 import { Card, Typography, Box, Grid, Stack } from '@mui/material';
-import Iconify from 'src/components/Iconify';
 import { useGetPackage } from 'src/api/package';
+import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 

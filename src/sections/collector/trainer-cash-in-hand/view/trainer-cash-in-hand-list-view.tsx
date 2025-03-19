@@ -38,10 +38,8 @@ const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer', width: 180 },
   { id: 'amount_to_be_collected', label: 'Amount', width: 180 },
   { id: 'cash_in_hand', label: 'Cash In Hand', width: 180 },
-  { id: 'num_of_session', label: 'Session Completed', width: 180 },
   { id: 'num_of_booking', label: 'No.of Booking', width: 180 },
   { id: 'cash_clearance_date', label: 'Cash Clearance Date', width: 180 },
-  { id: 'admin_fee', label: 'Admin Fee', width: 180 },
 ];
 
 // ----------------------------------------------------------------------

@@ -246,7 +246,6 @@ export default function PackageCreateForm({
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
-    console.log('data', data);
     saveCurrentLocaleTranslation();
     const formData = new FormData();
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);

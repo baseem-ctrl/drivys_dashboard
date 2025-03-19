@@ -65,7 +65,6 @@ const EditableForm: React.FC = () => {
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
   });
-  console.log('data', data);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,

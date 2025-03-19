@@ -43,7 +43,6 @@ type Props = {
 const StudentReviewsTable: React.FC<Props> = ({ students }) => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  console.log(students, 'students');
 
   const handleBookingClick = (booking_id) => {
     router.push(paths.dashboard.booking.details(booking_id));
