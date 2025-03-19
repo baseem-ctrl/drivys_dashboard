@@ -94,39 +94,47 @@ export default function SchoolReportListView() {
   );
   const handleDownloadClick = async () => {
     try {
-      if (downloadReportsLoading) {
-        console.warn('Booking reports are still loading...');
-        return;
-      }
+      const token = localStorage.getItem('token');
+      const params = {
+        locale: locale,
+        start_date: filters.startDate,
+        end_date: filters.endDate,
+        school_id: filters.school_id,
+        page: table.page !== undefined ? (table.page + 1).toString() : '',
+        limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
+      };
 
-      if (!downloadReportsData || downloadReportsData.length === 0) {
-        console.error('No valid CSV data available to download.');
-        return;
-      }
-
-      // Extract headers from the first object keys
-      const headers = Object.keys(downloadReportsData[0]).join(',');
-
-      // Convert data to CSV format
-      const csvRows = downloadReportsData.map((row) =>
-        Object.values(row)
-          .map((value) => `"${value}"`)
-          .join(',')
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value)
       );
 
-      // Combine headers with data
-      const csvContent = [headers, ...csvRows].join('\n');
+      const queryParams = new URLSearchParams(filteredParams).toString();
 
-      // Create and download CSV file
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'school_report.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_API}admin/reports/schools?${queryParams}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'text/csv',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to download CSV');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'school_report.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error in downloading report:', error);
+      console.error('Error downloading CSV:', error);
     }
   };
 

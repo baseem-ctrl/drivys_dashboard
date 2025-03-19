@@ -1,6 +1,4 @@
 import useSWR, { mutate } from 'swr';
-import { utils, writeFile } from 'xlsx';
-import Papa from 'papaparse';
 import { drivysFetcher, endpoints } from 'src/utils/axios';
 
 export function useGetBookingReportsDownload(
@@ -29,12 +27,24 @@ export function useGetBookingReportsDownload(
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   let parsedData: any[] = [];
+
   if (data) {
     try {
-      parsedData = Papa.parse(data, {
-        header: true, // Ensures first row is used as keys
-        skipEmptyLines: true, // Skips empty lines
-      }).data;
+      const rows = data.trim().split('\n');
+      const headers = rows[0].split(',').map((header) => header.trim());
+
+      parsedData = rows.slice(1).map((row) => {
+        const values = row.split(',').map((value) => value.trim()); // Extract row values
+        return headers.reduce(
+          (acc, header, index) => {
+            acc[header] = values[index] || ''; // Map values to headers
+            return acc;
+          },
+          {} as Record<string, string>
+        );
+      });
+
+      console.log('Parsed Booking Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -48,21 +58,37 @@ export function useGetBookingReportsDownload(
     totalRecords: parsedData.length || 0,
   };
 
-  const downloadExcel = () => {
-    const ws = utils.json_to_sheet(parsedData);
+  // Function to download CSV manually
+  const downloadCSV = () => {
+    if (!parsedData.length) {
+      console.warn('No data available to download.');
+      return;
+    }
 
-    // Create a new workbook and append the worksheet
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'Booking Reports');
+    // Extract headers dynamically
+    const headers = Object.keys(parsedData[0]);
 
-    writeFile(wb, 'booking_reports.xlsx');
+    // Convert data into CSV format
+    const csvContent = [
+      headers.join(','),
+      ...parsedData.map((row) => headers.map((field) => `"${row[field]}"`).join(',')),
+    ].join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'BookingReports.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const revalidateBookingReports = () => {
     mutate(getTheFullUrl);
   };
 
-  return { ...memoizedValue, revalidateBookingReports, downloadExcel };
+  return { ...memoizedValue, revalidateBookingReports, downloadCSV };
 }
 
 export function useGetRevenueReportsDownload(
@@ -87,12 +113,25 @@ export function useGetRevenueReportsDownload(
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   let parsedData: any[] = [];
+
   if (data) {
     try {
-      parsedData = Papa.parse(data, {
-        header: true,
-        skipEmptyLines: true,
-      }).data;
+      // Manual CSV Parsing Without PapaParse
+      const rows = data.trim().split('\n'); // Split CSV into rows
+      const headers = rows[0].split(',').map((header) => header.trim()); // Extract headers
+
+      parsedData = rows.slice(1).map((row) => {
+        const values = row.split(',').map((value) => value.trim()); // Extract row values
+        return headers.reduce(
+          (acc, header, index) => {
+            acc[header] = values[index] || ''; // Map values to headers
+            return acc;
+          },
+          {} as Record<string, string>
+        );
+      });
+
+      console.log('Parsed Revenue Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -106,18 +145,37 @@ export function useGetRevenueReportsDownload(
     totalRecords: parsedData.length || 0,
   };
 
-  const downloadExcel = () => {
-    const ws = utils.json_to_sheet(parsedData);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'Revenue Reports');
-    writeFile(wb, 'revenue_reports.xlsx');
+  // Function to download CSV manually
+  const downloadCSV = () => {
+    if (!parsedData.length) {
+      console.warn('No data available to download.');
+      return;
+    }
+
+    // Extract headers dynamically
+    const headers = Object.keys(parsedData[0]);
+
+    // Convert data into CSV format
+    const csvContent = [
+      headers.join(','), // Add headers row
+      ...parsedData.map((row) => headers.map((field) => `"${row[field]}"`).join(',')), // Map data rows
+    ].join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'RevenueReports.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const revalidateRevenueReports = () => {
     mutate(getTheFullUrl);
   };
 
-  return { ...memoizedValue, revalidateRevenueReports, downloadExcel };
+  return { ...memoizedValue, revalidateRevenueReports, downloadCSV };
 }
 
 export function useGetTrainerReportsDownload(
@@ -146,12 +204,25 @@ export function useGetTrainerReportsDownload(
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   let parsedData: any[] = [];
+
   if (data) {
     try {
-      parsedData = Papa.parse(data, {
-        header: true,
-        skipEmptyLines: true,
-      }).data;
+      // Manual CSV Parsing Without PapaParse
+      const rows = data.trim().split('\n'); // Split CSV into rows
+      const headers = rows[0].split(',').map((header) => header.trim()); // Extract headers
+
+      parsedData = rows.slice(1).map((row) => {
+        const values = row.split(',').map((value) => value.trim()); // Extract row values
+        return headers.reduce(
+          (acc, header, index) => {
+            acc[header] = values[index] || ''; // Map values to headers
+            return acc;
+          },
+          {} as Record<string, string>
+        );
+      });
+
+      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -165,18 +236,37 @@ export function useGetTrainerReportsDownload(
     totalRecords: parsedData.length || 0,
   };
 
-  const downloadExcel = () => {
-    const ws = utils.json_to_sheet(parsedData);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'Trainer Reports');
-    writeFile(wb, 'trainer_reports.xlsx');
+  // Function to download CSV manually
+  const downloadCSV = () => {
+    if (!parsedData.length) {
+      console.warn('No data available to download.');
+      return;
+    }
+
+    // Extract headers dynamically
+    const headers = Object.keys(parsedData[0]);
+
+    // Convert data into CSV format
+    const csvContent = [
+      headers.join(','),
+      ...parsedData.map((row) => headers.map((field) => `"${row[field]}"`).join(',')),
+    ].join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'TrainerReports.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const revalidateTrainerReports = () => {
     mutate(getTheFullUrl);
   };
 
-  return { ...memoizedValue, revalidateTrainerReports, downloadExcel };
+  return { ...memoizedValue, revalidateTrainerReports, downloadCSV };
 }
 
 export function useGetStudentReportsDownload(
@@ -205,12 +295,25 @@ export function useGetStudentReportsDownload(
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   let parsedData: any[] = [];
+
   if (data) {
     try {
-      parsedData = Papa.parse(data, {
-        header: true,
-        skipEmptyLines: true,
-      }).data;
+      // Manual CSV Parsing Without PapaParse
+      const rows = data.trim().split('\n'); // Split CSV into rows
+      const headers = rows[0].split(',').map((header) => header.trim()); // Extract headers
+
+      parsedData = rows.slice(1).map((row) => {
+        const values = row.split(',').map((value) => value.trim()); // Extract row values
+        return headers.reduce(
+          (acc, header, index) => {
+            acc[header] = values[index] || ''; // Map values to headers
+            return acc;
+          },
+          {} as Record<string, string>
+        );
+      });
+
+      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -224,19 +327,39 @@ export function useGetStudentReportsDownload(
     totalRecords: parsedData.length || 0,
   };
 
-  const downloadExcel = () => {
-    const ws = utils.json_to_sheet(parsedData);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'Student Reports');
-    writeFile(wb, 'student_reports.xlsx');
+  // Function to download CSV manually
+  const downloadCSV = () => {
+    if (!parsedData.length) {
+      console.warn('No data available to download.');
+      return;
+    }
+
+    // Extract headers dynamically
+    const headers = Object.keys(parsedData[0]);
+
+    // Convert data into CSV format
+    const csvContent = [
+      headers.join(','),
+      ...parsedData.map((row) => headers.map((field) => `"${row[field]}"`).join(',')),
+    ].join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'StudentData.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const revalidateStudentReports = () => {
     mutate(getTheFullUrl);
   };
 
-  return { ...memoizedValue, revalidateStudentReports, downloadExcel };
+  return { ...memoizedValue, revalidateStudentReports, downloadCSV };
 }
+
 export function useGetSchoolReportsDownload(
   locale?: string,
   start_date?: string,
@@ -261,22 +384,24 @@ export function useGetSchoolReportsDownload(
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
   let parsedData: any[] = [];
+
   if (data) {
     try {
-      const parsedCSV = Papa.parse(data, {
-        header: true,
-        skipEmptyLines: true,
-        delimiter: ',',
-        quoteChar: '"',
-        transformHeader: (header) => header.trim(), // Ensure headers are correctly formatted
+      // Manual CSV Parsing Without PapaParse
+      const rows = data.trim().split('\n'); // Split CSV into rows
+      const headers = rows[0].split(',').map((header) => header.trim()); // Extract headers
+
+      parsedData = rows.slice(1).map((row) => {
+        const values = row.split(',').map((value) => value.trim()); // Extract row values
+        return headers.reduce(
+          (acc, header, index) => {
+            acc[header] = values[index] || ''; // Map values to headers
+            return acc;
+          },
+          {} as Record<string, string>
+        );
       });
 
-      // If the first row is invalid, remove it
-      if (parsedCSV.data.length > 0 && !parsedCSV.data[0]['School ID']) {
-        parsedCSV.data.shift();
-      }
-
-      parsedData = parsedCSV.data; // Extract the parsed data
       console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
@@ -291,16 +416,35 @@ export function useGetSchoolReportsDownload(
     totalRecords: parsedData.length || 0,
   };
 
-  const downloadExcel = () => {
-    const ws = utils.json_to_sheet(parsedData);
-    const wb = utils.book_new();
-    utils.book_append_sheet(wb, ws, 'School Reports');
-    writeFile(wb, 'school_reports.xlsx');
+  // Function to download CSV manually
+  const downloadCSV = () => {
+    if (!parsedData.length) {
+      console.warn('No data available to download.');
+      return;
+    }
+
+    // Extract headers dynamically
+    const headers = Object.keys(parsedData[0]);
+
+    // Convert data into CSV format
+    const csvContent = [
+      headers.join(','),
+      ...parsedData.map((row) => headers.map((field) => `"${row[field]}"`).join(',')),
+    ].join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'SchoolData.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const revalidateSchoolReports = () => {
     mutate(getTheFullUrl);
   };
 
-  return { ...memoizedValue, revalidateSchoolReports, downloadExcel };
+  return { ...memoizedValue, revalidateSchoolReports, downloadCSV };
 }
