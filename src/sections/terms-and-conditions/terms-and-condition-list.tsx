@@ -75,7 +75,7 @@ const TermsPageList: React.FC = () => {
         content: isEditing
           ? [...termsList]
           : [...(termsAndConditions[0]?.value || []), ...termsList],
-        locale: 'en',
+        locale,
         display_order: termsAndConditions[0]?.display_order || 1,
       };
 
