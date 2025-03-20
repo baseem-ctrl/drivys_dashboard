@@ -91,6 +91,20 @@ const EditableForm: React.FC = () => {
     setEditedFields((prev) => ({ ...prev, [id]: false }));
     setFormData([...data]);
   };
+  const [updatedItem, setUpdatedItem] = useState<{ id: number; value: boolean } | null>(null);
+
+  const handleToggle = (id: number, newValue: boolean) => {
+    handleChange(id, newValue); // First update state
+    setUpdatedItem({ id, value: newValue }); // Store the latest change
+  };
+
+  // Trigger `handleSave` after state update
+  useEffect(() => {
+    if (updatedItem) {
+      handleSave(updatedItem.id);
+      setUpdatedItem(null); // Reset after saving
+    }
+  }, [updatedItem]); // Runs when `updatedItem` changes
 
   const handleSave = async (id: number) => {
     try {
@@ -169,42 +183,17 @@ const EditableForm: React.FC = () => {
     if (item.key === 'DEFAULT_SCHOOL') {
       const selectedSchool = schoolList.find((school) => school.id === item.value);
       return (
-        // <Box display="flex" alignItems="center" width="100%" gap={2}>
-        //   <Typography variant="body2" fontWeight="500" color="gray" mb={1}>
-        //     {item.key
-        //       .replace(/_/g, ' ')
-        //       .toLowerCase()
-        //       .replace(/^./, (char) => char.toUpperCase())}
-        //   </Typography>
+        <Grid alignItems="center" spacing={2} sx={{ ml: 2 }}>
+          {/* <Grid item xs={6}> */}
+          <Typography variant="body1" sx={{ mt: 2, mb: 2 }} fontWeight="500" color="gray">
+            {item.key
+              .replace(/_/g, ' ')
+              .toLowerCase()
+              .replace(/\b\w/g, (char) => char.toUpperCase())}
+          </Typography>
+          {/* </Grid> */}
 
-        //   {editedFields[item.id] && (
-        //     <>
-        //       <IconButton color="primary" onClick={() => handleSave(item.id)}>
-        //         <SaveIcon />
-        //       </IconButton>
-        //       <IconButton color="primary" onClick={() => handleCancelEdit(item.id)}>
-        //         <CloseIcon />
-        //       </IconButton>
-        //     </>
-        //   )}
-        // </Box>
-        <Grid container alignItems="center" spacing={2} sx={{ ml: 2 }}>
-          <Grid item xs={6}>
-            {/* <Typography variant="h6" fontWeight="bold" mb={2}>
-              {item.key
-                .replace(/_/g, ' ')
-                .toLowerCase()
-                .replace(/^./, (char) => char.toUpperCase())}
-            </Typography> */}
-            <Typography variant="body1">
-              {item.key
-                .replace(/_/g, ' ')
-                .toLowerCase()
-                .replace(/\b\w/g, (char) => char.toUpperCase())}
-            </Typography>
-          </Grid>
-
-          <Grid item xs={5}>
+          <Grid item xs={11}>
             <Autocomplete
               fullWidth
               options={
@@ -265,12 +254,6 @@ const EditableForm: React.FC = () => {
       return (
         <Grid container alignItems="center" spacing={2} sx={{ ml: 2 }}>
           <Grid item xs={6}>
-            {/* <Typography variant="h6" fontWeight="bold" mb={2}>
-              {item.key
-                .replace(/_/g, ' ')
-                .toLowerCase()
-                .replace(/^./, (char) => char.toUpperCase())}
-            </Typography> */}
             <Typography variant="body1">
               {item.key
                 .replace(/_/g, ' ')
@@ -282,27 +265,9 @@ const EditableForm: React.FC = () => {
           <Grid item xs={5}>
             <Switch
               checked={item.value}
-              onChange={(e) => handleChange(item.id, e.target.checked)}
+              onChange={(e) => handleToggle(item.id, e.target.checked)}
               color="primary"
             />
-          </Grid>
-          <Grid item xs={11}>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{
-                mt: 2,
-                textTransform: 'none',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-                height: '38px',
-              }}
-              onClick={() => handleSave(item.id)}
-            >
-              Save
-            </Button>
           </Grid>
         </Grid>
       );
