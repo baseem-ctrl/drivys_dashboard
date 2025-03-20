@@ -12,19 +12,32 @@ import {
   TextField,
   Box,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useGetTermsAndConditions, updateCreateTC } from 'src/api/terms-and-conditions';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import TermsAccordion from './terms-and-condition-accordian';
+import { useGetAllLanguage } from 'src/api/language';
 
 const TermsPageList: React.FC = () => {
+  const [locale, setLocale] = useState('En');
   const { termsAndConditions, termsLoading, termsError, revalidateTermsAndConditions } =
-    useGetTermsAndConditions();
+    useGetTermsAndConditions(locale);
   const [open, setOpen] = useState(false);
   const [termsList, setTermsList] = useState([{ heading: '', content: '' }]);
   const [isEditing, setIsEditing] = useState(false);
-
+  const { language } = useGetAllLanguage(0, 1000);
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
+  const handleLocaleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setLocale(event.target.value as string);
+  };
   const handleOpen = (edit = false) => {
     setOpen(true);
     setIsEditing(edit);
@@ -98,6 +111,7 @@ const TermsPageList: React.FC = () => {
           <Typography variant="h4" gutterBottom>
             Terms & Policies
           </Typography>
+
           <Typography color="error">Failed to load terms and conditions.</Typography>
         </Paper>
       </Container>
@@ -110,6 +124,18 @@ const TermsPageList: React.FC = () => {
   return (
     <Container>
       <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
+        <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
+          <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
+            <InputLabel shrink={!!locale}>Locale</InputLabel>
+            <Select value={locale} onChange={handleLocaleChange} label="Locale">
+              {localeOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" gutterBottom>
             Terms & Policies
@@ -132,7 +158,13 @@ const TermsPageList: React.FC = () => {
           Below are our key terms and policies. Click to expand for details.
         </Typography>
 
-        <TermsAccordion terms={termsAndConditions[0]?.value || []} />
+        {termsAndConditions.length === 0 ? (
+          <Typography variant="body1" color="primary" mt={3} textAlign="center">
+            No terms and conditions available.
+          </Typography>
+        ) : (
+          <TermsAccordion terms={termsAndConditions[0]?.value || []} />
+        )}
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>
