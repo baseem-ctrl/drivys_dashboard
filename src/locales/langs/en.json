@@ -366,7 +366,7 @@
   "other": "OTHER",
   "school_commission_range": "School Commission must be between {{min}}% and {{max}}%.",
   "certificate_commission_range": "Certificate Commission must be between {{min}}% and {{max}}%.",
-  "certificate_commission_tooltip": "Commission for trainer from certificate",
+  "certificate_commission_tooltip": "Commission of drivys from certificate",
   "vehicle_number": "Vehicle Number",
   "max_cash_in_hand_allowed": "Max Cash in Hand Allowed",
   "create_user": "Create User",
