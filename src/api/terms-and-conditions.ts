@@ -1,9 +1,8 @@
 import { drivysFetcher, drivysCreator, endpoints } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
-
-export function useGetTermsAndConditions() {
-  const URL = endpoints.termsAndConditions.getList;
+export function useGetTermsAndConditions(locale) {
+  const URL = `${endpoints.termsAndConditions.getList}?locale=${locale}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
 
@@ -23,6 +22,7 @@ export function useGetTermsAndConditions() {
 
   return { ...memoizedValue, revalidateTermsAndConditions };
 }
+
 export function updateCreateTC(body: any) {
   const URL = endpoints.termsAndConditions.createUpdate;
   const response = drivysCreator([URL, body]);
