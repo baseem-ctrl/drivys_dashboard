@@ -658,7 +658,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
+                          <Tooltip title="Enter -1 for unlimited Packages" placement="top">
                             <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
                           </Tooltip>
                         </InputAdornment>
