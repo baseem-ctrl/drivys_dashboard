@@ -44,6 +44,8 @@ import { createUpdatePackage } from 'src/api/package';
 import { useGetAllCategory } from 'src/api/category';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { InfoOutlined } from '@mui/icons-material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { FormatColorFill } from '@mui/icons-material';
 
 type Props = {
   open: boolean;
@@ -134,6 +136,8 @@ export default function PackageCreateForm({
     is_certificate_included: Yup.boolean(),
     is_cash_pay_available: Yup.boolean(),
     is_pickup_fee_included: Yup.boolean(),
+    background_color: Yup.mixed(),
+
     number_of_sessions: Yup.number().test(
       'is-even',
       'Number of sessions must be an even number',
@@ -164,6 +168,7 @@ export default function PackageCreateForm({
       session_inclusions: '',
       is_published: false,
       is_pickup_fee_included: false,
+      background_color: '',
       is_certificate_included: false,
       is_cash_pay_available: false,
       number_of_sessions: '',
@@ -256,6 +261,8 @@ export default function PackageCreateForm({
     formData.append('is_cash_pay_available', formDataState.is_cash_pay_available ? 1 : 0);
 
     if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
+    formData.append('background_color', data.background_color ? data.background_color : 'normal');
+
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
     if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
     formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions || '');
@@ -457,7 +464,58 @@ export default function PackageCreateForm({
                 loading={categoryLoading}
               />
             </Grid>
-            <Box sx={{ mt: 2 }}>
+            <Grid item xs={12}>
+              <Stack spacing={2} mt={2}>
+                <Typography variant="subtitle2" fontWeight={500} color="primary">
+                  Choose Background Color
+                </Typography>
+                <Controller
+                  name="background_color"
+                  control={control}
+                  defaultValue="normal" // Default selection
+                  render={({ field }) => (
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={field.value || 'normal'} // Ensures "Normal" is preselected
+                      exclusive
+                      onChange={(_, newValue) => field.onChange(newValue)}
+                      fullWidth
+                    >
+                      {['normal', 'gold', 'orange', 'silver'].map((color) => (
+                        <ToggleButton
+                          key={color}
+                          value={color}
+                          sx={{
+                            textTransform: 'capitalize',
+                            px: 3,
+                            borderRadius: 2,
+                            fontWeight: 'bold',
+                            borderColor: (theme) =>
+                              field.value === color
+                                ? theme.palette.primary.main
+                                : 'rgba(0, 0, 0, 0.2)',
+                            backgroundColor: (theme) =>
+                              field.value === color ? theme.palette.primary.main : 'transparent',
+                            color: (theme) =>
+                              field.value === color
+                                ? theme.palette.primary.contrastText
+                                : theme.palette.text.primary,
+                            '&:hover': {
+                              backgroundColor: (theme) => theme.palette.grey,
+                            },
+                          }}
+                        >
+                          <FormatColorFill sx={{ mr: 1 }} />{' '}
+                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                        </ToggleButton>
+                      ))}
+                    </ToggleButtonGroup>
+                  )}
+                />
+              </Stack>
+            </Grid>
+
+            <Box sx={{ mt: 3 }}>
               {(!cityLoading &&
                 cityFields?.map((cityField, index) => (
                   <Grid key={index} container spacing={2} sx={{ mb: 2 }}>
