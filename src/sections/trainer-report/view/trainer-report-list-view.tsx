@@ -258,20 +258,22 @@ export default function TrainerReportListView() {
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="outlined"
-                onClick={handleDownloadClick}
-                sx={{
-                  color: '#d32f2f',
-                  borderColor: '#d32f2f',
-                  marginBottom: 2,
-                  mr: 3,
-                  mt: 3,
-                }}
-                startIcon={<DownloadIcon />}
-              >
-                Download
-              </Button>
+              {trainerReports && trainerReports?.length > 0 && (
+                <Button
+                  variant="outlined"
+                  onClick={handleDownloadClick}
+                  sx={{
+                    color: '#d32f2f',
+                    borderColor: '#d32f2f',
+                    marginBottom: 2,
+                    mr: 3,
+                    mt: 3,
+                  }}
+                  startIcon={<DownloadIcon />}
+                >
+                  Download
+                </Button>
+              )}
             </Box>
             <TableSelectedAction
               dense={table.dense}
