@@ -427,10 +427,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   });
   const getColor = (color) => {
     const colorMap = {
-      normal: '#d3d3d3', // Light gray
-      gold: '#FFD700', // Gold
-      orange: '#FFA500', // Orange
-      silver: '#C0C0C0', // Silver
+      normal: '#d3d3d3',
+      gold: '#FFD700',
+      orange: '#FFA500',
+      silver: '#C0C0C0',
     };
     return colorMap[color] || 'transparent';
   };
