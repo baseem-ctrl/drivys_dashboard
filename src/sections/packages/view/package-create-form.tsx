@@ -476,7 +476,7 @@ export default function PackageCreateForm({
                   render={({ field }) => (
                     <ToggleButtonGroup
                       color="primary"
-                      value={field.value || 'normal'} // Ensures "Normal" is preselected
+                      value={field.value || 'normal'}
                       exclusive
                       onChange={(_, newValue) => field.onChange(newValue)}
                       fullWidth
