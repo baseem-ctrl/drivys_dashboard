@@ -52,7 +52,8 @@ export default function NotificationsPopover() {
   const drawer = useBoolean();
 
   const smUp = useResponsive('up', 'sm');
-
+  const notificationList = JSON.parse(localStorage.getItem('notifications') || '[]');
+  console.log('notificationList', notificationList);
   const [currentTab, setCurrentTab] = useState('all');
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
