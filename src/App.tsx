@@ -1,5 +1,6 @@
 // i18n
 import 'src/locales/i18n';
+import { useEffect } from 'react';
 
 // scrollbar
 import 'simplebar-react/dist/simplebar.min.css';
@@ -41,6 +42,11 @@ import { SettingsProvider, SettingsDrawer } from 'src/components/settings';
 import { CheckoutProvider } from 'src/sections/checkout/context';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
+import firebase from 'firebase/compat/app'; // Import Firebase app
+import 'firebase/compat/auth'; // Import Firebase auth
+import 'firebase/compat/firestore'; // Import Firebase firestore
+import 'firebase/compat/storage';
+import { generateToken } from './utils/firebase';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
@@ -48,8 +54,7 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // ----------------------------------------------------------------------
 
 export default function App() {
-
-  const is_user_type_school_admin = localStorage.getItem("user_type") === "SCHOOL_ADMIN"
+  const is_user_type_school_admin = localStorage.getItem('user_type') === 'SCHOOL_ADMIN';
 
   // const charAt = `
 
@@ -63,7 +68,12 @@ export default function App() {
   // console.info(`%c${charAt}`, 'color: #5BE49B');
 
   useScrollToTop();
-
+  const auth = localStorage.getItem('token');
+  useEffect(() => {
+    if (auth) {
+      generateToken();
+    }
+  }, [auth]);
   return (
     <AuthProvider>
       <LocalizationProvider>

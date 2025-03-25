@@ -385,4 +385,5 @@ export const endpoints = {
     student: 'admin/reports/students',
     school: 'admin/reports/schools',
   },
+  updateFCMToken: 'consumer/auth/update-fcm-token',
 };
