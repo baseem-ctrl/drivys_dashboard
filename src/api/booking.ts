@@ -153,7 +153,7 @@ export function useGetPaymentStatusEnum() {
 // function to fetch booking details by a student's ID
 export function useGetBookingByTrainerId(filters: {
   trainer_id: string;
-  payment_status?: string;
+  payment_status?: string | number;
   page?: number;
   limit?: number;
   payment_method?: string;
@@ -169,12 +169,24 @@ export function useGetBookingByTrainerId(filters: {
 
   const queryParams = new URLSearchParams();
   queryParams.append('driver_id', filters.trainer_id);
-  if (filters.page) queryParams.append('page', filters.page.toString());
-  if (filters.limit) queryParams.append('limit', filters.limit.toString());
-  if (filters.payment_status !== undefined)
+  if (filters.page !== undefined) queryParams.append('page', filters.page.toString());
+  if (filters.limit !== undefined) queryParams.append('limit', filters.limit.toString());
+
+  if (
+    filters.payment_status !== undefined &&
+    filters.payment_status !== null &&
+    filters.payment_status !== ''
+  ) {
     queryParams.append('payment_status', filters.payment_status.toString());
-  if (filters.payment_method !== undefined)
+  }
+
+  if (
+    filters.payment_method !== undefined &&
+    filters.payment_method !== null &&
+    filters.payment_method !== ''
+  ) {
     queryParams.append('payment_method', filters.payment_method.toString());
+  }
 
   URL += `?${queryParams.toString()}`;
 
