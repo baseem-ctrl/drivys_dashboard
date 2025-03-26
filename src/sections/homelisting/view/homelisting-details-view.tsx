@@ -23,6 +23,7 @@ import Iconify from 'src/components/iconify';
 import { Button } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetHomeListingById } from 'src/api/homelisting';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ type Props = {
 
 export default function HomeListingDetailsView({ id }: Props) {
   const settings = useSettingsContext();
+  const { t } = useTranslation()
   const { details, detailsLoading, revalidateDetails } = useGetHomeListingById(id);
 
   const currentJob = details;
@@ -61,7 +63,7 @@ export default function HomeListingDetailsView({ id }: Props) {
           key={tab.value}
           iconPosition="end"
           value={tab.value}
-          label={tab.label}
+          label={t(tab.label)}
           icon={
             tab.value === 'candidates' ? (
               <Label variant="filled">{currentJob?.candidates.length}</Label>
@@ -83,14 +85,14 @@ export default function HomeListingDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Home Listing Details"
+        heading={t("Home Listing Details")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: "Home Listing",
+            name: t("Home Page List"),
             href: paths.dashboard.homelisting.root,
           },
-          { name: 'Details' },
+          { name: t('Details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -98,7 +100,7 @@ export default function HomeListingDetailsView({ id }: Props) {
         action={
           currentTab === 'trainers' && (
             <Button onClick={quickCreate.onTrue} variant="contained">
-              Add Trainer
+              {t("Add Trainer")}
             </Button>
           )
         }

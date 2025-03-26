@@ -20,6 +20,7 @@ export default function LanguagePopover() {
   const handleChangeLang = useCallback(
     (newLang: string) => {
       locales.onChangeLang(newLang);
+      window.location.reload()
       popover.onClose();
     },
     [locales, popover]

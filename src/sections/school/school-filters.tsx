@@ -239,7 +239,7 @@ export default function ProductFilters({
           backdrop: { invisible: true },
         }}
         PaperProps={{
-          sx: { width: 280 },
+          sx: { width: 320 },
         }}
       >
         {renderHead}

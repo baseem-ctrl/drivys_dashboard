@@ -17,8 +17,10 @@ import { Delete } from '@mui/icons-material';
 import { useGetTermsAndConditions, updateCreateTC } from 'src/api/terms-and-conditions';
 import { enqueueSnackbar } from 'src/components/snackbar';
 import TermsAccordion from './terms-and-condition-accordian';
+import { useTranslation } from 'react-i18next';
 
 const TermsPageList: React.FC = () => {
+  const { t } = useTranslation();
   const { termsAndConditions, termsLoading, termsError, revalidateTermsAndConditions } =
     useGetTermsAndConditions();
   const [open, setOpen] = useState(false);
@@ -96,9 +98,9 @@ const TermsPageList: React.FC = () => {
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
           <Typography variant="h4" gutterBottom>
-            Terms & Policies
+            {t("Terms & Policies")}
           </Typography>
-          <Typography color="error">Failed to load terms and conditions.</Typography>
+          <Typography color="error"> {t("Failed to load terms and conditions.")}</Typography>
         </Paper>
       </Container>
     );
@@ -112,7 +114,7 @@ const TermsPageList: React.FC = () => {
       <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" gutterBottom>
-            Terms & Policies
+            {t("Terms & Policies")}
           </Typography>
           <Box>
             <Button
@@ -121,22 +123,22 @@ const TermsPageList: React.FC = () => {
               sx={{ mr: 2 }}
               onClick={() => handleOpen(false)}
             >
-              Add T&C
+              {t("Add T&C")}
             </Button>
             <Button variant="outlined" color="primary" onClick={() => handleOpen(true)}>
-              Update T&C
+              {t("Update T&C")}
             </Button>
           </Box>
         </Box>
         <Typography variant="body1" color="textSecondary" mb={2}>
-          Below are our key terms and policies. Click to expand for details.
+          {t("Below are our key terms and policies. Click to expand for details.")}
         </Typography>
 
         <TermsAccordion terms={termsAndConditions[0]?.value || []} />
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>
-            {isEditing ? 'Update Terms and Conditions' : 'Add Terms and Conditions'}
+            {isEditing ? t('Update Terms and Conditions') : t('Add Terms and Conditions')}
           </DialogTitle>
           <DialogContent>
             {termsList.map((term, index) => (
@@ -144,7 +146,7 @@ const TermsPageList: React.FC = () => {
                 <TextField
                   fullWidth
                   margin="dense"
-                  label="Heading"
+                  label={t("Heading")}
                   name="heading"
                   value={term.heading}
                   onChange={(e) => handleChange(index, e)}
@@ -152,7 +154,7 @@ const TermsPageList: React.FC = () => {
                 <TextField
                   fullWidth
                   margin="dense"
-                  label="Content"
+                  label={t("Content")}
                   name="content"
                   multiline
                   rows={4}
@@ -171,15 +173,15 @@ const TermsPageList: React.FC = () => {
               </Box>
             ))}
             <Button onClick={handleAddTerm} color="primary">
-              + Add Another
+              {t("+ Add Another")}
             </Button>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button onClick={handleSubmit} color="primary" variant="contained">
-              {isEditing ? 'Update' : 'Save'}
+              {isEditing ? t('Update') : t('Save')}
             </Button>
           </DialogActions>
         </Dialog>

@@ -423,7 +423,7 @@ export default function BookingListView() {
                   <TableRow>
                     <TableCell colSpan={currentTableHeaders.length} align="center">
                       <Typography variant="h6" color="textSecondary">
-                        No data available
+                        {t("No data available")}
                       </Typography>
                     </TableCell>
                   </TableRow>

@@ -575,7 +575,7 @@ export default function SchoolTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          {t("View")}
         </MenuItem>
 
         {!row?.is_default && (

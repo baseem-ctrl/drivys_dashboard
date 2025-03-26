@@ -24,6 +24,7 @@ import { IUserItem } from 'src/types/user';
 import { useGetUsers } from 'src/api/users';
 import { Chip, FormControl, InputLabel } from '@mui/material';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   currentUser?: IUserItem;
@@ -35,6 +36,7 @@ export default function SendNotificationForm({
   handleClosePopup,
   revalidateNotifications,
 }: Props) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [loading, setLoading] = useState(false);
@@ -118,7 +120,7 @@ export default function SendNotificationForm({
 
       const response = await sendNotification(notificationData);
 
-      enqueueSnackbar('Notification sent successfully!', {
+      enqueueSnackbar(t('Notification sent successfully!'), {
         variant: 'success',
       });
 
@@ -161,14 +163,14 @@ export default function SendNotificationForm({
               }}
             >
               <FormControl fullWidth>
-                <InputLabel>User Type</InputLabel>
+                <InputLabel>{t("User Type")}</InputLabel>
                 <Controller
                   name="userType"
                   control={control}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label="User Type"
+                      label={t("User Type")}
                       onChange={(e) => {
                         field.onChange(e);
                         revalidateUsers({ user_types: e.target.value });
@@ -179,7 +181,7 @@ export default function SendNotificationForm({
                       }}
                     >
                       <MenuItem value="" disabled>
-                        Select User Type
+                        {t("Select User Type")}
                       </MenuItem>
                       {Object.entries(enumData).map(([key, value]) => (
                         <MenuItem key={key} value={value.value}>
@@ -197,7 +199,7 @@ export default function SendNotificationForm({
                   render={({ field }) => (
                     <RHFAutocompleteSearch
                       {...field}
-                      label="User IDs"
+                      label={t("User IDs")}
                       multiple
                       disabled={sendAll === 1}
                       options={users?.map((user) => ({
@@ -218,16 +220,16 @@ export default function SendNotificationForm({
                 />
               </FormControl>
 
-              <RHFTextField name="title" label="Notification Title" fullWidth />
-              <RHFTextField name="description" label="Description" fullWidth />
-              <RHFTextField name="detailMessage" label="Body" fullWidth multiline rows={4} />
+              <RHFTextField name="title" label={t("Notification Title")} fullWidth />
+              <RHFTextField name="description" label={t("Description")} fullWidth />
+              <RHFTextField name="detailMessage" label={t("Body")} fullWidth multiline rows={4} />
 
-              <RHFSwitch name="sendAll" label="Send to all users?" labelPlacement="start" />
+              <RHFSwitch name="sendAll" label={t("Send to all users?")} labelPlacement="start" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting || loading}>
-                Send Notification
+                {t("Send Notification")}
               </LoadingButton>
             </Stack>
           </Card>

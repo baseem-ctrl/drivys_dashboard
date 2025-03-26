@@ -395,14 +395,14 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          // dense={table.dense}
+        // dense={table.dense}
         />
       )}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
         title={t('delete')}
-        content={t('confirm_delete_message')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           handleRemove();

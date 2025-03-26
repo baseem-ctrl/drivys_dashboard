@@ -141,7 +141,7 @@ export default function LanguageListView() {
       // Update the UI or state after successful deletion
       enqueueSnackbar(response?.message);
     } catch (error) {
-      enqueueSnackbar('error deleting language', { variant: 'error' });
+      enqueueSnackbar(t('error deleting language'), { variant: 'error' });
     }
   };
   // const handleDeleteRows = useCallback(() => {

@@ -139,7 +139,7 @@ export default function UserDocumentCreateUpdate({
           <Box mt={2}>
             <Grid container spacing={4}>
               <Grid item xs={6}>
-                <RHFSelect name="doc_type" label={t("Select Documnet Type")} fullWidth>
+                <RHFSelect name="doc_type" label={t("Select Document Type")} fullWidth>
                   {docTypeOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -148,7 +148,7 @@ export default function UserDocumentCreateUpdate({
                 </RHFSelect>
               </Grid>
               <Grid item xs={6}>
-                <RHFSelect name="doc_side" label={t("Select Doc Side")} fullWidth>
+                <RHFSelect name="doc_side" label={t("Select Document Side")} fullWidth>
                   {docSideOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}

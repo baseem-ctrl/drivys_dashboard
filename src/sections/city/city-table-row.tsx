@@ -11,6 +11,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CityCreateEditForm from './city-create-update';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ export default function CityTableRow({
   reload,
   handleCheckboxClick,
 }: Props) {
+  const { t } = useTranslation();
   const { is_published, display_order, city_translations } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -70,7 +72,7 @@ export default function CityTableRow({
             color={is_published === 1 ? 'success' : 'error'} // Using color based on the published status
             style={{ cursor: 'pointer' }} // Adding pointer cursor to indicate it's clickable
           >
-            {is_published === 1 ? 'Published' : 'Unpublished'}
+            {is_published === 1 ? t('Published') : t('Unpublished')}
           </Label>
         </TableCell>
 
@@ -106,7 +108,7 @@ export default function CityTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -116,7 +118,7 @@ export default function CityTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 

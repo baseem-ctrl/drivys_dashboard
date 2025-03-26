@@ -300,7 +300,7 @@ export default function NotificationlistingListView() {
         )}
       </Container>
       <Dialog open={openPopup} onClose={handleClosePopup} fullWidth>
-        <DialogTitle>Send Notification</DialogTitle>
+        <DialogTitle>{t("Send Notification")}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <SendNotificationForm
             revalidateNotifications={revalidateNotifications}

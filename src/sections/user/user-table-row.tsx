@@ -142,7 +142,7 @@ export default function UserTableRow({
               (is_active === true && 'success') || (is_active === false && 'error') || 'default'
             }
           >
-            {is_active ? 'Active' : 'In Active'}
+            {is_active ? t('Active') : t('inactive')}
           </Label>
         </TableCell>
         {currentUserType === 'TRAINER' && (
@@ -246,7 +246,7 @@ export default function UserTableRow({
             }}
           >
             <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
-            {!row?.verified_at ? 'Verify' : 'Unverify'}
+            {!row?.verified_at ? t('Verify') : t('Unverify')}
           </MenuItem>
         )}
       </CustomPopover>
@@ -254,12 +254,12 @@ export default function UserTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={onDeleteRow}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

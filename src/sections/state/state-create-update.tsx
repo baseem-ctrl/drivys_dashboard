@@ -26,6 +26,7 @@ import FormProvider, {
 import { createStateTranslation, updateStateTranslation } from 'src/api/state';
 import { useGetAllLanguage } from 'src/api/language';
 import { useGetAllCity } from 'src/api/city';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,8 @@ type Props = {
 
 export default function StateCreateEditForm({ title, currentState, open, onClose, reload }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const { t } = useTranslation();
 
   const CitySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -60,9 +63,9 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       locale: currentState?.translations?.[0]?.locale || localeOptions[0]?.value,
       city_id: currentState?.city
         ? {
-            value: currentState?.city?.id,
-            label: currentState?.city?.city_translations[0]?.name || 'Unknown',
-          }
+          value: currentState?.city?.id,
+          label: currentState?.city?.city_translations[0]?.name || 'Unknown',
+        }
         : null,
       published: currentState?.is_published === 1,
       order: currentState?.order || 0, // Set default order to 0 if not provided
@@ -160,7 +163,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{t(title)}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -173,9 +176,9 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="locale" label="Locale">
+            <RHFSelect name="locale" label={t("Locale")}>
               <MenuItem value="" disabled>
-                Select Locale
+                {t("Select Locale")}
               </MenuItem>
               {localeOptions?.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -186,7 +189,7 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
 
             <RHFAutocomplete
               name="city_id"
-              label="City"
+              label={t("City")}
               options={city?.map((option: any) => ({
                 value: option?.id,
                 label: option?.city_translations[0]?.name ?? 'Unknown',
@@ -194,23 +197,23 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
               getOptionLabel={(option) => option?.label ?? ''}
               renderOption={(props, option: any) => (
                 <li {...props} key={option?.value}>
-                  {option?.label ?? 'Unknown'}
+                  {option?.label ?? t('Unknown')}
                 </li>
               )}
             />
 
-            <RHFTextField name="name" label="Name" />
-            <RHFTextField name="order" label="Order" type="number" />
-            <RHFSwitch name="published" label="Published" />
+            <RHFTextField name="name" label={t("Name")} />
+            <RHFTextField name="order" label={t("Order")} type="number" />
+            <RHFSwitch name="published" label={t("Published")} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentState?.id ? 'Update' : 'Create'}
+            {currentState?.id ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

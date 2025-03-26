@@ -7,26 +7,27 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import UserNewEditForm from '../user-new-edit-form';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function UserCreateView() {
   const settings = useSettingsContext();
-
+  const { t } = useTranslation();
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading={t("Create a new user")}
         links={[
           {
-            name: 'Dashboard',
+            name: t('Dashboard'),
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
+            name: t('User'),
             href: paths.dashboard.user.list,
           },
-          { name: 'New user' },
+          { name: t('New user') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

@@ -255,7 +255,7 @@ export default function RefundListView() {
         {selectedTab === 0 && (
           <Box ml="auto" width={200}>
             <FormControl fullWidth variant="outlined" size="small">
-              <InputLabel sx={{ mb: 0.5 }}>Status</InputLabel>
+              <InputLabel sx={{ mb: 0.5 }}>{t("Status")}</InputLabel>
               <Select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -337,7 +337,7 @@ export default function RefundListView() {
                     <TableRow>
                       <TableCell colSpan={currentTableHeaders.length} align="center">
                         <Typography variant="h6" color="textSecondary">
-                          No data available
+                          {t("No data available")}
                         </Typography>
                       </TableCell>
                     </TableRow>

@@ -4,6 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 // components
 import Iconify from 'src/components/iconify';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +17,8 @@ type Props = {
 };
 
 export default function StateSearch({ query, results, onSearch, hrefItem, loading }: Props) {
+
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState(query || ''); // State to manage search value
 
   const handleClear = () => {
@@ -31,7 +34,7 @@ export default function StateSearch({ query, results, onSearch, hrefItem, loadin
         setSearchValue(e.target.value);
         onSearch('name', e.target.value);
       }}
-      placeholder="Search..."
+      placeholder={t("Search...")}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

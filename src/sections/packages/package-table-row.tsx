@@ -341,7 +341,7 @@ export default function PackageTableRow({
                     field.onChange(newValue?.id || '');
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Select School" placeholder="Search School..." />
+                    <TextField {...params} label={t("Select School")} placeholder="Search School..." />
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                 />

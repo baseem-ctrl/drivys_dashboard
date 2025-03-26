@@ -52,18 +52,9 @@ import CitySearch from '../city-search';
 import { useRouter } from 'src/routes/hooks';
 import { useGetAllLanguage } from 'src/api/language';
 import CityUpdateBulkRescheduleFee from '../city-reschedule-bulk-edit';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'action', label: '', width: 88 },
-
-  { id: 'name', label: 'Name' },
-  { id: 'locale', label: 'Locale', width: 180 },
-  { id: 'is_published', label: 'Published', width: 180 },
-  { id: 'action1', label: '', width: 180 },
-  { id: 'action2', label: '', width: 88 },
-];
 
 const defaultFilters: ICityTableFilters = {
   name: '',
@@ -73,6 +64,18 @@ const defaultFilters: ICityTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function CityListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'action', label: '', width: 88 },
+
+    { id: 'name', label: t('Name') },
+    { id: 'locale', label: t('Locale'), width: 180 },
+    { id: 'is_published', label: t('Published'), width: 180 },
+    { id: 'action1', label: '', width: 180 },
+    { id: 'action2', label: '', width: 88 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const popover = usePopover();
   const settings = useSettingsContext();
@@ -230,7 +233,7 @@ export default function CityListView() {
               updateRescheduleFee.onTrue();
             }}
           >
-            Update Bulk Commission
+            {t("Update Bulk Commission")}
           </MenuItem>
         </CustomPopover>
       </Stack>
@@ -240,17 +243,17 @@ export default function CityListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t("List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: t('Dashboard'), href: paths.dashboard.root },
             {
-              name: 'City',
+              name: t('City'),
               href: paths.dashboard.system.city,
               onClick: (event) => {
                 setViewMode('table');
               },
             },
-            { name: 'List' },
+            { name: t('List') },
           ]}
           action={
             viewMode === 'table' && (
@@ -261,7 +264,7 @@ export default function CityListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New City
+                {t("New City")}
               </Button>
             )
           }
@@ -283,7 +286,7 @@ export default function CityListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -303,24 +306,24 @@ export default function CityListView() {
                 <TableBody>
                   {cityLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : dataFiltered?.map((row) => (
-                        <CityTableRow
-                          key={row.id}
-                          row={row}
-                          selected={selectedCityIds.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          handleCheckboxClick={handleCheckboxClick}
-                          selectedCityIds={selectedCityIds}
-                          reload={revalidateCities}
-                        />
-                      ))}
+                      <CityTableRow
+                        key={row.id}
+                        row={row}
+                        selected={selectedCityIds.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        handleCheckboxClick={handleCheckboxClick}
+                        selectedCityIds={selectedCityIds}
+                        reload={revalidateCities}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

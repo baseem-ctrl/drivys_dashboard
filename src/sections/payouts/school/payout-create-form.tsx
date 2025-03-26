@@ -18,6 +18,7 @@ import { MenuItem, Typography } from '@mui/material';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { processPayoutToSchool } from 'src/api/payouts';
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
 
 const PayoutSchema = Yup.object().shape({
   amount: Yup.number().required('Amount is required').positive('Amount must be positive'),
@@ -27,6 +28,7 @@ const PayoutSchema = Yup.object().shape({
 });
 
 export default function PayoutCreateForm({ open, onClose, vendorId, reload, amount }) {
+  const { t } = useTranslation()
   const defaultValues = useMemo(
     () => ({
       amount: '',
@@ -74,13 +76,13 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
         router.push(paths.dashboard.payouts.school);
       }
     } catch (error) {
-      enqueueSnackbar('Failed to create payout.', { variant: 'error' });
+      enqueueSnackbar(t('Failed to create payout.'), { variant: 'error' });
     }
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Create Payout</DialogTitle>
+      <DialogTitle>{t("Create Payout")}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Box
@@ -97,7 +99,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             }}
           >
             <Typography sx={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>
-              Amount Required From Admin is {amount} AED
+              {t("Amount Required From Admin is")} {amount} {t("AED")}
             </Typography>
           </Box>
 
@@ -105,14 +107,14 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
               <RHFTextField
                 name="amount"
-                label="Amount"
+                label={t("Amount")}
                 type="number"
                 control={control}
                 fullWidth
               />
 
-              <RHFSelect name="payment_method" label="Payment Method" control={control} fullWidth>
-                <MenuItem value="">Select Payment Method</MenuItem>
+              <RHFSelect name="payment_method" label={t("Payment Method")} control={control} fullWidth>
+                <MenuItem value="">{t("Select Payment Method")} </MenuItem>
                 {paymentMethodEnum.map((method) => (
                   <MenuItem key={method.value} value={method.value}>
                     {method.name}
@@ -124,7 +126,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
               <RHFTextField
                 name="payment_method_details"
-                label="Payment Method Details"
+                label={t("Payment Method Details")}
                 control={control}
                 multiline
                 rows={3}
@@ -132,7 +134,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
               />
               <RHFTextField
                 name="notes"
-                label="Notes"
+                label={t("Notes")}
                 multiline
                 rows={3}
                 control={control}
@@ -141,11 +143,11 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             </Box>
             <Box sx={{ width: '100%' }}>
               <Typography variant="subtitle1" color="primary" gutterBottom>
-                Upload Proof of Payment
+                {t("Upload Proof of Payment")}
               </Typography>
               <RHFFileUpload
                 name="proof_file"
-                label="Proof of Payment"
+                label={t("Proof of Payment")}
                 control={control}
                 accept="image/*"
                 required
@@ -155,14 +157,14 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
         </FormProvider>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("Cancel")}</Button>
         <LoadingButton
           type="submit"
           variant="contained"
           loading={isSubmitting}
           onClick={handleSubmit(onSubmit)}
         >
-          Submit
+          {t("Submit")}
         </LoadingButton>
       </DialogActions>
     </Dialog>

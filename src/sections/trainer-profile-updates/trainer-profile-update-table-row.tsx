@@ -86,90 +86,90 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
             Object.keys(updatedFields).map((section) =>
               updatedFields[section]
                 ? Object.keys(updatedFields[section]).map((field) => {
-                    const change = updatedFields[section]?.[field];
+                  const change = updatedFields[section]?.[field];
 
-                    return (
-                      <Box
-                        key={field}
-                        display="flex"
-                        alignItems="center"
+                  return (
+                    <Box
+                      key={field}
+                      display="flex"
+                      alignItems="center"
+                      sx={{
+                        marginBottom: '0.8rem',
+                        padding: '0.8rem',
+                        borderRadius: '8px',
+                        backgroundColor: '#f1f1f1',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        transition: 'background-color 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: '#e7e7e7',
+                        },
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        color="primary"
                         sx={{
-                          marginBottom: '0.8rem',
-                          padding: '0.8rem',
-                          borderRadius: '8px',
-                          backgroundColor: '#f1f1f1',
-                          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                          transition: 'background-color 0.3s ease',
-                          '&:hover': {
-                            backgroundColor: '#e7e7e7',
-                          },
+                          fontWeight: 'bold',
+                          marginRight: '1rem',
+                          fontSize: '1.225rem',
                         }}
                       >
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="primary"
-                          sx={{
-                            fontWeight: 'bold',
-                            marginRight: '1rem',
-                            fontSize: '1.225rem',
-                          }}
-                        >
-                          •
-                        </Typography>
-                        {change ? (
-                          <>
-                            <Typography
-                              variant="body2"
-                              component="span"
-                              sx={{
-                                fontWeight: 'bold',
-                                marginRight: '3px',
-                                color: '#333',
-                              }}
-                            >
-                              {field?.toLocaleUpperCase()}
-                            </Typography>
-                            <Typography variant="body2" component="span" sx={{ color: '#555' }}>
-                              {t('changed_from')}{' '}
-                            </Typography>
-
-                            <Typography
-                              variant="body2"
-                              component="span"
-                              sx={{
-                                color: 'red',
-                                fontWeight: 'bold',
-                                ml: '3px',
-                                mr: '3px',
-                              }}
-                            >
-                              {change?.old ?? 'N/A'}
-                            </Typography>
-                            <Typography variant="body2" component="span" sx={{ color: '#555' }}>
-                              {t('to')}
-                            </Typography>
-
-                            <Typography
-                              variant="body2"
-                              component="span"
-                              sx={{
-                                color: 'green',
-                                fontWeight: 'bold',
-                                ml: '3px',
-                              }}
-                            >
-                              {change?.new ?? 'N/A'}
-                            </Typography>
-                          </>
-                        ) : (
-                          <Typography variant="body2" component="span" sx={{ color: '#888' }}>
-                            {t('no_changes')}
+                        •
+                      </Typography>
+                      {change ? (
+                        <>
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{
+                              fontWeight: 'bold',
+                              marginRight: '3px',
+                              color: '#333',
+                            }}
+                          >
+                            {field?.toLocaleUpperCase()}
                           </Typography>
-                        )}
-                      </Box>
-                    );
-                  })
+                          <Typography variant="body2" component="span" sx={{ color: '#555' }}>
+                            {t('changed_from')}{' '}
+                          </Typography>
+
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{
+                              color: 'red',
+                              fontWeight: 'bold',
+                              ml: '3px',
+                              mr: '3px',
+                            }}
+                          >
+                            {change?.old ?? 'N/A'}
+                          </Typography>
+                          <Typography variant="body2" component="span" sx={{ color: '#555' }}>
+                            {t('to')}
+                          </Typography>
+
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{
+                              color: 'green',
+                              fontWeight: 'bold',
+                              ml: '3px',
+                            }}
+                          >
+                            {change?.new ?? 'N/A'}
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography variant="body2" component="span" sx={{ color: '#888' }}>
+                          {t('no_changes')}
+                        </Typography>
+                      )}
+                    </Box>
+                  );
+                })
                 : null
             )}
         </Box>
@@ -187,7 +187,7 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
       <TableCell>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Tooltip
-            title={!row?.user?.verified_at ? 'Only verified users can be unverified.' : ''}
+            title={!row?.user?.verified_at ? t('Only verified users can be unverified.') : ''}
             arrow
           >
             <span>

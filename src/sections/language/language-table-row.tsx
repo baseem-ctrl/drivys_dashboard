@@ -120,8 +120,8 @@ export default function LanguageTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();

@@ -368,7 +368,7 @@ export default function HomeListingDialog({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>{updateValue?.id ? title : 'Create Home Listing '}</DialogTitle>
+      <DialogTitle>{updateValue?.id ? t(title) : t('Create Home Listing')}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid xs={12} md={8}>
@@ -464,20 +464,20 @@ export default function HomeListingDialog({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>Trainers:</h5>
+            <h5>{t("Trainers")}:</h5>
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
                   <RHFAutocomplete
                     name={`trainers[${index}].user_id`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1}`}
+                    label={`${t("Trainer")} ${index + 1}`}
                     getOptionLabel={(option) => {
                       return option ? `${option?.label}` : '';
                     }}
                     options={userOptions}
                     renderOption={(props, option: any) => (
                       <li {...props} key={option?.value}>
-                        {option?.label ?? 'Unknown'}
+                        {option?.label ?? t('Unknown')}
                       </li>
                     )}
                   />
@@ -493,7 +493,7 @@ export default function HomeListingDialog({
             ))}
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
-                Add Trainer
+                {t("Add Trainer")}
               </Button>
             </Grid>
 
@@ -508,7 +508,7 @@ export default function HomeListingDialog({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => {}}
+            apiCall={() => { }}
             isSubmitting={isSubmitting}
           />
         </FormProvider>

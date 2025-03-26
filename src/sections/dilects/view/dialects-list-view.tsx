@@ -36,16 +36,7 @@ import DialectFilters from '../dialects-filters';
 import DialectSearch from '../dialects-search';
 import { useGetAllLanguage } from 'src/api/language';
 import { deleteDialect, useGetAllDialect } from 'src/api/dialect';
-
-const TABLE_HEAD = [
-  { id: 'dialect_name', label: 'Dialect Name' },
-  { id: 'language_name', label: 'Language Name' },
-  { id: 'description', label: 'Description' },
-  { id: 'keywords', label: 'Keywords' },
-  { id: 'order_id', label: 'Order' },
-  { id: 'is_published', label: 'Published' },
-  { id: 'action2', label: '' },
-];
+import { useTranslation } from 'react-i18next';
 
 const defaultFilters: IDialectTableFilters = {
   name: '',
@@ -53,6 +44,18 @@ const defaultFilters: IDialectTableFilters = {
 };
 
 export default function DialectListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'dialect_name', label: t('Dialect Name') },
+    { id: 'language_name', label: t('Language Name') },
+    { id: 'description', label: t('Description') },
+    { id: 'keywords', label: t('Keywords') },
+    { id: 'order_id', label: t('Order') },
+    { id: 'is_published', label: t('Published') },
+    { id: 'action2', label: '' },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -170,17 +173,17 @@ export default function DialectListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading={t("List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Dialect',
+            name: t('Dialect'),
             href: paths.dashboard.system.dialect,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'List' },
+          { name: t('List') },
         ]}
         action={
           viewMode === 'table' && (
@@ -191,7 +194,7 @@ export default function DialectListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Dialect
+              {t("New Dialect")}
             </Button>
           )
         }
@@ -214,7 +217,7 @@ export default function DialectListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -234,23 +237,23 @@ export default function DialectListView() {
                 <TableBody>
                   {dialectLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={5}>
-                            <Skeleton variant="text" />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={5}>
+                          <Skeleton variant="text" />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData.length > 0 &&
-                      tableData.map((row, index) => (
-                        <DialectTableRow
-                          key={index}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          reload={revalidateCategory}
-                        />
-                      ))}
+                    tableData.map((row, index) => (
+                      <DialectTableRow
+                        key={index}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        reload={revalidateCategory}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

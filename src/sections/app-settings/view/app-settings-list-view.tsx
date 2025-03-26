@@ -51,6 +51,7 @@ import { useGetAllAppSettings } from 'src/api/app-settings';
 import { width } from '@mui/system';
 import { Grid, Skeleton, TableCell, TableRow } from '@mui/material';
 import EditableForm from '../app-settings-form';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +72,7 @@ const defaultFilters: IUserTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function AppSettingsListView() {
+  const { t } = useTranslation();
   const table = useTable({ defaultRowsPerPage: 15 });
 
   const settings = useSettingsContext();
@@ -116,11 +118,11 @@ export default function AppSettingsListView() {
     <>
       <Container maxWidth="xl">
         <CustomBreadcrumbs
-          heading="List"
+          heading={t("List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'App Settings', href: paths.dashboard.system.appsettings },
-            { name: 'List' },
+            { name: t('Dashboard'), href: paths.dashboard.root },
+            { name: t('App Settings'), href: paths.dashboard.system.appsettings },
+            { name: t('List') },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -173,7 +175,7 @@ export default function AppSettingsListView() {
                         </TableCell>
                       </TableRow>
                     ))}
-                 
+
 
                   <TableEmptyRows
                     // height={denseHeight}

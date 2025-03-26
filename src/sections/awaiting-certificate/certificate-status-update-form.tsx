@@ -20,6 +20,7 @@ import { RHFTextField } from 'src/components/hook-form';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { Typography } from '@mui/material';
 import { updateCertificateRequestStatus } from 'src/api/certificate';
+import { useTranslation } from 'react-i18next';
 
 // Validation schema
 const validationSchema = Yup.object().shape({
@@ -43,6 +44,7 @@ export default function CertificateStatusUpdateForm({
   reload,
   currentCertificate,
 }: Props) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const methods = useForm({
@@ -104,12 +106,12 @@ export default function CertificateStatusUpdateForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider {...methods}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{t(title)}</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <RHFTextField name="comments" label="Comments" />
+                <RHFTextField name="comments" label={t("Comments")} />
               </Grid>
               <Grid item xs={12}>
                 <FormControl fullWidth>
@@ -127,16 +129,16 @@ export default function CertificateStatusUpdateForm({
 
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: 'primary.main' }}>
-                  Upload Certificate File
+                  {t("Upload Certificate File")}
                 </Typography>
-                <RHFFileUpload name="certificate_file" label="Upload Certificate File" />
+                <RHFFileUpload name="certificate_file" label={t("Upload Certificate File")} />
               </Grid>
             </Grid>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton
             type="submit"
@@ -144,7 +146,7 @@ export default function CertificateStatusUpdateForm({
             loading={isSubmitting}
             onClick={handleSubmit(onSubmit)}
           >
-            Update
+            {t("Update")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

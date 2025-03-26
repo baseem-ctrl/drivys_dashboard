@@ -258,7 +258,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                   <TableRow>
                     {workingHoursHeaders.map((header) => (
                       <TableCell key={header.key}>
-                        <Typography>{header.label}</Typography>
+                        <Typography>{t(header.label)}</Typography>
                       </TableCell>
                     ))}
                     <TableCell></TableCell>
@@ -272,7 +272,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">
-                          {groupedWorkingHours[day].some((hour) => hour.is_off_day) ? 'Yes' : 'No'}
+                          {groupedWorkingHours[day].some((hour) => hour.is_off_day) ? t('Yes') : t('No')}
                         </Typography>
                       </TableCell>
 

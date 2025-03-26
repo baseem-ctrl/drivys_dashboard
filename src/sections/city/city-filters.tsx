@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 // types
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ export default function CityFilters({
   onLocaleChange,
   localeOptions,
 }: Props) {
+  const { t } = useTranslation();
   // Function that handles the filter using locale
   const handleFilterLocale = (event: React.ChangeEvent<{ value: unknown }>) => {
     const newValue = event.target.value as string;
@@ -61,10 +63,10 @@ export default function CityFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t("Reset")}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -81,12 +83,12 @@ export default function CityFilters({
   const renderLocale = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Locale
+        {t("Locale")}
       </Typography>
       <FormControl fullWidth variant="outlined">
         <Select value={filters?.locale || ''} onChange={handleFilterLocale} displayEmpty>
           <MenuItem value="" disabled>
-            Select Locale
+            {t("Select Locale")}
           </MenuItem>
           {localeOptions?.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -110,7 +112,7 @@ export default function CityFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer
