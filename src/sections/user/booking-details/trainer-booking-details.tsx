@@ -15,6 +15,7 @@ import {
   Button,
 } from '@mui/material';
 import { useGetBookingByTrainerId } from 'src/api/booking';
+import { useTranslation } from 'react-i18next';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { TablePaginationCustom, useTable } from 'src/components/table';
@@ -43,7 +44,7 @@ const defaultFilters = {
 // Define the functional component
 const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
-
+  const { t } = useTranslation();
   const [filters, setFilters] = useState(defaultFilters);
   const { bookingTrainerDetails, bookingLoading, totalBookings } = useGetBookingByTrainerId({
     trainer_id: id,
@@ -126,140 +127,105 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
   };
 
   return (
-    <Box>
-      {' '}
-      {
-        <Box sx={{ textAlign: 'right', mb: 3, display: 'flex', justifyContent: 'space-between' }}>
-          {bookingDetails && bookingDetails.length > 0 && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<DownloadIcon />}
-              onClick={handleDownloadReport}
-            >
-              Download Report
-            </Button>
-          )}
-          <BookingFilters
-            open={openFilters.value}
-            onOpen={openFilters.onTrue}
-            onClose={openFilters.onFalse}
-            filters={filters}
-            onFilters={handleFilters}
-            canReset={canReset}
-            onResetFilters={handleResetFilters}
-          />
-        </Box>
-      }{' '}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell align="center">Total</TableCell>
-              <TableCell align="center">Total Sessions</TableCell>
-              <TableCell align="center">Total Sessions Booked</TableCell>
-              <TableCell align="center">Completed Sessions</TableCell>
-              <TableCell align="center">Booking Status</TableCell>
-              <TableCell align="center">Payment Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {bookingLoading ? (
-              Array.from(new Array(5)).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton animation="wave" height={40} />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : tableData && tableData.length > 0 ? (
-              tableData.map((booking) => (
-                <TableRow
-                  key={booking.id}
-                  onClick={() => {
-                    handleBookingClick(booking.id);
-                  }}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                    },
-                  }}
-                >
-                  <TableCell>
-                    <Grid container alignItems="center" spacing={1}>
-                      <Grid item>
-                        <Typography>{booking?.user?.name || 'N/A'}</Typography>
-                      </Grid>
-                    </Grid>
-                  </TableCell>
-                  <TableCell>{booking?.user?.email || 'N/A'}</TableCell>
-                  <TableCell align="center">{booking?.total || 'N/A'} AED</TableCell>
-                  <TableCell>{booking?.package?.number_of_sessions || 'N/A'}</TableCell>
-                  <TableCell>{booking?.no_of_sessions || 'N/A'}</TableCell>
-                  <TableCell>{booking?.no_of_sessions_completed || 'N/A'}</TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      label={booking?.booking_status || 'N/A'}
-                      color={
-                        booking?.booking_status === 'PENDING'
-                          ? 'info'
-                          : booking?.booking_status === 'CANCELLED'
-                          ? 'error'
-                          : booking?.booking_status === 'IN PROGRESS'
-                          ? 'warning'
-                          : booking?.booking_status === 'CONFIRMED'
-                          ? 'secondary'
-                          : 'success'
-                      }
-                      variant="soft"
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      label={booking?.payment_status || 'N/A'}
-                      color={
-                        booking?.payment_status === 'PENDING'
-                          ? 'info'
-                          : booking?.payment_status === 'FAILED'
-                          ? 'error'
-                          : booking?.payment_status === 'REFUNDED'
-                          ? 'warning'
-                          : booking?.payment_status === 'PARTIALLY PAID'
-                          ? 'primary'
-                          : 'success'
-                      }
-                      variant="soft"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  <Box sx={{ py: 2 }}>
-                    <Typography variant="h6" color="textSecondary">
-                      No bookings available under this trainer
-                    </Typography>
-                  </Box>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{t("User")}</TableCell>
+            <TableCell>{t("Email")}</TableCell>
+            <TableCell align="center">{t("Total")}</TableCell>
+            <TableCell align="center">{t("Total Sessions")}</TableCell>
+            <TableCell align="center">{t("Total Sessions Booked")}</TableCell>
+            <TableCell align="center">{t("Completed Sessions")}</TableCell>
+            <TableCell align="center">{t("Booking Status")}</TableCell>
+            <TableCell align="center">{t("Payment Status")}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {bookingLoading ? (
+            Array.from(new Array(5)).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton animation="wave" height={40} />
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <TablePaginationCustom
-          count={totalBookings}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
-        />
-      </TableContainer>
-    </Box>
+            ))
+          ) : bookingDetails && bookingDetails.length > 0 ? (
+            bookingDetails.map((booking) => (
+              <TableRow
+                key={booking.id}
+                onClick={() => {
+                  handleBookingClick(booking.id);
+                }}
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
+                }}
+              >
+                <TableCell>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <Typography>{booking?.user?.name || 'N/A'}</Typography>
+                    </Grid>
+                  </Grid>
+                </TableCell>
+                <TableCell>{booking?.user?.email || 'N/A'}</TableCell>
+                <TableCell align="center">{booking?.total || 'N/A'} AED</TableCell>
+                <TableCell>{booking?.package?.number_of_sessions || 'N/A'}</TableCell>
+                <TableCell>{booking?.no_of_sessions || 'N/A'}</TableCell>
+                <TableCell>{booking?.no_of_sessions_completed || 'N/A'}</TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking?.booking_status || 'N/A'}
+                    color={
+                      booking?.booking_status === 'PENDING'
+                        ? 'info'
+                        : booking?.booking_status === 'CANCELLED'
+                          ? 'error'
+                          : booking?.booking_status === 'IN PROGRESS'
+                            ? 'warning'
+                            : booking?.booking_status === 'CONFIRMED'
+                              ? 'secondary'
+                              : 'success'
+                    }
+                    variant="soft"
+                  />
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={booking?.payment_status || 'N/A'}
+                    color={
+                      booking?.payment_status === 'PENDING'
+                        ? 'info'
+                        : booking?.payment_status === 'FAILED'
+                          ? 'error'
+                          : booking?.payment_status === 'REFUNDED'
+                            ? 'warning'
+                            : booking?.payment_status === 'PARTIALLY PAID'
+                              ? 'primary'
+                              : 'success'
+                    }
+                    variant="soft"
+                  />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                <Box sx={{ py: 2 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    {t("No bookings available under this trainer")}
+                  </Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

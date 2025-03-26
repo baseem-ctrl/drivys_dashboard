@@ -167,7 +167,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
 
           <RHFSelect
             name="language"
-            label="Language"
+            label={t("Language")}
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
           >
@@ -178,7 +178,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
                 </MenuItem>
               ))
             ) : (
-              <MenuItem disabled>No languages available</MenuItem> // Placeholder when no languages are available
+              <MenuItem disabled>{t("No languages available")}</MenuItem> // Placeholder when no languages are available
             )}
           </RHFSelect>
 
@@ -198,7 +198,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
           <RHFSwitch name="published" label={t('Published')} />
           <RHFSelect
             name="position"
-            label="Position"
+            label={t("Position")}
             value={selectedPosition}
             onChange={(e) => setSelectedPosition(e.target.value)} // Update position state
           >
@@ -210,7 +210,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
         <Box pt={3}>
           {/* Button to open the image selection dialog */}
           <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
-            Select Images
+            {t("Select Images")}
           </Button>
 
           {/* Image Preview Component */}
@@ -234,7 +234,7 @@ export default function HomeSliderForm({ updateValue }: Props) {
         onClose={() => setImageDialogOpen(false)}
         setSelectedImageIds={setSelectedImageIds}
         selectedImageIds={selectedImageIds}
-        apiCall={() => {}}
+        apiCall={() => { }}
         isSubmitting={isSubmitting}
       />
     </FormProvider>

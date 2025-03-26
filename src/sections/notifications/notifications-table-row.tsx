@@ -13,6 +13,7 @@ import { sendNotification } from 'src/api/notification';
 import ConfirmDialogSend from 'src/components/custom-dialog/confirm-dailog-send';
 import { useState } from 'react';
 import moment from 'moment';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -116,8 +117,8 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
       <ConfirmDialogSend
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
-        title="Send Notification"
-        content="Are you sure you want to send this notification?"
+        title={t("Send Notification")}
+        content={t("Are you sure you want to send this notification?")}
         onConfirm={handleSendNotification}
         loading={loading}
       />
@@ -133,7 +134,7 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
             popover.onClose();
           }}
         >
-          View
+          {t("View")}
         </MenuItem>
       </CustomPopover>
     </>

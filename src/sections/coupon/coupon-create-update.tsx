@@ -388,14 +388,14 @@ export default function CouponDialog({
                   render={({ field }) => (
                     <RHFTextField
                       {...field}
-                      label="Discount Value"
+                      label={t("Discount Value")}
                       type={values?.use_percentage ? 'number' : 'text'}
                       inputProps={{ maxLength: 10, onWheel: (e) => e.target.blur() }}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton onClick={handleToggle}>
-                              {values?.use_percentage ? '%' : 'AED'}
+                              {values?.use_percentage ? '%' : t('AED')}
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -411,7 +411,7 @@ export default function CouponDialog({
                   type="date"
                   inputProps={{ min: today }}
                 />
-                <RHFTextField name="ending_date" label="End Date " type="date" />
+                <RHFTextField name="ending_date" label={t("End Date")} type="date" />
 
                 {/* <RHFMultiSelectAuto
                   name="Product"

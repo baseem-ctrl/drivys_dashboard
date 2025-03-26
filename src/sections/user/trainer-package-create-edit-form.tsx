@@ -18,6 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useGetPackageTrainerById } from 'src/api/package-trainer';
 import { useGetPackage, useGetPublicPackage } from 'src/api/package';
+import { useTranslation } from 'react-i18next';
 
 const TrainerPackageCreateEditForm = ({
   open,
@@ -28,6 +29,7 @@ const TrainerPackageCreateEditForm = ({
   editMode,
   setEditMode,
 }) => {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -74,7 +76,7 @@ const TrainerPackageCreateEditForm = ({
     }));
   };
 
-  useEffect(() => {});
+  useEffect(() => { });
   const { packageList, packageLoading } = useGetPublicPackage({
     vendor_id: trainer_details?.vendor?.id,
     city_id: trainer_details?.user_preference?.city_id,
@@ -165,7 +167,7 @@ const TrainerPackageCreateEditForm = ({
   };
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>{editMode ? 'Update Package' : 'Add Package'}</DialogTitle>
+      <DialogTitle>{editMode ? t('Update Package') : t('Add Package')}</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -176,7 +178,7 @@ const TrainerPackageCreateEditForm = ({
             <Box display="flex" justifyContent="space-between" mb={5} mt={2}>
               {!selectedPackage && (
                 <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
-                  <InputLabel id="package-id-label">Package ID</InputLabel>
+                  <InputLabel id="package-id-label">{t("Package ID")}</InputLabel>
                   <Select
                     labelId="package-id-label"
                     name="package_id"
@@ -184,10 +186,10 @@ const TrainerPackageCreateEditForm = ({
                     onChange={(e) => {
                       handleChange(e);
                     }}
-                    label="Package ID"
+                    label={t("Package ID")}
                   >
                     {packageLoading ? (
-                      <MenuItem disabled>Loading...</MenuItem>
+                      <MenuItem disabled>{t("Loading...")}</MenuItem>
                     ) : (
                       packageList.map((pkg) => (
                         <MenuItem key={pkg.id} value={pkg.id}>
@@ -202,7 +204,7 @@ const TrainerPackageCreateEditForm = ({
               )}
               <TextField
                 name="trainer_price"
-                label="Trainer Price"
+                label={t("Trainer Price")}
                 type="number"
                 value={formValues.trainer_price}
                 onInput={handleChange}
@@ -221,7 +223,7 @@ const TrainerPackageCreateEditForm = ({
                   color="primary"
                 />
               }
-              label="Status"
+              label={t("Status")}
               labelPlacement="start"
             />
             <FormControlLabel
@@ -233,16 +235,16 @@ const TrainerPackageCreateEditForm = ({
                   color="primary"
                 />
               }
-              label="Published"
+              label={t("Published")}
               labelPlacement="start"
             />
           </>
         )}
       </DialogContent>
       <DialogActions>
-        <LoadingButton onClick={onClose}>Cancel</LoadingButton>
+        <LoadingButton onClick={onClose}>{t("Cancel")}</LoadingButton>
         <LoadingButton onClick={handleSubmit} color="primary" loading={isSubmitting}>
-          Submit
+          {t("Submit")}
         </LoadingButton>
       </DialogActions>
     </Dialog>

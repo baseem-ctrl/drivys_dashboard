@@ -52,22 +52,11 @@ import { deleteHomeListing, useGetHomeListing } from 'src/api/homelisting';
 import { useGetAllLanguage } from 'src/api/language';
 import HomeListingDialog from '../home-listing-dailogue';
 import HomeListingNewEdit from './homelisting-new-edit';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  // { id: 'locale', label: 'Language' },
-  { id: 'title', label: 'Title' },
-  // { id: 'description', label: 'Description' },
-  { id: 'catalogue_type', label: 'Catalogue type' },
-  // { id: 'picture', label: 'Picture' },
-  { id: 'display_type', label: 'Display type' },
-  { id: 'display_order', label: 'Display order' },
-  { id: 'is_active', label: 'Active Status ' },
-  { id: 'action', label: 'Action' },
 
-  // { id: '' },
-];
 
 const defaultFilters: any = {
   name: '',
@@ -81,6 +70,22 @@ const defaultFilters: any = {
 
 export default function HomelistingListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    // { id: 'locale', label: 'Language' },
+    { id: 'title', label: t('Title') },
+    // { id: 'description', label: 'Description' },
+    { id: 'catalogue_type', label: t('Catalogue type') },
+    // { id: 'picture', label: 'Picture' },
+    { id: 'display_type', label: t('Display type') },
+    { id: 'display_order', label: t('Display order') },
+    { id: 'is_active', label: t('Active Status') },
+    { id: 'action', label: t('Action') },
+
+    // { id: '' },)
+  ];
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -220,11 +225,11 @@ export default function HomelistingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="Home Page List"
+          heading={t("Home Page List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Home Page List', href: paths.dashboard.homelisting.root },
-            { name: 'List' },
+            { name: t('Dashboard'), href: paths.dashboard.root },
+            { name: t('Home Page List'), href: paths.dashboard.homelisting.root },
+            { name: t('List') },
           ]}
           action={
             <Button
@@ -232,7 +237,7 @@ export default function HomelistingListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Home Listing
+              {t("New Home Listing")}
             </Button>
           }
           sx={{
@@ -275,32 +280,32 @@ export default function HomelistingListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                  // }
+                // onSelectAllRows={(checked) =>
+                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                // }
                 />
 
                 <TableBody>
                   {homelistingLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <HomeListingTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          revalidateHomeListing={revalidateHomeListing}
-                          onViewRow={() => handleViewRow(row?.id)}
-                        />
-                      ))}
+                      <HomeListingTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={(e: any) => handleEditRow(e, row.id)}
+                        revalidateHomeListing={revalidateHomeListing}
+                        onViewRow={() => handleViewRow(row?.id)}
+                      />
+                    ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}

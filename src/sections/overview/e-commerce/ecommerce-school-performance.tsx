@@ -93,7 +93,7 @@ export default function SchoolPerformanceDetails({ title, subheader, tableData, 
             options={tableData}
             getOptionLabel={(option) => option.school_name}
             isOptionEqualToValue={(option, value) => option.school_id === value?.school_id}
-            renderInput={(params) => <TextField {...params} label="Select School" />}
+            renderInput={(params) => <TextField {...params} label={t("Select School")} />}
             disableClearable
             sx={{ width: 250 }}
           />

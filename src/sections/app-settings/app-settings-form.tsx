@@ -31,6 +31,7 @@ import { updateValue, useGetAllAppSettings } from 'src/api/app-settings';
 import { useGetSchool } from 'src/api/school';
 
 import PrivacyPolicy from './privacy-policy';
+import { useTranslation } from 'react-i18next';
 
 interface FormField {
   id: number;
@@ -40,20 +41,21 @@ interface FormField {
 }
 
 const EditableForm: React.FC = () => {
+  const { t } = useTranslation();
   const { language } = useGetAllLanguage(0, 1000);
   const [selectedLocale, setSelectedLocale] = useState('En');
   const methods = useForm();
   const [editedFields, setEditedFields] = useState<Record<number, boolean>>({});
   const fieldTooltips: Record<string, string> = {
     DEFAULT_MAX_CASH_IN_HAND_ALLOWED:
-      'The maximum amount of cash a trainer is allowed to hold for transactions.',
-    REWARD_FEE: 'The commission deducted from the reward given to the trainer by the student.',
-    TAX_RATE: 'The percentage of tax applied to the booking amount.',
-    CANCELLATION_FEE: 'The fee charged when a student cancels a booking.',
+      t('The maximum amount of cash a trainer is allowed to hold for transactions.'),
+    REWARD_FEE: t('The commission deducted from the reward given to the trainer by the student.'),
+    TAX_RATE: t('The percentage of tax applied to the booking amount.'),
+    CANCELLATION_FEE: t('The fee charged when a student cancels a booking.'),
     MINIMUM_KM:
-      'The minimum distance covered that determines the base price for the pickup option.',
-    SLOT_DURATION: 'The duration of each booking slot.',
-    CASH_FEE: 'Additional fee applied when the payment method is cash.',
+      t('The minimum distance covered that determines the base price for the pickup option.'),
+    SLOT_DURATION: t('The duration of each booking slot.'),
+    CASH_FEE: t('Additional fee applied when the payment method is cash.'),
   };
   const {
     appSettings: data,
@@ -168,7 +170,7 @@ const EditableForm: React.FC = () => {
       return (
         <Box width="100%" display="flex" flexDirection="column">
           <Typography variant="body1" color="primary" gutterBottom>
-            Privacy policy
+            {t("Privacy policy")}
           </Typography>
           <PrivacyPolicy
             item={item}
@@ -209,12 +211,12 @@ const EditableForm: React.FC = () => {
               value={
                 selectedSchool
                   ? {
-                      label: selectedSchool.vendor_translations
-                        .slice(0, 2)
-                        .map((translation) => translation.name)
-                        .join(' - '),
-                      value: selectedSchool.id,
-                    }
+                    label: selectedSchool.vendor_translations
+                      .slice(0, 2)
+                      .map((translation) => translation.name)
+                      .join(' - '),
+                    value: selectedSchool.id,
+                  }
                   : null
               }
               onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
@@ -301,6 +303,9 @@ const EditableForm: React.FC = () => {
           </Box>
 
           <TextField
+            value={item.value}
+            onChange={(e) => handleChange(item.id, e.target.value)}
+            label={t(item.key.replace(/_/g, ' '))}
             fullWidth
             variant="outlined"
             value={item.value}
@@ -326,7 +331,7 @@ const EditableForm: React.FC = () => {
             }}
             onClick={() => handleSave(item.id)}
           >
-            Save
+            {t("Save")}
           </Button>
         </Box>
       );
@@ -345,10 +350,10 @@ const EditableForm: React.FC = () => {
           }}
         >
           <Typography variant="h5" component="h1" color="primary">
-            App Settings
+            {t("App Settings")}
           </Typography>
           <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
-            <InputLabel shrink={!!selectedLocale}>Locale</InputLabel>
+            <InputLabel shrink={!!selectedLocale}>{t("Locale")}</InputLabel>
             <Select value={selectedLocale} onChange={handleLocaleChange} label="Locale">
               {localeOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>

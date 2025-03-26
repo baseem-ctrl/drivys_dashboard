@@ -158,7 +158,7 @@ export default function CategoryFilters({
               onClick={() => handleFilterPublish(option)}
             />
           }
-          label={option}
+          label={t(option)}
           sx={{
             ...(option === 'all' && {
               textTransform: 'capitalize',

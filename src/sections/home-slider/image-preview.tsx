@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import Iconify from 'src/components/iconify';
 import { deleteHomeSliderImage } from 'src/api/home-slider';
 import { enqueueSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 type ImagePreviewProps = {
   selectedImageIds: number[];
@@ -39,6 +40,8 @@ export default function ImagePreview({
   selectedImageArray,
   reload,
 }: ImagePreviewProps) {
+
+  const { t } = useTranslation();
   const { allImages } = useGetAllImages(0, 1000);
 
   // Filter out the images that match the selectedImageIds
@@ -74,14 +77,14 @@ export default function ImagePreview({
   };
 
   if (selectedImageIds?.length === 0 || selectedImages?.length === 0) {
-    return <Typography>No images selected</Typography>;
+    return <Typography>{t("No images selected")}</Typography>;
   }
   console.log(selectedImages, "selectedImages");
 
   return (
     <Box mt={2}>
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Selected Images
+        {t("Selected Images")}
       </Typography>
       <Grid container spacing={2}>
         {selectedImages?.map((image, index) => (

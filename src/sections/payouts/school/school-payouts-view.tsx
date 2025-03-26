@@ -36,6 +36,7 @@ import { useGetSchool } from 'src/api/school';
 import { useRouter } from 'src/routes/hooks';
 import { useGetUsers } from 'src/api/users';
 import PayoutCreateForm from './payout-create-form';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +55,7 @@ const PAYOUT_SORT_OPTIONS = [
   { value: 'total_paid_and_completed_booking', label: 'Bookings' },
 ];
 export default function SchoolPayoutPage() {
+  const { t } = useTranslation();
   const settings = useSettingsContext();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const router = useRouter();
@@ -179,11 +181,11 @@ export default function SchoolPayoutPage() {
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
     const fields = [
-      { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
+      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: t('Total Earnings'), value: `${item?.total_earning_from_booking ?? 0} ${t("AED")}` },
       {
-        label: 'Last Paid',
+        label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
             <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
@@ -197,11 +199,11 @@ export default function SchoolPayoutPage() {
           </Box>
         ),
       },
-      { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
+      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
       {
-        label: 'Action',
+        label: t('Action'),
         value: (
-          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+          <Tooltip title={!isPayoutAvailable ? t('No payout remaining') : ''} arrow>
             <span>
               {' '}
               <Button
@@ -215,7 +217,7 @@ export default function SchoolPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                Payouts
+                {t("Payouts")}
               </Button>
             </span>
           </Tooltip>
@@ -268,11 +270,11 @@ export default function SchoolPayoutPage() {
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
     const fields = [
-      { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: 'Total Eranings ', value: `${item?.total_earning_from_booking} AED` ?? '0 AED' },
+      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: t('Total Eranings '), value: `${item?.total_earning_from_booking} ${t("AED")}` ?? '0 ${t("AED")}' },
       {
-        label: 'Last Paid',
+        label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
             <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
@@ -286,9 +288,9 @@ export default function SchoolPayoutPage() {
           </Box>
         ),
       },
-      { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
+      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
       {
-        label: 'Action',
+        label: t('Action'),
         value: (
           <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
             <span>
@@ -304,7 +306,7 @@ export default function SchoolPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                Payouts
+                ${t("Payouts")}
               </Button>
             </span>
           </Tooltip>
@@ -341,14 +343,14 @@ export default function SchoolPayoutPage() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="School Payout"
+        heading={t("School Payout")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Payout',
+            name: t('Payout'),
             href: paths.dashboard.payouts.school,
           },
-          { name: 'School Payouts' },
+          { name: t('School Payouts') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -388,7 +390,7 @@ export default function SchoolPayoutPage() {
               )
             }
 
-            // onClick={() => handleView(tour.id)}
+          // onClick={() => handleView(tour.id)}
           >
             <CardContent
               sx={{

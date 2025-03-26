@@ -31,6 +31,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { createImageSingle } from 'src/api/all-image';
 import { createLanguage, updateLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +51,7 @@ export default function LanguageCreateEditForm({
   reload,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   const [imageId, setImageId] = useState('');
 
   const NewUserSchema = Yup.object().shape({
@@ -196,7 +198,7 @@ export default function LanguageCreateEditForm({
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{t(title)}</DialogTitle>
         <Stack sx={{ ml: 10, mr: 10, mt: 5, mb: 5 }}>
           <RHFUpload name="flag_id" maxSize={3145728} onDrop={handleDrop} sx={{ mb: 3 }} />
         </Stack>
@@ -211,21 +213,21 @@ export default function LanguageCreateEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFTextField name="name" label="Name" />
-            <RHFTextField name="language_culture" label="Language culture" />
-            <RHFSwitch name="published" label={'Published'} />
+            <RHFTextField name="name" label={t("Name")} />
+            <RHFTextField name="language_culture" label={t("Language culture")} />
+            <RHFSwitch name="published" label={t('Published')} />
 
-            <RHFTextField name="display_order" label="Display order" />
+            <RHFTextField name="display_order" label={t("Display order")} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentLanguage?.id ? 'Update' : 'Create'}
+            {currentLanguage?.id ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

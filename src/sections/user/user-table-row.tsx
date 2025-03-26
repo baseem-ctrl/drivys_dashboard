@@ -142,7 +142,7 @@ export default function UserTableRow({
               (is_active === true && 'success') || (is_active === false && 'error') || 'default'
             }
           >
-            {is_active ? 'Active' : 'In Active'}
+            {is_active ? t('Active') : t('inactive')}
           </Label>
         </TableCell>
         {currentUserType === 'TRAINER' && (
@@ -161,8 +161,8 @@ export default function UserTableRow({
                   row?.is_suspended === true || row?.is_suspended === 1
                     ? 'success'
                     : row?.is_suspended === false || row?.is_suspended === 0
-                    ? 'error'
-                    : 'warning'
+                      ? 'error'
+                      : 'warning'
                 }
                 sx={{ alignContent: 'center' }}
               >
@@ -172,7 +172,7 @@ export default function UserTableRow({
           </>
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          <Tooltip title={t("Quick Edit")} placement="top" arrow>
             <IconButton
               color={quickEdit.value ? 'inherit' : 'default'}
               onClick={(e) => {
@@ -217,7 +217,7 @@ export default function UserTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -227,7 +227,7 @@ export default function UserTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -236,7 +236,7 @@ export default function UserTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          {t("View")}
         </MenuItem>
         {user_type === 'TRAINER' && (
           <MenuItem
@@ -246,7 +246,7 @@ export default function UserTableRow({
             }}
           >
             <Iconify icon="solar:verified-check-bold" sx={{ color: '#42A5F5' }} />
-            {!row?.verified_at ? 'Verify' : 'Unverify'}
+            {!row?.verified_at ? t('Verify') : t('Unverify')}
           </MenuItem>
         )}
       </CustomPopover>
@@ -254,12 +254,12 @@ export default function UserTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={onDeleteRow}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

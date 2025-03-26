@@ -44,6 +44,7 @@ import { createUpdatePackage } from 'src/api/package';
 import { useGetAllCategory } from 'src/api/category';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { InfoOutlined } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { FormatColorFill } from '@mui/icons-material';
 
@@ -60,6 +61,7 @@ export default function PackageCreateForm({
   onClose,
   revalidateDeliverey,
 }: Props) {
+  const { t } = useTranslation()
   const { enqueueSnackbar } = useSnackbar();
   const [searchValue, setSearchValue] = useState('');
   const [searchValueCat, setSearchValueCat] = useState('');
@@ -352,7 +354,7 @@ export default function PackageCreateForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Create Package</DialogTitle>
+        <DialogTitle>{t("Create Package")}</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
@@ -366,7 +368,7 @@ export default function PackageCreateForm({
             >
               <RHFSelect
                 name="locale (Language)"
-                label="Locale"
+                label={t("Locale")}
                 value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
@@ -377,7 +379,7 @@ export default function PackageCreateForm({
                 ))}
               </RHFSelect>
 
-              <RHFTextField name="name" label="Name" />
+              <RHFTextField name="name" label={t("Name")} />
             </Box>
             {/* <RHFTextField name="description" label="Description" /> */}
           </Box>
@@ -388,11 +390,11 @@ export default function PackageCreateForm({
             <Grid item xs={13}>
               <RHFTextField
                 name="number_of_sessions"
-                label="Number of sessions"
+                label={t("Number of sessions")}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title="Enter -1 for unlimited Packages" placement="top">
+                      <Tooltip title={t("Enter -1 for unlimited Packages")} placement="top">
                         <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
                       </Tooltip>
                     </InputAdornment>
@@ -418,12 +420,11 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFAutocompleteSearch
                 name="vendor_id"
-                label="Select School"
+                label={t("Select School")}
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={schoolList?.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}${
-                    item.email ? ` - ${item.email}` : ''
-                  }`,
+                  label: `${item.vendor_translations?.[0]?.name}${item.email ? ` - ${item.email}` : ''
+                    }`,
                   value: item.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
@@ -433,14 +434,14 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFTextField
                 name="drivys_commision"
-                label="Drivy's Commission"
+                label={t("Drivy's Commission")}
                 type={values?.is_drivys_commision_percentage ? 'number' : 'text'}
                 inputProps={{ min: 0 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
-                        {values?.is_drivys_commision_percentage ? '%' : 'AED'}
+                        {values?.is_drivys_commision_percentage ? '%' : t('AED')}
                       </div>
                     </InputAdornment>
                   ),
@@ -452,12 +453,12 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFAutocompleteSearch
                 name="category_id"
-                label="Select Category"
+                label={t("Select Category")}
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={category?.map((item) => ({
                   label:
                     item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
-                      ?.name || 'Unknown',
+                      ?.name || t('Unknown'),
                   value: item?.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
@@ -522,7 +523,7 @@ export default function PackageCreateForm({
                     <Grid item xs={12}>
                       <RHFAutocompleteSearch
                         name={`cities_ids[${index}][id]`}
-                        label={`Select City ${index + 1}`}
+                        label={`${t('Select City')} ${index + 1}`}
                         multiple={false}
                         options={city?.map((option: any) => ({
                           value: option?.id,
@@ -538,28 +539,28 @@ export default function PackageCreateForm({
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][min_price]`}
-                        label="City Min Price"
+                        label={t("City Min Price")}
                         type="number"
                         inputProps={{ min: 0 }}
                         value={cityField.min_price}
                         onChange={(event) =>
                           handleCityFieldChange(index, 'min_price', event.target.value)
                         }
-                        suffix="AED"
+                        suffix={t("AED")}
                       />
                     </Grid>
 
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][max_price]`}
-                        label="City Max Price"
+                        label={t("City Max Price")}
                         type="number"
                         inputProps={{ min: 0 }}
                         value={cityField.max_price}
                         onChange={(event) =>
                           handleCityFieldChange(index, 'max_price', event.target.value)
                         }
-                        suffix="AED"
+                        suffix={t("AED")}
                       />
                     </Grid>
 
@@ -579,7 +580,7 @@ export default function PackageCreateForm({
                 []}
 
               <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
-                Add City
+                {t("Add City")}
               </Button>
             </Box>
 
@@ -592,7 +593,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label="Publish"
+                label={t("Publish")}
               />
             </Grid>
             <Grid item xs={12}>
@@ -604,7 +605,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label="Pickup Fee Included"
+                label={t("Pickup Fee Included")}
               />
             </Grid>
             <Grid item xs={12}>
@@ -616,7 +617,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label="Certificate Fee Included"
+                label={t("Certificate Fee Included")}
               />
             </Grid>
             <Grid item xs={12} mt={1}>
@@ -628,12 +629,12 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label="Pay By Cash"
+                label={t("Pay By Cash")}
               />
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
-                <Typography variant="subtitle2">Session inclusions</Typography>
+                <Typography variant="subtitle2">{t("Session inclusions")}</Typography>
                 <RHFEditor name="session_inclusions" />
               </Stack>
               {/* <RHFTextField name="session_inclusions" label="Session inclusions" /> */}
@@ -643,10 +644,10 @@ export default function PackageCreateForm({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Create
+            {t("Create")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

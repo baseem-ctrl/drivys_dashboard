@@ -17,6 +17,7 @@ import Grid from '@mui/material/Grid';
 import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form';
 import { createOrUpdatePackageDocument } from 'src/api/packageDocument';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -35,6 +36,7 @@ export default function PackageDocumentCreateUpdate({
   packageId,
   sessionNumber,
 }: Props) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const DocumentSchema = Yup.object().shape({
     title: Yup.string(),
@@ -159,23 +161,23 @@ export default function PackageDocumentCreateUpdate({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>{currentDocument ? 'Update Document' : 'Create Document'}</DialogTitle>
+        <DialogTitle>{currentDocument ? t('Update Document') : t('Create Document')}</DialogTitle>
 
         <DialogContent>
           <Box mt={2}>
             <Grid container spacing={2}>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="session_no" label="Session Number" type="number" fullWidth />
+                <RHFTextField name="session_no" label={t("Session Number")} type="number" fullWidth />
               </Grid>
 
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="title" label="Title" fullWidth />
+                <RHFTextField name="title" label={t("Title")} fullWidth />
               </Grid>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="description" label="Description" fullWidth />
+                <RHFTextField name="description" label={t("Description")} fullWidth />
               </Grid>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFSelect name="type" label="Type" fullWidth>
+                <RHFSelect name="type" label={t("Type")} fullWidth>
                   {typeOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -185,7 +187,7 @@ export default function PackageDocumentCreateUpdate({
               </Grid>
 
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFSelect name="status" label="Status" fullWidth>
+                <RHFSelect name="status" label={t("Status")} fullWidth>
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -198,15 +200,15 @@ export default function PackageDocumentCreateUpdate({
                 <Box
                   sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
                 >
-                  Package Document Upload
+                  {t("Package Document Upload")}
                 </Box>
               </Grid>
 
               <Grid item xs={12} sx={{ mb: 1 }}>
                 <RHFFileUpload
                   name="file"
-                  label="Upload Package Document"
-                  helperText="Please upload a package document"
+                  label={t("Upload Package Document")}
+                  helperText={t("Please upload a package document")}
                 />
               </Grid>
 
@@ -214,15 +216,15 @@ export default function PackageDocumentCreateUpdate({
                 <Box
                   sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
                 >
-                  Package Icon Upload
+                  {t("Package Icon Upload")}
                 </Box>
               </Grid>
 
               <Grid item xs={12} sx={{ mb: 1 }}>
                 <RHFFileUpload
                   name="icon"
-                  label="Upload Icon"
-                  helperText="Upload an icon image (optional)"
+                  label={t("Upload Icon")}
+                  helperText={t("Upload an icon image (optional)")}
                 />
               </Grid>
             </Grid>
@@ -231,10 +233,10 @@ export default function PackageDocumentCreateUpdate({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentDocument ? 'Update' : 'Create'}
+            {currentDocument ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

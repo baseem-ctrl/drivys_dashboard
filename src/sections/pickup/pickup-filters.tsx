@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open?: boolean;
@@ -40,6 +41,7 @@ export default function CityFilters({
   onLocaleChange,
   localeOptions,
 }: Props) {
+  const { t } = useTranslation();
   const handleFilterChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
     const value = event.target.value;
     onFilters?.(name, value);
@@ -53,7 +55,7 @@ export default function CityFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
       <Tooltip title="Reset">
@@ -74,7 +76,7 @@ export default function CityFilters({
     <Stack spacing={3}>
       <Stack>
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Status
+          {t("Status")}
         </Typography>
         <FormControl fullWidth variant="outlined">
           <Select
@@ -83,7 +85,7 @@ export default function CityFilters({
             displayEmpty
           >
             <MenuItem value="" disabled>
-              Select Status
+              {t("Select Status")}
             </MenuItem>
             <MenuItem value="1">Active</MenuItem>
             <MenuItem value="0">Inactive</MenuItem>
@@ -93,18 +95,18 @@ export default function CityFilters({
 
       <Stack>
         <Typography variant="subtitle2" sx={{ mb: 2 }}>
-          Date Range
+          {t("Date Range")}
         </Typography>
         <TextField
           sx={{ mb: 2 }}
-          label="Start Date"
+          label={t("Start Date")}
           type="date"
           value={filters?.start_date || ''}
           onChange={handleFilterChange('start_date')}
           InputLabelProps={{ shrink: true }}
         />
         <TextField
-          label="End Date"
+          label={t("End Date")}
           type="date"
           value={filters?.end_date || ''}
           onChange={handleFilterChange('end_date')}
@@ -114,10 +116,10 @@ export default function CityFilters({
 
       <Stack>
         <Typography variant="subtitle2" sx={{ mb: 2 }}>
-          Time Range
+          {t("Time Range")}
         </Typography>
         <TextField
-          label="Start Time"
+          label={t("Start Time")}
           type="time"
           sx={{ mb: 2 }}
           value={filters?.start_time || ''}
@@ -125,7 +127,7 @@ export default function CityFilters({
           InputLabelProps={{ shrink: true }}
         />
         <TextField
-          label="End Time"
+          label={t("End Time")}
           type="time"
           value={filters?.end_time || ''}
           onChange={handleFilterChange('end_time')}
@@ -147,7 +149,7 @@ export default function CityFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer

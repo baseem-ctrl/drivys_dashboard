@@ -22,6 +22,7 @@ import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-sea
 import FormProvider from 'src/components/hook-form/form-provider';
 import { useGetAllCity } from 'src/api/city';
 import { createUpdatePackage } from 'src/api/package';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -38,6 +39,8 @@ export default function AddCityPackage({
   id,
   reload,
 }: Props) {
+
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const { city, cityLoading } = useGetAllCity({
@@ -101,14 +104,14 @@ export default function AddCityPackage({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Add City </DialogTitle>
+        <DialogTitle>{t("Add City")} </DialogTitle>
 
         <DialogContent>
           <Grid container spacing={2} sx={{ mb: 4, mt: 2 }}>
             <Grid item xs={12}>
               <RHFAutocompleteSearch
                 name={`cities_ids[${currentCityData?.length || 0}][id]`}
-                label="Select City"
+                label={t("Select City")}
                 multiple={false}
                 options={city?.map((option: any) => ({
                   value: option?.id,
@@ -121,7 +124,7 @@ export default function AddCityPackage({
             <Grid item xs={6}>
               <RHFTextField
                 name={`cities_ids[${currentCityData?.length || 0}][min_price]`}
-                label="City Min Price"
+                label={t("City Min Price")}
                 type="number"
                 inputProps={{ min: 0 }}
               />
@@ -130,7 +133,7 @@ export default function AddCityPackage({
             <Grid item xs={6}>
               <RHFTextField
                 name={`cities_ids[${currentCityData?.length || 0}][max_price]`}
-                label="City Max Price"
+                label={t("City Max Price")}
                 type="number"
                 inputProps={{ min: 0 }}
               />
@@ -140,10 +143,10 @@ export default function AddCityPackage({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Submit
+            {t("Submit")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -30,21 +30,26 @@ import {
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllVendorCommissions } from 'src/api/commission';
 import CertificateCommissionRow from '../certificate-commission-table-row';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'vendor-name', label: 'School Name', width: 180 },
 
-  { id: 'max-commission', label: 'Max Commission', width: 180 },
-  { id: 'min-commission', label: 'Min Commission', width: 180 },
-  { id: 'certificate-commission', label: 'Drivys Certificate Commission (%)', width: 280 },
-  { id: 'action', label: '', width: 180 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function CertificateCommissionDrivys() {
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    { id: 'vendor-name', label: t('School Name'), width: 180 },
+
+    { id: 'max-commission', label: t('Max Commission'), width: 180 },
+    { id: 'min-commission', label: t('Min Commission'), width: 180 },
+    { id: 'certificate-commission', label: t('Drivys Certificate Commission (%)'), width: 280 },
+    { id: 'action', label: '', width: 180 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -71,14 +76,14 @@ export default function CertificateCommissionDrivys() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Drivys Certificate Commission"
+        heading={t("Drivys Certificate Commission")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Commission',
+            name: t('Commission'),
             href: paths.dashboard.commission.certificateCommissionDrivys,
           },
-          { name: 'Drivys Commission' },
+          { name: t('Drivys Commission') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -119,20 +124,20 @@ export default function CertificateCommissionDrivys() {
                 <TableBody>
                   {commissionsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <CertificateCommissionRow
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateVendorCommissions}
-                        />
-                      ))}
+                      <CertificateCommissionRow
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateVendorCommissions}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

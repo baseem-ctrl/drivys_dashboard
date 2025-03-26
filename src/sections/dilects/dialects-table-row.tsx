@@ -9,6 +9,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import DilectCreateEditForm from './dialects-create-update';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ export default function DilectTableRow({
   reload,
 }: Props) {
   const { language_name, dialect_name, is_published, order, description, keywords } = row;
+  const { t } = useTranslation();
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -48,7 +50,7 @@ export default function DilectTableRow({
         <TableCell>{order}</TableCell>
         <TableCell>
           <Label variant="soft" color={is_published === 1 ? 'success' : 'error'}>
-            {is_published === 1 ? 'Published' : 'Unpublished'}
+            {is_published === 1 ? t('Published') : t('Unpublished')}
           </Label>
         </TableCell>
         <TableCell align="right">
@@ -79,7 +81,7 @@ export default function DilectTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -89,15 +91,15 @@ export default function DilectTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();

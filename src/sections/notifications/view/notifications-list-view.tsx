@@ -46,19 +46,11 @@ import { useGetAllLanguage } from 'src/api/language';
 import { sendNotification, useGetNotificationList } from 'src/api/notification';
 import NotificationDetails from './notifications-details';
 import SendNotificationForm from '../send-notification-form';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'user_id', label: 'User ID' },
-  { id: 'title', label: 'Title' },
-  { id: 'description', label: 'Description' },
 
-  { id: 'user_type', label: 'User Type' },
-
-  { id: 'trainer_name', label: 'Trainer Name' },
-  { id: '', label: 'Sent At' },
-];
 
 const defaultFilters: any = {
   name: '',
@@ -76,6 +68,19 @@ export default function NotificationlistingListView() {
   const settings = useSettingsContext();
 
   const confirm = useBoolean();
+
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    { id: 'user_id', label: t('User ID') },
+    { id: 'title', label: t('Title') },
+    { id: 'description', label: t('Description') },
+
+    { id: 'user_type', label: t('User Type') },
+
+    { id: 'trainer_name', label: t('Trainer Name') },
+    { id: '', label: t('Sent At') },
+  ];
 
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
   const [selectedNotification, setSelectedNotification] = useState(null);
@@ -152,17 +157,17 @@ export default function NotificationlistingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="Notification List"
+          heading={t("Notification List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: t('Dashboard'), href: paths.dashboard.root },
             {
-              name: 'Notification List',
+              name: t('Notification List'),
               href: paths.dashboard.notification.root,
               onClick: (event) => {
                 setViewMode('table');
               },
             },
-            { name: 'List' },
+            { name: t('List') },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -176,7 +181,7 @@ export default function NotificationlistingListView() {
               onClick={handleOpenPopup}
               endIcon={<AddIcon />}
             >
-              Send Notification
+              {t("Send Notification")}
             </Button>
           </Box>
         )}
@@ -231,32 +236,32 @@ export default function NotificationlistingListView() {
                     rowCount={tableData?.length}
                     numSelected={table.selected.length}
                     onSort={table.onSort}
-                    // onSelectAllRows={(checked) =>
-                    //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                    // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                   />
 
                   <TableBody>
                     {notificationsLoading
                       ? Array.from(new Array(5)).map((_, index) => (
-                          <TableRow key={index}>
-                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                              <Skeleton animation="wave" height={40} />
-                            </TableCell>
-                          </TableRow>
-                        ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                       : tableData?.map((row) => (
-                          <NotificationTableRow
-                            key={row.id}
-                            row={row}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => handleRowClick(row)}
-                            // onDeleteRow={() => handleDeleteRow(row.id)}
-                            // onEditRow={(e: any) => handleEditRow(e, row.id)}
-                            // revalidateHomeListing={revalidateNotifications}
-                            // onViewRow={() => handleRowClick(row)}
-                          />
-                        ))}
+                        <NotificationTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={(e: any) => handleEditRow(e, row.id)}
+                        // revalidateHomeListing={revalidateNotifications}
+                        // onViewRow={() => handleRowClick(row)}
+                        />
+                      ))}
 
                     {/* <TableEmptyRows
                     height={denseHeight}
@@ -285,17 +290,17 @@ export default function NotificationlistingListView() {
           <NotificationDetails
             selectedNotification={selectedNotification}
             setViewMode={setViewMode}
-            // onEdit={handleEditClick}
-            // onBack={handleBackToList}
-            // reload={revalidateCities}
-            // cityId={rowId}
-            // index={index}
-            // setOpenEditPopup={setOpenEditPopup}
+          // onEdit={handleEditClick}
+          // onBack={handleBackToList}
+          // reload={revalidateCities}
+          // cityId={rowId}
+          // index={index}
+          // setOpenEditPopup={setOpenEditPopup}
           />
         )}
       </Container>
       <Dialog open={openPopup} onClose={handleClosePopup} fullWidth>
-        <DialogTitle>Send Notification</DialogTitle>
+        <DialogTitle>{t("Send Notification")}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <SendNotificationForm
             revalidateNotifications={revalidateNotifications}

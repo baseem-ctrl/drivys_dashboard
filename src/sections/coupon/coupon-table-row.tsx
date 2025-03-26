@@ -20,6 +20,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import LanguageCreateEditForm from './coupon-create-update';
 import { deleteLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,7 @@ export default function LanguageTableRow({
   onDeleteRow,
   reload,
 }: Props) {
+  const { t } = useTranslation();
   const {
     name,
     coupon_code,
@@ -78,11 +80,11 @@ export default function LanguageTableRow({
           </Label> */}
           {discount_type_id === 1 ? (
             <Label variant="soft" color="info">
-              linked to {row?.package?.length} packages
+              {t("linked to")} {row?.package?.length} {t("packages")}
             </Label>
           ) : discount_type_id === 2 ? (
             <Label variant="soft" color="info">
-              linked to {categories?.length} categories
+              {t("linked to")} {categories?.length}  {t("categories")}
             </Label>
           ) : (
             ''
@@ -102,7 +104,7 @@ export default function LanguageTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{limitation_times}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
-            {is_active === 1 ? 'Active' : 'In Active'}
+            {is_active === 1 ? t('Active') : t('In Active')}
           </Label>
         </TableCell>
 
@@ -114,7 +116,7 @@ export default function LanguageTableRow({
       </TableRow>
 
       <LanguageCreateEditForm
-        title="Edit Coupon"
+        title={t("Edit Coupon")}
         updateValue={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
@@ -135,7 +137,7 @@ export default function LanguageTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -145,22 +147,22 @@ export default function LanguageTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

@@ -45,8 +45,10 @@ import { useGetUserDetails } from 'src/api/users';
 import PayoutCreateForm from '../payout-create-form';
 import { useLocation } from 'react-router';
 import { useGetSessionStatusEnum } from 'src/api/enum';
+import { useTranslation } from 'react-i18next';
 
 export const BookingDetailsTable: React.FC<{}> = () => {
+  const { t } = useTranslation();
   const settings = useSettingsContext();
   const router = useRouter();
   const quickCreate = useBoolean();
@@ -143,22 +145,22 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const bookingTableCells = [
-    { label: 'Booking ID', minWidth: '50px' },
-    { label: 'Booking Revenue Amount', minWidth: '240px' },
-    { label: 'Sessions Completed', minWidth: '140px' },
-    { label: 'Trainer Payout', minWidth: '150px' },
-    { label: 'Date', minWidth: '250px' },
-    { label: 'Payment Method', minWidth: '150px' },
+    { label: t('Booking ID'), minWidth: '50px' },
+    { label: t('Booking Revenue Amount'), minWidth: '240px' },
+    { label: t('Sessions Completed'), minWidth: '140px' },
+    { label: t('Trainer Payout'), minWidth: '150px' },
+    { label: t('Date'), minWidth: '250px' },
+    { label: t('Payment Method'), minWidth: '150px' },
   ];
 
   const payoutHistoryCells = [
-    { label: 'Amount', width: '200px' },
-    { label: 'Notes', width: '200px' },
-    { label: 'Payment Method', width: '200px' },
-    { label: 'Payment Method Details', width: '200px' },
-    { label: 'Processed At', width: '200px' },
-    { label: 'Proof File', width: '200px' },
-    { label: 'Status', width: '200px' },
+    { label: t('Amount'), width: '200px' },
+    { label: t('Notes'), width: '200px' },
+    { label: t('Payment Method'), width: '200px' },
+    { label: t('Payment Method Details'), width: '200px' },
+    { label: t('Processed At'), width: '200px' },
+    { label: t('Proof File'), width: '200px' },
+    { label: t('Status'), width: '200px' },
   ];
   const isSmallScreen = useMediaQuery('(max-width:600px)');
 
@@ -235,49 +237,49 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Revenue Amount
+            {t("Total Revenue Amount")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalRevenueValue ?? '0'} AED
+            {totalRevenueValue ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Drivys Commission
+            {t("Total Drivys Commission")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalDrivysCommission ?? '0'} AED
+            {totalDrivysCommission ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Trainer Earning
+            {t("Total Trainer Earning")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalTrainerEarning ?? '0'} AED
+            {totalTrainerEarning ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total School Earning
+            {t("Total School Earning")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalVendorEarning ?? '0'} AED
+            {totalVendorEarning ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Typography variant="subtitle2" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
-          Amount Required From Admin is {amount} AED
+          {t("Amount Required From Admin is")}   {amount} {t("AED")}
         </Typography>
 
-        <Tooltip title={isPayoutDisabled ? 'No payout remaining' : ''} arrow>
+        <Tooltip title={isPayoutDisabled ? t('No payout remaining') : ''} arrow>
           <span>
             <Button
               variant="contained"
@@ -297,7 +299,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                 quickCreate.onTrue();
               }}
             >
-              Payout
+              {t("Payout")}
             </Button>
           </span>
         </Tooltip>
@@ -308,14 +310,14 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Payout Details"
+        heading={t("Trainer Payout Details")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Payout',
+            name: t('Payout'),
             href: paths.dashboard.payouts.root,
           },
-          { name: 'Trainer Payouts Details' },
+          { name: t('Trainer Payout Details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -329,7 +331,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
         aria-label="payout tabs"
       >
         {tabLabels.map((label) => (
-          <Tab key={label} label={label} />
+          <Tab key={label} label={t(label)} />
         ))}
       </Tabs>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -487,7 +489,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <Divider sx={{ my: 4, borderColor: '#ddd' }} />
 
       <Typography variant="h6" color="primary" sx={{ mt: 4, mb: 2 }}>
-        Payout History
+        {t("Payout History")}
       </Typography>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table stickyHeader>
@@ -504,7 +506,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
             {payoutHistoryList?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} sx={{ textAlign: 'center', fontStyle: 'italic' }}>
-                  No records available
+                  {t("No records available")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -540,10 +542,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                           item.status === 'Processed'
                             ? 'success'
                             : item.status === 'Pending'
-                            ? 'warning'
-                            : item.status === 'Failed'
-                            ? 'error'
-                            : 'default'
+                              ? 'warning'
+                              : item.status === 'Failed'
+                                ? 'error'
+                                : 'default'
                         }
                         variant="soft"
                         size="small"

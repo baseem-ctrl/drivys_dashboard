@@ -29,6 +29,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useLocation } from 'react-router';
 import { useGetSchoolById } from 'src/api/school';
 import PayoutCreateForm from './payout-create-form';
+import { useTranslation } from 'react-i18next';
 
 // Define types for the booking details
 interface BookingDetails {
@@ -41,6 +42,7 @@ interface BookingDetails {
 }
 
 export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = () => {
+  const { t } = useTranslation();
   const settings = useSettingsContext();
   const router = useRouter();
   const quickCreate = useBoolean();
@@ -81,13 +83,13 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   const tableCellStyle = { fontWeight: 'bold', fontSize: '1.125rem' };
 
   const tableCells = [
-    { label: 'School Name', width: '250px' },
-    { label: 'Trainer Name', width: '250px' },
-    { label: 'Booking ID', width: '150px' },
-    { label: 'Total Booking Revenue', width: '240px' },
-    { label: "Drivy's Commission", width: '250px' },
-    { label: 'School Earnings', width: '250px' },
-    { label: 'Trainer Earning', width: '250px' },
+    { label: t('School Name'), width: '250px' },
+    { label: t('Trainer Name'), width: '250px' },
+    { label: t('Booking ID'), width: '150px' },
+    { label: t('Total Booking Revenue'), width: '240px' },
+    { label: t("Drivy's Commission"), width: '250px' },
+    { label: t('School Earnings'), width: '250px' },
+    { label: t('Trainer Earning'), width: '250px' },
   ];
   const isSmallScreen = useMediaQuery('(max-width:600px)');
   const handleUserClick = (id) => {
@@ -168,49 +170,49 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
       <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Revenue Amount
+            {t("Total Revenue Amount")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalRevenueValue ?? '0'} AED
+            {totalRevenueValue ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Drivys Commission
+            {t("Total Drivys Commission")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalDrivysCommission ?? '0'} AED
+            {totalDrivysCommission ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total Trainer Earning
+            {t("Total Trainer Earning")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalTrainerEarning ?? '0'} AED
+            {totalTrainerEarning ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            Total School Earning
+            {t("Total School Earning")}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalVendorEarning ?? '0'} AED
+            {totalVendorEarning ?? '0'} {t("AED")}
           </Typography>
         </Box>
 
         <Typography variant="subtitle2" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
-          Amount Required From Admin is {amount} AED
+          {t("Amount Required From Admin is")}  {amount} {t("AED")}
         </Typography>
 
-        <Tooltip title={isPayoutDisabled ? 'No payout remaining' : ''} arrow>
+        <Tooltip title={isPayoutDisabled ? t('No payout remaining') : ''} arrow>
           <span>
             <Button
               variant="contained"
@@ -230,7 +232,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
                 quickCreate.onTrue();
               }}
             >
-              Payout
+              {t("Payout")}
             </Button>
           </span>
         </Tooltip>
@@ -240,14 +242,14 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="School Payout Details"
+        heading={t("School Payout Details")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Payout',
+            name: t('Payout'),
             href: paths.dashboard.payouts.school,
           },
-          { name: 'School Payouts Details' },
+          { name: t('School Payouts Details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

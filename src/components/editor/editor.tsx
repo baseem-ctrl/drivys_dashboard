@@ -6,6 +6,7 @@ import { alpha } from '@mui/material/styles';
 import { EditorProps } from './types';
 import { StyledEditor } from './styles';
 import Toolbar, { formats } from './toolbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ export default function Editor({
   sx,
   ...other
 }: EditorProps) {
+  const { t } = useTranslation();
   const modules = {
     toolbar: {
       container: `#${id}`,
@@ -50,7 +52,7 @@ export default function Editor({
         <ReactQuill
           modules={modules}
           formats={formats}
-          placeholder="Write something awesome..."
+          placeholder={t("Write something awesome...")}
           {...other}
         />
       </StyledEditor>

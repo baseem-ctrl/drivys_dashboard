@@ -29,6 +29,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { useGetAllLanguage } from 'src/api/language';
 import { createHomeListing } from 'src/api/homelisting';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ const displayTypeOptions = [
   { label: 'GRID', value: 'GRID' },
 ];
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
+  const { t } = useTranslation()
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
   );
@@ -246,19 +248,19 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                 {[
                   ...(details?.translations?.length
                     ? details.translations.map((t) => ({
-                        label: `Title (${t.locale})`,
-                        value: t.title ?? 'N/A',
-                      }))
-                    : [{ label: 'Title', value: 'N/A' }]),
-                  { label: 'Display Order', value: details?.display_order ?? 'NA' },
-                  { label: 'Catalogue Type', value: details?.catalogue_type ?? 'NA' },
-                  { label: 'Display Type', value: details?.display_type ?? 'NA' },
+                      label: `Title (${t.locale})`,
+                      value: t.title ?? 'N/A',
+                    }))
+                    : [{ label: t('Title'), value: 'N/A' }]),
+                  { label: t('Display Order'), value: details?.display_order ?? 'NA' },
+                  { label: t('Catalogue Type'), value: details?.catalogue_type ?? 'NA' },
+                  { label: t('Display Type'), value: details?.display_type ?? 'NA' },
                   {
-                    label: 'Is Active',
+                    label: t('Is Active'),
                     value: (
                       <FormControlLabel
                         control={<Switch checked={details?.is_active ?? false} disabled />}
-                        label={details?.is_active ? 'Active' : 'Inactive'}
+                        label={details?.is_active ? t('Active') : t('Inactive')}
                       />
                     ),
                   },

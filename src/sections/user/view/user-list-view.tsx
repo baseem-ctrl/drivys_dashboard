@@ -299,7 +299,7 @@ export default function UserListView() {
             }}
           >
             {userTypeOptions.map((tab) => (
-              <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+              <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
             ))}
           </Tabs>
 
@@ -365,30 +365,30 @@ export default function UserListView() {
                 <TableBody>
                   {usersLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell
-                            colSpan={
-                              filters.userTypes === 'TRAINER'
-                                ? TABLE_HEAD.trainer?.length
-                                : TABLE_HEAD.all?.length || 6
-                            }
-                          >
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell
+                          colSpan={
+                            filters.userTypes === 'TRAINER'
+                              ? TABLE_HEAD.trainer?.length
+                              : TABLE_HEAD.all?.length || 6
+                          }
+                        >
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <UserTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          currentUserType={filters?.userTypes}
-                          reload={() => revalidateUsers()}
-                        />
-                      ))}
+                      <UserTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        currentUserType={filters?.userTypes}
+                        reload={() => revalidateUsers()}
+                      />
+                    ))}
 
                   {tableData?.length === 0 && !usersLoading && <TableNoData notFound={notFound} />}
                 </TableBody>

@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { sendNotification } from 'src/api/notification';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialogSend from 'src/components/custom-dialog/confirm-dailog-send';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function NotificationDetails({ selectedNotification, setViewMode }) {
+  const { t } = useTranslation()
   const { user, title, description, data, sent_at } = selectedNotification;
   const { email, user_type, phone, locale } = user;
   const { no_of_sessions, session_dates, pickup_location, trainer_details } =
@@ -35,7 +37,7 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
       setLoading(true);
 
       const response = await sendNotification(notificationData);
-      enqueueSnackbar('Notification sent successfully!', {
+      enqueueSnackbar(t('Notification sent successfully!'), {
         variant: 'success',
       });
     } catch (error) {
@@ -84,20 +86,20 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                   pb: 1,
                 }}
               >
-                User Details
+                {t("User Details")}
               </Typography>
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>User ID:</strong> {user.id ?? 'N/A'}
+                      <strong>{t("User ID")}:</strong> {user.id ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Name:</strong> {user.name ?? 'N/A'}
+                      <strong>{t("Name:")}</strong> {user.name ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Email:</strong> {email ?? 'N/A'}
+                      <strong>{t("Email:")}</strong> {email ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -105,13 +107,13 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>Phone:</strong> {phone ?? 'N/A'}
+                      <strong>{t("Phone")}:</strong> {phone ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>User Type:</strong> {user_type ?? 'N/A'}
+                      <strong>{t("User Type")}:</strong> {user_type ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Locale:</strong> {locale ?? 'N/A'}
+                      <strong>{t("Locale")}:</strong> {locale ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -133,7 +135,7 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                       onClick={() => setConfirmDialogOpen(true)}
                       sx={{ color: 'success.main', width: '90%' }}
                     >
-                      Sent
+                      {t("Sent")}
                     </Button>
                   ) : (
                     <Button
@@ -142,7 +144,7 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                       onClick={() => setConfirmDialogOpen(true)}
                       sx={{ width: '90%' }}
                     >
-                      Send
+                      {t("Send")}
                     </Button>
                   )}
                 </Stack>
@@ -171,17 +173,17 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                   pb: 1,
                 }}
               >
-                Notification Details
+                {t("Notification Details")}
               </Typography>
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>Title:</strong> {title ?? 'N/A'}
+                      <strong>{t("Title")}:</strong> {title ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Description:</strong> {description ?? 'N/A'}
+                      <strong>{t("Description")}:</strong> {description ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -189,13 +191,13 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>No. of Sessions:</strong> {no_of_sessions ?? 'N/A'}
+                      <strong>{t("No. of Sessions")}:</strong> {no_of_sessions ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Pickup Location:</strong> {pickup_location ?? 'N/A'}
+                      <strong>{t("Pickup Location")}:</strong> {pickup_location ?? 'N/A'}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Trainer Name:</strong> {trainer_details?.name ?? 'N/A'}
+                      <strong>{t("Trainer Name")}:</strong> {trainer_details?.name ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -205,7 +207,7 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>Session Start Time:</strong> {session_dates?.start_time ?? 'N/A'}
+                      <strong>{t("Session Start Time")}:</strong> {session_dates?.start_time ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -213,7 +215,7 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <Typography variant="body2">
-                      <strong>Session End Time:</strong> {session_dates?.end_time ?? 'N/A'}
+                      <strong>{t("Session End Time")}:</strong> {session_dates?.end_time ?? 'N/A'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -225,8 +227,8 @@ export default function NotificationDetails({ selectedNotification, setViewMode 
       <ConfirmDialogSend
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
-        title="Send Notification"
-        content="Are you sure you want to send this notification?"
+        title={t("Send Notification")}
+        content={t("Are you sure you want to send this notification?")}
         onConfirm={handleSendNotification}
         loading={loading}
       />

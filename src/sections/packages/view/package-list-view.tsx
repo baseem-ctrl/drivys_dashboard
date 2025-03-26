@@ -49,22 +49,9 @@ import JobSearch from 'src/sections/job/job-search';
 import PackageSearch from '../package-search';
 import { STATUS_OPTIONS } from 'src/_mock/_school';
 import { deletePackage, useGetPackage } from 'src/api/package';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'locale', label: 'Language' },
-  { id: 'name', label: 'Name' },
-  // { id: 'session_inclusions', label: 'Session inclusions' },
-  { id: 'number_of_sessions', label: 'Number of sessions' },
-  { id: 'is_published', label: 'Is published' },
-  { id: 'Vendor', label: 'School' },
-  { id: 'drivys_commision', label: 'Drivys Commision' },
-  { id: 'category', label: 'Category' },
-  { id: 'action', label: 'Action' },
-
-  // { id: '' },
-];
 
 const defaultFilters: any = {
   name: '',
@@ -79,6 +66,22 @@ const defaultFilters: any = {
 // ----------------------------------------------------------------------
 
 export default function PackageListView() {
+
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'locale', label: t('Language') },
+    { id: 'name', label: t('Name') },
+    // { id: 'session_inclusions', label: 'Session inclusions' },
+    { id: 'number_of_sessions', label: t('Number of sessions') },
+    { id: 'is_published', label: t('Is published') },
+    { id: 'Vendor', label: t('School') },
+    { id: 'drivys_commision', label: t('Drivys Commision') },
+    { id: 'category', label: t('Category') },
+    { id: 'action', label: t('Action') },
+
+    // { id: '' },
+  ];
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
   const { enqueueSnackbar } = useSnackbar();
@@ -239,11 +242,11 @@ export default function PackageListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading="Package List"
+          heading={t("Package List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Package', href: paths.dashboard.package.root },
-            { name: 'List' },
+            { name: t('Dashboard'), href: paths.dashboard.root },
+            { name: t('Package'), href: paths.dashboard.package.root },
+            { name: t('List') },
           ]}
           action={
             <Button
@@ -251,7 +254,7 @@ export default function PackageListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Package
+              {t("New Package")}
             </Button>
           }
           sx={{
@@ -276,7 +279,7 @@ export default function PackageListView() {
                 table.onSelectAllRows(checked, tableData?.map((row) => row?.id))
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -293,33 +296,33 @@ export default function PackageListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                  // }
+                // onSelectAllRows={(checked) =>
+                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                // }
                 />
 
                 <TableBody>
                   {packageLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <PackageTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          revalidatePackage={revalidatePackage}
-                          onViewRow={() => handleViewRow(row?.id)}
-                          schoolList={schoolList}
-                        />
-                      ))}
+                      <PackageTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={(e: any) => handleEditRow(e, row.id)}
+                        revalidatePackage={revalidatePackage}
+                        onViewRow={() => handleViewRow(row?.id)}
+                        schoolList={schoolList}
+                      />
+                    ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}

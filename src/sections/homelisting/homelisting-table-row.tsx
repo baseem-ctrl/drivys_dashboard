@@ -27,6 +27,7 @@ import { paths } from 'src/routes/paths';
 import { createHomeListing } from 'src/api/homelisting';
 import HomeSliderDialog from '../home-slider/home-slider-dialog';
 import HomeListingDialog from './home-listing-dailogue';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +63,7 @@ export default function HomeListingTableRow({
   revalidateHomeListing,
   onViewRow,
 }: Props) {
+  const { t } = useTranslation();
   const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
   const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
@@ -197,7 +199,7 @@ export default function HomeListingTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{display_order || 'N/A'}</TableCell>
         <TableCell>
           <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
-            {is_active === 1 ? 'Active' : 'Not Active'}
+            {is_active === 1 ? t('Active') : t('Not Active')}
           </Label>
         </TableCell>
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
@@ -249,7 +251,7 @@ export default function HomeListingTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          {t("View")}
         </MenuItem>
 
         <MenuItem
@@ -259,7 +261,7 @@ export default function HomeListingTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
 
         <MenuItem
@@ -270,7 +272,7 @@ export default function HomeListingTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
       </CustomPopover>
     </>

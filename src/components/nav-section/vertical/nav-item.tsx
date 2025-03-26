@@ -10,6 +10,7 @@ import Iconify from '../../iconify';
 //
 import { NavItemProps, NavConfigProps } from '../types';
 import { StyledItem, StyledIcon, StyledDotIcon } from './styles';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,8 @@ export default function NavItem({
   ...other
 }: Props) {
   const { title, path, icon, info, children, disabled, caption, roles } = item;
+
+  const { t, i18n } = useTranslation()
 
   const subItem = depth !== 1;
 
@@ -83,7 +86,7 @@ export default function NavItem({
       {!!children && (
         <Iconify
           width={16}
-          icon={open ? 'eva:arrow-ios-downward-fill' : 'eva:arrow-ios-forward-fill'}
+          icon={open ? 'eva:arrow-ios-downward-fill' : i18n.language === 'ar' ? 'eva:arrow-ios-back-fill' : 'eva:arrow-ios-forward-fill'}
           sx={{ ml: 1, flexShrink: 0 }}
         />
       )}

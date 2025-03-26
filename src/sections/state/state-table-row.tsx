@@ -9,6 +9,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import StateCreateEditForm from './state-create-update';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ export default function StateTableRow({
   onDeleteRow,
   reload,
 }: Props) {
+  const { t } = useTranslation();
   const { id, is_published, order, translations, city } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -55,7 +57,7 @@ export default function StateTableRow({
 
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
           <Label variant="soft" color={is_published === 1 ? 'success' : 'error'}>
-            {is_published === 1 ? 'Published' : 'Unpublished'}
+            {is_published === 1 ? t('Published') : t('Unpublished')}
           </Label>
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
@@ -82,7 +84,7 @@ export default function StateTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -92,22 +94,22 @@ export default function StateTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

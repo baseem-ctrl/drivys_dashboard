@@ -13,6 +13,7 @@ import {
   Tooltip,
   RadioGroup,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -42,6 +43,7 @@ export default function BookingFilters({
   canReset,
   onResetFilters,
 }: Props) {
+  const { t } = useTranslation();
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
   const handleFilterPaymentStatus = (newValue: string) => {
@@ -62,10 +64,10 @@ export default function BookingFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t("Reset")}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -82,7 +84,7 @@ export default function BookingFilters({
   const renderPaymentStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Payment Status
+        {t("Payment Status")}
       </Typography>
       {paymentStatusEnum?.map((status) => (
         <FormControlLabel
@@ -93,7 +95,7 @@ export default function BookingFilters({
               onClick={() => handleFilterPaymentStatus(status.value)}
             />
           }
-          label={status.name}
+          label={t(status.name)}
         />
       ))}
     </Stack>
@@ -101,7 +103,7 @@ export default function BookingFilters({
   const renderPaymentMethod = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Payment Method
+        {t("Payment Method")}
       </Typography>
       {paymentMethodEnum?.map((method) => (
         <FormControlLabel
@@ -112,7 +114,7 @@ export default function BookingFilters({
               onChange={() => handleFilterPaymentMethod(method.value)}
             />
           }
-          label={method.name}
+          label={t(method.name)}
         />
       ))}
     </Stack>
@@ -130,7 +132,7 @@ export default function BookingFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer
@@ -151,12 +153,12 @@ export default function BookingFilters({
         <Scrollbar sx={{ px: 2.5, py: 3 }}>
           <Stack spacing={3}>
             {paymentStatusLoading || paymentStatusError ? (
-              <Typography color="error">Failed to load payment statuses</Typography>
+              <Typography color="error">{t("Failed to load payment statuses")}</Typography>
             ) : (
               renderPaymentStatus
             )}
             {paymentMethodLoading || paymentMethodError ? (
-              <Typography color="error">Failed to load payment methods</Typography>
+              <Typography color="error">{t("Failed to load payment methods")}</Typography>
             ) : (
               renderPaymentMethod
             )}

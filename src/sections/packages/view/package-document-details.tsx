@@ -15,6 +15,7 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { createOrUpdatePackageDocument, deletePackageDocumentById } from 'src/api/packageDocument';
+import { useTranslation } from 'react-i18next';
 
 type Document = {
   id: number;
@@ -39,6 +40,7 @@ export default function PackageDocumentDetails({
   reload,
   sessionNumber,
 }: Props) {
+  const { t } = useTranslation()
   const [editMode, setEditMode] = useState<number | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -288,7 +290,7 @@ export default function PackageDocumentDetails({
                               overflow: 'hidden',
                               border: '2px solid #ccc',
                             }}
-                            // onClick={() => document.getElementById('imageUpload')?.click()} // Triggers file input on click
+                          // onClick={() => document.getElementById('imageUpload')?.click()} // Triggers file input on click
                           >
                             {doc.file && doc.type === 'image' ? (
                               <img
@@ -309,7 +311,7 @@ export default function PackageDocumentDetails({
                                   margin: 0,
                                 }}
                               >
-                                No Image
+                                {t("No Image")}
                               </span>
                             ) : (
                               <span
@@ -326,7 +328,7 @@ export default function PackageDocumentDetails({
                                 }}
                                 onClick={() => handleFileClick(doc.file)}
                               >
-                                Click to open
+                                {t("Click to open")}
                               </span>
                             )}
                           </Box>
@@ -350,8 +352,7 @@ export default function PackageDocumentDetails({
                                   color: 'text.disabled',
                                 }}
                               >
-                                Preview unavailable for videos and PDFs. Click here to view the
-                                uploaded file
+                                {t("Preview unavailable for videos and PDFs. Click here to view the uploaded file")}
                               </Typography>
                             ))}
                         </Stack>
@@ -374,7 +375,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Title
+                              {t("Title")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -401,7 +402,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Description
+                              {t("Description")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -428,7 +429,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              File Name
+                              {t("File Name")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -460,7 +461,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Icon
+                              {t("Icon")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -482,12 +483,12 @@ export default function PackageDocumentDetails({
                               onClick={() => window.open(doc?.icon?.virtual_path, '_blank')}
                             >
                               {doc?.icon?.virtual_path
-                                ? doc.icon.virtual_path.length > 10
-                                  ? `${doc.icon.virtual_path.slice(
-                                      0,
-                                      8
-                                    )}...${doc.icon.virtual_path.slice(-14)}`
-                                  : doc.icon.virtual_path
+                                ? doc?.icon?.virtual_path.length > 10
+                                  ? `${doc?.icon?.virtual_path.slice(
+                                    0,
+                                    8
+                                  )}...${doc?.icon?.virtual_path.slice(-14)}`
+                                  : doc?.icon?.virtual_path
                                 : 'N/A'}
                             </Typography>
                           </Box>
@@ -505,7 +506,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Type
+                              {t("Type")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -534,7 +535,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Status
+                              {t("Status")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -561,7 +562,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
                             >
-                              Session No.
+                              {t("Session No.")}
                             </Typography>
                             <Typography
                               variant="h6"
@@ -636,7 +637,7 @@ export default function PackageDocumentDetails({
                                   margin: 0,
                                 }}
                               >
-                                No Image
+                                {t("No Image")}
                               </span>
                             )}
 
@@ -660,7 +661,7 @@ export default function PackageDocumentDetails({
                                 fontFamily: 'Public Sans, sans-serif',
                               }}
                             >
-                              Update photo
+                              {t("Update photo")}
                             </Box>
                           </Box>
 
@@ -685,7 +686,7 @@ export default function PackageDocumentDetails({
                           onClick={handleClickFileUpload}
                         >
                           <Typography sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}>
-                            Icon
+                            {t("Icon")}
                           </Typography>
                           <Typography
                             variant="h6"
@@ -704,10 +705,10 @@ export default function PackageDocumentDetails({
                           >
                             {uploadedFile
                               ? uploadedFile.name
-                              : `${doc.icon.virtual_path.slice(
-                                  0,
-                                  8
-                                )}...${doc.icon.virtual_path.slice(-14)}`}
+                              : `${doc?.icon?.virtual_path.slice(
+                                0,
+                                8
+                              )}...${doc?.icon?.virtual_path.slice(-14)}`}
                           </Typography>
                         </Box>
                         <input
@@ -723,7 +724,7 @@ export default function PackageDocumentDetails({
                           render={({ field }) => (
                             <TextField
                               {...field}
-                              label="Title"
+                              label={t("Title")}
                               variant="outlined"
                               error={Boolean(errors.title)}
                               helperText={errors.title?.message}
@@ -736,7 +737,7 @@ export default function PackageDocumentDetails({
                           render={({ field }) => (
                             <TextField
                               {...field}
-                              label="Description"
+                              label={t("Description")}
                               variant="outlined"
                               error={Boolean(errors.description)}
                               helperText={errors.description?.message}
@@ -751,7 +752,7 @@ export default function PackageDocumentDetails({
                             <TextField
                               {...field}
                               select
-                              label="Status"
+                              label={t("Status")}
                               variant="outlined"
                               fullWidth
                               error={Boolean(errors.status)}
@@ -773,7 +774,7 @@ export default function PackageDocumentDetails({
                             <TextField
                               {...field}
                               select
-                              label="Type"
+                              label={t("Type")}
                               variant="outlined"
                               fullWidth
                               error={Boolean(errors.type)}
@@ -793,7 +794,7 @@ export default function PackageDocumentDetails({
                           render={({ field }) => (
                             <TextField
                               {...field}
-                              label="Session"
+                              label={t("Session")}
                               variant="outlined"
                               error={Boolean(errors.session)}
                               helperText={errors.session?.message}
@@ -808,10 +809,10 @@ export default function PackageDocumentDetails({
                             type="submit"
                             disabled={isSubmitting}
                           >
-                            Save
+                            {t("Save")}
                           </Button>
                           <Button variant="outlined" onClick={handleCancel}>
-                            Cancel
+                            {t("Cancel")}
                           </Button>
                         </Stack>
                       </Stack>
@@ -822,7 +823,7 @@ export default function PackageDocumentDetails({
             </Grid>
           ) : (
             <Typography variant="h6" align="center">
-              No documents available.
+              {t("No documents available.")}
             </Typography>
           )}
         </Scrollbar>
@@ -836,22 +837,22 @@ export default function PackageDocumentDetails({
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={handleClickEdit}>Edit</MenuItem>
-        <MenuItem onClick={() => openDeleteDialog(docID)}>Delete</MenuItem>
+        <MenuItem onClick={handleClickEdit}>{t("Edit")}</MenuItem>
+        <MenuItem onClick={() => openDeleteDialog(docID)}>{t("Delete")}</MenuItem>
       </Menu>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={() => setConfirm({ ...confirm, value: false })}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           handleDelete(confirm.id);
           setConfirm({ ...confirm, value: false });
         }}
         action={
           <Button variant="contained" color="error" onClick={() => handleDelete(confirm.id)}>
-            Delete
+            {t("Delete")}
           </Button>
         }
       />

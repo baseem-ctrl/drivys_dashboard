@@ -20,6 +20,7 @@ import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components
 import { createCityTranslation, updateCityTranslation } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
 import { IconButton, Tooltip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,8 @@ type Props = {
 };
 
 export default function CityCreateEditForm({ title, currentCity, open, onClose, reload }: Props) {
+
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -89,11 +92,11 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   const rescheduleValue = watch('free_reschedule_before');
   let tooltipTitle;
   if (!rescheduleType) {
-    tooltipTitle = 'A reschedule fee applies every time the student reschedules the slot.';
+    tooltipTitle = t('A reschedule fee applies every time the student reschedules the slot.');
   } else if (rescheduleType === 1) {
-    tooltipTitle = `The reschedule fee applies only after ${rescheduleValue} day(s).`;
+    tooltipTitle = `${t("The reschedule fee applies only after")} ${rescheduleValue} ${t("day(s).")} `;
   } else {
-    tooltipTitle = `The reschedule fee applies only after ${rescheduleValue} hour(s).`;
+    tooltipTitle = ` ${t("The reschedule fee applies only after")} ${rescheduleValue} ${t("hour(s).")} `;
   }
 
   useEffect(() => {
@@ -187,7 +190,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{t(title)}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -210,7 +213,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
             </MenuItem>
           ))}
         </Select> */}
-            <RHFSelect name="locale" label="Locale">
+            <RHFSelect name="locale" label={t("Locale")}>
               <MenuItem value="" disabled>
                 Select Locale
               </MenuItem>
@@ -226,30 +229,30 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
                 </MenuItem>
               )}
             </RHFSelect>
-            <RHFTextField name="name" label="Name" />
-            <RHFSwitch name="published" label="Published" />
-            <RHFSwitch name="is_certificate_available" label="Is Certificate Available" />
+            <RHFTextField name="name" label={t("Name")} />
+            <RHFSwitch name="published" label={t("Published")} />
+            <RHFSwitch name="is_certificate_available" label={t("Is Certificate Available")} />
             {values?.is_certificate_available && (
               <>
                 <RHFTextField
                   name="certificate_price"
-                  label="Certificate Price"
-                  prefix="AED"
+                  label={t("Certificate Price")}
+                  prefix={t("AED")}
                   type="number"
                 />
-                <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
+                <RHFTextField name="certificate_link" label={t("Certificate Link")} type="url" />
               </>
             )}
             <RHFTextField
               name="reschedule_fee"
-              label="Reschedule Fee"
+              label={t("Reschedule Fee")}
               type="number"
               inputProps={{ min: 2, max: 999999 }}
             />
-            <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
-            <RHFTextField name="min_price" label="Min. Price" type="number" />
+            <RHFTextField name="price_per_km" label={t("Price Per Km")} type="number" />
+            <RHFTextField name="min_price" label={t("Min. Price")} type="number" />
             <Box display="flex" alignItems="center" gap={1}>
-              <RHFSelect name="free_reschedule_before_type" label="Free Reschedule Before Type">
+              <RHFSelect name="free_reschedule_before_type" label={t("Free Reschedule Before Type")}>
                 <MenuItem value={1}>Day</MenuItem>
                 <MenuItem value={0}>Hour</MenuItem>
               </RHFSelect>
@@ -258,7 +261,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               {' '}
               <RHFTextField
                 name="free_reschedule_before"
-                label="Free Reschedule Before"
+                label={t("Free Reschedule Before")}
                 type="number"
               />
               <Tooltip title={tooltipTitle} arrow placement="top">
@@ -272,11 +275,11 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentCity?.id ? 'Update' : 'Create'}
+            {currentCity?.id ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

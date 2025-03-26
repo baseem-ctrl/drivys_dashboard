@@ -28,19 +28,24 @@ import {
 
 import { useGetAllVendorCommissionList } from 'src/api/commission';
 import CertificateCommissionRow from '../trainer-commission-table-row';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer Name', width: 180 },
-  { id: 'vendor-name', label: 'School Name', width: 180 },
-  { id: 'trainer-certificate-commission', label: 'Trainer Commission', width: 180 },
-  { id: 'action', label: '', width: 180 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function TrainerCommission() {
+  const { t } = useTranslation()
+
+  const TABLE_HEAD = [
+    { id: 'trainer-name', label: t('Trainer Name'), width: 180 },
+    { id: 'vendor-name', label: t('School Name'), width: 180 },
+    { id: 'trainer-certificate-commission', label: t('Trainer Commission'), width: 180 },
+    { id: 'action', label: '', width: 180 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -67,14 +72,14 @@ export default function TrainerCommission() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Commission"
+        heading={t("Trainer Commission")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Commission',
+            name: t('Commission'),
             href: paths.dashboard.commission.root,
           },
-          { name: 'Trainer Commission' },
+          { name: t('Trainer Commission') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -114,20 +119,20 @@ export default function TrainerCommission() {
                 <TableBody>
                   {commissionsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <CertificateCommissionRow
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateVendorCommissions}
-                        />
-                      ))}
+                      <CertificateCommissionRow
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateVendorCommissions}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

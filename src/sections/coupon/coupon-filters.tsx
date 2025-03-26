@@ -23,6 +23,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { ColorPicker } from 'src/components/color-utils';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Autocomplete, Chip, TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -71,6 +72,7 @@ export default function CouponFilters({
   discountOptions,
   activeOptions,
 }: Props) {
+  const { t } = useTranslation();
   const marksLabel = [...Array(21)].map((_, index) => {
     const value = index * 10;
 
@@ -133,10 +135,10 @@ export default function CouponFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t("Reset")}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -153,7 +155,7 @@ export default function CouponFilters({
   const renderDiscountType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        Discount Types
+        {t("Discount Types")}
       </Typography>
       <Autocomplete
         disableCloseOnSelect
@@ -161,7 +163,7 @@ export default function CouponFilters({
         getOptionLabel={(option) => option}
         value={filters.discount_type_id}
         onChange={(event, newValue) => handleFilterDiscount(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Discount type" {...params} />}
+        renderInput={(params) => <TextField placeholder={t("Select Discount type")} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option}>
             {option}
@@ -185,7 +187,7 @@ export default function CouponFilters({
   const renderIsActive = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 2 }}>
-        Status
+        {t("Status")}
       </Typography>
       {activeOptions?.map((option) => (
         <FormControlLabel
@@ -200,7 +202,7 @@ export default function CouponFilters({
               onClick={() => handleFilterActive(option)}
             />
           }
-          label={option}
+          label={t(option)}
           sx={{
             ...(option === 'Show All' && {
               textTransform: 'capitalize',
@@ -214,7 +216,7 @@ export default function CouponFilters({
   const renderPrice = (
     <Stack>
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Price
+        {t("Price")}
       </Typography>
 
       <Stack direction="row" spacing={5} sx={{ my: 2 }}>
@@ -225,11 +227,11 @@ export default function CouponFilters({
 
   const renderDateRange = (
     <Stack spacing={1.5} sx={{ mb: 3 }}>
-      <Typography variant="subtitle2">Range</Typography>
+      <Typography variant="subtitle2">{t("Range")}</Typography>
 
       <Stack spacing={2}>
         <DatePicker
-          label="Start date"
+          label={t("Start date")}
           value={filters.starting_date}
           onChange={(newValue) => {
             handleFilterStartDate(newValue);
@@ -237,13 +239,13 @@ export default function CouponFilters({
         />
 
         <DatePicker
-          label="End date"
+          label={t("End date")}
           value={filters.ending_date}
           onChange={handleFilterEndDate}
           slotProps={{
             textField: {
               error: dateError,
-              helperText: dateError && 'End date must be later than start date',
+              helperText: dateError && t('End date must be later than start date'),
             },
           }}
         />
@@ -263,7 +265,7 @@ export default function CouponFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer
@@ -304,6 +306,7 @@ type InputRangeProps = {
 };
 
 function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
+  const { t } = useTranslation();
   const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
     onFilters(filterName, value); // Call the function with max value
@@ -321,7 +324,7 @@ function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
             fontWeight: 'fontWeightSemiBold',
           }}
         >
-          Discount Price
+          {t("Discount Price")}
         </Typography>
 
         <InputBase

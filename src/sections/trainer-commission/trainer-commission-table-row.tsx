@@ -8,10 +8,12 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useAuthContext } from 'src/auth/hooks';
 import { updateCommission } from 'src/api/commission';
 import { useGetSchoolById } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function TrainerCommissionRow({ reload, row }) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const router = useRouter();
@@ -61,11 +63,11 @@ export default function TrainerCommissionRow({ reload, row }) {
       };
 
       await updateCommission(body);
-      enqueueSnackbar('Commission updated successfully', { variant: 'success' });
+      enqueueSnackbar(t('Commission updated successfully'), { variant: 'success' });
       setIsEditing(false);
       reload();
     } catch (error) {
-      enqueueSnackbar('Failed to update commission', { variant: 'error' });
+      enqueueSnackbar(t('Failed to update commission'), { variant: 'error' });
     } finally {
       setIsUpdating(false);
     }
@@ -123,9 +125,8 @@ export default function TrainerCommissionRow({ reload, row }) {
               <Typography sx={{ color: error ? 'error.main' : 'primary.main', fontSize: 14 }}>
                 {' '}
                 {error ||
-                  `School Commission must be between ${
-                    minCommission !== null ? `${minCommission}%` : 'N/A'
-                  } and ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+                  `${t("School Commission must be between")} ${minCommission !== null ? `${minCommission}%` : 'N/A'
+                  } ${t("and")} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
               </Typography>
             }
           />
@@ -143,7 +144,7 @@ export default function TrainerCommissionRow({ reload, row }) {
               disabled={isUpdating}
               sx={{ marginRight: '10px' }}
             >
-              Save
+              {t("Save")}
             </Button>
             <Button
               variant="outlined"
@@ -154,7 +155,7 @@ export default function TrainerCommissionRow({ reload, row }) {
               }}
               disabled={isUpdating}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           </>
         ) : (
@@ -164,7 +165,7 @@ export default function TrainerCommissionRow({ reload, row }) {
             onClick={() => setIsEditing(true)}
             disabled={isUpdating}
           >
-            {isUpdating ? 'Updating...' : 'Update Commission'}
+            {isUpdating ? t('Updating...') : t('Update Commission')}
           </Button>
         )}
       </TableCell>

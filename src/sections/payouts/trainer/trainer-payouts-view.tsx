@@ -35,6 +35,7 @@ import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useGetUsers } from 'src/api/users';
 import { useRouter } from 'src/routes/hooks';
 import PayoutCreateForm from '../payout-create-form';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ const PAYOUT_SORT_OPTIONS = [
   { value: 'paid_cash_bookings', label: 'Cash Bookings' },
 ];
 export default function TrainerPayoutPage() {
+  const { t } = useTranslation();
   const settings = useSettingsContext();
   const router = useRouter();
   const quickCreate = useBoolean();
@@ -185,16 +187,16 @@ export default function TrainerPayoutPage() {
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
     const fields = [
-      { label: 'Trainer Name', value: item?.trainer_name ?? 'NA' },
-      { label: 'School Name', value: item?.vendor_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: t('Trainer Name'), value: item?.trainer_name ?? 'NA' },
+      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
-        label: 'Last Paid',
+        label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
             <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
             <Chip
-              label={`Time: ${lastPaidDate}`}
+              label={`${t("Time")}: ${lastPaidDate}`}
               size="small"
               color="success"
               variant="soft"
@@ -205,15 +207,15 @@ export default function TrainerPayoutPage() {
       },
 
       {
-        label: 'Total Earnings',
-        value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
+        label: t('Total Earnings'),
+        value: `${item?.total_amount_earned_from_booking} ${t("AED")}` ?? '0 AED',
       },
-      { label: 'Earnings In Cash', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
-      { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
+      { label: t('Earnings In Cash'), value: `${item?.total_cash_amount_received} ${t("AED")}` ?? 'NA' },
+      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
       {
-        label: 'Action',
+        label: t('Action'),
         value: (
-          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
+          <Tooltip title={!isPayoutAvailable ? t('No payout remaining') : ''} arrow>
             <span>
               {' '}
               <Button
@@ -227,7 +229,7 @@ export default function TrainerPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                Payouts
+                {t("Payouts")}
               </Button>
             </span>
           </Tooltip>
@@ -278,11 +280,11 @@ export default function TrainerPayoutPage() {
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
     const fields = [
-      { label: 'Trainer', value: item?.trainer_name ?? 'NA' },
-      { label: 'School', value: item?.vendor_name ?? 'NA' },
-      { label: 'Total Bookings', value: item?.total_paid_and_completed_booking ?? 0 },
+      { label: t('Trainer'), value: item?.trainer_name ?? 'NA' },
+      { label: t('School'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
-        label: 'Last Paid',
+        label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
             <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
@@ -297,13 +299,13 @@ export default function TrainerPayoutPage() {
         ),
       },
       {
-        label: 'Total Earnings',
+        label: t('Total Earnings'),
         value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
       },
-      { label: 'Earnings In Cash', value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
-      { label: 'Admin Payable Amount', value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
+      { label: t('Earnings In Cash'), value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
+      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
       {
-        label: 'Action',
+        label: t('Action'),
         value: (
           <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
             <span>
@@ -357,14 +359,14 @@ export default function TrainerPayoutPage() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Payout"
+        heading={t("Trainer Payout")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Payout',
+            name: t('Payout'),
             href: paths.dashboard.payouts.root,
           },
-          { name: 'Trainer Payouts' },
+          { name: t('Trainer Payouts') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

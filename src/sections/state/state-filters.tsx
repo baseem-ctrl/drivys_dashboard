@@ -16,6 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +52,7 @@ export default function StateFilters({
   selectedOrder,
   handleOrderChange,
 }: Props) {
+  const { t } = useTranslation();
   // Function that handles the filter using locale
   const handleFilterLocale = (event: React.ChangeEvent<{ value: unknown }>) => {
     const newValue = event.target.value as string;
@@ -73,7 +75,7 @@ export default function StateFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
       <Tooltip title="Reset">
@@ -93,12 +95,12 @@ export default function StateFilters({
   const renderLocale = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Locale
+        {t("Locale")}
       </Typography>
       <FormControl fullWidth variant="outlined">
         <Select value={filters?.locale || ''} onChange={handleFilterLocale} displayEmpty>
           <MenuItem value="" disabled>
-            Select Locale
+            {t("Select Locale")}
           </MenuItem>
           {localeOptions?.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -113,7 +115,7 @@ export default function StateFilters({
   const renderPublishStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 1 }}>
-        Publish Status
+        {t("Publish Status")}
       </Typography>
       <FormControl>
         <FormControlLabel
@@ -124,7 +126,7 @@ export default function StateFilters({
               value="published"
             />
           }
-          label="Show All Published"
+          label={t("Show All Published")}
         />
         <FormControlLabel
           control={
@@ -134,7 +136,7 @@ export default function StateFilters({
               value="unpublished"
             />
           }
-          label="Show All Unpublished"
+          label={t("Show All Un Published")}
         />
       </FormControl>
     </Stack>
@@ -144,7 +146,7 @@ export default function StateFilters({
   const renderOrderInput = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 2 }}>
-        Display Order ID
+        {t("Display Order ID")}
       </Typography>
       <TextField
         value={selectedOrder === undefined ? ' ' : selectedOrder}
@@ -166,7 +168,7 @@ export default function StateFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer

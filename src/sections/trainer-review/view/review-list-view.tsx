@@ -31,20 +31,25 @@ import { useGetTrainerReview } from 'src/api/review';
 import TrainerReviewRow from '../review-table-row';
 import ReviewFilters from '../review-filters';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 
-// ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer', width: 180 },
-  { id: 'trainer-email', label: 'Trainer Email', width: 180 },
-  { id: 'trainer-phone', label: 'Trainer Phone', width: 180 },
-  { id: 'avg-rating', label: 'Average Rating', width: 180 },
-  { id: 'reviews', label: 'Reviews', width: 180 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function TrainerReviewListView() {
+  const { t } = useTranslation();
+
+  // ----------------------------------------------------------------------
+
+  const TABLE_HEAD = [
+    { id: 'trainer-name', label: t('Trainer'), width: 180 },
+    { id: 'trainer-email', label: t('Trainer Email'), width: 180 },
+    { id: 'trainer-phone', label: t('Trainer Phone'), width: 180 },
+    { id: 'avg-rating', label: t('Average Rating'), width: 180 },
+    { id: 'reviews', label: t('Reviews'), width: 180 },
+  ];
+
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -150,17 +155,17 @@ export default function TrainerReviewListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Review List"
+        heading={t("Trainer Review List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Review',
+            name: t('Review'),
             href: paths.dashboard.review.root,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Trainer Review' },
+          { name: t('Trainer Review') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -201,21 +206,21 @@ export default function TrainerReviewListView() {
                 <TableBody>
                   {trainerReviewsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : tableData?.map((row) => (
-                        <TrainerReviewRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateTrainerReviews}
-                        />
-                      ))}
+                      <TrainerReviewRow
+                        userType={user?.user?.user_type}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateTrainerReviews}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

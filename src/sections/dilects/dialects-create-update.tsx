@@ -19,6 +19,7 @@ import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import { createOrUpdateDialect } from 'src/api/dialect';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   title: string;
@@ -35,6 +36,7 @@ export default function DialectCreateEditForm({
   onClose,
   reload,
 }: Props) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -109,34 +111,34 @@ export default function DialectCreateEditForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <FormProvider {...methods}>
-        <DialogTitle>{currentDialect ? title : 'Create Dialect'}</DialogTitle>
+        <DialogTitle>{currentDialect ? t(title) : t('Create Dialect')}</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="language_name" label="Language Name" />
+                <RHFTextField name="language_name" label={t("Language Name")} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="dialect_name" label="Dialect Name" />
+                <RHFTextField name="dialect_name" label={t("Dialect Name")} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="keywords" label="Keywords" />
+                <RHFTextField name="keywords" label={t("Keywords")} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="description" label="Description" multiline rows={2} />
+                <RHFTextField name="description" label={t("Description")} multiline rows={2} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="order" label="Order" type="number" />
+                <RHFTextField name="order" label={t("Order")} type="number" />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFSwitch name="is_published" label="Published" />
+                <RHFSwitch name="is_published" label={t("Published")} />
               </Grid>
             </Grid>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <LoadingButton
             type="submit"
@@ -144,7 +146,7 @@ export default function DialectCreateEditForm({
             loading={isSubmitting}
             onClick={handleSubmit(onSubmit)}
           >
-            {currentDialect?.id ? 'Update' : 'Create'}
+            {currentDialect?.id ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -6,6 +6,8 @@ import { Typography } from '@mui/material';
 import { useGetStudents } from 'src/api/student';
 import { UserCardsView } from './view';
 import { useEffect, useState } from 'react';
+import { cond } from 'lodash';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -13,6 +15,7 @@ type Props = {
 };
 
 export default function StudentDetailsContent({ id }: Props) {
+  const { t } = useTranslation();
   const [tableData, setTableData] = useState([]);
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { students, studentsLoading, studentsLength, revalidateStudents } = useGetStudents({
@@ -56,7 +59,7 @@ export default function StudentDetailsContent({ id }: Props) {
         </>
       ) : (
         <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-          No students under this trainer
+          {t("No students under this trainer")}
         </Typography>
       )}
     </>

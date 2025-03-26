@@ -8,6 +8,7 @@ import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
 import { updateCommission } from 'src/api/commission';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 import { useGetSchoolById } from 'src/api/school';
 // ----------------------------------------------------------------------
 
@@ -26,6 +27,7 @@ interface StudentReviewRowProps {
 export default function CertificateCommissionRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
+  const { t } = useTranslation();
 
   const router = useRouter();
   const {
@@ -65,11 +67,11 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
       };
 
       await updateCommission(body);
-      enqueueSnackbar('Commission updated successfully', { variant: 'success' });
+      enqueueSnackbar(t('Commission updated successfully'), { variant: 'success' });
       setIsEditing(false);
       reload();
     } catch (error) {
-      enqueueSnackbar('Failed to update commission', { variant: 'error' });
+      enqueueSnackbar(t('Failed to update commission'), { variant: 'error' });
     } finally {
       setIsUpdating(false);
       reload();
@@ -127,9 +129,8 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               <Typography sx={{ color: error ? 'error.main' : 'primary.main', fontSize: 14 }}>
                 {' '}
                 {error ||
-                  `Certificate Commission must be between ${
-                    minCommission !== null ? `${minCommission}%` : 'N/A'
-                  } and ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+                  `${t("Certificate Commission must be between")} ${minCommission !== null ? `${minCommission}%` : 'N/A'
+                  } ${t("and")} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
               </Typography>
             }
           />
@@ -147,7 +148,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               disabled={isUpdating}
               sx={{ marginRight: '10px' }}
             >
-              Save
+              {t("Save")}
             </Button>
             <Button
               variant="outlined"
@@ -158,7 +159,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               }}
               disabled={isUpdating}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
           </>
         ) : (
@@ -168,7 +169,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
             onClick={() => setIsEditing(true)}
             disabled={isUpdating}
           >
-            {isUpdating ? 'Updating...' : 'Update Commission'}
+            {isUpdating ? t('Updating...') : t('Update Commission')}
           </Button>
         )}
       </TableCell>

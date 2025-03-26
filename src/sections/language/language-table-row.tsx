@@ -20,6 +20,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import LanguageCreateEditForm from './language-create-update';
 import { deleteLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,9 @@ export default function LanguageTableRow({
   onDeleteRow,
   reload,
 }: Props) {
+
+  const { t } = useTranslation();
+
   const { name, language_culture, flag, published, display_order, id } = row;
 
   const confirm = useBoolean();
@@ -64,7 +68,7 @@ export default function LanguageTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Label variant="soft" color={published === 1 ? 'success' : 'error'}>
-            {published === 1 ? 'Published' : 'Un published'}
+            {published === 1 ? t('Published') : t('Un published')}
           </Label>
         </TableCell>
 
@@ -99,7 +103,7 @@ export default function LanguageTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -109,15 +113,15 @@ export default function LanguageTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();

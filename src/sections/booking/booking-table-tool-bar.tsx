@@ -12,6 +12,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from 'date-fns/locale';
 import '../overview/e-commerce/view/CustomDateRangePicker.css';
+import { useTranslation } from 'react-i18next';
 
 export default function BookingTableToolbar({
   filters,
@@ -21,6 +22,7 @@ export default function BookingTableToolbar({
   studentOptions,
   loading,
 }: any) {
+  const { t } = useTranslation();
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
   const [schoolOptions, setSchoolOptions] = useState([]);
@@ -128,7 +130,7 @@ export default function BookingTableToolbar({
           onChange={(event, newValue) => handleChange('vendor')(newValue?.value || '')}
           renderInput={(params) => (
             <TextField
-              placeholder="Select School"
+              placeholder={t("Select School")}
               {...params}
               onChange={(e) => setSearch(e.target.value)}
               fullWidth
@@ -144,10 +146,10 @@ export default function BookingTableToolbar({
 
       <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
         <TextField
-          label="Search by Name"
+          label={t("Search by Name")}
           value={filters.search || ''}
           onChange={(e) => handleChange('search')(e.target.value)}
-          placeholder="Search by student, driver, or school name"
+          placeholder={t("Search by student, driver, or school name")}
           fullWidth
         />
         {filters.search && (
@@ -207,7 +209,7 @@ export default function BookingTableToolbar({
             },
           }}
         >
-          Select Date
+          {t("Select Date")}
         </Button>
         {filters.start_date && filters.end_date && (
           <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 2 }}>

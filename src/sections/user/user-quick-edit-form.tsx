@@ -33,6 +33,7 @@ import { IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetSchool } from 'src/api/school';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ type Props = {
 };
 
 export default function UserQuickEditForm({ currentUser, open, onClose, reload }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuthContext();
   const [searchValue, setSearchValue] = useState('');
 
@@ -175,7 +177,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Quick Update</DialogTitle>
+        <DialogTitle>{t("Quick Update")}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -188,7 +190,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             }}
             pt={3}
           >
-            <RHFSelect name="user_type" label="User Type">
+            <RHFSelect name="user_type" label={t("User Type")}>
               {filteredValues?.length > 0 &&
                 filteredValues?.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -196,14 +198,14 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                   </MenuItem>
                 ))}
             </RHFSelect>
-            <RHFTextField name="name" label="Full Name" />
+            <RHFTextField name="name" label={t("Full Name")} />
             {values.user_type === 'TRAINER' && (
-              <RHFTextField name="name_ar" label="Name (Ar)" />
+              <RHFTextField name="name_ar" label={t("Name (Ar)")} />
             )}{' '}
-            <RHFTextField name="email" label="Email Address" />
+            <RHFTextField name="email" label={t("Email Address")} />
             <RHFTextField
               name="password"
-              label="Password"
+              label={t("Password")}
               type={password.value ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
@@ -218,12 +220,11 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             {values.user_type === 'TRAINER' && (
               <RHFAutocompleteSearch
                 name="vendor_id"
-                label="Select School"
-                placeholder="Search School..."
+                label={t("Select School")}
+                placeholder={t("Search School...")}
                 options={schoolList?.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}${
-                    item.email ? ` - ${item.email}` : ''
-                  }`,
+                  label: `${item.vendor_translations?.[0]?.name}${item.email ? ` - ${item.email}` : ''
+                    }`,
                   value: item.id,
                 }))}
                 setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
@@ -234,7 +235,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={1}>
               <RHFTextField
                 name="country_code"
-                label="Country"
+                label={t("Country")}
                 sx={{ maxWidth: 100 }}
                 prefix="+"
                 error={!!errors.country_code}
@@ -242,23 +243,23 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
               />
               <RHFTextField
                 name="phone"
-                label="Phone Number"
+                label={t("Phone Number")}
                 sx={{ flex: 1 }}
                 error={!!errors.phone}
                 helperText={errors.phone?.message}
               />
             </Box>
-            <RHFSwitch name="is_active" label="Is Active" />{' '}
+            <RHFSwitch name="is_active" label={t("Is Active")} />{' '}
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Update
+            {t("Update")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -10,6 +10,7 @@ import Image from '../image';
 //
 import { UploadProps } from './types';
 import RejectionFiles from './errors-rejection-files';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +32,8 @@ export default function UploadAvatar({
   });
 
   const hasFile = !!file;
+
+  const { t } = useTranslation()
 
   const hasError = isDragReject || !!error;
 
@@ -85,7 +88,7 @@ export default function UploadAvatar({
     >
       <Iconify icon="solar:camera-add-bold" width={32} />
 
-      <Typography variant="caption">{file ? 'Update photo' : 'Upload photo'}</Typography>
+      <Typography variant="caption">{file ? t('Update photo') : t('Upload photo')}</Typography>
     </Stack>
   );
 

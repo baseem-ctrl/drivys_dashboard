@@ -16,6 +16,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { deleteReview } from 'src/api/review';
 import { useSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 type Review = {
   session_id: number;
@@ -42,6 +43,8 @@ type Props = {
 
 const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const { t } = useTranslation();
 
   const router = useRouter();
   const handleBookingClick = (booking_id) => {
@@ -82,11 +85,11 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ borderTopLeftRadius: '12px' }}>Session ID</TableCell>
-                  <TableCell>Student Name</TableCell>
-                  <TableCell>Booking ID</TableCell>
-                  <TableCell>Rating</TableCell>
-                  <TableCell>Comments</TableCell>
+                  <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t("Session ID")}</TableCell>
+                  <TableCell>{t("Student Name")}</TableCell>
+                  <TableCell>{t("Booking ID")}</TableCell>
+                  <TableCell>{t("Rating")}</TableCell>
+                  <TableCell>{t("Comments")}</TableCell>
                   <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                 </TableRow>
               </TableHead>
@@ -149,9 +152,9 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                           'N/A'
                         )}
                       </TableCell>
-                      <TableCell>{review?.user_comments || 'No Comments'}</TableCell>
+                      <TableCell>{review?.user_comments || t('No Comments')}</TableCell>
                       <TableCell>
-                        <Tooltip title={review?.user_comments ? '' : 'No comments to delete'} arrow>
+                        <Tooltip title={review?.user_comments ? '' : t('No comments to delete')} arrow>
                           <span>
                             <Button
                               variant="contained"
@@ -162,7 +165,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                               onClick={() => handleDeleteComment(review?.session_id)}
                               disabled={!review.user_comments}
                             >
-                              Delete
+                              {t("Delete")}
                             </Button>
                           </span>
                         </Tooltip>
@@ -174,7 +177,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                     <TableCell colSpan={6} align="center">
                       <Box sx={{ py: 2 }}>
                         <Typography variant="h6" color="textSecondary">
-                          No reviews available under this trainer
+                          {t("No reviews available under this trainer")}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -187,7 +190,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
       ) : (
         <Box sx={{ py: 2 }}>
           <Typography variant="h6" color="textSecondary">
-            No reviews available under this trainer
+            {t("No reviews available under this trainer")}
           </Typography>
         </Box>
       )}

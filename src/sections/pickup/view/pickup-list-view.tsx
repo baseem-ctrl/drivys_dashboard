@@ -36,20 +36,9 @@ import PickupCreateEditForm from '../pickup-new-edit-form';
 import { deleteCityPickupExclusionById, useGetCityPickupExclusionList } from 'src/api/pickup';
 import PickupFilters from '../pickup-filters';
 import PickupSearch from '../pickup-search';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'city_id', label: 'City ID' },
-
-  { id: 'start_date', label: 'Start Date', width: 180 },
-  { id: 'end_date', label: 'End Date', width: 180 },
-  { id: 'start_time', label: 'Start Time', width: 180 },
-  { id: 'end_time', label: 'End Time', width: 180 },
-
-  { id: 'status', label: 'Status', width: 180 },
-  { id: 'action2', label: '', width: 88 },
-];
 
 const defaultFilters: IPickupTableFilters = {
   name: '',
@@ -64,6 +53,21 @@ const defaultFilters: IPickupTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function PickupListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'city_id', label: t('City ID') },
+
+    { id: 'start_date', label: t('Start Date'), width: 180 },
+    { id: 'end_date', label: t('End Date'), width: 180 },
+    { id: 'start_time', label: t('Start Time'), width: 180 },
+    { id: 'end_time', label: t('End Time'), width: 180 },
+
+    { id: 'status', label: t('Status'), width: 180 },
+    { id: 'action2', label: '', width: 88 },
+  ];
+
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -105,7 +109,7 @@ export default function PickupListView() {
       const response = await deleteCityPickupExclusionById(cityId);
 
       if (response) {
-        enqueueSnackbar('Pickup deleted successfully!', { variant: 'success' });
+        enqueueSnackbar(t('Pickup deleted successfully!'), { variant: 'success' });
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -169,17 +173,17 @@ export default function PickupListView() {
         }}
       >
         <CustomBreadcrumbs
-          heading="List"
+          heading={t("List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: t('Dashboard'), href: paths.dashboard.root },
             {
-              name: 'Pickup',
+              name: t('Pickup'),
               href: paths.dashboard.system.city,
               onClick: (event) => {
                 setViewMode('table');
               },
             },
-            { name: 'List' },
+            { name: t('List') },
           ]}
           action={
             viewMode === 'table' && (
@@ -190,7 +194,7 @@ export default function PickupListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New Pickup
+                {t("New Pickup")}
               </Button>
             )
           }
@@ -212,7 +216,7 @@ export default function PickupListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t("Delete")}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -232,21 +236,21 @@ export default function PickupListView() {
                 <TableBody>
                   {exclusionsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
                     : dataFiltered?.map((row) => (
-                        <PickupTableRow
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          reload={revalidateExclusions}
-                        />
-                      ))}
+                      <PickupTableRow
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
+                        reload={revalidateExclusions}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>

@@ -42,19 +42,11 @@ import StateFilters from '../state-filters';
 import StateSearch from '../state-search';
 import { IStateTableFilters } from 'src/types/state';
 import { useGetAllLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 // import StateNewEditForm from '../state-new-edit-form';
 // import StateDetails from './state-details';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'locale', label: 'Locale', width: 180 },
-  { id: 'city', label: 'City', width: 180 },
-  { id: 'is_published', label: 'Published', width: 180 },
-  { id: 'action1', label: 'Display Order ID', width: 180 },
-  { id: 'action2', label: '', width: 88 },
-];
 
 const defaultFilters: IStateTableFilters = {
   name: '',
@@ -63,6 +55,17 @@ const defaultFilters: IStateTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function StateListView() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'name', label: t('Name') },
+    { id: 'locale', label: t('Locale'), width: 180 },
+    { id: 'city', label: t('City'), width: 180 },
+    { id: 'is_published', label: t('Published'), width: 180 },
+    { id: 'action1', label: t('Display Order ID'), width: 180 },
+    { id: 'action2', label: '', width: 88 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -210,17 +213,17 @@ export default function StateListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t("List")}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: t('Dashboard'), href: paths.dashboard.root },
             {
-              name: 'Area',
+              name: t('Area'),
               href: paths.dashboard.system.state,
               onClick: (event) => {
                 setViewMode('table');
               },
             },
-            { name: 'List' },
+            { name: t('List') },
           ]}
           action={
             viewMode === 'table' && (
@@ -231,7 +234,7 @@ export default function StateListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                New Area
+                {t("New Area")}
               </Button>
             )
           }
@@ -254,7 +257,7 @@ export default function StateListView() {
                   )
                 }
                 action={
-                  <Tooltip title="Delete">
+                  <Tooltip title={t("Delete")}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -274,23 +277,23 @@ export default function StateListView() {
                   <TableBody>
                     {stateLoading
                       ? Array.from(new Array(5)).map((_, index) => (
-                          <TableRow key={index}>
-                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                              <Skeleton animation="wave" height={40} />
-                            </TableCell>
-                          </TableRow>
-                        ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                       : tableData?.map((row) => (
-                          <StateTableRow
-                            row={row}
-                            setProvinceID={setProvinceID}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => handleRowClick(row)}
-                            onDeleteRow={() => handleDeleteRow(row.id)}
-                            onEditRow={() => handleEditRow(row.id)}
-                            reload={revalidateStates}
-                          />
-                        ))}
+                        <StateTableRow
+                          row={row}
+                          setProvinceID={setProvinceID}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id)}
+                          reload={revalidateStates}
+                        />
+                      ))}
                   </TableBody>
                 </Table>
               </Scrollbar>

@@ -49,9 +49,11 @@ import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
+  const { t } = useTranslation()
 
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -100,7 +102,7 @@ const BookingDetailsComponent = () => {
     formData.append('booking_id', id);
     try {
       const response = await updatePaymentBookingStatus(formData);
-      enqueueSnackbar(response.message ?? 'Status Updated successfully', {
+      enqueueSnackbar(response.message ?? t('Status Updated successfully'), {
         variant: 'success',
       });
 
@@ -159,8 +161,8 @@ const BookingDetailsComponent = () => {
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <Tabs value={value} onChange={(event, newValue) => setValue(newValue)}>
-            <Tab label="Booking Details" />
-            <Tab label="Payment & Summary" />
+            <Tab label={t("Booking Details")} />
+            <Tab label={t("Payment & Summary")} />
           </Tabs>
         </Grid>
         {/* User Information */}
@@ -185,7 +187,7 @@ const BookingDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 4, fontWeight: 'bold', color: 'primary.main' }}>
-                  User Information:
+                  {t("User Information")}:
                 </Typography>
                 <Grid container spacing={5} alignItems="center">
                   <Grid item>
@@ -217,7 +219,7 @@ const BookingDetailsComponent = () => {
                   <Grid item>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Name
+                        {t("Name")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -228,7 +230,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> Email
+                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t("Email")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -239,7 +241,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> Phone
+                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t("Phone")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -250,7 +252,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Country Code
+                        {t("Country Code")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -261,7 +263,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Gear Type
+                        {t("Gear Type")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -275,7 +277,7 @@ const BookingDetailsComponent = () => {
 
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        DOB
+                        {t("DOB")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -286,7 +288,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Locale
+                        {t("Locale")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -316,7 +318,7 @@ const BookingDetailsComponent = () => {
                   </Box> */}
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Active
+                        {t("Active")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -362,7 +364,7 @@ const BookingDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 4, fontWeight: 'bold', color: 'primary.main' }}>
-                  Driver Information:
+                  {t("Driver Information")}  :
                 </Typography>
                 <Grid container spacing={5} alignItems="center">
                   <Grid item>
@@ -394,7 +396,7 @@ const BookingDetailsComponent = () => {
                   <Grid item>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Name
+                        {t("Name")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -405,7 +407,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> Email
+                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} />{t("Email")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -416,7 +418,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> Phone
+                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} />{t("Phone")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -427,7 +429,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Country Code
+                        {t("Country Code")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -438,7 +440,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Locale
+                        {t("Locale")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -450,7 +452,7 @@ const BookingDetailsComponent = () => {
 
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        DOB
+                        {t("DOB")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -461,7 +463,7 @@ const BookingDetailsComponent = () => {
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Active
+                        {t("Active")}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -501,12 +503,12 @@ const BookingDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Package Details:
+                  {t("Package Details")}  :
                 </Typography>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Package Name
+                    {t("Package Name")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -518,7 +520,7 @@ const BookingDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Number of Sessions
+                    {t("Number of Sessions")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -530,7 +532,7 @@ const BookingDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    School
+                    {t("School")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -559,12 +561,12 @@ const BookingDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Pickup Location:
+                  {t("Pickup Location")}  :
                 </Typography>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Label
+                    {t("Label")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -576,7 +578,7 @@ const BookingDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Address
+                    {t("Address")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -589,7 +591,7 @@ const BookingDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    City
+                    {t("City")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -601,7 +603,7 @@ const BookingDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Phone
+                    {t("Phone")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -625,7 +627,7 @@ const BookingDetailsComponent = () => {
             >
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Payment Information:
+                  {t("Payment Information")}  :
                 </Typography>
 
                 <Box sx={{ mb: 3 }}>
@@ -651,21 +653,21 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Payment Method:
+                        {t("Payment Method")}  :
                       </Typography>
                       <Typography>{bookingDetails?.payment_method || 'N/A'}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Payment Amount:
+                        {t("Payment Method")}  :
                       </Typography>
                       <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Tax Amount:
+                        {t("Tax Amount")}:
                       </Typography>
                       <Typography>{`${bookingDetails?.tax_amount || 'N/A'} AED`}</Typography>
                     </Box>
@@ -673,27 +675,27 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Amount Due:
+                        {t("Amount Due")}  :
                       </Typography>
                       <Typography>{`${bookingDetails?.amount_due || 'N/A'} AED`}</Typography>
                     </Box>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Amount Paid:
+                        {t("Amount Paid")}  :
                       </Typography>
                       <Typography>{`${bookingDetails?.amount_paid || 'N/A'} AED`}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Amount Refunded:
+                        {t("Amount Refunded")}  :
                       </Typography>
                       <Typography>{`${bookingDetails?.amount_refunded || 'N/A'} AED`}</Typography>
                     </Box>
                     {bookingDetails?.coupon_code && (
                       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                          Coupon Used:
+                          {t("Coupon Used")}  :
                         </Typography>
                         <Typography>{`${bookingDetails?.coupon_code || 'N/A'} AED`}</Typography>
                       </Box>
@@ -701,11 +703,10 @@ const BookingDetailsComponent = () => {
                     {bookingDetails?.wallet_amount_used !== '0.00' && (
                       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                          Wallet Amount Used:
+                          {t("Wallet Amount Used")}  :
                         </Typography>
-                        <Typography>{`${
-                          bookingDetails?.wallet_amount_used || 'N/A'
-                        } AED`}</Typography>
+                        <Typography>{`${bookingDetails?.wallet_amount_used || 'N/A'
+                          } ${t("AED")}`}</Typography>
                       </Box>
                     )}
                   </Grid>
@@ -713,14 +714,14 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Discount:
+                        {t("Discount")} :
                       </Typography>
                       <Typography>{`${bookingDetails?.discount || 'N/A'} AED`}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        Total Amount:
+                        {t("Total Amount")}  :
                       </Typography>
                       <Typography>{`${bookingDetails?.total || 'N/A'} AED`}</Typography>
                     </Box>
@@ -745,10 +746,10 @@ const BookingDetailsComponent = () => {
             >
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Booking Summary:
+                  {t("Booking Summary")}  :
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Total Amount:
+                  {t("Total Amount")} :
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
                   {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
@@ -758,13 +759,13 @@ const BookingDetailsComponent = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Booking ID</TableCell>
-                        <TableCell>Sessions</TableCell>
-                        <TableCell>Session Status</TableCell>
-                        <TableCell>Rating</TableCell>
-                        <TableCell>Start Time</TableCell>
-                        <TableCell>End Time</TableCell>
-                        <TableCell>Session Type</TableCell>
+                        <TableCell>{t("Booking ID")}</TableCell>
+                        <TableCell>{t("Sessions")}</TableCell>
+                        <TableCell>{t("Session Status")}</TableCell>
+                        <TableCell>{t("Rating")}</TableCell>
+                        <TableCell>{t("Start Time")}</TableCell>
+                        <TableCell>{t("End Time")}</TableCell>
+                        <TableCell>{t("Session Type")}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -773,12 +774,12 @@ const BookingDetailsComponent = () => {
                           <TableCell>{session?.booking_id || 'N/A'}</TableCell>
                           <TableCell>
                             <ListItemText
-                              primary={`Total Sessions Booked:${session?.no_of_sessions}`}
+                              primary={`${t("Total Sessions Booked")} : ${session?.no_of_sessions}`}
                               secondary={
                                 <div>
-                                  <p>Session No:{session?.session_no}</p>
+                                  <p>{t("Session No.")}:{session?.session_no}</p>
                                   <p>
-                                    Completed Sessions:
+                                    {t("Completed Sessions")} :
                                     {bookingDetails.no_of_sessions_completed}
                                   </p>
                                 </div>
@@ -801,10 +802,10 @@ const BookingDetailsComponent = () => {
                                 session?.session_status === 'PENDING'
                                   ? 'info'
                                   : session?.session_status === 'CANCELLED'
-                                  ? 'error'
-                                  : session?.session_status === 'CONFIRMED'
-                                  ? 'default'
-                                  : 'success'
+                                    ? 'error'
+                                    : session?.session_status === 'CONFIRMED'
+                                      ? 'default'
+                                      : 'success'
                               }
                               variant="soft"
                             />
@@ -832,16 +833,16 @@ const BookingDetailsComponent = () => {
                           <TableCell>
                             {session.start_time
                               ? moment(session.start_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                                .utcOffset('+04:00')
+                                .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
 
                           <TableCell>
                             {session.end_time
                               ? moment(session.end_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                                .utcOffset('+04:00')
+                                .format('DD/MM/YY h:mm A')
                               : 'N/A'}
                           </TableCell>
 

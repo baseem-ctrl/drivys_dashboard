@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 // components
 import Iconify from 'src/components/iconify';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,8 @@ export default function DilectSearch({
   setSearchQuery,
   searchQuery,
 }: Props) {
+
+  const { t } = useTranslation();
   const handleClear = () => {
     setSearchQuery('');
     onSearch('name', '');
@@ -31,7 +34,7 @@ export default function DilectSearch({
         setSearchQuery(e.target.value);
         onSearch('name', e.target.value);
       }}
-      placeholder="Search..."
+      placeholder={t("Search...")}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">

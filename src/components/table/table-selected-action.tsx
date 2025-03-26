@@ -2,6 +2,7 @@
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import Stack, { StackProps } from '@mui/material/Stack';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ export default function TableSelectedAction({
   if (!numSelected) {
     return null;
   }
-
+  const { t } = useTranslation()
   return (
     <Stack
       direction="row"
@@ -66,7 +67,7 @@ export default function TableSelectedAction({
           }),
         }}
       >
-        {numSelected} selected
+        {numSelected} {t("selected")}
       </Typography>
 
       {action && action}

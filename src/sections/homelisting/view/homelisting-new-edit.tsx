@@ -237,7 +237,7 @@ export default function HomeListingNewEdit({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle> {title}</DialogTitle>
+      <DialogTitle> {t(title)}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid xs={12} md={8}>
@@ -324,7 +324,7 @@ export default function HomeListingNewEdit({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>Trainers:</h5>
+            <h5>{t("Trainers")}:</h5>
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
@@ -337,7 +337,7 @@ export default function HomeListingNewEdit({
                     options={userOptions}
                     renderOption={(props, option: any) => (
                       <li {...props} key={option?.value}>
-                        {option?.label ?? 'Unknown'}
+                        {option?.label ?? t('Unknown')}
                       </li>
                     )}
                   />
@@ -353,7 +353,7 @@ export default function HomeListingNewEdit({
             ))}
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
-                Add Trainer
+                {t("Add Trainer")}
               </Button>
             </Grid>
 
@@ -368,7 +368,7 @@ export default function HomeListingNewEdit({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => {}}
+            apiCall={() => { }}
             isSubmitting={isSubmitting}
           />
         </FormProvider>

@@ -34,21 +34,22 @@ import CertificateFilters from '../certificate-filters';
 import CertificateRow from '../certificate-table-row';
 import CertificateSearch from '../certificate-search';
 import { ICityTableFilters } from 'src/types/city';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'city', label: 'City', width: 180 },
-
-  { id: 'gear', label: 'Gear', width: 180 },
-  { id: 'request_date', label: 'Request Date', width: 180 },
-  { id: 'certificate_url', label: 'Certificate URL', width: 180 },
-  { id: 'status', label: 'Status', width: 180 },
-  { id: 'trainer', label: 'Trainer', width: 180 },
-  { id: 'txn', label: 'Transaction ID', width: 180 },
-  { id: 'user', label: 'User', width: 180 },
-  { id: 'vehicle_type', label: 'Vehicle Type', width: 180 },
-  { id: 'comments', label: 'Comments', width: 180 },
+  { id: 'city', label: t('City'), width: 180 },
+  { id: 'gear', label: t('Gear'), width: 180 },
+  { id: 'request_date', label: t('Request Date'), width: 180 },
+  { id: 'certificate_url', label: t('Certificate URL'), width: 180 },
+  { id: 'status', label: t('Status'), width: 180 },
+  { id: 'trainer', label: t('Trainer'), width: 180 },
+  { id: 'txn', label: t('Transaction ID'), width: 180 },
+  { id: 'user', label: t('User'), width: 180 },
+  { id: 'vehicle_type', label: t('Vehicle Type'), width: 180 },
+  { id: 'comments', label: t('Comments'), width: 180 },
   { id: 'actions', label: '', width: 180 },
 ];
 
@@ -56,6 +57,7 @@ const TABLE_HEAD = [
 
 export default function CertificateListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
+  const { t } = useTranslation()
   const settings = useSettingsContext();
   const location = useLocation();
   const path = location.pathname.split('/').pop();
@@ -165,11 +167,11 @@ export default function CertificateListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading={t("List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: path === 'awaiting-certificate' ? 'Awaiting Certificate' : 'Approved Certificate',
+            name: path === 'awaiting-certificate' ? t('Awaiting Certificate') : t('Approved Certificate'),
             href: paths.dashboard.school.certificate,
             onClick: (event) => {
               setViewMode('table');
@@ -238,7 +240,7 @@ export default function CertificateListView() {
                         colSpan={TABLE_HEAD.length}
                         sx={{ textAlign: 'center', fontStyle: 'italic', color: 'gray' }}
                       >
-                        Nothing to show
+                        {t("Nothing to show")}
                       </TableCell>
                     </TableRow>
                   )}

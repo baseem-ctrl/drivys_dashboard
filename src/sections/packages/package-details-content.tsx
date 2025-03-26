@@ -50,6 +50,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFEditor, RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AddCityPackage from './add-city-package';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -59,6 +60,7 @@ type Props = {
 };
 
 export default function PackageDetails({ details, loading, reload }: Props) {
+  const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [openAddCityDialog, setOpenAddCityDialog] = useState(false);
   const handleOpenAddCityDialog = () => {
@@ -154,7 +156,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       category_id:
         category?.length > 0
           ? category.find((category) => category?.id === details?.category_id)
-              ?.category_translations[0]?.name
+            ?.category_translations[0]?.name
           : '',
     }),
     [selectedLocaleObject, details, schoolList, category]
@@ -517,16 +519,16 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
             {[
               ...(details?.package_translations?.flatMap((itm: any) => [
-                { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+                { label: `${t("Name")} (${t(itm?.locale)})`, value: itm?.name ?? 'N/A' },
               ]) || []),
               ...(details?.package_translations?.flatMap((itm: any) => [
                 {
-                  label: `Session inclusions (${itm?.locale})`,
+                  label: `${t("Session inclusions")} (${t(itm?.locale)})`,
                   value: <PackageDescription description={itm?.session_inclusions} /> ?? 'N/A',
                 },
               ]) || []),
               {
-                label: 'School Id',
+                label: t('School Id'),
                 value: (
                   <Box
                     component="span"
@@ -540,14 +542,14 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 ),
               },
               ...(details?.vendor?.vendor_translations?.flatMap((itm: any) => [
-                { label: `School Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+                { label: `${t("School Name")} (${t(itm?.locale)})`, value: itm?.name ?? 'N/A' },
               ]) || []),
 
-              { label: 'Number of sessions', value: details?.number_of_sessions ?? 'NA' },
-              { label: 'Drivys Commission', value: `${details?.drivys_commision ?? 'NA'} AED` },
+              { label: t('Number of sessions'), value: details?.number_of_sessions ?? 'NA' },
+              { label: t('Drivys Commission'), value: `${details?.drivys_commision ?? 'NA'} AED` },
 
               {
-                label: 'Category',
+                label: t('Category'),
                 value: (() => {
                   const selectedCategory = category?.find((cat) => cat.id === details?.category_id);
                   return selectedCategory
@@ -556,7 +558,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 })(),
               },
               {
-                label: 'Is Published',
+                label: t('Is Published'),
                 value:
                   details?.is_published === 1 ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -565,7 +567,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
               {
-                label: 'Is Cerificate Fee Included',
+                label: t('Is Cerificate Fee Included'),
                 value:
                   details?.is_certificate_included === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -574,7 +576,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
               {
-                label: 'Is Pay By Cash Available',
+                label: t('Is Pay By Cash Available'),
                 value:
                   details?.background_color === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -606,7 +608,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
               //
               {
-                label: 'Is Pickup Fee Included',
+                label: t('Is Pickup Fee Included'),
                 value:
                   details?.is_pickup_fee_included === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -619,7 +621,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 details?.session_details
                   ?.slice(0, Math.floor(numberOfSessions / 2))
                   ?.map((sessionItem: any) => ({
-                    label: `Slot ${sessionItem.slot_number} Title`,
+                    label: `${t("Slot")} ${sessionItem.slot_number} ${t("Title")}`,
                     value: sessionItem.translations?.[0]?.title ?? 'N/A',
                   }))) ||
                 []),
@@ -657,7 +659,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 >
                   <RHFSelect
                     name="locale (Language)"
-                    label="Locale"
+                    label={t("Locale")}
                     value={selectedLanguage}
                     onChange={(e) => handleChange(e)}
                   >
@@ -667,7 +669,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       </MenuItem>
                     ))}
                   </RHFSelect>
-                  <RHFTextField name="name" label="Name" />
+                  <RHFTextField name="name" label={t("Name")} />
                 </Box>
               </Box>
 
@@ -677,7 +679,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 columnGap={2}
                 display="grid"
                 gridTemplateColumns="repeat(1, 1fr)"
-                // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
+              // sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
               >
                 <Box
                   display="grid"
@@ -691,7 +693,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 >
                   <RHFTextField
                     name="number_of_sessions"
-                    label="Number of sessions"
+                    label={t("Number of sessions")}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -704,12 +706,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   />
                   <RHFAutocompleteSearch
                     name="vendor_id"
-                    label="Select School"
+                    label={t("Select School")}
                     placeholder="Search School..."
                     options={schoolList?.map((item: any) => ({
-                      label: `${item.vendor_translations?.[0]?.name}${
-                        item.email ? ` - ${item.email}` : ''
-                      }`,
+                      label: `${item.vendor_translations?.[0]?.name}${item.email ? ` - ${item.email}` : ''
+                        }`,
                       value: item.id,
                     }))}
                     setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
@@ -718,8 +719,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   />
                   <RHFAutocompleteSearch
                     name="category_id"
-                    label="Select Category"
-                    placeholder="Search Category..."
+                    label={t("Select Category")}
+                    placeholder={t("Search Category...")}
                     options={category?.map((item: any) => ({
                       label: `${item.category_translations?.[0]?.name}`,
                       value: item.id,
@@ -729,23 +730,23 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     loading={categoryLoading}
                   />
                   <Stack direction="row" alignItems="center">
-                    <RHFSwitch name="is_published" label="Publish" />
+                    <RHFSwitch name="is_published" label={t("Publish")} />
                   </Stack>
                   <Stack direction="row" alignItems="center">
-                    <RHFSwitch name="is_certificate_included" label="Is Certificate fee included" />
+                    <RHFSwitch name="is_certificate_included" label={t("Is Certificate fee included")} />
                   </Stack>
                   <Stack direction="row" alignItems="center">
-                    <RHFSwitch name="is_cash_pay_available" label="Is Pay by Cash Available" />
+                    <RHFSwitch name="is_cash_pay_available" label={t("Is Pay by Cash Available")} />
                   </Stack>
 
                   <Stack direction="row" alignItems="center">
-                    <RHFSwitch name="is_pickup_fee_included" label="Is Pickup fee included" />
+                    <RHFSwitch name="is_pickup_fee_included" label={t("Is Pickup fee included")} />
                   </Stack>
                   <RHFTextField
                     name="drivys_commision"
-                    label="Drivys Commission"
+                    label={t("Drivys Commission")}
                     InputProps={{
-                      endAdornment: <Typography sx={{ ml: 1 }}>AED</Typography>,
+                      endAdornment: <Typography sx={{ ml: 1 }}>{t("AED")}</Typography>,
                     }}
                   />
                   <Grid item xs={12}>
@@ -796,7 +797,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 <Box mt={2}>
                   {sessionTitles && sessionTitles.length > 0 && (
                     <Typography variant="subtitle2" mb={3}>
-                      Session Details
+                      {t("Session Details")}
                     </Typography>
                   )}
                   <Grid item xs={10}>
@@ -806,7 +807,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                           <RHFTextField
                             fullWidth
                             name={`session_titles[${index}]`}
-                            label={`Session Title ${index + 1}`}
+                            label={`${t("Session Title")} ${index + 1}`}
                             value={session.title}
                             onChange={(e) => handleSessionTitleChange(index, e.target.value)}
                           />
@@ -816,19 +817,19 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   </Grid>
                 </Box>
                 <Stack spacing={1.5}>
-                  <Typography variant="subtitle2">Session Inclusion</Typography>
+                  <Typography variant="subtitle2">{t("Session Inclusion")}</Typography>
                   <RHFEditor name="session_inclusions" />
                 </Stack>
               </Box>
               <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
                 <Button variant="outlined" color="error" onClick={handleCancel}>
-                  Cancel
+                  {t("Cancel")}
                 </Button>
                 {/* <Button type="submit" variant="contained">
                   {isSubmitting ? <CircularProgress size="20px" /> : 'Save'}
                 </Button> */}
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  Update
+                  {t("Update")}
                 </LoadingButton>
               </Stack>
             </FormProvider>
@@ -866,7 +867,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     mb: 2,
                   }}
                 >
-                  City {index + 1}
+                  {t("City")} {index + 1}
                 </Box>
 
                 <hr style={{ borderColor: '#CF5A0D', margin: '0 0 16px 0', borderWidth: '1px' }} />
@@ -894,7 +895,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   onClick={() => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)}
                 >
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    City
+                    {t("City")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                     :
@@ -906,7 +907,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
                 <Box sx={{ display: 'flex', mb: 1 }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    Min Price
+                    {t("Min Price")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                     :
@@ -918,7 +919,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
                 <Box sx={{ display: 'flex', mb: 1 }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    Max Price
+                    {t("Max Price")}
                   </Box>
                   <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                     :
@@ -958,13 +959,13 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       <>
                         <RHFTextField
                           name={`cities_ids[${index}][min_price]`}
-                          label="Min Price"
+                          label={t("Min Price")}
                           defaultValue={cityItem?.min_price ?? ''}
                           sx={{ mt: 1, mb: 3 }}
                         />
                         <RHFTextField
                           name={`cities_ids[${index}][max_price]`}
-                          label="Max Price"
+                          label={t("Max Price")}
                           defaultValue={cityItem?.max_price ?? ''}
                           sx={{ mt: 1, mb: 3 }}
                         />
@@ -976,10 +977,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
               <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
                 <Button variant="outlined" color="error" onClick={handleCancelEdit}>
-                  Cancel
+                  {t("Cancel")}
                 </Button>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  Update
+                  {t("Update")}
                 </LoadingButton>
               </Stack>
             </FormProvider>
@@ -992,8 +993,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   return (
     <>
       <Tabs value={selectedTab} onChange={handleTabChange} aria-label="package details tabs">
-        <Tab label="Details" />
-        <Tab label="City" />
+        <Tab label={t("Details")} />
+        <Tab label={t("City")} />
       </Tabs>
       {loading ? (
         <Box
@@ -1024,7 +1025,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               sx={{ mt: 7, mb: 5 }}
               onClick={handleOpenDialog}
             >
-              Add package document
+              {t("Add package document")}
             </Button>
           )}
           {selectedTab === 1 && (
@@ -1036,7 +1037,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 sx={{ mt: 7, mb: 5 }}
                 onClick={handleOpenAddCityDialog}
               >
-                Add City
+                {t("Add City")}
               </Button>
             </Box>
           )}

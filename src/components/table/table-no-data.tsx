@@ -4,6 +4,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 //
 import EmptyContent from '../empty-content';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -13,13 +14,14 @@ type Props = {
 };
 
 export default function TableNoData({ notFound, sx }: Props) {
+  const { t } = useTranslation()
   return (
     <TableRow>
       {notFound ? (
         <TableCell colSpan={12}>
           <EmptyContent
             filled
-            title="No Data"
+            title={t("No Data")}
             sx={{
               py: 10,
               ...sx,

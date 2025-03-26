@@ -17,6 +17,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +64,8 @@ export default function ProductFilters({
   publishedOptions,
   schoolOptions,
 }: Props) {
+
+  const { t } = useTranslation();
   const handleFilterStocks = (newValue: string) => {
     onFilters('status', newValue);
   };
@@ -84,7 +87,7 @@ export default function ProductFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t("Filters")}
       </Typography>
 
       <Tooltip title="Reset">
@@ -128,7 +131,7 @@ export default function ProductFilters({
   const renderActive = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Publish Status
+        {t("Publish Status")}
       </Typography>
       {publishedOptions.map((option) => (
         <FormControlLabel
@@ -139,7 +142,7 @@ export default function ProductFilters({
               onClick={() => handleFilterPublished(option?.value)}
             />
           }
-          label={option.label}
+          label={t(option.label)}
         />
       ))}
     </Stack>
@@ -147,7 +150,7 @@ export default function ProductFilters({
   const renderPrice = (
     <Stack>
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        No of sessions
+        {t("No of sessions")}
       </Typography>
 
       {/* <Stack direction="row" spacing={5} sx={{ my: 2 }}>
@@ -189,14 +192,14 @@ export default function ProductFilters({
   const renderVendorType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        School Type
+        {t("School Type")}
       </Typography>
       <Autocomplete
         options={schoolsOptions?.map((option) => option)}
         getOptionLabel={(option) => option.label}
         value={filters.vendor_id}
         onChange={(event, newValue) => handleFilterVendor(newValue)}
-        renderInput={(params) => <TextField placeholder="Select School type" {...params} />}
+        renderInput={(params) => <TextField placeholder={t("Select School type")} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -228,7 +231,7 @@ export default function ProductFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t("Filters")}
       </Button>
 
       <Drawer
@@ -265,7 +268,7 @@ export default function ProductFilters({
 // ----------------------------------------------------------------------
 
 type InputRangeProps = {
-  type: 'min' | 'max';
+  type: string;
   onFilters: (name: string, value: any) => void;
   filterName: string;
   value: any;
@@ -317,6 +320,8 @@ function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
 }
 
 function NoOfSession({ type, onFilters, filterName, value }: InputRangeProps) {
+
+  const { t } = useTranslation();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
     onFilters('number_of_sessions', value); // Call the function with min value
@@ -333,7 +338,7 @@ function NoOfSession({ type, onFilters, filterName, value }: InputRangeProps) {
           fontWeight: 'fontWeightSemiBold',
         }}
       >
-        {`${type} `}
+        {`${t(type)} `}
       </Typography>
 
       <InputBase

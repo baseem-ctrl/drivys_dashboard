@@ -29,6 +29,7 @@ import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { useGetAllCity } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
 import { createUpdateCityPickupExclusion } from 'src/api/pickup';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ export default function PickupCreateEditForm({
   onClose,
   reload,
 }: Props) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { city } = useGetAllCity({
     limit: 1000,
@@ -63,9 +65,9 @@ export default function PickupCreateEditForm({
     () => ({
       city_id: currentPickup?.city
         ? {
-            value: currentPickup?.city?.id,
-            label: currentPickup?.city?.city_translations[0]?.name || 'Unknown',
-          }
+          value: currentPickup?.city?.id,
+          label: currentPickup?.city?.city_translations[0]?.name || 'Unknown',
+        }
         : null,
       end_date: currentPickup?.end_date ? moment(currentPickup.end_date).toDate() : new Date(),
       end_time: currentPickup?.end_time && parseTime(currentPickup?.end_time),
@@ -149,7 +151,7 @@ export default function PickupCreateEditForm({
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{t(title)}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -164,7 +166,7 @@ export default function PickupCreateEditForm({
           >
             <RHFAutocomplete
               name="city_id"
-              label="City"
+              label={t("City")}
               options={city?.map((option: any) => ({
                 value: option?.id,
                 label: option?.city_translations[0]?.name ?? 'Unknown',
@@ -179,7 +181,7 @@ export default function PickupCreateEditForm({
 
             <DatePicker
               name="start_date"
-              label="Start Date"
+              label={t("Start Date")}
               value={watch('start_date')}
               onChange={(value) => setValue('start_date', value)}
               renderInput={(params) => <RHFTextField {...params} />}
@@ -187,7 +189,7 @@ export default function PickupCreateEditForm({
 
             <TimePicker
               name="start_time"
-              label="Start Time"
+              label={t("Start Time")}
               value={watch('start_time')}
               onChange={(value) => setValue('start_time', value)}
               renderInput={(params) => <RHFTextField {...params} />}
@@ -195,7 +197,7 @@ export default function PickupCreateEditForm({
 
             <DatePicker
               name="end_date"
-              label="End Date"
+              label={t("End Date")}
               value={watch('end_date')}
               onChange={(value) => setValue('end_date', value)}
               renderInput={(params) => <RHFTextField {...params} />}
@@ -203,23 +205,23 @@ export default function PickupCreateEditForm({
 
             <TimePicker
               name="end_time"
-              label="End Time"
+              label={t("End Time")}
               value={watch('end_time')}
               onChange={(value) => setValue('end_time', value)}
               renderInput={(params) => <RHFTextField {...params} />}
             />
 
-            <RHFSwitch name="status" label="Status" />
+            <RHFSwitch name="status" label={t("Status")} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentPickup?.id ? 'Update' : 'Create'}
+            {currentPickup?.id ? t('Update') : t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

@@ -13,6 +13,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import PickupCreateEditForm from './pickup-new-edit-form';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ export default function PickupTableRow({
   reload,
 }: Props) {
   const { city_id, end_date, end_time, start_date, start_time, status } = row;
+  const { t } = useTranslation()
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -75,7 +77,7 @@ export default function PickupTableRow({
             color={!!status ? 'success' : 'error'}
             style={{ cursor: 'pointer' }}
           >
-            {!!status ? 'Active' : 'Inactive'}
+            {!!status ? t('Active') : t('Inactive')}
           </Label>
         </TableCell>
         <TableCell align="right">
@@ -107,7 +109,7 @@ export default function PickupTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          {t("Delete")}
         </MenuItem>
 
         <MenuItem
@@ -117,15 +119,15 @@ export default function PickupTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          {t("Edit")}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure you want to delete?"
+        title={t("Delete")}
+        content={t("Are you sure you want to delete?")}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();

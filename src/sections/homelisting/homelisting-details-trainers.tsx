@@ -35,6 +35,7 @@ import { paths } from 'src/routes/paths';
 import { createHomeListing, RemoveTrainerFromHomeListing } from 'src/api/homelisting';
 import { useParams } from 'react-router';
 import { deleteTrainer } from 'src/api/trainer';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ export default function HomeListingTrainers({
   revalidateDetails,
   detailsLoading,
 }: Props) {
+  const { t } = useTranslation()
   const params = useParams();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
@@ -192,7 +194,7 @@ export default function HomeListingTrainers({
       {create && (
         <Stack component={Card} direction="column" spacing={2} sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
-            Add New Trainer
+            {t("Add New Trainer")}
           </Typography>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
@@ -214,7 +216,7 @@ export default function HomeListingTrainers({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Search Trainer"
+                    label={t("Search Trainer")}
                     variant="outlined"
                     InputProps={{
                       ...params.InputProps,
@@ -237,7 +239,7 @@ export default function HomeListingTrainers({
                 variant="outlined"
                 loading={detailsLoading}
               >
-                {'Save'}
+                {t('Save')}
               </LoadingButton>
               <LoadingButton
                 onClick={() => {
@@ -247,7 +249,7 @@ export default function HomeListingTrainers({
                 variant="outlined"
                 sx={{ width: '100%' }}
               >
-                {'Cancel'}
+                {t('Cancel')}
               </LoadingButton>
             </Box>
           </FormProvider>

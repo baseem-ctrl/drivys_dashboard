@@ -40,6 +40,7 @@ import JobFiltersResult from '../job-filters-result';
 import CardSkeleton from '../card-skeleton';
 import LoyalityProgramList from '../loyality-program-list';
 import { useGetLoyaltyProgramList } from 'src/api/loyality';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +64,8 @@ const isPublishMap = {
 // ----------------------------------------------------------------------
 
 export default function LoyalityProgramListView() {
+
+  const { t } = useTranslation();
   const settings = useSettingsContext();
 
   const openFilters = useBoolean();
@@ -210,14 +213,14 @@ export default function LoyalityProgramListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Loyality Program List"
+        heading={t("Loyality Program List")}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: 'Loyality',
+            name: t('Loyality'),
             href: paths.dashboard.category.root,
           },
-          { name: 'List' },
+          { name: t('List') },
         ]}
         action={
           <Button
@@ -228,7 +231,7 @@ export default function LoyalityProgramListView() {
             startIcon={<Iconify icon="mingcute:add-line" />}
             disabled={addOnlyOneCategory}
           >
-            New Loyality Program
+            {t("New Loyality Program")}
           </Button>
         }
         sx={{
@@ -256,7 +259,7 @@ export default function LoyalityProgramListView() {
         reload={revalidateLoyaltyPrograms}
         setTableData={setTableData}
         setAddOnlyOneCategory={setAddOnlyOneCategory}
-        // parentCategoryValues={category}
+      // parentCategoryValues={category}
       />
       <TablePaginationCustom
         count={totalpages}
@@ -265,9 +268,9 @@ export default function LoyalityProgramListView() {
         onPageChange={table.onChangePage}
         onRowsPerPageChange={table.onChangeRowsPerPage}
 
-        // dense={table.dense}
-        // onChangeDense={table.onChangeDense}
-        //
+      // dense={table.dense}
+      // onChangeDense={table.onChangeDense}
+      //
       />
     </Container>
   );

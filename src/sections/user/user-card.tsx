@@ -24,6 +24,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { Link } from '@mui/material';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -34,6 +35,7 @@ export default function UserCard({ student }: Props) {
   const theme = useTheme();
   const { user } = useAuthContext();
   const router = useRouter();
+  const { t } = useTranslation()
 
   const {
     id,
@@ -134,7 +136,7 @@ export default function UserCard({ student }: Props) {
       >
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Date of birth
+            {t("Date of birth")}
           </Typography>
           <Typography
             variant="caption"
@@ -147,7 +149,7 @@ export default function UserCard({ student }: Props) {
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Phone
+            {t("Phone")}
           </Typography>
           <Typography
             variant="caption"
@@ -160,7 +162,7 @@ export default function UserCard({ student }: Props) {
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            Gender
+            {t("Gender")}
           </Typography>
           <Typography
             variant="caption"

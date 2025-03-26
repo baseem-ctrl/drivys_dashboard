@@ -6,6 +6,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import HomeSliderForm from './home-slider-form';
+import { useTranslation } from 'react-i18next';
 
 //
 
@@ -13,21 +14,21 @@ import HomeSliderForm from './home-slider-form';
 
 export default function HomeSliderCreateView() {
   const settings = useSettingsContext();
-
+  const { t } = useTranslation()
   return (
     <Container>
       <CustomBreadcrumbs
-        heading="Create Home Slider"
+        heading={t("Create Home Slider")}
         links={[
           {
-            name: 'Dashboard',
+            name: t('Dashboard'),
             href: paths.dashboard.root,
           },
           {
-            name: 'Sliders',
+            name: t('Sliders'),
             href: paths.dashboard.slider.root,
           },
-          { name: 'New Home slider' },
+          { name: t('New Home slider') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

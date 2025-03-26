@@ -18,7 +18,7 @@ type Props = {
 };
 
 export default function NotificationDetailsToolbar({ backLink, createdAt, orderNumber }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <Stack
@@ -43,13 +43,22 @@ export default function NotificationDetailsToolbar({ backLink, createdAt, orderN
               backgroundColor: 'action.hover',
             },
           }}
-        >
+        > {i18n.language === 'en' ? (
+
           <Iconify
             icon="eva:arrow-ios-back-fill"
             sx={{
               marginTop: '-3px',
             }}
+          />) : (
+          <Iconify
+            icon="eva:arrow-ios-back-fill"
+            sx={{
+              marginTop: '-3px',
+              transform: 'rotate(180deg)',
+            }}
           />
+        )}
         </Box>
 
         <Stack spacing={0.5}>
