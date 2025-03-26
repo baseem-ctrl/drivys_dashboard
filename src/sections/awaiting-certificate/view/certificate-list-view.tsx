@@ -61,7 +61,6 @@ export default function CertificateListView() {
   const settings = useSettingsContext();
   const location = useLocation();
   const path = location.pathname.split('/').pop();
-  console.log('path', path);
   const confirm = useBoolean();
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);

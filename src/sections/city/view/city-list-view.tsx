@@ -135,7 +135,6 @@ export default function CityListView() {
   const handlePopoverClose = () => {
     setOpenPopover(false);
   };
-  console.log('selectedCityIds', selectedCityIds);
   // Function to delete a city row by city ID
   const handleDeleteRow = async (cityId: string) => {
     const response = await deleteCity(cityId);

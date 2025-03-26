@@ -45,7 +45,6 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
   });
-  console.log('city', city);
   const methods = useForm({
     resolver: yupResolver(CitySchema),
     defaultValues: {

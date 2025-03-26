@@ -19,10 +19,10 @@ import { useState } from 'react';
 import { createPackageCity, deletePackageCityById } from 'src/api/city';
 import PackageCreateEditForm from '../package-create-update-form';
 import { useBoolean } from 'src/hooks/use-boolean';
-import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { useTable } from 'src/components/table';
 import { useTranslation } from 'react-i18next';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 

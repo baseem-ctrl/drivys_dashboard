@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -131,6 +132,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
     is_cash_pay_available: Yup.boolean(),
+    background_color: Yup.mixed(),
+
     drivys_commision: Yup.mixed(),
     is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
@@ -145,6 +148,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       is_published: !!details?.is_published,
       is_certificate_included: !!details?.is_certificate_included,
       is_cash_pay_available: !!details?.is_cash_pay_available,
+      background_color: details?.background_color || 'normal',
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
       drivys_commision: details?.drivys_commision || '',
       vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
@@ -157,7 +161,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
-  console.log('defaultVendorValues', defaultVendorValues, details);
   const Schoolmethods = useForm({
     resolver: yupResolver(VendorSchema) as any,
     defaultVendorValues,
@@ -172,6 +175,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   } = Schoolmethods;
   const { isSubmitting, errors } = schoolFormState;
   const values = schoolWatch();
+
   const handleChange = (event: { target: { value: any } }) => {
     const selectedLocale = event.target.value;
     setSelectedLanguage(selectedLocale);
@@ -282,6 +286,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         ],
         number_of_sessions: data?.number_of_sessions,
         is_published: data?.is_published ? '1' : '0',
+        background_color: data?.background_color || details?.background_color,
         drivys_commision: data?.drivys_commision || details?.drivys_commision,
         is_certificate_included: data?.is_certificate_included ? '1' : '0',
         is_cash_pay_available: data?.is_cash_pay_available ? '1' : '0',
@@ -295,10 +300,9 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('is_published', payload.is_published);
       formData.append('is_certificate_included', payload.is_certificate_included);
       formData.append('is_cash_pay_available', payload.is_cash_pay_available);
+      formData.append('background_color', payload.background_color);
       formData.append('drivys_commision', payload.drivys_commision);
-
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
-
       formData.append('number_of_sessions', payload.number_of_sessions);
       formData.append('vendor_id', payload.vendor_id || '');
       formData.append('package_id', details.id || '');
@@ -423,6 +427,16 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       reload();
     }
   });
+  const getColor = (color) => {
+    const colorMap = {
+      normal: '#d3d3d3',
+      gold: '#FFD700',
+      orange: '#FFA500',
+      silver: '#C0C0C0',
+    };
+    return colorMap[color] || 'transparent';
+  };
+
   const citySubmit = packageSubmit(async (data) => {
     try {
       let formData = new FormData();
@@ -564,12 +578,34 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               {
                 label: t('Is Pay By Cash Available'),
                 value:
-                  details?.is_cash_pay_available === true ? (
+                  details?.background_color === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />
                   ),
               },
+              {
+                label: 'Background Color',
+                value: details?.background_color ? (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: getColor(details.background_color),
+                        border: '1px solid #ccc',
+                      }}
+                    />
+                    <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                      {details.background_color}
+                    </Typography>
+                  </Stack>
+                ) : (
+                  'N/A'
+                ),
+              },
+
               //
               {
                 label: t('Is Pickup Fee Included'),
@@ -661,7 +697,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <Tooltip title="Enter -1 for unlimeted Packages" placement="top">
+                          <Tooltip title="Enter -1 for unlimited Packages" placement="top">
                             <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
                           </Tooltip>
                         </InputAdornment>
@@ -713,6 +749,50 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       endAdornment: <Typography sx={{ ml: 1 }}>{t("AED")}</Typography>,
                     }}
                   />
+                  <Grid item xs={12}>
+                    <Stack spacing={2} mt={2}>
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        Choose Background Color
+                      </Typography>
+                      <ToggleButtonGroup
+                        color="primary"
+                        value={values.background_color || 'normal'} // Default to "normal"
+                        exclusive
+                        onChange={(_, newValue) =>
+                          newValue && schoolSetValue('background_color', newValue)
+                        }
+                        fullWidth
+                      >
+                        {['normal', 'gold', 'orange', 'silver'].map((color) => (
+                          <ToggleButton
+                            key={color}
+                            value={color}
+                            sx={{
+                              textTransform: 'capitalize',
+                              fontWeight: 'bold',
+                              borderColor: (theme) =>
+                                values.background_color === color
+                                  ? theme.palette.primary.main
+                                  : 'rgba(0, 0, 0, 0.2)',
+                              backgroundColor: (theme) =>
+                                values.background_color === color
+                                  ? theme.palette.primary.light
+                                  : 'transparent',
+                              color: (theme) =>
+                                values.background_color === color
+                                  ? theme.palette.primary.contrastText
+                                  : theme.palette.text.primary,
+                              '&:hover': {
+                                backgroundColor: (theme) => theme.palette.grey,
+                              },
+                            }}
+                          >
+                            {color.charAt(0).toUpperCase() + color.slice(1)}
+                          </ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    </Stack>
+                  </Grid>
                 </Box>
                 <Box mt={2}>
                   {sessionTitles && sessionTitles.length > 0 && (

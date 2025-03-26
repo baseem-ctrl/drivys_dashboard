@@ -56,7 +56,6 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
   );
-  console.log('details', details);
   const [editMode, setEditMode] = useState(false);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 

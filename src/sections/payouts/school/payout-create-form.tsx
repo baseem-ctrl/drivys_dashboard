@@ -39,7 +39,6 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
     }),
     []
   );
-  console.log('trainerIdddd', vendorId);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = usePaymentMethodEnum();

@@ -123,7 +123,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       reset(defaultValues);
     }
   }, [currentUser, defaultValues, reset]);
-  console.log('Heyyyy', currentUser?.user_type);
   const onSubmit = handleSubmit(async (data) => {
     try {
       const body = new FormData();

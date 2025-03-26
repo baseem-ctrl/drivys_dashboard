@@ -54,7 +54,6 @@ export default function TrainerCommission() {
 
   const { vendorCommissions, commissionsLoading, totalPages, revalidateVendorCommissions } =
     useGetAllVendorCommissionList(table.page, table.rowsPerPage);
-  console.log('vendorCommissions', vendorCommissions);
 
   useEffect(() => {
     if (vendorCommissions?.length) {

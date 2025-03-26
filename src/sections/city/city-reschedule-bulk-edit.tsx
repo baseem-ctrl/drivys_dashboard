@@ -45,7 +45,6 @@ export default function CityUpdateBulkRescheduleFee({
   setSelelectedCityId,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
-  console.log('selectedCityIds', selectedCityIds);
   const NewUserSchema = Yup.object().shape({
     reschedule_fee: Yup.mixed(),
     free_reschedule_before: Yup.mixed(),

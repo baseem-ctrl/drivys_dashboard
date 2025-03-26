@@ -40,7 +40,6 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
   const [isUpdating, setIsUpdating] = useState(false);
 
   const router = useRouter();
-  console.log('isUpdating', isUpdating);
   const handleSaveClick = async () => {
     setIsUpdating(true);
     try {

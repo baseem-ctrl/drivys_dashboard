@@ -426,18 +426,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                                 </TableRow>
                               ) : item?.sessions?.length > 0 ? (
                                 item.sessions.map((session, sessionIndex) => {
-                                  console.log(`Session ${sessionIndex}:`, session);
-                                  console.log(`Session Status Enum:`, sessionStatusEnum);
-
                                   const statusLabel =
                                     sessionStatusEnum.find(
                                       (status) => status.value === session.session_status
                                     )?.name || 'Unknown';
-
-                                  console.log(
-                                    `Mapped Status Label for session ${sessionIndex}:`,
-                                    statusLabel
-                                  );
 
                                   return (
                                     <TableRow key={sessionIndex}>

@@ -205,7 +205,6 @@ export default function CouponDialog({
   useEffect(() => {
     setSelectedDiscountType(defaultValues?.discount_type_id || '');
   }, [updateValue]);
-  console.log('category options', categoryOptions);
   const { formState } = methods;
   const { enqueueSnackbar } = useSnackbar();
   const today = moment().format('YYYY-MM-DD');

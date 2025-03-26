@@ -371,4 +371,19 @@ export const endpoints = {
     getList: 'admin/appSetting/get-tc',
     createUpdate: 'admin/appSetting/createUpdateTC',
   },
+  reportSessionPreview: {
+    booking: 'admin/reports/preview/bookings',
+    revenue: 'admin/reports/preview/revenue',
+    trainer: 'admin/reports/preview/trainers',
+    student: 'admin/reports/preview/students',
+    school: 'admin/reports/preview/schools',
+  },
+  reportSessionDownload: {
+    booking: 'admin/reports/bookings',
+    revenue: 'admin/reports/revenue',
+    trainer: 'admin/reports/trainers',
+    student: 'admin/reports/students',
+    school: 'admin/reports/schools',
+  },
+  updateFCMToken: 'consumer/auth/update-fcm-token',
 };

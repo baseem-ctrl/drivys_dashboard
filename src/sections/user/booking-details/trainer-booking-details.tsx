@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   TableContainer,
   Paper,
@@ -12,9 +12,15 @@ import {
   Typography,
   Box,
   Skeleton,
+  Button,
 } from '@mui/material';
 import { useGetBookingByTrainerId } from 'src/api/booking';
 import { useTranslation } from 'react-i18next';
+import { Download as DownloadIcon } from '@mui/icons-material';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { TablePaginationCustom, useTable } from 'src/components/table';
+import isEqual from 'lodash/isEqual';
+import BookingFilters from './booking-filters';
 
 // Define the props type for the component
 interface BookingTableProps {
@@ -31,12 +37,94 @@ interface BookingTableProps {
   }[];
   handleBookingClick: (id: string) => void;
 }
-
+const defaultFilters = {
+  payment_status: '',
+  payment_method: '',
+};
 // Define the functional component
 const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, id }) => {
-  const { bookingTrainerDetails, bookingLoading } = useGetBookingByTrainerId(id);
+  const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { t } = useTranslation();
+  const [filters, setFilters] = useState(defaultFilters);
+  const { bookingTrainerDetails, bookingLoading, totalBookings } = useGetBookingByTrainerId({
+    trainer_id: id,
+    payment_status: filters.payment_status,
+    payment_method: filters.payment_method,
+    page: table.page + 1,
+    limit: table.rowsPerPage,
+  });
   const bookingDetails = bookingTrainerDetails.bookings;
+  const openFilters = useBoolean();
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (bookingDetails?.length > 0) {
+      setTableData(bookingDetails);
+    } else {
+      setTableData([]);
+    }
+  }, [bookingDetails]);
+  const handleFilters = useCallback(
+    (name, value) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
+  const canReset = !isEqual(defaultFilters, filters);
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
+  const handleDownloadReport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const params = {
+        driver_id: id,
+        page: table.page !== undefined ? (table.page + 1).toString() : '',
+        limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
+        payment_status:
+          filters.payment_status !== undefined ? filters.payment_status.toString() : '',
+        payment_method:
+          filters.payment_method !== undefined ? filters.payment_method.toString() : '',
+        is_download: 1,
+      };
+
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value)
+      );
+
+      const queryParams = new URLSearchParams(filteredParams).toString();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_HOST_API}admin/booking/get-bookings-list?${queryParams}`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'text/csv',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to download CSV');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'trainer_bookings_report.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+    }
+  };
 
   return (
     <TableContainer component={Paper}>

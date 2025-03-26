@@ -365,7 +365,8 @@
   "search_school": "Search School...",
   "other": "OTHER",
   "school_commission_range": "School Commission must be between {{min}}% and {{max}}%.",
-  "certificate_commission_tooltip": "Commission for trainer from certificate",
+  "certificate_commission_range": "Certificate Commission must be between {{min}}% and {{max}}%.",
+  "certificate_commission_tooltip": "Commission of drivys from certificate",
   "vehicle_number": "Vehicle Number",
   "max_cash_in_hand_allowed": "Max Cash in Hand Allowed",
   "create_user": "Create User",
@@ -997,7 +998,16 @@
   "Pay By Cash":"Pay By Cash",
   "Create Payout":"Create Payout",
   "Select Payment Method":"Select Payment Method",
-  "Upload Proof of Payment":"Upload Proof of Payment"
-
-
+  "Upload Proof of Payment":"Upload Proof of Payment",
+  "min_certificate_commission": "Min Certificate Commission",
+  "max_certificate_commission": "Max Certificate Commission",
+  "certificate_commission_required": "Certificate commission is required",
+  "min_certificate_commission_error": "Certificate commission must be greater than Min Certificate Commission",
+  "max_certificate_commission_error": "Certificate commission must be less than Max Certificate Commission",
+  "Add Bulk Commission":"Add Bulk Commission",
+  "Commission in (%)":"Commission in (%)",
+  "Certificate Commission must be between":"Certificate Commission must be between",
+  "Add New Trainer":"Add New Trainer",
+  "report":"Report",
+  "student":"Student"
 }

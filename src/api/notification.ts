@@ -52,3 +52,15 @@ export async function sendNotification(notificationData: Body) {
     throw error;
   }
 }
+export async function updateFcm(fcmToken: string) {
+  const URL = endpoints.updateFCMToken;
+  const payload = { fcm_token: fcmToken };
+
+  try {
+    const response = await drivysCreator([URL, payload]);
+    return response;
+  } catch (error) {
+    console.error('Error updating FCM token:', error);
+    throw error;
+  }
+}

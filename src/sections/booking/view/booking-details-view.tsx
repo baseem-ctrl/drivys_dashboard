@@ -147,7 +147,6 @@ const BookingDetailsComponent = () => {
       </Box>
     );
   }
-  console.log('bookingDetails', bookingDetails?.sessions[0]?.end_time);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <BookingDetailsToolbar

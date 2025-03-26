@@ -71,7 +71,6 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
               <TableRow
                 key={booking.id}
                 onClick={() => {
-                  console.log(`Booking ID clicked: ${booking.id}`);
                   handleBookingClick(booking.id);
                 }}
                 sx={{

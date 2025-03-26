@@ -67,7 +67,6 @@ const EditableForm: React.FC = () => {
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
   });
-  console.log('data', data);
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -94,6 +93,20 @@ const EditableForm: React.FC = () => {
     setEditedFields((prev) => ({ ...prev, [id]: false }));
     setFormData([...data]);
   };
+  const [updatedItem, setUpdatedItem] = useState<{ id: number; value: boolean } | null>(null);
+
+  const handleToggle = (id: number, newValue: boolean) => {
+    handleChange(id, newValue); // First update state
+    setUpdatedItem({ id, value: newValue }); // Store the latest change
+  };
+
+  // Trigger `handleSave` after state update
+  useEffect(() => {
+    if (updatedItem) {
+      handleSave(updatedItem.id);
+      setUpdatedItem(null); // Reset after saving
+    }
+  }, [updatedItem]); // Runs when `updatedItem` changes
 
   const handleSave = async (id: number) => {
     try {
@@ -172,118 +185,154 @@ const EditableForm: React.FC = () => {
     if (item.key === 'DEFAULT_SCHOOL') {
       const selectedSchool = schoolList.find((school) => school.id === item.value);
       return (
-        <Box display="flex" alignItems="center" width="100%" gap={2}>
-          <Autocomplete
-            fullWidth
-            options={
-              schoolList?.map((school) => ({
-                label: school.vendor_translations
-                  .slice(0, 2)
-                  .map((translation) => translation.name)
-                  .join(' - '),
-                value: school.id,
-              })) ?? []
-            }
-            getOptionLabel={(option) => t(option.label)}
-            value={
-              selectedSchool
-                ? {
-                  label: selectedSchool.vendor_translations
+        <Grid alignItems="center" spacing={2} sx={{ ml: 2 }}>
+          {/* <Grid item xs={6}> */}
+          <Typography variant="body1" sx={{ mt: 2, mb: 2 }} fontWeight="500" color="gray">
+            {item.key
+              .replace(/_/g, ' ')
+              .toLowerCase()
+              .replace(/\b\w/g, (char) => char.toUpperCase())}
+          </Typography>
+          {/* </Grid> */}
+
+          <Grid item xs={11}>
+            <Autocomplete
+              fullWidth
+              options={
+                schoolList?.map((school) => ({
+                  label: school.vendor_translations
                     .slice(0, 2)
                     .map((translation) => translation.name)
                     .join(' - '),
-                  value: selectedSchool.id,
-                }
-                : null
-            }
-            onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
-            loading={schoolLoading}
-            renderInput={(params) => (
-              <TextField {...params} label={t("Default School")} placeholder="Select School" />
-            )}
-            renderOption={(props, option) => (
-              <li {...props} key={option.value}>
-                {option.label}
-              </li>
-            )}
-          />
-
-          {editedFields[item.id] && (
-            <>
-              <IconButton color="primary" onClick={() => handleSave(item.id)}>
-                <SaveIcon />
-              </IconButton>
-              <IconButton color="primary" onClick={() => handleCancelEdit(item.id)}>
-                <CloseIcon />
-              </IconButton>
-            </>
-          )}
-        </Box>
+                  value: school.id,
+                })) ?? []
+              }
+              getOptionLabel={(option) => option.label}
+              value={
+                selectedSchool
+                  ? {
+                    label: selectedSchool.vendor_translations
+                      .slice(0, 2)
+                      .map((translation) => translation.name)
+                      .join(' - '),
+                    value: selectedSchool.id,
+                  }
+                  : null
+              }
+              onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
+              loading={schoolLoading}
+              renderInput={(params) => (
+                <TextField {...params} label="Default School" placeholder="Select School" />
+              )}
+              renderOption={(props, option) => (
+                <li {...props} key={option.value}>
+                  {option.label}
+                </li>
+              )}
+            />
+          </Grid>
+          <Grid item xs={11}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{
+                mt: 2,
+                textTransform: 'none',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                height: '38px',
+              }}
+              onClick={() => handleSave(item.id)}
+            >
+              Save
+            </Button>
+          </Grid>
+        </Grid>
       );
     }
     if (typeof item.value === 'boolean') {
       return (
-        <Box display="flex" alignItems="center" width="100%">
-          {' '}
-          <FormControlLabel
-            control={
-              <Switch
-                checked={item.value}
-                onChange={(e) => handleChange(item.id, e.target.checked)}
-                color="primary"
-              />
-            }
-            label={t(item.key.replace(/_/g, ' '))}
-          />
-          {editedFields[item.id] && (
-            <>
-              <IconButton color="primary" onClick={() => handleSave(item.id)}>
-                <SaveIcon />
-              </IconButton>
-              <IconButton color="secondary" onClick={() => handleCancelEdit(item.id)}>
-                <CloseIcon />
-              </IconButton>
-            </>
-          )}
-        </Box>
+        <Grid container alignItems="center" spacing={2} sx={{ ml: 2 }}>
+          <Grid item xs={6}>
+            <Typography variant="body1">
+              {item.key
+                .replace(/_/g, ' ')
+                .toLowerCase()
+                .replace(/\b\w/g, (char) => char.toUpperCase())}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={5}>
+            <Switch
+              checked={item.value}
+              onChange={(e) => handleToggle(item.id, e.target.checked)}
+              color="primary"
+            />
+          </Grid>
+        </Grid>
       );
     }
     if (typeof item.value === 'number' || typeof item.value === 'string') {
       const tooltipText = fieldTooltips[item.key] || '';
 
       return (
-        <Box display="flex" alignItems="center" width="100%">
+        <Box display="flex" flexDirection="column" p={4} width="100%">
+          {/* <Typography variant="h6" fontWeight="bold" mb={2}>
+            {item.key
+              .replace(/_/g, ' ')
+              .toLowerCase()
+              .replace(/^./, (char) => char.toUpperCase())}
+          </Typography> */}
+
+          <Box display="flex" alignItems="center">
+            <Typography variant="body2" fontWeight="500" color="gray" mb={1}>
+              {item.key
+                .replace(/_/g, ' ')
+                .toLowerCase()
+                .replace(/^./, (char) => char.toUpperCase())}
+            </Typography>
+            {tooltipText && (
+              <Tooltip title={tooltipText} arrow>
+                <IconButton size="small" sx={{ ml: 1, mb: '10px' }}>
+                  <InfoOutlinedIcon fontSize="medium" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
+
           <TextField
             value={item.value}
             onChange={(e) => handleChange(item.id, e.target.value)}
             label={t(item.key.replace(/_/g, ' '))}
             fullWidth
             variant="outlined"
-            margin="normal"
-            multiline={item.value.toString().length > 20}
-            rows={item.value.toString().length > 20 ? 4 : 1}
-            InputProps={{
-              endAdornment: tooltipText ? (
-                <InputAdornment position="end">
-                  <Tooltip title={tooltipText} arrow>
-                    <IconButton>
-                      <InfoOutlinedIcon />
-                    </IconButton>
-                  </Tooltip>
-                </InputAdornment>
-              ) : null,
+            value={item.value}
+            onChange={(e) => handleChange(item.id, e.target.value)}
+            sx={{
+              backgroundColor: '#F8F8F8',
+              borderRadius: '8px',
+              '& fieldset': { border: '1px solid #E0E0E0' },
             }}
           />
-          {editedFields[item.id] && (
-            <>
-              <IconButton color="primary" onClick={() => handleSave(item.id)}>
-                <SaveIcon />
-              </IconButton>
-              <IconButton color="secondary" onClick={() => handleCancelEdit(item.id)}>
-                <CloseIcon />
-              </IconButton>
-            </>
-          )}
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{
+              mt: 2,
+              textTransform: 'none',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              borderRadius: '8px',
+              height: '38px',
+            }}
+            onClick={() => handleSave(item.id)}
+          >
+            {t("Save")}
+          </Button>
         </Box>
       );
     }
@@ -297,7 +346,6 @@ const EditableForm: React.FC = () => {
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
             marginBottom: 3,
           }}
         >
@@ -324,14 +372,26 @@ const EditableForm: React.FC = () => {
         ) : (
           <FormProvider {...methods}>
             <form>
-              <Grid container spacing={2}>
+              <Box>
                 {formData &&
                   formData.map((item) => (
-                    <Grid item xs={item.key === 'PRIVACY POLICY' ? 12 : 6} key={item.id}>
-                      <Box sx={{ marginBottom: 2 }}>{renderInputField(item)}</Box>
+                    <Grid
+                      item
+                      xs={item.key === 'PRIVACY POLICY' || item.value === 'boolean' ? 12 : 7}
+                      key={item.id}
+                      sx={{ display: 'flex', justifyContent: 'flexstart' }}
+                    >
+                      <Box
+                        sx={{
+                          width: item.key === 'PRIVACY POLICY' ? '100%' : '60%',
+                          marginBottom: 2,
+                        }}
+                      >
+                        {renderInputField(item)}
+                      </Box>
                     </Grid>
                   ))}
-              </Grid>
+              </Box>
             </form>
           </FormProvider>
         )}

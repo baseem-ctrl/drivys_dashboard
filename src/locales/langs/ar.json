@@ -342,7 +342,6 @@
   "search_school": "بحث عن مدرسة...",
   "other": "أخرى",
   "school_commission_range": "يجب أن تكون عمولة المدرسة بين {{min}}% و {{max}}%.",
-  "certificate_commission_tooltip": "العمولة للمدرب من الشهادة",
   "vehicle_number": "رقم المركبة",
   "max_cash_in_hand_allowed": "أقصى مبلغ نقدي مسموح به",
   "create_user": "إنشاء مستخدم",
@@ -1052,7 +1051,21 @@
   "Pay By Cash": "الدفع نقدًا",
   "Create Payout": "إنشاء دفعة",
   "Select Payment Method": "اختر وسيلة الدفع",
-  "Upload Proof of Payment": "تحميل إثبات الدفع"
+  "Upload Proof of Payment": "تحميل إثبات الدفع",
+  "min_certificate_commission": "الحد الأدنى لعمولة الشهادة",
+  "max_certificate_commission": "الحد الأقصى لعمولة الشهادة",
+  "certificate_commission_required": "مطلوب عمولة الشهادة",
+  "certificate_commission_range": "يجب أن تكون عمولة الشهادة بين {{الحد الأدنى}}٪ و {{الحد الأقصى}}٪.",
+  "min_certificate_commission_error": "يجب أن تكون عمولة الشهادة أكبر من الحد الأدنى لعمولة الشهادة",
+  "max_certificate_commission_error": "يجب أن تكون عمولة الشهادة أقل من الحد الأقصى لعمولة الشهادة",
+  "certificate_commission_tooltip": "عمولة المنصة من الشهادة",
+  "Add Bulk Commission":"إضافة عمولة جماعية",
+  "Commission in (%)":"العمولة بنسبة (%)",
+  "Certificate Commission must be between":"يجب أن تكون عمولة الشهادة بين",
+  "Add New Trainer":"إضافة مدرب جديد",
+  "Search Trainer":"بحث عن مدرب",
+  "report":"تقرير",
+  "student":"طالب"
 
 }
 

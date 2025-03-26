@@ -35,6 +35,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useGetTrainerNoSchool } from 'src/api/trainer';
 import { updateUserVerification } from 'src/api/school-admin';
+import { useLocales } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +75,8 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
   });
   const popover = usePopover();
   const confirm = useBoolean();
+  const { t } = useLocales();
+
   const NewUserSchema = Yup.object().shape({
     vehicle_number: Yup.string().nullable(), // not required
     phone: Yup.string().matches(
@@ -126,6 +129,30 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
               (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
         );
       }),
+    certificate_commission_in_percentage: Yup.number()
+      .required(t('certificate_commission_required'))
+      .when([], {
+        is: () =>
+          candidates[0]?.certificate_min_commision >= 0 &&
+          candidates[0]?.certificate_max_commision >= 0 &&
+          candidates[0]?.certificate_max_commision &&
+          candidates[0]?.certificate_min_commision,
+        then: (schema) =>
+          schema
+            .min(
+              candidates[0]?.certificate_min_commision,
+              t('min_certificate_commission_error', {
+                min: candidates[0]?.certificate_min_commision ?? 0,
+              })
+            )
+            .max(
+              candidates[0]?.certificate_max_commision,
+              t('max_certificate_commission_error', {
+                max: candidates?.certificate_max_commision ?? 100,
+              })
+            ),
+        otherwise: (schema) => schema,
+      }),
   });
   const defaultValues = useMemo(
     () => ({
@@ -135,6 +162,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       password: '',
 
       vendor_commission_in_percentage: editDetails?.vendor_commission_in_percentage || '',
+      certificate_commission_in_percentage: editDetails?.certificate_commission_in_percentage || '',
       vehicle_number: editDetails?.vehicle_number || '',
       phone: '',
       dob: editDetails?.user?.dob?.split('T')[0] || '',
@@ -189,6 +217,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       email: data?.email,
       password: data?.password,
       vendor_commission_in_percentage: data?.vendor_commission_in_percentage,
+      certificate_commission_in_percentage: data?.certificate_commission_in_percentage,
       vehicle_number: data?.vehicle_number,
       phone: data?.phone,
       country_code: '971',
@@ -230,7 +259,6 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
     setTrainerMappingId(trainer?.id);
     setIndex(index);
   };
-  console.log('schoolTrainersList', schoolTrainersList);
   const handleRemove = async () => {
     try {
       if (trainerMappingId) {
@@ -308,7 +336,19 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                         {candidates[0]?.vendor?.max_commision || '0'}%
                       </FormHelperText>
                     </div>
-
+                    <div>
+                      <RHFTextField
+                        name="certificate_commission_in_percentage"
+                        label="Certificate Commision"
+                        fullWidth
+                        suffix="%"
+                      />
+                      <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                        Certificate Commission must be in between{' '}
+                        {candidates[0]?.vendor?.certificate_min_commision || '0'}% and{' '}
+                        {candidates[0]?.vendor?.certificate_max_commision || '0'}%
+                      </FormHelperText>
+                    </div>
                     <RHFTextField
                       name="dob"
                       label="Date of Birth"
