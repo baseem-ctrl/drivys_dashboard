@@ -18,6 +18,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 import { AddBulkSchoolCommision } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -29,6 +30,7 @@ type Props = {
 };
 
 export default function BulkSchoolCommission({ bulkIds, open, onClose, type, reload }: Props) {
+  const { t } = useTranslation()
   const { enqueueSnackbar } = useSnackbar();
   const NewUserSchema = Yup.object().shape({
     commission: Yup.string(),
@@ -99,7 +101,7 @@ export default function BulkSchoolCommission({ bulkIds, open, onClose, type, rel
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{'Add Bulk Commission'}</DialogTitle>
+        <DialogTitle>{t('Add Bulk Commission')}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -115,7 +117,7 @@ export default function BulkSchoolCommission({ bulkIds, open, onClose, type, rel
             <RHFTextField
               type="number"
               name="commission"
-              label="Commission in (%)"
+              label={t("Commission in (%)")}
               prefix="%"
             ></RHFTextField>
           </Box>
@@ -123,11 +125,11 @@ export default function BulkSchoolCommission({ bulkIds, open, onClose, type, rel
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            Cancel
+            {t("Cancel")}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Update
+            {t("Update")}
           </LoadingButton>
         </DialogActions>
       </FormProvider>
