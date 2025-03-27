@@ -392,32 +392,28 @@ export default function UserNewEditForm({
     }
   }, [selectedCity, setValue]);
   useEffect(() => {
-    if (values.vendor_id?.value === undefined || values.vendor_id?.value === null) {
-      setDefaultOption({ label: 'OTHER', value: null });
-    } else {
-      // Otherwise, retain the selected value
-      const selectedOption = schoolList?.find((school) => school.id === values.vendor_id.value);
-      if (selectedOption) {
-        setDefaultOption({
-          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption?.id,
-        });
-      }
-    }
-  }, [values.vendor_id, schoolList]);
-
-  useEffect(() => {
     if (currentUser?.id) {
       reset(defaultValues);
-      const selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
-      if (selectedOption) {
-        setDefaultOption({
-          label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
-          value: selectedOption?.id,
-        });
-      }
     }
-  }, [currentUser?.id, reset, defaultValues]);
+
+    let selectedOption = null;
+
+    if (values.vendor_id?.value !== undefined && values.vendor_id?.value !== null) {
+      selectedOption = schoolList?.find((school) => school?.id === values.vendor_id.value);
+    } else if (currentUser?.vendor?.id) {
+      selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
+    }
+
+    if (selectedOption) {
+      setDefaultOption({
+        label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+        value: selectedOption?.id,
+      });
+    } else {
+      setDefaultOption({ label: 'OTHER', value: null });
+    }
+  }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues]);
+
   const watchedVendorId = watch('vendor_id');
 
   useEffect(() => {
