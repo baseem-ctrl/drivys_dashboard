@@ -54,7 +54,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
     table.page + 1,
     table.rowsPerPage
   );
-
+  console.log('workingHours', workingHours);
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');
   const deletePopover = usePopover();
@@ -166,27 +166,29 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
               disabled={!details?.is_active}
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => handleCreateShift()}
-            >{t("Add Shift")}</Button>
+            >
+              {t('Add Shift')}
+            </Button>
           </Box>
 
           {shifts.length > 0 && (
             <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-              {t("Trainer Shifts:")}
+              {t('Trainer Shifts:')}
             </Typography>
           )}
           {shiftsLoading ? (
-            <Typography>{t("Loading shifts..")}.</Typography>
+            <Typography>{t('Loading shifts..')}.</Typography>
           ) : shiftsError ? (
-            <Typography color="error">{t("Error loading shifts")}</Typography>
+            <Typography color="error">{t('Error loading shifts')}</Typography>
           ) : shifts.length > 0 ? (
             <Card>
               <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>{t("Shift Start Time")}</TableCell>
-                      <TableCell>{t("Shift End Time")}</TableCell>
-                      <TableCell>{t("Action")}</TableCell>
+                      <TableCell>{t('Shift Start Time')}</TableCell>
+                      <TableCell>{t('Shift End Time')}</TableCell>
+                      <TableCell>{t('Action')}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -215,11 +217,11 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             <Box display="flex" justifyContent="flex-start" alignItems="center" height="100%">
               {details?.is_active ? (
                 <Typography variant="subtitle1" color="primary">
-                  {t("No shifts available. Please create a shift")}
+                  {t('No shifts available. Please create a shift')}
                 </Typography>
               ) : (
                 <Typography variant="subtitle1" color="primary">
-                  {t("Shift creation is disabled as the trainer is inactive.")}
+                  {t('Shift creation is disabled as the trainer is inactive.')}
                 </Typography>
               )}
             </Box>
@@ -242,7 +244,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
               startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => handleCreateWorkingHours()}
             >
-              {t("Add Work Hours")}
+              {t('Add Work Hours')}
             </Button>
           </Box>
         )}
@@ -250,7 +252,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
         {workingHours && workingHours.length > 0 && (
           <Card>
             <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-              {t("Trainer Working Hours:")}
+              {t('Trainer Working Hours:')}
             </Typography>
             <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
               <Table>
@@ -258,7 +260,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                   <TableRow>
                     {workingHoursHeaders.map((header) => (
                       <TableCell key={header.key}>
-                        <Typography>{t(header.label)}</Typography>
+                        <Typography>{header.label}</Typography>
                       </TableCell>
                     ))}
                     <TableCell></TableCell>
@@ -272,24 +274,33 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">
-                          {groupedWorkingHours[day].some((hour) => hour.is_off_day) ? t('Yes') : t('No')}
+                          {groupedWorkingHours[day].some((hour) => hour.is_off_day)
+                            ? t('Yes')
+                            : t('No')}
                         </Typography>
                       </TableCell>
 
                       {/* Conditionally render shift time or full day */}
                       <TableCell>
-                        {groupedWorkingHours[day][0]?.is_full_day ? (
-                          <Chip label={t("Full Day")} color="primary" />
+                        {groupedWorkingHours[day][0]?.is_off_day ? (
+                          <Chip label={'Off Day'} color="info" />
+                        ) : groupedWorkingHours[day][0]?.is_full_day ? (
+                          <Chip label={t('Full Day')} color="primary" />
                         ) : (
-                          // <TableCell align="center">
-                          groupedWorkingHours[day].map((hour, index) => (
-                            <Box key={index} component="div">
-                              <Typography variant="body2">
-                                {moment(hour.start_time).local().format('h:mm A')} -{' '}
-                                {moment(hour.end_time).local().format('h:mm A')}
-                              </Typography>
-                            </Box>
-                          ))
+                          groupedWorkingHours[day]
+                            .slice() // Create a copy to avoid mutating the original array
+                            .sort(
+                              (a, b) =>
+                                moment(a.start_time).valueOf() - moment(b.start_time).valueOf()
+                            ) // Sort by start_time
+                            .map((hour, index) => (
+                              <Box key={index} component="div">
+                                <Typography variant="body2">
+                                  {moment(hour.start_time).local().format('h:mm A')} -{' '}
+                                  {moment(hour.end_time).local().format('h:mm A')}
+                                </Typography>
+                              </Box>
+                            ))
                         )}
                       </TableCell>
                     </TableRow>
@@ -302,20 +313,20 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
         {leaveDates && leaveDates.length > 0 && (
           <Card sx={{ mt: 4 }}>
             <Typography variant="h6" sx={{ p: 2, borderBottom: '1px solid #ddd' }}>
-              {t("Leave Dates")}
+              {t('Leave Dates')}
             </Typography>
             <TableContainer sx={{ position: 'relative', overflow: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>
-                      <Typography>{t("Date")}</Typography>
+                      <Typography>{t('Date')}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>{t("Type")}</Typography>
+                      <Typography>{t('Type')}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>{t("Time")}</Typography>
+                      <Typography>{t('Time')}</Typography>
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -363,7 +374,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
         {/* <MenuItem
           onClick={() => {
@@ -379,8 +390,8 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure you want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           handleDeleteWorkingHour(workingHourID);
@@ -398,8 +409,8 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
       <ConfirmDialog
         open={deletePopover.open}
         onClose={deletePopover.onClose}
-        title={t("Delete")}
-        content={t("Are you sure you want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           handleDeleteShift(selectedShift?.id);
@@ -410,7 +421,7 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             color="error"
             onClick={() => handleDeleteShift(selectedShift?.id)}
           >
-            {t("Delete")}
+            {t('Delete')}
           </Button>
         }
       />
