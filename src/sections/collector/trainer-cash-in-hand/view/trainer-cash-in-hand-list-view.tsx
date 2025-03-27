@@ -40,6 +40,7 @@ const TABLE_HEAD = [
   { id: 'cash_in_hand', label: 'Cash In Hand', width: 180 },
   { id: 'num_of_booking', label: 'No.of Booking', width: 180 },
   { id: 'cash_clearance_date', label: 'Cash Clearance Date', width: 180 },
+  { id: 'action', label: '', width: 180 },
 ];
 
 // ----------------------------------------------------------------------

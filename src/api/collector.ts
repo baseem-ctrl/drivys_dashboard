@@ -1,4 +1,4 @@
-import { endpoints, drivysFetcher } from 'src/utils/axios';
+import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -43,4 +43,9 @@ export function useGetCollectorCashInHand(
   };
 
   return { ...memoizedValue, revalidateCollectorCashInHand };
+}
+export function collectCash(body: any) {
+  const URL = endpoints.collector.collectCash;
+  const response = drivysCreator([URL, body]);
+  return response;
 }
