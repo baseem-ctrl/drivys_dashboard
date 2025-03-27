@@ -26,7 +26,7 @@ interface StudentReviewRowProps {
 export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<null | HTMLElement>(null);
   const [trainerId, setTrainerId] = useState<string | null>(null);
 
   // Open popover and set trainer ID

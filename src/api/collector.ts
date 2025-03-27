@@ -45,7 +45,7 @@ export function useGetCollectorCashInHand(
   return { ...memoizedValue, revalidateCollectorCashInHand };
 }
 export function collectCash(body: any) {
-  const URL = endpoints.collector.getCashInHand;
+  const URL = endpoints.collector.collectCash;
   const response = drivysCreator([URL, body]);
   return response;
 }
