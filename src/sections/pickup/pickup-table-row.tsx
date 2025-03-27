@@ -35,7 +35,7 @@ export default function PickupTableRow({
   reload,
 }: Props) {
   const { city_id, end_date, end_time, start_date, start_time, status } = row;
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -88,7 +88,7 @@ export default function PickupTableRow({
       </TableRow>
 
       <PickupCreateEditForm
-        title="Edit Pickup"
+        title={t('Edit Pickup')}
         currentPickup={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
@@ -109,7 +109,7 @@ export default function PickupTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -119,15 +119,15 @@ export default function PickupTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure you want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
