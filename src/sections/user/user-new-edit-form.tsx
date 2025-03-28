@@ -101,7 +101,7 @@ export default function UserNewEditForm({
   const router = useRouter();
   const { user } = useAuthContext();
   const { t } = useLocales();
-
+  console.log('currentUser', currentUser?.vendor?.certificate_max_commision);
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
 
@@ -867,20 +867,32 @@ export default function UserNewEditForm({
 
               {values.user_type === 'TRAINER' && (
                 <>
-                  <RHFTextField
-                    name="certificate_commission_in_percentage"
-                    label={t('certificate_commission')}
-                    type="number"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Tooltip title={t('certificate_commission_tooltip')} placement="top">
-                            <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
-                          </Tooltip>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                  <div>
+                    <RHFTextField
+                      name="certificate_commission_in_percentage"
+                      label={t('certificate_commission')}
+                      type="number"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Tooltip title={t('certificate_commission_tooltip')} placement="top">
+                              <InfoOutlined sx={{ color: 'gray', cursor: 'pointer' }} />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    {currentUser?.vendor?.certificate_min_commision &&
+                    currentUser?.vendor?.certificate_max_commision ? (
+                      <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
+                        {t('Certificate Commission must be between', {
+                          min: currentUser?.vendor?.certificate_min_commision || '0',
+                          max: currentUser?.vendor?.certificate_max_commision || '0',
+                        })}
+                      </FormHelperText>
+                    ) : null}
+                  </div>
+
                   <RHFTextField name="vehicle_number" label={t('vehicle_number')} type="text" />
                 </>
               )}
