@@ -1020,13 +1020,6 @@ export default function UserNewEditForm({
                           ))}
                       </RHFSelect>
                     )}
-                    {values.user_type === 'TRAINER' && (
-                      <RHFTextField
-                        name="school_commission_in_percentage"
-                        label={t('school_commission_trainer')}
-                        type="number"
-                      />
-                    )}
                   </Box>
                   <Box
                     rowGap={3}
