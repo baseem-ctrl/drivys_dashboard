@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -101,10 +101,8 @@ export default function UserNewEditForm({
   const router = useRouter();
   const { user } = useAuthContext();
   const { t } = useLocales();
-  console.log('currentUser', currentUser?.vendor?.certificate_max_commision);
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
@@ -267,6 +265,7 @@ export default function UserNewEditForm({
       otherwise: (schema) => schema.notRequired(),
     }),
   });
+
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -275,6 +274,7 @@ export default function UserNewEditForm({
       name_ar: currentUser?.name_ar || '',
       password: '',
       phone: currentUser?.phone || '',
+      // city_assigned: currentUser?.city_assigned || [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
@@ -415,6 +415,7 @@ export default function UserNewEditForm({
   }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues]);
 
   const watchedVendorId = watch('vendor_id');
+  console.log('values.user_type', values.user_type);
 
   useEffect(() => {
     if (watchedVendorId) {
@@ -491,6 +492,13 @@ export default function UserNewEditForm({
           body.append('vendor_id', matchedVendor.id);
         } else if (data?.vendor_id?.value) {
           body.append('vendor_id', data.vendor_id.value);
+        }
+      }
+      if (data?.user_type === 'COLLECTOR') {
+        if (Array.isArray(data?.city_assigned) && data.city_assigned.length > 0) {
+          data.city_assigned.forEach((city) => {
+            body.append('city_assigned[]', city);
+          });
         }
       }
       if (
@@ -637,6 +645,7 @@ export default function UserNewEditForm({
       </Box>
     );
   }
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -747,6 +756,54 @@ export default function UserNewEditForm({
                   label={t('name_ar')}
                   error={!!errors.name_ar}
                   helperText={errors.name_ar?.message || ''}
+                />
+              )}
+              {values.user_type === 'COLLECTOR' && (
+                <Controller
+                  name="city_assigned"
+                  control={control}
+                  render={({ field }) => {
+                    // Ensure field.value is always an array
+                    const selectedOptions = Array.isArray(field.value)
+                      ? field.value
+                          .map((id) => {
+                            const match = city?.find((c) => c.id === id);
+                            return match
+                              ? {
+                                  value: match.id,
+                                  label: match.city_translations?.[0]?.name ?? t('unknown'),
+                                }
+                              : null;
+                          })
+                          .filter(Boolean) // Remove any null values
+                      : [];
+
+                    return (
+                      <RHFAutocompleteSearch
+                        {...field}
+                        label={t('City Assigned')}
+                        multiple
+                        options={
+                          Array.isArray(city)
+                            ? city.map((option) => ({
+                                value: option.id ?? 'unknown',
+                                label: option.city_translations?.[0]?.name ?? t('unknown'),
+                              }))
+                            : []
+                        }
+                        value={selectedOptions} // Ensure correct format
+                        onChange={(event, newValue) => {
+                          // Store only city IDs in field.value
+                          field.onChange(newValue.map((option) => option.value));
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option?.value}>
+                            {option?.label || 'Unknown'}
+                          </li>
+                        )}
+                      />
+                    );
+                  }}
                 />
               )}
               <RHFTextField
