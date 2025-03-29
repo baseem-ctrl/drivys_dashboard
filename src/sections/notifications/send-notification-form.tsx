@@ -18,13 +18,14 @@ import MenuItem from '@mui/material/MenuItem';
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField, RHFSwitch } from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFSwitch, RHFSelect } from 'src/components/hook-form';
 import { sendNotification } from 'src/api/notification'; // Assuming you have this utility
 import { IUserItem } from 'src/types/user';
 import { useGetUsers } from 'src/api/users';
 import { Chip, FormControl, InputLabel } from '@mui/material';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useTranslation } from 'react-i18next';
+import { useGetAllLanguage } from 'src/api/language';
 
 type Props = {
   currentUser?: IUserItem;
@@ -38,7 +39,12 @@ export default function SendNotificationForm({
 }: Props) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { language } = useGetAllLanguage(0, 1000);
 
+  const localeOptions = (language || []).map((lang) => ({
+    value: lang.language_culture,
+    label: lang.name,
+  }));
   const [loading, setLoading] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const NotificationSchema = Yup.object().shape({
@@ -64,6 +70,7 @@ export default function SendNotificationForm({
       detailMessage: '',
       user_id: [],
       sendAll: 0,
+      locale: 'En',
     }),
     [currentUser]
   );
@@ -110,12 +117,13 @@ export default function SendNotificationForm({
 
       // Prepare the notification data
       const notificationData = {
-        user_ids: data.sendAll ? [] : data.user_id, // `user_id` is now an array
-        user_type: data.userType,
-        title: data.title,
-        description: data.description,
-        detail_message: data.detailMessage,
-        send_all: data.sendAll ? 1 : 0,
+        user_ids: data?.sendAll ? [] : data?.user_id, // `user_id` is now an array
+        user_type: data?.userType,
+        title: data?.title,
+        locale: data?.locale,
+        description: data?.description,
+        detail_message: data?.detailMessage,
+        send_all: data?.sendAll ? 1 : 0,
       };
 
       const response = await sendNotification(notificationData);
@@ -152,7 +160,7 @@ export default function SendNotificationForm({
     >
       <Grid container spacing={3} sx={{ width: '100%' }}>
         <Grid xs={12}>
-          <Card sx={{ p: 3, width: '100%', mb: 5 }}>
+          <Grid sx={{ p: 3, width: '100%', mb: 5 }}>
             <Box
               rowGap={3}
               columnGap={2}
@@ -162,15 +170,33 @@ export default function SendNotificationForm({
                 sm: 'repeat(2, 1fr)',
               }}
             >
+              {/* Locale Selection Dropdown */}
+              <RHFSelect name="locale" label={t('Locale')}>
+                <MenuItem value="" disabled>
+                  Select Locale
+                </MenuItem>
+                {localeOptions?.length > 0 ? (
+                  localeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" disabled>
+                    No options available
+                  </MenuItem>
+                )}
+              </RHFSelect>
+
               <FormControl fullWidth>
-                <InputLabel>{t("User Type")}</InputLabel>
+                <InputLabel>{t('User Type')}</InputLabel>
                 <Controller
                   name="userType"
                   control={control}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      label={t("User Type")}
+                      label={t('User Type')}
                       onChange={(e) => {
                         field.onChange(e);
                         revalidateUsers({ user_types: e.target.value });
@@ -181,7 +207,7 @@ export default function SendNotificationForm({
                       }}
                     >
                       <MenuItem value="" disabled>
-                        {t("Select User Type")}
+                        {t('Select User Type')}
                       </MenuItem>
                       {Object.entries(enumData).map(([key, value]) => (
                         <MenuItem key={key} value={value.value}>
@@ -192,6 +218,7 @@ export default function SendNotificationForm({
                   )}
                 />
               </FormControl>
+
               <FormControl fullWidth>
                 <Controller
                   name="user_id"
@@ -199,7 +226,7 @@ export default function SendNotificationForm({
                   render={({ field }) => (
                     <RHFAutocompleteSearch
                       {...field}
-                      label={t("User IDs")}
+                      label={t('User IDs')}
                       multiple
                       disabled={sendAll === 1}
                       options={users?.map((user) => ({
@@ -220,19 +247,19 @@ export default function SendNotificationForm({
                 />
               </FormControl>
 
-              <RHFTextField name="title" label={t("Notification Title")} fullWidth />
-              <RHFTextField name="description" label={t("Description")} fullWidth />
-              <RHFTextField name="detailMessage" label={t("Body")} fullWidth multiline rows={4} />
+              <RHFTextField name="title" label={t('Notification Title')} fullWidth />
+              <RHFTextField name="description" label={t('Description')} fullWidth />
+              <RHFTextField name="detailMessage" label={t('Body')} fullWidth multiline rows={4} />
 
-              <RHFSwitch name="sendAll" label={t("Send to all users?")} labelPlacement="start" />
+              <RHFSwitch name="sendAll" label={t('Send to all users?')} labelPlacement="start" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting || loading}>
-                {t("Send Notification")}
+                {t('Send Notification')}
               </LoadingButton>
             </Stack>
-          </Card>
+          </Grid>
         </Grid>
       </Grid>
     </FormProvider>
