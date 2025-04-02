@@ -516,63 +516,71 @@ export default function UserDetailsContent({
                 { label: t('wallet_points'), value: details?.wallet_points ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER' && details?.languages?.length
                   ? details?.languages.map((lang, index) => ({
-                    label: `${t('language')} ${index + 1}`,
-                    value: lang?.dialect?.id
-                      ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
-                      : 'NA',
-                  }))
+                      label: `${t('language')} ${index + 1}`,
+                      value: lang?.dialect?.id
+                        ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
+                        : 'NA',
+                    }))
                   : []),
+                // ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
+                //   ? details?.city_assigned.map((city, index) => ({
+                //       label: `${t('city')} ${index + 1}
+                //       `,
+                //       value: ` ${city?.city?.city_translations?.[0]?.name ?? t('Unknown')}`,
+                //     }))
+                //   : []),
+
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: t('school_name'),
-                      value: details?.vendor?.vendor_translations?.[0]?.name ? (
-                        <Link
-                          onClick={() => handleClickTrainer(details?.vendor?.id)}
-                          style={{
-                            textDecoration: 'underline',
-                            color: 'inherit',
-                            cursor: 'pointer',
-                          }}
-                          onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
-                          onMouseOut={(e) => (e.target.style.color = 'inherit')}
-                        >
-                          {details?.vendor?.vendor_translations?.[0]?.name}
-                        </Link>
-                      ) : (
-                        details?.school_name ?? 'N/A'
-                      ),
-                    },
-                    {
-                      label: t('school_commission'),
-                      value:
-                        details?.vendor_commission_in_percentage != null
-                          ? `${details.vendor_commission_in_percentage} %`
-                          : 'N/A',
-                    },
+                      {
+                        label: t('school_name'),
+                        value: details?.vendor?.vendor_translations?.[0]?.name ? (
+                          <Link
+                            onClick={() => handleClickTrainer(details?.vendor?.id)}
+                            style={{
+                              textDecoration: 'underline',
+                              color: 'inherit',
+                              cursor: 'pointer',
+                            }}
+                            onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
+                            onMouseOut={(e) => (e.target.style.color = 'inherit')}
+                          >
+                            {details?.vendor?.vendor_translations?.[0]?.name}
+                          </Link>
+                        ) : (
+                          details?.school_name ?? 'N/A'
+                        ),
+                      },
+                      {
+                        label: t('school_commission'),
+                        value:
+                          details?.vendor_commission_in_percentage != null
+                            ? `${details.vendor_commission_in_percentage} %`
+                            : 'N/A',
+                      },
 
-                    {
-                      label: t('certificate_commission'),
-                      value:
-                        details?.user_preference?.certificate_commission_in_percentage != null
-                          ? `${details.user_preference.certificate_commission_in_percentage} %`
-                          : 'N/A',
-                    },
-                    {
-                      label: t('min_price'),
-                      value:
-                        details?.user_preference?.min_price != null
-                          ? `${details.user_preference?.min_price} `
-                          : 'N/A',
-                    },
-                    {
-                      label: t('price_per_km'),
-                      value:
-                        details?.user_preference?.price_per_km != null
-                          ? `${details.user_preference?.price_per_km} `
-                          : 'N/A',
-                    },
-                  ]
+                      {
+                        label: t('certificate_commission'),
+                        value:
+                          details?.user_preference?.certificate_commission_in_percentage != null
+                            ? `${details.user_preference.certificate_commission_in_percentage} %`
+                            : 'N/A',
+                      },
+                      {
+                        label: t('min_price'),
+                        value:
+                          details?.user_preference?.min_price != null
+                            ? `${details.user_preference?.min_price} `
+                            : 'N/A',
+                      },
+                      {
+                        label: t('price_per_km'),
+                        value:
+                          details?.user_preference?.price_per_km != null
+                            ? `${details.user_preference?.price_per_km} `
+                            : 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -587,6 +595,44 @@ export default function UserDetailsContent({
                   </Box>
                 </Box>
               ))}
+              {[
+                { label: t('name'), value: details?.name ?? 'N/A' },
+                ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
+                  ? [
+                      {
+                        label: 'City Assigned',
+                        value: details.city_assigned.map(
+                          (city) => city?.city?.city_translations?.[0]?.name ?? t('Unknown')
+                        ),
+                      },
+                    ]
+                  : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {Array.isArray(item.value)
+                      ? item.value.length > 0
+                        ? item.value.map((city, cityIndex) => (
+                            <Chip
+                              key={cityIndex}
+                              label={city}
+                              variant="soft"
+                              color="primary"
+                              sx={{ marginRight: 1, marginBottom: 1 }}
+                            />
+                          ))
+                        : t('N/A')
+                      : item.value ?? t('N/A')}
+                  </Box>
+                </Box>
+              ))}
+
               {details?.user_type === 'TRAINER' &&
                 trainerReviews &&
                 trainerReviews[0]?.avg_rating && (
@@ -655,75 +701,75 @@ export default function UserDetailsContent({
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: t('admin_suspended'),
-                      tooltip: t('admin_suspended_tooltip'),
-                      value: (
-                        <Switch
-                          checked={!!details?.is_suspended}
-                          onChange={() => handleSuspend()}
-                          color="error"
-                        />
-                      ),
-                    },
-                    {
-                      label: t('auto_suspended'),
-                      tooltip: t('auto_suspended_tooltip'),
-                      value: (
-                        <Chip
-                          label={
-                            details?.max_cash_in_hand_allowed
-                              ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                ? t('yes')
-                                : t('no')
-                              : t('no')
-                          }
-                          color={
-                            details?.max_cash_in_hand_allowed
-                              ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                ? 'error'
-                                : 'default'
-                              : 'default'
-                          }
-                          variant="soft"
-                        />
-                      ),
-                    },
-                    {
-                      label: t('verification'),
-                      tooltip: t('verification_tooltip'),
-                      value: !details?.verified_at ? (
-                        <Box display="flex" alignItems="center" gap={2}>
-                          <Chip
-                            label={t('not_verified')}
+                      {
+                        label: t('admin_suspended'),
+                        tooltip: t('admin_suspended_tooltip'),
+                        value: (
+                          <Switch
+                            checked={!!details?.is_suspended}
+                            onChange={() => handleSuspend()}
                             color="error"
-                            icon={<ErrorOutlineIcon />}
+                          />
+                        ),
+                      },
+                      {
+                        label: t('auto_suspended'),
+                        tooltip: t('auto_suspended_tooltip'),
+                        value: (
+                          <Chip
+                            label={
+                              details?.max_cash_in_hand_allowed
+                                ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                  ? t('yes')
+                                  : t('no')
+                                : t('no')
+                            }
+                            color={
+                              details?.max_cash_in_hand_allowed
+                                ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                                  ? 'error'
+                                  : 'default'
+                                : 'default'
+                            }
+                            variant="soft"
+                          />
+                        ),
+                      },
+                      {
+                        label: t('verification'),
+                        tooltip: t('verification_tooltip'),
+                        value: !details?.verified_at ? (
+                          <Box display="flex" alignItems="center" gap={2}>
+                            <Chip
+                              label={t('not_verified')}
+                              color="error"
+                              icon={<ErrorOutlineIcon />}
+                              variant="outlined"
+                              sx={{ fontWeight: 'bold' }}
+                            />
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              startIcon={<CheckCircleIcon />}
+                              sx={{ padding: '6px 16px', minWidth: '100px' }}
+                              onClick={handleVerify}
+                            >
+                              {t('verify')}
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Chip
+                            label={`${t('verified_on')} ${moment
+                              .utc(details?.verified_at)
+                              .format('ll')}`}
+                            color="success"
+                            icon={<CheckCircleIcon />}
                             variant="outlined"
                             sx={{ fontWeight: 'bold' }}
                           />
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<CheckCircleIcon />}
-                            sx={{ padding: '6px 16px', minWidth: '100px' }}
-                            onClick={handleVerify}
-                          >
-                            {t('verify')}
-                          </Button>
-                        </Box>
-                      ) : (
-                        <Chip
-                          label={`${t('verified_on')} ${moment
-                            .utc(details?.verified_at)
-                            .format('ll')}`}
-                          color="success"
-                          icon={<CheckCircleIcon />}
-                          variant="outlined"
-                          sx={{ fontWeight: 'bold' }}
-                        />
-                      ),
-                    },
-                  ]
+                        ),
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -843,11 +889,11 @@ export default function UserDetailsContent({
               },
               ...(details?.user_type === 'STUDENT'
                 ? [
-                  {
-                    label: t('trainer_language'),
-                    value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
-                  },
-                ]
+                    {
+                      label: t('trainer_language'),
+                      value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
+                    },
+                  ]
                 : []),
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -903,11 +949,11 @@ export default function UserDetailsContent({
                   },
                   ...(details?.user_type === 'STUDENT'
                     ? [
-                      {
-                        label: t('trainer_language'),
-                        value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
-                      },
-                    ]
+                        {
+                          label: t('trainer_language'),
+                          value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
+                        },
+                      ]
                     : []),
                 ].map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -1240,8 +1286,8 @@ export default function UserDetailsContent({
                       const selectedCity = city.find((cityItem) => cityItem.id === selectedCityId);
                       const selectedCityName = selectedCity
                         ? selectedCity.city_translations
-                          .map((translation) => translation.name)
-                          .join(', ')
+                            .map((translation) => translation.name)
+                            .join(', ')
                         : '';
 
                       field.onChange(e);
@@ -1303,8 +1349,8 @@ export default function UserDetailsContent({
                       );
                       const selectedAreaName = selectedArea
                         ? selectedArea?.translations
-                          ?.map((translation) => translation?.name ?? t('unknown'))
-                          .join(', ')
+                            ?.map((translation) => translation?.name ?? t('unknown'))
+                            .join(', ')
                         : '';
 
                       field.onChange(e);
@@ -1499,7 +1545,7 @@ export default function UserDetailsContent({
                     });
                     // handleEditAddress(index, address);
                   }}
-                // sx={{ mt: 1 }}
+                  // sx={{ mt: 1 }}
                 >
                   {showMapIndex === index ? t('hide_map') : t('show_map')}
                 </Button>
@@ -1617,8 +1663,8 @@ export default function UserDetailsContent({
                             );
                             const selectedCityName = selectedCity
                               ? selectedCity?.city_translations
-                                ?.map((translation) => translation?.name ?? t('unknown'))
-                                .join(', ')
+                                  ?.map((translation) => translation?.name ?? t('unknown'))
+                                  .join(', ')
                               : '';
 
                             field.onChange(e);
@@ -1676,8 +1722,8 @@ export default function UserDetailsContent({
                             );
                             const selectedAreaName = selectedArea
                               ? selectedArea?.translations
-                                ?.map((translation) => translation?.name ?? t('unknown'))
-                                .join(', ')
+                                  ?.map((translation) => translation?.name ?? t('unknown'))
+                                  .join(', ')
                               : '';
 
                             field.onChange(e);
@@ -1867,6 +1913,7 @@ export default function UserDetailsContent({
             <Grid xs={12} md={12}>
               {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
             </Grid>
+
             <Grid xs={12} md={12}>
               {details?.user_type === 'STUDENT' && studentTab === 'review' && (
                 <StudentReviewsTable students={studentReviews} />

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -101,10 +101,8 @@ export default function UserNewEditForm({
   const router = useRouter();
   const { user } = useAuthContext();
   const { t } = useLocales();
-  console.log('currentUser', currentUser?.vendor?.certificate_max_commision);
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
@@ -267,6 +265,7 @@ export default function UserNewEditForm({
       otherwise: (schema) => schema.notRequired(),
     }),
   });
+
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
@@ -275,6 +274,10 @@ export default function UserNewEditForm({
       name_ar: currentUser?.name_ar || '',
       password: '',
       phone: currentUser?.phone || '',
+      // city_assigned: currentUser?.city_assigned || [],
+      city_assigned:
+        currentUser?.city_assigned?.map((city) => city.city?.city_translations?.[0]?.name || '') ||
+        [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
@@ -393,7 +396,7 @@ export default function UserNewEditForm({
   }, [selectedCity, setValue]);
   useEffect(() => {
     if (currentUser?.id) {
-      reset(defaultValues);
+      // reset(defaultValues);
     }
 
     let selectedOption = null;
@@ -491,6 +494,13 @@ export default function UserNewEditForm({
           body.append('vendor_id', matchedVendor.id);
         } else if (data?.vendor_id?.value) {
           body.append('vendor_id', data.vendor_id.value);
+        }
+      }
+      if (data?.user_type === 'COLLECTOR') {
+        if (Array.isArray(data?.city_assigned) && data.city_assigned.length > 0) {
+          data.city_assigned.forEach((city) => {
+            body.append('city_assigned[]', city.value);
+          });
         }
       }
       if (
@@ -637,6 +647,7 @@ export default function UserNewEditForm({
       </Box>
     );
   }
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -749,12 +760,72 @@ export default function UserNewEditForm({
                   helperText={errors.name_ar?.message || ''}
                 />
               )}
+              {values.user_type === 'COLLECTOR' && (
+                <RHFAutocompleteSearch
+                  name="city_assigned"
+                  label={t('City Assigned')}
+                  multiple // Enable multiple selection
+                  disabled={currentUser?.id}
+                  options={
+                    Array.isArray(city)
+                      ? city.map((option) => ({
+                          value: option.id ?? 'unknown',
+                          label: option.city_translations?.[0]?.name ?? t('unknown'),
+                        }))
+                      : []
+                  }
+                />
+
+                // <RHFAutocompleteSearch
+                //   name="city_assigned" // Ensure you pass the name prop!
+                //   label={t('City Assigned')}
+                //   multiple
+                //   options={
+                //     Array.isArray(city)
+                //       ? city.map((option) => ({
+                //           value: option.id ?? 'unknown',
+                //           label: option.city_translations?.[0]?.name ?? t('unknown'),
+                //         }))
+                //       : []
+                //   }
+                //   value={
+                //     Array.isArray(values.city_assigned)
+                //       ? values.city_assigned
+                //           .map((id) => {
+                //             const match = city?.find((c) => c.id === id);
+                //             return match
+                //               ? {
+                //                   value: match.id,
+                //                   label: match.city_translations?.[0]?.name ?? t('unknown'),
+                //                 }
+                //               : null;
+                //           })
+                //           .filter(Boolean)
+                //       : []
+                //   }
+                //   // isOptionEqualToValue={(option, value) => option.value === value.value}
+                //   // onChange={(event, newValue) => {
+                //   //   console.log('New Selected Cities:', newValue);
+                //   //   setValue(
+                //   //     'city_assigned',
+                //   //     newValue.map((option) => option.value)
+                //   //   );
+                //   // }}
+                //   renderOption={(props, option) => (
+                //     <li {...props} key={option?.value}>
+                //       {option?.label || 'Unknown'}
+                //     </li>
+                //   )}
+                // />
+              )}
+
               <RHFTextField
                 name="email"
                 label={t('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
+
               <RHFTextField
                 name="password"
                 label={t('password')}
