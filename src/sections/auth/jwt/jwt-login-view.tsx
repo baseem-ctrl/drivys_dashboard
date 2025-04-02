@@ -142,9 +142,9 @@ export default function JwtLoginView() {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use email : <strong>admin@drivys.com</strong> / password :<strong> mvp@12345</strong>
-      </Alert>
+      </Alert> */}
       <Box sx={{ borderColor: 'divider', mb: 2, width: '100%' }}>
         <Select
           fullWidth
