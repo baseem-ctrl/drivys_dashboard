@@ -499,7 +499,7 @@ export default function UserNewEditForm({
       if (data?.user_type === 'COLLECTOR') {
         if (Array.isArray(data?.city_assigned) && data.city_assigned.length > 0) {
           data.city_assigned.forEach((city) => {
-            body.append('city_assigned[]', city);
+            body.append('city_assigned[]', city.value);
           });
         }
       }
@@ -765,6 +765,7 @@ export default function UserNewEditForm({
                   name="city_assigned"
                   label={t('City Assigned')}
                   multiple // Enable multiple selection
+                  disabled={currentUser?.id}
                   options={
                     Array.isArray(city)
                       ? city.map((option) => ({
