@@ -275,6 +275,9 @@ export default function UserNewEditForm({
       password: '',
       phone: currentUser?.phone || '',
       // city_assigned: currentUser?.city_assigned || [],
+      city_assigned:
+        currentUser?.city_assigned?.map((city) => city.city?.city_translations?.[0]?.name || '') ||
+        [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
@@ -393,7 +396,7 @@ export default function UserNewEditForm({
   }, [selectedCity, setValue]);
   useEffect(() => {
     if (currentUser?.id) {
-      reset(defaultValues);
+      // reset(defaultValues);
     }
 
     let selectedOption = null;
@@ -415,7 +418,6 @@ export default function UserNewEditForm({
   }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues]);
 
   const watchedVendorId = watch('vendor_id');
-  console.log('values.user_type', values.user_type);
 
   useEffect(() => {
     if (watchedVendorId) {
@@ -759,59 +761,70 @@ export default function UserNewEditForm({
                 />
               )}
               {values.user_type === 'COLLECTOR' && (
-                <Controller
+                <RHFAutocompleteSearch
                   name="city_assigned"
-                  control={control}
-                  render={({ field }) => {
-                    // Ensure field.value is always an array
-                    const selectedOptions = Array.isArray(field.value)
-                      ? field.value
-                          .map((id) => {
-                            const match = city?.find((c) => c.id === id);
-                            return match
-                              ? {
-                                  value: match.id,
-                                  label: match.city_translations?.[0]?.name ?? t('unknown'),
-                                }
-                              : null;
-                          })
-                          .filter(Boolean) // Remove any null values
-                      : [];
-
-                    return (
-                      <RHFAutocompleteSearch
-                        {...field}
-                        label={t('City Assigned')}
-                        multiple
-                        options={
-                          Array.isArray(city)
-                            ? city.map((option) => ({
-                                value: option.id ?? 'unknown',
-                                label: option.city_translations?.[0]?.name ?? t('unknown'),
-                              }))
-                            : []
-                        }
-                        value={selectedOptions} // Ensure correct format
-                        onChange={(event, newValue) => {
-                          // Store only city IDs in field.value
-                          field.onChange(newValue.map((option) => option.value));
-                        }}
-                        renderOption={(props, option) => (
-                          <li {...props} key={option?.value}>
-                            {option?.label || 'Unknown'}
-                          </li>
-                        )}
-                      />
-                    );
-                  }}
+                  label={t('City Assigned')}
+                  multiple // Enable multiple selection
+                  options={
+                    Array.isArray(city)
+                      ? city.map((option) => ({
+                          value: option.id ?? 'unknown',
+                          label: option.city_translations?.[0]?.name ?? t('unknown'),
+                        }))
+                      : []
+                  }
                 />
+
+                // <RHFAutocompleteSearch
+                //   name="city_assigned" // Ensure you pass the name prop!
+                //   label={t('City Assigned')}
+                //   multiple
+                //   options={
+                //     Array.isArray(city)
+                //       ? city.map((option) => ({
+                //           value: option.id ?? 'unknown',
+                //           label: option.city_translations?.[0]?.name ?? t('unknown'),
+                //         }))
+                //       : []
+                //   }
+                //   value={
+                //     Array.isArray(values.city_assigned)
+                //       ? values.city_assigned
+                //           .map((id) => {
+                //             const match = city?.find((c) => c.id === id);
+                //             return match
+                //               ? {
+                //                   value: match.id,
+                //                   label: match.city_translations?.[0]?.name ?? t('unknown'),
+                //                 }
+                //               : null;
+                //           })
+                //           .filter(Boolean)
+                //       : []
+                //   }
+                //   // isOptionEqualToValue={(option, value) => option.value === value.value}
+                //   // onChange={(event, newValue) => {
+                //   //   console.log('New Selected Cities:', newValue);
+                //   //   setValue(
+                //   //     'city_assigned',
+                //   //     newValue.map((option) => option.value)
+                //   //   );
+                //   // }}
+                //   renderOption={(props, option) => (
+                //     <li {...props} key={option?.value}>
+                //       {option?.label || 'Unknown'}
+                //     </li>
+                //   )}
+                // />
               )}
+
               <RHFTextField
                 name="email"
                 label={t('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
+
               <RHFTextField
                 name="password"
                 label={t('password')}
