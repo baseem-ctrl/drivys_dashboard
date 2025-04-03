@@ -39,12 +39,11 @@ import { useGetBookingReportsDownload } from 'src/api/reportDownload';
 
 const TABLE_HEAD = [
   { id: 'school-name', label: 'School', width: 200 },
-  { id: 'top-booking-times', label: 'Top Booking Times', width: 200 },
-  { id: 'total-cancelled-session', label: 'Cancelled Sessions', width: 200 },
-  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
-  { id: 'total-pending-session', label: 'Pending Sessions', width: 200 },
-  { id: 'total-rescheduled-session', label: 'Rescheduled Sessions', width: 200 },
   { id: 'total-booked-session', label: 'Total Bookings', width: 200 },
+  { id: 'total-students', label: 'Total Students', width: 200 },
+  { id: 'total-trainers', label: 'Total Trainers', width: 200 },
+  { id: 'total-paid-booking', label: 'Total Paid Bookings Sessions', width: 200 },
+  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
