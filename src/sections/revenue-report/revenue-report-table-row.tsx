@@ -42,8 +42,17 @@ export default function RevenueReportRow({ row }) {
           <Typography variant="body2">{row['School Name'] || 'N/A'}</Typography>
         </TableCell>
         <TableCell>
-          <Typography variant="body2">${row['Bookings Revenue By School'] || '0'}</Typography>
+          <Typography variant="body2">{row['Bookings Revenue By School'] || '0'} AED</Typography>
         </TableCell>
+        <TableCell>
+          <Typography variant="body2">{row['Total Number Of Bookings'] || '0'}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography variant="body2">
+            {row['Total Number Of Completed Bookings'] || '0'}
+          </Typography>
+        </TableCell>
+
         <TableCell>
           <Link
             component="button"
@@ -60,7 +69,7 @@ export default function RevenueReportRow({ row }) {
         <>
           {/* Bookings Revenue By Trainer Table */}
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={5}>
               <Paper
                 sx={{
                   marginBottom: 2,
@@ -102,64 +111,6 @@ export default function RevenueReportRow({ row }) {
                   onPageChange={handleTrainerPageChange}
                   onRowsPerPageChange={handleTrainerRowsPerPageChange}
                 />
-              </Paper>
-            </TableCell>
-          </TableRow>
-
-          {/* Payment Methods Section */}
-          <TableRow>
-            <TableCell colSpan={3}>
-              <Paper sx={{ padding: 2 }}>
-                <Typography variant="h6">Payment Methods</Typography>
-
-                {row['Payment Methods'] && row['Payment Methods'].length > 0 ? (
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Payment Method</TableCell>
-                        <TableCell>Total Revenue</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {row['Payment Methods']
-                        ?.slice(
-                          paymentPage * paymentRowsPerPage,
-                          paymentPage * paymentRowsPerPage + paymentRowsPerPage
-                        )
-                        .map((payment, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{payment['Payment Method']}</TableCell>
-                            <TableCell>{payment['Total Revenue']}</TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '50px',
-                    }}
-                  >
-                    <Typography variant="body2" color="primary">
-                      No revenue data available for payment methods.
-                    </Typography>
-                  </Box>
-                )}
-
-                {row['Payment Methods'] && row['Payment Methods'].length > 0 && (
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 15]}
-                    component="div"
-                    count={row['Payment Methods'].length || 0}
-                    rowsPerPage={paymentRowsPerPage}
-                    page={paymentPage}
-                    onPageChange={handlePaymentPageChange}
-                    onRowsPerPageChange={handlePaymentRowsPerPageChange}
-                  />
-                )}
               </Paper>
             </TableCell>
           </TableRow>

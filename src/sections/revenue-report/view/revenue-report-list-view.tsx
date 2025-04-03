@@ -39,8 +39,12 @@ import RevenueReportFilter from '../revenue-report-filters';
 
 const TABLE_HEAD = [
   { id: 'school-name', label: 'School', width: 200 },
-  { id: 'school-revenue', label: 'Bookings Revenue By School', width: 200 },
-  { id: 'trainer-revenue', label: 'Bookings Revenue By Trainer and payment method', width: 200 },
+  { id: 'school-revenue', label: 'School Revenue', width: 200 },
+
+  { id: 'total-booking', label: 'Total Bookings', width: 200 },
+  { id: 'total-completed-booking', label: 'Completed Bookings', width: 200 },
+
+  { id: 'more-details', label: 'Revenue By Trainer', width: 200 },
 ];
 
 // ----------------------------------------------------------------------

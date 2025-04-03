@@ -39,10 +39,9 @@ import SchoolReportFilter from '../school-report-filters';
 
 const TABLE_HEAD = [
   { id: 'school-name', label: 'School Name', width: 200 },
-  { id: 'bookings', label: 'Bookings Details', width: 200 },
-  { id: 'revenue', label: 'Revenue', width: 200 },
-  { id: 'trainers-count', label: 'Trainers Count', width: 200 },
-  { id: 'avg-rating', label: 'Average Rating', width: 200 },
+  { id: 'total-trainer-count', label: 'Total Trainer Count', width: 200 },
+  { id: 'school-admin-email-id', label: 'School Admin Email', width: 200 },
+  { id: 'school-admin-phone-number', label: 'School Admin Phn', width: 200 },
 ];
 
 // ----------------------------------------------------------------------

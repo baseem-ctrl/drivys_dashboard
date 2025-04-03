@@ -39,8 +39,12 @@ import TrainerReportFilter from '../trainer-report-filters';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer', width: 200 },
+  { id: 'school-name', label: 'School', width: 200 },
+  { id: 'total-bookings', label: 'Total Bookings', width: 200 },
+  { id: 'total-sessions', label: 'Total Sessions', width: 200 },
+  { id: 'completed-bookings', label: 'Completed Bookings', width: 200 },
+
   { id: 'cancellation-rate', label: 'Cancellation Rate', width: 200 },
-  { id: 'total-sessions', label: 'Total Session', width: 200 },
   { id: 'avg-rating', label: 'Average Rating', width: 200 },
 ];
 
