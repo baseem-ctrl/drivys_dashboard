@@ -39,12 +39,11 @@ import { useGetBookingReportsDownload } from 'src/api/reportDownload';
 
 const TABLE_HEAD = [
   { id: 'school-name', label: 'School', width: 200 },
-  { id: 'top-booking-times', label: 'Top Booking Times', width: 200 },
-  { id: 'total-cancelled-session', label: 'Cancelled Sessions', width: 200 },
-  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
-  { id: 'total-pending-session', label: 'Pending Sessions', width: 200 },
-  { id: 'total-rescheduled-session', label: 'Rescheduled Sessions', width: 200 },
   { id: 'total-booked-session', label: 'Total Bookings', width: 200 },
+  { id: 'total-students', label: 'Total Students', width: 200 },
+  { id: 'total-trainers', label: 'Total Trainers', width: 200 },
+  { id: 'total-paid-booking', label: 'Total Paid Bookings Sessions', width: 200 },
+  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
@@ -63,6 +62,7 @@ export default function BookingReportListView() {
     endDate?: string;
     booking_status?: string;
     payment_method?: number;
+    category_id?: any;
   }>({});
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
@@ -83,7 +83,8 @@ export default function BookingReportListView() {
     table.page + 1,
     table.rowsPerPage,
     filters.booking_status,
-    filters.payment_method
+    filters.payment_method,
+    filters.category_id
   );
   const {
     bookingReports: downloadReportsData,
@@ -102,7 +103,6 @@ export default function BookingReportListView() {
     setFilters(newFilters);
   };
   const { language } = useGetAllLanguage(0, 1000);
-
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -141,6 +141,7 @@ export default function BookingReportListView() {
         end_date: filters.endDate,
         booking_status: filters.bookingStatus,
         payment_method: filters.paymentMethod,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };

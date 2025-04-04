@@ -47,8 +47,13 @@ export default function TrainerReportsRow({ row }) {
           {row['Trainer Name'] || 'N/A'}
         </Typography>
       </TableCell>
+      <TableCell>
+        <Typography variant="body2">{row['School Name'] || 'N/A'}</Typography>
+      </TableCell>
+      <TableCell>{row['Total Bookings'] ?? '0'}</TableCell>
+      <TableCell>{row['Total Sessions'] ?? '0'}</TableCell>
+      <TableCell>{row['Total Completed Bookings'] ?? '0'}</TableCell>
       <TableCell>{row['Cancellation Rate'] ?? 'N/A'}</TableCell>
-      <TableCell>{row['Total Sessions'] ?? 'N/A'}</TableCell>
       <TableCell>{renderStars(row['Average Rating'])}</TableCell>
     </TableRow>
   );

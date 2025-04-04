@@ -18,7 +18,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useGetUsers } from 'src/api/users';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -28,6 +27,7 @@ import {
   useGetPaymentMethodEnum,
   useGetPaymentStatusEnum,
 } from 'src/api/enum';
+import { useGetAllCategory } from 'src/api/category';
 
 export default function BookingReportFilter({ filters, onFilters }: any) {
   const { users } = useGetUsers({ page: 0, limit: 1000, user_types: 'STUDENT' });
@@ -42,10 +42,17 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
     revalidateBookingStatusEnum,
   } = useGetBookingStatusEnum();
 
+  const { category, categoryLoading } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+    published: '1',
+  });
   const handleFilterPaymentStatus = (newValue: string) => {
     onFilters({ ...filters, booking_status: newValue });
   };
-
+  const handleFilterCategory = (newValue: string) => {
+    onFilters({ ...filters, category_id: newValue.value });
+  };
   const handleFilterPaymentMethod = (newValue: number) => {
     onFilters({ ...filters, payment_method: newValue });
   };
@@ -77,7 +84,13 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
   };
 
   const handleClearDates = () => {
-    onFilters({ ...filters, startDate: undefined, endDate: undefined });
+    onFilters({
+      ...filters,
+      startDate: undefined,
+      endDate: undefined,
+      payment_method: undefined,
+      category_id: undefined,
+    });
     setSelectionRange({
       startDate: new Date(),
       endDate: new Date(),
@@ -144,7 +157,11 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
       </FormControl>
     </Stack>
   );
-
+  const categoryOptions =
+    category?.map((item: any) => ({
+      label: item.category_translations.map((translation: any) => translation.name).join(' - '),
+      value: item.id,
+    })) ?? [];
   return (
     <Box
       display="flex"
@@ -153,7 +170,15 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
       sx={{ '& > *': { flex: '1 1 100%', minWidth: '250px' } }}
     >
       {renderPaymentMethod}
-      {renderPaymentStatus}
+      {/* {renderPaymentStatus} */}
+      <Autocomplete
+        options={categoryOptions}
+        getOptionLabel={(option) => option.label}
+        value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
+        isOptionEqualToValue={(option, value) => option.value === value.value}
+        onChange={(event, newValue) => handleFilterCategory(newValue)}
+        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+      />
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Button
@@ -170,7 +195,10 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
         >
           Select Date
         </Button>
-        {(filters.startDate || filters.endDate) && (
+        {(filters.startDate ||
+          filters.endDate ||
+          filters.payment_method ||
+          filters.category_id) && (
           <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 1 }}>
             <DeleteIcon />
           </IconButton>

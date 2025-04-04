@@ -39,8 +39,11 @@ import StudentReportFilter from '../student-report-filters';
 
 const TABLE_HEAD = [
   { id: 'student-name', label: 'Student', width: 200 },
+  { id: 'total-sessions', label: 'Total Sessions', width: 200 },
   { id: 'completed-sessions', label: 'Completed Sessions', width: 200 },
-  { id: 'avg-rating', label: 'Average Rating', width: 200 },
+  { id: 'category', label: 'Category', width: 200 },
+  { id: 'amount-paid', label: 'Amount Paid For Session', width: 260 },
+  { id: 'is-certificate-issues', label: 'Certificate issued', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
@@ -55,7 +58,7 @@ export default function StudentReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    student_id: null,
+    category_id: null,
     city_id: null,
     startDate: null,
     endDate: null,
@@ -76,7 +79,7 @@ export default function StudentReportListView() {
     filters.endDate,
     table.page + 1,
     table.rowsPerPage,
-    filters.student_id,
+    filters.category_id,
     filters.city_id
   );
   const {
@@ -100,7 +103,7 @@ export default function StudentReportListView() {
         start_date: filters.startDate,
         end_date: filters.endDate,
         city_id: filters.city_id,
-        student_id: filters.student_id,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };

@@ -39,10 +39,9 @@ import SchoolReportFilter from '../school-report-filters';
 
 const TABLE_HEAD = [
   { id: 'school-name', label: 'School Name', width: 200 },
-  { id: 'bookings', label: 'Bookings Details', width: 200 },
-  { id: 'revenue', label: 'Revenue', width: 200 },
-  { id: 'trainers-count', label: 'Trainers Count', width: 200 },
-  { id: 'avg-rating', label: 'Average Rating', width: 200 },
+  { id: 'total-trainer-count', label: 'Total Trainer Count', width: 200 },
+  { id: 'school-admin-email-id', label: 'School Admin Email', width: 200 },
+  { id: 'school-admin-phone-number', label: 'School Admin Phn', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
@@ -57,7 +56,7 @@ export default function SchoolReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    school_id: null,
+    // school_id: null,
     startDate: null,
     endDate: null,
   });
@@ -77,8 +76,8 @@ export default function SchoolReportListView() {
     filters.startDate,
     filters.endDate,
     table.page + 1,
-    table.rowsPerPage,
-    filters.school_id
+    table.rowsPerPage
+    // filters.school_id
   );
   const {
     schoolReports: downloadReportsData,
@@ -99,7 +98,7 @@ export default function SchoolReportListView() {
         locale: locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
-        school_id: filters.school_id,
+        // school_id: filters.school_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };
@@ -190,7 +189,7 @@ export default function SchoolReportListView() {
 
   const handleResetFilters = useCallback(() => {
     setFilters({
-      school_id: null,
+      // school_id: null,
       startDate: null,
       endDate: null,
     });

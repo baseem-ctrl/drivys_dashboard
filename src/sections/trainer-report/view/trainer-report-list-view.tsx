@@ -39,8 +39,12 @@ import TrainerReportFilter from '../trainer-report-filters';
 
 const TABLE_HEAD = [
   { id: 'trainer-name', label: 'Trainer', width: 200 },
+  { id: 'school-name', label: 'School', width: 200 },
+  { id: 'total-bookings', label: 'Total Bookings', width: 200 },
+  { id: 'total-sessions', label: 'Total Sessions', width: 200 },
+  { id: 'completed-bookings', label: 'Completed Bookings', width: 200 },
+
   { id: 'cancellation-rate', label: 'Cancellation Rate', width: 200 },
-  { id: 'total-sessions', label: 'Total Session', width: 200 },
   { id: 'avg-rating', label: 'Average Rating', width: 200 },
 ];
 
@@ -56,12 +60,12 @@ export default function TrainerReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    city_id: null,
-    trainer_id: null,
+    school_id: null,
+    category_id: null,
     startDate: null,
     endDate: null,
   });
-
+  console.log('filters', filters);
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
 
@@ -77,8 +81,8 @@ export default function TrainerReportListView() {
     filters.endDate,
     table.page + 1,
     table.rowsPerPage,
-    filters.city_id,
-    filters.trainer_id
+    filters.school_id,
+    filters.category_id
   );
   const {
     trainerReports: downloadReportsData,
@@ -100,8 +104,8 @@ export default function TrainerReportListView() {
         locale: locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
-        city_id: filters.city_id,
-        trainer_id: filters.trainer_id,
+        school_id: filters.school_id,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };

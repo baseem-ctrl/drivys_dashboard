@@ -32,7 +32,7 @@ export default function ReportBookingRow({ reload, row, userType }) {
   const { enqueueSnackbar } = useSnackbar();
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
-
+  console.log('row', row);
   const handleRowClick = () => {
     setIsReviewsVisible(!isReviewsVisible);
   };
@@ -133,12 +133,11 @@ export default function ReportBookingRow({ reload, row, userType }) {
           {row['School Name'] || 'N/A'}
         </Typography>
       </TableCell>
-      <TableCell>{row['Top Booking Times'] || 'N/A'}</TableCell>
-      <TableCell>{row['Total Number of Cancelled Sessions'] || 'N/A'}</TableCell>
-      <TableCell>{row['Total Number of Completed Sessions'] || 'N/A'}</TableCell>
-      <TableCell>{row['Total Number of Pending Sessions'] || 'N/A'}</TableCell>
-      <TableCell>{row['Total Number of Rescheduled Sessions'] || 'N/A'}</TableCell>
-      <TableCell>{row['Total Number of Sessions Booked'] || 'N/A'}</TableCell>
+      <TableCell>{row['Total Number of Bookings'] || '0'}</TableCell>
+      <TableCell>{row['Total Number of Students'] || '0'}</TableCell>
+      <TableCell>{row['Total Number of Active Trainers'] || '0'}</TableCell>
+      <TableCell>{row['Total Number of Paid Bookings'] || '0'}</TableCell>
+      <TableCell>{row['Total Number of Completed Bookings'] || '0'}</TableCell>
     </TableRow>
   );
 }

@@ -6,7 +6,9 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-
+import { Link } from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
 import { Chip, Stack } from '@mui/material';
 
 export default function SchoolReportsRow({ row }) {
@@ -49,33 +51,35 @@ export default function SchoolReportsRow({ row }) {
           {row['School Name'] || 'N/A'}
         </Typography>
       </TableCell>
+      <TableCell>{row['Trainers Count'] ?? 'N/A'}</TableCell>
+
       <TableCell>
-        <Stack direction="row" spacing={1}>
-          <Chip
-            label={`Bookings: ${row['Bookings Count'] ?? '0'}`}
-            variant="outlined"
-            color="secondary"
-            size="small"
-          />
-          <Chip
-            label={`Completed: ${row['Completed Bookings Count'] ?? '0'}`}
-            variant="outlined"
-            color="success"
-            size="small"
-          />
-          <Chip
-            label={`Confirmed: ${row['Confirmed Bookings Count'] ?? '0'}`}
-            variant="outlined"
-            color="info"
-            size="small"
-          />
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <EmailIcon fontSize="small" color="primary" />
+          {row['School Admin Email'] ? (
+            <Link>{row['School Admin Email']}</Link>
+          ) : (
+            <Typography color="textSecondary">N/A</Typography>
+          )}
         </Stack>
       </TableCell>
 
-      <TableCell>{row['Revenue'] ?? 'N/A'}</TableCell>
-
-      <TableCell>{row['Trainers Count'] ?? 'N/A'}</TableCell>
-      <TableCell>{renderStars(row['Average Rating'])}</TableCell>
+      <TableCell>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <PhoneIcon fontSize="small" color="success" />
+          {row['School Admin Phone Number'] ? (
+            <Link
+              // href={`tel:${row['School Admin Phone Number']}`}
+              // underline="hover"
+              color="#22C55E"
+            >
+              {row['School Admin Phone Number']}
+            </Link>
+          ) : (
+            <Typography color="textSecondary">N/A</Typography>
+          )}
+        </Stack>
+      </TableCell>
     </TableRow>
   );
 }

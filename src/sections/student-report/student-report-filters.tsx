@@ -6,6 +6,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useRef, useState } from 'react';
 import { enUS } from 'date-fns/locale';
+import { useGetAllCategory } from 'src/api/category';
 
 export default function StudentReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -20,12 +21,21 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
   });
+  const { category, categoryLoading } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+    published: '1',
+  });
   const { users } = useGetUsers({
     page: 0,
     limit: 1000,
     user_types: 'STUDENT',
   });
-
+  const categoryOptions =
+    category?.map((item: any) => ({
+      label: item.category_translations.map((translation: any) => translation.name).join(' - '),
+      value: item.id,
+    })) ?? [];
   const handleCityChange = (event: any, value: any) => {
     onFilters((prevFilters: any) => ({
       ...prevFilters,
@@ -34,6 +44,9 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
   };
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
+  };
+  const handleFilterCategory = (newValue: string) => {
+    onFilters({ ...filters, category_id: newValue.value });
   };
   const handleTrainerChange = (event: any, value: any) => {
     onFilters((prevFilters: any) => ({
@@ -115,28 +128,20 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
           isOptionEqualToValue={(option, value) => option.value === value}
           renderInput={(params) => <TextField placeholder="Select City" {...params} fullWidth />}
           onChange={handleCityChange}
+          sx={{ minWidth: 180 }}
         />
       </Box>
 
       {/* Trainer Filter */}
       <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
-          fullWidth
-          options={
-            users?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
-              value: item.id,
-            })) ?? []
-          }
-          value={
-            users
-              ?.map((item: any) => ({ label: `${item?.name ?? 'NA'}`, value: item.id }))
-              .find((option) => option.value === filters.student_id) || null
-          }
-          getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value?.value}
-          renderInput={(params) => <TextField placeholder="Select Student" {...params} fullWidth />}
-          onChange={handleTrainerChange}
+          options={categoryOptions}
+          getOptionLabel={(option) => option.label}
+          value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          onChange={(event, newValue) => handleFilterCategory(newValue)}
+          renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+          sx={{ minWidth: 180 }}
         />
       </Box>
       <Box display="flex" gap={2} width="100%">

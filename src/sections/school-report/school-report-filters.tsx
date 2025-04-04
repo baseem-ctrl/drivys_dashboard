@@ -100,7 +100,7 @@ export default function SchoolReportFilter({ filters, onFilters }: any) {
       }}
     >
       {/* City Filter */}
-      <Box flex={1} display="flex" alignItems="center" gap={1}>
+      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
           fullWidth
           options={schoolOptions}
@@ -110,7 +110,7 @@ export default function SchoolReportFilter({ filters, onFilters }: any) {
           renderInput={(params) => <TextField placeholder="Select School" {...params} fullWidth />}
           onChange={handleSchoolChange}
         />
-      </Box>
+      </Box> */}
 
       <Box display="flex" gap={2} width="100%">
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

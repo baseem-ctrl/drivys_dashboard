@@ -6,6 +6,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { Chip } from '@mui/material';
 
 export default function StudentReportsRow({ row }) {
   const router = useRouter();
@@ -47,8 +48,17 @@ export default function StudentReportsRow({ row }) {
           {row['Student Name'] || 'N/A'}
         </Typography>
       </TableCell>
-      <TableCell>{row['Completed Sessions'] ?? 'N/A'}</TableCell>
-      <TableCell>{renderStars(row['Average Rating'])}</TableCell>
+      <TableCell>{row['Total Sessions'] ?? '0'}</TableCell>
+      <TableCell>{row['Completed Sessions'] ?? '0'}</TableCell>
+      <TableCell>{row['Category'] ?? 'N/A'}</TableCell>
+      <TableCell>{row['Amount Paid'] ?? '0'} AED</TableCell>
+      <TableCell>
+        <Chip
+          label={row['Certificate Issued'] ? 'Yes' : 'No'}
+          color={row['Certificate Issued'] ? 'success' : 'error'}
+          variant="soft"
+        />
+      </TableCell>{' '}
     </TableRow>
   );
 }
