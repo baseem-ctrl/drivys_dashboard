@@ -1,4 +1,4 @@
-import { Box, IconButton, Button } from '@mui/material';
+import { Box, IconButton, Button, Autocomplete, TextField, Chip } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,6 +6,7 @@ import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from 'date-fns/locale';
+import { useGetAllCategory } from 'src/api/category';
 
 export default function RevenueReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -16,7 +17,21 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
   });
   const datePickerRef = useRef<HTMLDivElement>(null);
   const clearFilterClicked = useRef(false);
+  const { category, categoryLoading } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+    published: '1',
+  });
 
+  const handleFilterCategory = (newValue: string) => {
+    onFilters({ ...filters, category_id: newValue.value });
+  };
+
+  const categoryOptions =
+    category?.map((item: any) => ({
+      label: item.category_translations.map((translation: any) => translation.name).join(' - '),
+      value: item.id,
+    })) ?? [];
   const handleSelect = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
     setSelectionRange(ranges.selection);
@@ -35,7 +50,7 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
   };
 
   const handleClearDates = () => {
-    onFilters({ ...filters, startDate: undefined, endDate: undefined });
+    onFilters({ ...filters, startDate: undefined, endDate: undefined, category_id: undefined });
     setSelectionRange({
       startDate: new Date(),
       endDate: new Date(),
@@ -63,27 +78,36 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
 
   return (
     <Box display="flex" gap={2} width="100%">
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button
-          variant="contained"
-          onClick={toggleDatePicker}
-          startIcon={<CalendarMonthIcon />}
-          sx={{
-            backgroundColor: 'transparent',
-            color: '#CF5A0D',
-            border: '1px solid #ccc',
-            textTransform: 'none',
-            '&:hover': { backgroundColor: '#e0e0e0', borderColor: '#aaa' },
-          }}
-        >
-          Select Date
-        </Button>
-        {(filters.startDate || filters.endDate) && (
-          <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 1 }}>
-            <DeleteIcon />
-          </IconButton>
-        )}
-      </Box>
+      <Button
+        variant="contained"
+        onClick={toggleDatePicker}
+        startIcon={<CalendarMonthIcon />}
+        sx={{
+          backgroundColor: 'transparent',
+          color: '#CF5A0D',
+          border: '1px solid #ccc',
+          textTransform: 'none',
+          '&:hover': { backgroundColor: '#e0e0e0', borderColor: '#aaa' },
+        }}
+      >
+        Select Date
+      </Button>
+
+      <Autocomplete
+        options={categoryOptions}
+        getOptionLabel={(option) => option.label}
+        value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
+        isOptionEqualToValue={(option, value) => option.value === value.value}
+        onChange={(event, newValue) => handleFilterCategory(newValue)}
+        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        sx={{ minWidth: 180 }}
+      />
+
+      {(filters.startDate || filters.endDate || filters.category_id) && (
+        <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 1 }}>
+          <DeleteIcon />
+        </IconButton>
+      )}
 
       {showDatePicker && (
         <Box

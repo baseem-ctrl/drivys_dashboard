@@ -1,4 +1,4 @@
-import { Box, TextField, Autocomplete, Button, IconButton } from '@mui/material';
+import { Box, TextField, Autocomplete, Button, IconButton, Chip } from '@mui/material';
 import { DateRangePicker } from 'react-date-range';
 import { useGetAllCity } from 'src/api/city';
 import { useGetUsers } from 'src/api/users';
@@ -6,6 +6,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useRef, useState } from 'react';
 import { enUS } from 'date-fns/locale';
+import { useGetAllCategory } from 'src/api/category';
+import { useGetSchool } from 'src/api/school';
 
 export default function TrainerReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -20,25 +22,39 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
   });
+  const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
+    limit: 1000,
+  });
   const { users: trainerUsers } = useGetUsers({
     page: 0,
     limit: 1000,
     user_types: 'TRAINER',
   });
+  const { category, categoryLoading } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+    published: '1',
+  });
 
-  const handleCityChange = (event: any, value: any) => {
-    onFilters((prevFilters: any) => ({
-      ...prevFilters,
-      city_id: value?.value || null,
-    }));
+  const handleFilterCategory = (newValue: string) => {
+    onFilters({ ...filters, category_id: newValue.value });
   };
+  const handleFilterSchool = (newValue: string) => {
+    onFilters({ ...filters, school_id: newValue.value });
+  };
+  const categoryOptions =
+    category?.map((item: any) => ({
+      label: item.category_translations.map((translation: any) => translation.name).join(' - '),
+      value: item.id,
+    })) ?? [];
+
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
-  const handleTrainerChange = (event: any, value: any) => {
+  const handleFilterCity = (event: any, value: any) => {
     onFilters((prevFilters: any) => ({
       ...prevFilters,
-      trainer_id: value?.value || null,
+      school_id: value?.value || null,
     }));
   };
   const handleClearDates = () => {
@@ -79,6 +95,14 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showDatePicker]);
+  const schoolOptions =
+    schoolList?.map((item: any) => ({
+      label: item.vendor_translations
+        .slice(0, 2)
+        .map((translation: any) => translation.name)
+        .join(' - '),
+      value: item.id,
+    })) ?? [];
   return (
     <Box
       display="flex"
@@ -87,52 +111,49 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
       sx={{
         '& > *': {
           flex: '1 1 100%',
-          minWidth: '300px',
+          // minWidth: '300px',
         },
       }}
     >
-      {/* City Filter */}
+      {/* Category Filter */}
       <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
-          fullWidth
-          options={
-            city?.map((item: any) => ({
-              label: item.city_translations.map((translation: any) => translation.name).join(' - '),
-              value: item.id,
-            })) ?? []
-          }
+          options={categoryOptions}
           getOptionLabel={(option) => option.label}
-          value={
-            city
-              ?.map((item: any) => ({
-                label: item.city_translations
-                  .map((translation: any) => translation.name)
-                  .join(' - '),
-                value: item.id,
-              }))
-              .find((option: any) => option.value === filters.city_id) || null
-          }
-          isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select City" {...params} fullWidth />}
-          onChange={handleCityChange}
+          value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          onChange={(event, newValue) => handleFilterCategory(newValue)}
+          renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+          sx={{ minWidth: 180 }}
         />
       </Box>
 
-      {/* Trainer Filter */}
+      {/* School Filter */}
       <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
-          fullWidth
-          options={
-            trainerUsers?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
-              value: item.id,
-            })) ?? []
+          options={schoolOptions}
+          getOptionLabel={(option) => option.label ?? ''}
+          value={schoolOptions.find((opt) => opt.value === filters.school_id) || null}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
+          onChange={(event, newValue) => handleFilterSchool(newValue)}
+          renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+          renderOption={(props, option) => (
+            <li {...props} key={option.value}>
+              {option.label}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option.value}
+                label={option.label}
+                size="small"
+                variant="soft"
+              />
+            ))
           }
-          value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
-          getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Trainer" {...params} fullWidth />}
-          onChange={handleTrainerChange}
+          sx={{ minWidth: 180 }}
         />
       </Box>
       <Box display="flex" gap={2} width="100%">

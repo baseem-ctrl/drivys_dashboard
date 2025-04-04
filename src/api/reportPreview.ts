@@ -8,7 +8,8 @@ export function useGetBookingReports(
   page?: number,
   limit?: number,
   booking_status?: any,
-  payment_method?: any
+  payment_method?: any,
+  category_id?: any
 ) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
@@ -20,6 +21,7 @@ export function useGetBookingReports(
     if (page) queryParams.page = page;
     if (booking_status) queryParams.booking_status = booking_status;
     if (payment_method !== undefined) queryParams.payment_method = payment_method;
+    if (category_id !== undefined) queryParams.category_id = category_id;
 
     return `${endpoints.reportSessionPreview.booking}?${new URLSearchParams(queryParams)}`;
   };
@@ -45,6 +47,8 @@ export function useGetRevenueReports(
   locale?: string,
   start_date?: string,
   end_date?: string,
+  category_id?: any,
+
   page?: number,
   limit?: number
 ) {
@@ -54,6 +58,7 @@ export function useGetRevenueReports(
     if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
+    if (category_id) queryParams.category_id = category_id;
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
 
@@ -83,8 +88,8 @@ export function useGetTrainerReports(
   end_date?: string,
   page?: number,
   limit?: number,
-  city_id?: number,
-  trainer_id?: number
+  school_id?: number,
+  category_id?: number
 ) {
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
@@ -94,8 +99,8 @@ export function useGetTrainerReports(
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
-    if (city_id) queryParams.city_id = city_id;
-    if (trainer_id) queryParams.trainer_id = trainer_id;
+    if (school_id) queryParams.school_id = school_id;
+    if (category_id) queryParams.category_id = category_id;
 
     return `${endpoints.reportSessionPreview.trainer}?${new URLSearchParams(queryParams)}`;
   };
@@ -123,7 +128,7 @@ export function useGetStudentReports(
   end_date?: string,
   page?: number,
   limit?: number,
-  student_id?: number,
+  category_id?: number,
   city_id?: number
 ) {
   const getTheFullUrl = () => {
@@ -134,7 +139,7 @@ export function useGetStudentReports(
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
-    if (student_id) queryParams.student_id = student_id;
+    if (category_id) queryParams.category_id = category_id;
     if (city_id) queryParams.city_id = city_id;
 
     return `${endpoints.reportSessionPreview.student}?${new URLSearchParams(queryParams)}`;

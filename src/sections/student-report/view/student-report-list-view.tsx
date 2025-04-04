@@ -58,7 +58,7 @@ export default function StudentReportListView() {
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState({
-    student_id: null,
+    category_id: null,
     city_id: null,
     startDate: null,
     endDate: null,
@@ -79,7 +79,7 @@ export default function StudentReportListView() {
     filters.endDate,
     table.page + 1,
     table.rowsPerPage,
-    filters.student_id,
+    filters.category_id,
     filters.city_id
   );
   const {
@@ -103,7 +103,7 @@ export default function StudentReportListView() {
         start_date: filters.startDate,
         end_date: filters.endDate,
         city_id: filters.city_id,
-        student_id: filters.student_id,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };

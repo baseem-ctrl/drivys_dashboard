@@ -66,6 +66,7 @@ export default function RevenueReportListView() {
   const [filters, setFilters] = useState<{
     startDate?: string;
     endDate?: string;
+    category_id?: any;
   }>({});
   const {
     revenueReports,
@@ -78,6 +79,8 @@ export default function RevenueReportListView() {
     locale,
     filters.startDate,
     filters.endDate,
+    filters.category_id,
+
     table.page + 1,
     table.rowsPerPage
   );
@@ -133,6 +136,7 @@ export default function RevenueReportListView() {
         locale: locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };
@@ -196,26 +200,24 @@ export default function RevenueReportListView() {
   const renderFilters = (
     <Stack
       spacing={3}
-      justifyContent="flex-end"
+      justifyContent="space-between"
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ marginBottom: 3 }}
     >
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <RevenueReportFilter
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          handleOrderChange={handleOrderChange}
-          selectedOrder={selectedOrder}
-          filters={filters}
-          setFilters={setFilters}
-          onFilters={handleFiltersChange}
-          // canReset={canReset}
-          onResetFilters={handleResetFilters}
-          localeOptions={localeOptions}
-          onLocaleChange={handleLocaleFilterChange}
-        />
-      </Stack>
+      <RevenueReportFilter
+        open={openFilters.value}
+        onOpen={openFilters.onTrue}
+        onClose={openFilters.onFalse}
+        handleOrderChange={handleOrderChange}
+        selectedOrder={selectedOrder}
+        filters={filters}
+        setFilters={setFilters}
+        onFilters={handleFiltersChange}
+        // canReset={canReset}
+        onResetFilters={handleResetFilters}
+        localeOptions={localeOptions}
+        onLocaleChange={handleLocaleFilterChange}
+      />
     </Stack>
   );
   return (

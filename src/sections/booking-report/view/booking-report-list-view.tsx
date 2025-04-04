@@ -62,6 +62,7 @@ export default function BookingReportListView() {
     endDate?: string;
     booking_status?: string;
     payment_method?: number;
+    category_id?: any;
   }>({});
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
@@ -82,7 +83,8 @@ export default function BookingReportListView() {
     table.page + 1,
     table.rowsPerPage,
     filters.booking_status,
-    filters.payment_method
+    filters.payment_method,
+    filters.category_id
   );
   const {
     bookingReports: downloadReportsData,
@@ -101,7 +103,6 @@ export default function BookingReportListView() {
     setFilters(newFilters);
   };
   const { language } = useGetAllLanguage(0, 1000);
-
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
@@ -140,6 +141,7 @@ export default function BookingReportListView() {
         end_date: filters.endDate,
         booking_status: filters.bookingStatus,
         payment_method: filters.paymentMethod,
+        category_id: filters.category_id,
         page: table.page !== undefined ? (table.page + 1).toString() : '',
         limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
       };
