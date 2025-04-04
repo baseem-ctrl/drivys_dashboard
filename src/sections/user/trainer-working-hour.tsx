@@ -54,7 +54,6 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
     table.page + 1,
     table.rowsPerPage
   );
-  console.log('workingHours', workingHours);
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');
   const deletePopover = usePopover();

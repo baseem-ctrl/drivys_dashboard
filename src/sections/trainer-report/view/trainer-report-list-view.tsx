@@ -65,7 +65,6 @@ export default function TrainerReportListView() {
     startDate: null,
     endDate: null,
   });
-  console.log('filters', filters);
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [locale, setLocale] = useState<string | undefined>(undefined);
 

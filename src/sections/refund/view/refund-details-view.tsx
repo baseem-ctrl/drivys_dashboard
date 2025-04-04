@@ -75,7 +75,6 @@ const RefundDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       console.error('Failed to update payment status:', error);
       revalidateBooking();
@@ -93,7 +92,6 @@ const RefundDetailsComponent = () => {
       });
 
       revalidateBooking();
-      console.log('Payment status updated:', response);
     } catch (error) {
       console.error('Failed to update payment status:', error);
       revalidateBooking();
