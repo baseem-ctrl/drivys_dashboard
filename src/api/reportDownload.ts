@@ -43,8 +43,6 @@ export function useGetBookingReportsDownload(
           {} as Record<string, string>
         );
       });
-
-      console.log('Parsed Booking Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -130,8 +128,6 @@ export function useGetRevenueReportsDownload(
           {} as Record<string, string>
         );
       });
-
-      console.log('Parsed Revenue Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -221,8 +217,6 @@ export function useGetTrainerReportsDownload(
           {} as Record<string, string>
         );
       });
-
-      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -312,8 +306,6 @@ export function useGetStudentReportsDownload(
           {} as Record<string, string>
         );
       });
-
-      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }
@@ -401,8 +393,6 @@ export function useGetSchoolReportsDownload(
           {} as Record<string, string>
         );
       });
-
-      console.log('Parsed Data:', parsedData);
     } catch (csvError) {
       console.error('CSV Parsing Error:', csvError);
     }

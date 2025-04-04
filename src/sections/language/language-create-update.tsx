@@ -116,7 +116,6 @@ export default function LanguageCreateEditForm({
       // Submit the form data
       const response = await createImageSingle(formData);
       setImageId(response?.data?.id);
-      console.log(response?.data?.id, 'response');
       // revalidateAllImages()
       enqueueSnackbar(response.message);
     } catch (error) {
@@ -213,17 +212,17 @@ export default function LanguageCreateEditForm({
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFTextField name="name" label={t("Name")} />
-            <RHFTextField name="language_culture" label={t("Language culture")} />
+            <RHFTextField name="name" label={t('Name')} />
+            <RHFTextField name="language_culture" label={t('Language culture')} />
             <RHFSwitch name="published" label={t('Published')} />
 
-            <RHFTextField name="display_order" label={t("Display order")} />
+            <RHFTextField name="display_order" label={t('Display order')} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

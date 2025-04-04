@@ -67,7 +67,6 @@ export default function DialectFilters({
 
   // Function to manage the language filter
   const handleFilterLanguage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('new value');
     const newValue = event.target.value;
 
     setLanguageName(newValue);
@@ -103,7 +102,7 @@ export default function DialectFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        {t("Filters")}
+        {t('Filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -124,14 +123,14 @@ export default function DialectFilters({
   const renderLanguage = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {t("Language Name")}
+        {t('Language Name')}
       </Typography>
       <TextField
         fullWidth
         variant="outlined"
         value={languageName} // Use the state directly
         onChange={handleFilterLanguage}
-        placeholder={t("Enter Language")}
+        placeholder={t('Enter Language')}
       />
     </Stack>
   );
@@ -140,14 +139,14 @@ export default function DialectFilters({
   const renderDialect = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {t("Dialect Name")}
+        {t('Dialect Name')}
       </Typography>
       <TextField
         fullWidth
         variant="outlined"
         value={dialectName} // Use the state directly
         onChange={handleFilterDialect}
-        placeholder={t("Enter Dialect")}
+        placeholder={t('Enter Dialect')}
       />
     </Stack>
   );
@@ -156,14 +155,14 @@ export default function DialectFilters({
   const renderKeyword = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {t("Keyword")}
+        {t('Keyword')}
       </Typography>
       <TextField
         fullWidth
         variant="outlined"
         value={keyword} // Use the state directly
         onChange={handleKeywordChange}
-        placeholder={t("Enter keyword")}
+        placeholder={t('Enter keyword')}
       />
     </Stack>
   );
@@ -172,7 +171,7 @@ export default function DialectFilters({
   const renderPublishStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 1 }}>
-        {t("Publish Status")}
+        {t('Publish Status')}
       </Typography>
       <FormControl>
         <FormControlLabel
@@ -183,7 +182,7 @@ export default function DialectFilters({
               value="published"
             />
           }
-          label={t("Show All Published")}
+          label={t('Show All Published')}
         />
         <FormControlLabel
           control={
@@ -193,7 +192,7 @@ export default function DialectFilters({
               value="unpublished"
             />
           }
-          label={t("Show All Un Published")}
+          label={t('Show All Un Published')}
         />
       </FormControl>
     </Stack>
@@ -211,7 +210,7 @@ export default function DialectFilters({
         }
         onClick={onOpen}
       >
-        {t("Filters")}
+        {t('Filters')}
       </Button>
 
       <Drawer

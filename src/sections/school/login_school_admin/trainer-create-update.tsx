@@ -49,7 +49,6 @@ type Props = {
 export default function TrainerCreateEditForm({ currentUser, open, onClose, reload }: Props) {
   const { user } = useAuthContext();
   const [searchValue, setSearchValue] = useState('');
-  console.log('currentUser', currentUser);
   const { enqueueSnackbar } = useSnackbar();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);

@@ -32,7 +32,6 @@ export default function ReportBookingRow({ reload, row, userType }) {
   const { enqueueSnackbar } = useSnackbar();
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
-  console.log('row', row);
   const handleRowClick = () => {
     setIsReviewsVisible(!isReviewsVisible);
   };

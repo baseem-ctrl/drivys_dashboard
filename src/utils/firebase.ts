@@ -33,7 +33,6 @@ export const generateToken = async () => {
           const token = await getToken(messaging, {
             vapidKey: import.meta.env.APP_PUSH_NOTIFI_KEY,
           });
-          console.log('FcmToken', token);
           // Check if token exists before attempting to update it
           if (token) {
             const res = await updateFcm(token);
