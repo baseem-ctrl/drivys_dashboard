@@ -160,6 +160,16 @@ export default function UserNewEditForm({
         : Yup.string(); // Required if `currentUser.id` is not present
     }),
     phone: Yup.string().matches(/^5\d{0,8}$/, t('phone_invalid')),
+
+    city_assigned: Yup.array()
+      .of(
+        Yup.object().shape({
+          value: Yup.mixed().required(t('city_id_required')),
+          label: Yup.string().required(t('city_name_required')),
+        })
+      )
+      .min(1, 'City is Required')
+      .required('City is Required'),
     dob: Yup.string()
       .nullable()
       .when('user_type', {
@@ -208,6 +218,7 @@ export default function UserNewEditForm({
     vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
+
     area_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
@@ -276,8 +287,10 @@ export default function UserNewEditForm({
       phone: currentUser?.phone || '',
       // city_assigned: currentUser?.city_assigned || [],
       city_assigned:
-        currentUser?.city_assigned?.map((city) => city.city?.city_translations?.[0]?.name || '') ||
-        [],
+        currentUser?.city_assigned?.map((c) => ({
+          value: c.city?.city_translations?.[0]?.city_id ?? '',
+          label: c.city?.city_translations?.[0]?.name ?? '',
+        })) || [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
       locale: language
@@ -496,13 +509,15 @@ export default function UserNewEditForm({
           body.append('vendor_id', data.vendor_id.value);
         }
       }
+      console.log('datadata', data);
       if (data?.user_type === 'COLLECTOR') {
-        if (Array.isArray(data?.city_assigned) && data.city_assigned.length > 0) {
-          data.city_assigned.forEach((city) => {
-            body.append('city_assigned[]', city.value);
-          });
-        }
+        data.city_assigned?.forEach((c) => {
+          if (c?.value) {
+            body.append('city_assigned[]', c.value);
+          }
+        });
       }
+
       if (
         (data?.vendor_id?.value === undefined || data?.vendor_id?.value === null) &&
         data?.user_type !== 'COLLECTOR'
@@ -765,14 +780,12 @@ export default function UserNewEditForm({
                   name="city_assigned"
                   label={t('City Assigned')}
                   multiple // Enable multiple selection
-                  disabled={currentUser?.id}
+                  // disabled={currentUser?.id}
                   options={
-                    Array.isArray(city)
-                      ? city.map((option) => ({
-                          value: option.id ?? 'unknown',
-                          label: option.city_translations?.[0]?.name ?? t('unknown'),
-                        }))
-                      : []
+                    city?.map((c) => ({
+                      value: c.city_translations?.[0]?.city_id,
+                      label: c.city_translations?.[0]?.name ?? t('unknown'),
+                    })) || []
                   }
                 />
 
