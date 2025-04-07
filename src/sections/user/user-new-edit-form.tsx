@@ -168,8 +168,11 @@ export default function UserNewEditForm({
           label: Yup.string().required(t('city_name_required')),
         })
       )
-      .min(1, 'City is Required')
-      .required('City is Required'),
+      .when('user_type', {
+        is: (userType) => userType?.toUpperCase() === 'COLLECTOR',
+        then: (schema) => schema.min(1, t('city_required')).required(t('city_required')),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     dob: Yup.string()
       .nullable()
       .when('user_type', {
@@ -470,6 +473,7 @@ export default function UserNewEditForm({
   const handleCancel = () => {
     router.back();
   };
+  console.log('data', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
