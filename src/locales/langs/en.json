@@ -1009,5 +1009,6 @@
   "Certificate Commission must be between": "Certificate Commission must be between {{min}} and {{max}}",
   "Add New Trainer": "Add New Trainer",
   "report": "Report",
-  "student": "Student"
+  "student": "Student",
+  "roles-and-permission": "Roles & Permission"
 }

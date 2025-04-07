@@ -387,4 +387,8 @@ export const endpoints = {
     school: 'admin/reports/schools',
   },
   updateFCMToken: 'consumer/auth/update-fcm-token',
+  rolesAndPermission: {
+    getRoles: 'admin/role/get-list',
+    getPermissions: 'admin/permission/get-list',
+  },
 };

@@ -49,7 +49,6 @@ const ICONS = {
   language: icon('ic_setting'),
   delivery: icon('ic_delivery'),
   school: icon('ic_school'),
-
   package: icon('ic_package'),
   map: icon('ic_map'),
 };
@@ -245,6 +244,15 @@ export function useNavData() {
         { title: t('trainer'), path: paths.dashboard.report.trainer },
         { title: t('student'), path: paths.dashboard.report.student },
         { title: t('school'), path: paths.dashboard.report.school },
+      ],
+    },
+    {
+      title: t('roles-and-permission'),
+      path: paths.dashboard.rolesAndPermission.roles,
+      icon: ICONS.trainers,
+      children: [
+        { title: t('roles'), path: paths.dashboard.rolesAndPermission.roles },
+        { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
       ],
     },
 
