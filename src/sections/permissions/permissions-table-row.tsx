@@ -32,16 +32,6 @@ export default function PermissionTableRow({ row, onEdit, onDelete }: Permission
           {row?.description || 'No description'}
         </Typography>
       </TableCell>
-
-      <TableCell align="right">
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Tooltip title="Edit">
-            <IconButton size="small" onClick={() => onEdit?.(row.id)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </TableCell>
     </TableRow>
   );
 }

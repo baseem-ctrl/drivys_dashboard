@@ -390,5 +390,7 @@ export const endpoints = {
   rolesAndPermission: {
     getRoles: 'admin/role/get-list',
     getPermissions: 'admin/permission/get-list',
+    createRole: 'admin/role/create-update',
+    createPermission: 'admin/permission/create-update',
   },
 };

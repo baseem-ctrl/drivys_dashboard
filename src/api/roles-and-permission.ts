@@ -1,4 +1,4 @@
-import { drivysFetcher, endpoints } from 'src/utils/axios';
+import { drivysCreator, drivysFetcher, endpoints } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
@@ -56,4 +56,15 @@ export function useGetPermissions(page: number, limit: number) {
   };
 
   return { ...memoizedValue, revalidatePermissions };
+}
+
+export function createPermission(body: any) {
+  const URL = endpoints.rolesAndPermission.createPermission;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function createRole(body: any) {
+  const URL = endpoints.rolesAndPermission.createRole;
+  const response = drivysCreator([URL, body]);
+  return response;
 }

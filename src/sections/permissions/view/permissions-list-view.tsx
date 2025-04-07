@@ -8,7 +8,19 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 
 // routes
@@ -18,6 +30,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import AddIcon from '@mui/icons-material/Add';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
@@ -33,14 +46,13 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetPermissions, useGetRoles } from 'src/api/roles-and-permission';
 import PermissionFilter from '../permissions-filters';
 import PermissionTableRow from '../permissions-table-row';
+import CreatePermission from '../create-permission';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Role', width: 200 },
   { id: 'description', label: 'Description', width: 200 },
-
-  { id: 'action', label: '', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
@@ -51,6 +63,7 @@ export default function PermissionListView() {
   const settings = useSettingsContext();
   const confirm = useBoolean();
   const openFilters = useBoolean();
+  const [open, setOpen] = useState(false);
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
@@ -108,50 +121,12 @@ export default function PermissionListView() {
     [table]
   );
 
-  const handleDownloadClick = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const params = {
-        locale: locale,
-        start_date: filters.startDate,
-        end_date: filters.endDate,
-        booking_status: filters.bookingStatus,
-        payment_method: filters.paymentMethod,
-        category_id: filters.category_id,
-        page: table.page !== undefined ? (table.page + 1).toString() : '',
-        limit: table.rowsPerPage !== undefined ? table.rowsPerPage.toString() : '',
-      };
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
-      const queryParams = new URLSearchParams(
-        Object.fromEntries(Object.entries(params).filter(([_, value]) => value))
-      ).toString();
-
-      const response = await fetch(
-        `${import.meta.env.VITE_HOST_API}admin/reports/bookings?${queryParams}`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'text/csv',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to download CSV');
-      }
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'booking_report.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading CSV:', error);
-    }
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handleOrderChange = (event) => {
@@ -251,6 +226,16 @@ export default function PermissionListView() {
       )} */}
 
       <Card>
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          sx={{ px: 2, pt: 2, pb: 1, mb: 3 }}
+        >
+          <Button color="primary" variant="contained" endIcon={<AddIcon />} onClick={handleOpen}>
+            Create New
+          </Button>
+        </Stack>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -316,6 +301,12 @@ export default function PermissionListView() {
           />
         )}
       </Card>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <DialogTitle>Create New Permission</DialogTitle>
+        <DialogContent>
+          <CreatePermission onClose={handleClose} reload={revalidatePermissions} />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }

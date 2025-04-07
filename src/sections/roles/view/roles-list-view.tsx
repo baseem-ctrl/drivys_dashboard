@@ -8,8 +8,20 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Button, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
-import DownloadIcon from '@mui/icons-material/Download';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -35,14 +47,13 @@ import { useGetBookingReportsDownload } from 'src/api/reportDownload';
 import RolesFilter from '../roles-filters';
 import RolesTableRow from '../roles-table-row';
 import { useGetRoles } from 'src/api/roles-and-permission';
+import CreateRole from '../create-role';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Role', width: 200 },
   { id: 'description', label: 'Description', width: 200 },
-
-  { id: 'action', label: '', width: 200 },
 ];
 
 // ----------------------------------------------------------------------
@@ -55,6 +66,7 @@ export default function RolesListView() {
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
+  const [open, setOpen] = useState(false);
   const [localeFilter, setLocaleFilter] = useState('');
   const [filters, setFilters] = useState<{
     startDate?: string;
@@ -69,13 +81,20 @@ export default function RolesListView() {
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
-  const { roles, rolesLoading, rolesError, rolesTotalPages } = useGetRoles(
+  const { roles, rolesLoading, rolesError, rolesTotalPages, revalidateRoles } = useGetRoles(
     table.page,
     table.rowsPerPage
   );
 
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
   const { language } = useGetAllLanguage(0, 1000);
   const localeOptions = (language || []).map((lang) => ({
@@ -250,6 +269,16 @@ export default function RolesListView() {
       )} */}
 
       <Card>
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          sx={{ px: 2, pt: 2, pb: 1, mb: 3 }}
+        >
+          <Button color="primary" variant="contained" endIcon={<AddIcon />} onClick={handleOpen}>
+            Create New
+          </Button>
+        </Stack>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -315,6 +344,12 @@ export default function RolesListView() {
           />
         )}
       </Card>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <DialogTitle>Create New Role</DialogTitle>
+        <DialogContent>
+          <CreateRole onClose={handleClose} reload={revalidateRoles} />
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }
