@@ -307,5 +307,9 @@ export const paths = {
       student: `${ROOTS.DASHBOARD}/report/student`,
       school: `${ROOTS.DASHBOARD}/report/school`,
     },
+    rolesAndPermission: {
+      roles: `${ROOTS.DASHBOARD}/roles-and-permission/roles`,
+      permission: `${ROOTS.DASHBOARD}/roles-and-permission/permission`,
+    },
   },
 };

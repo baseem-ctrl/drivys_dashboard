@@ -59,6 +59,8 @@ import RevenueReportListView from 'src/sections/revenue-report/view/revenue-repo
 import TrainerReportListView from 'src/sections/trainer-report/view/trainer-report-list-view';
 import StudentReportListView from 'src/sections/student-report/view/student-report-list-view';
 import SchoolReportListView from 'src/sections/school-report/view/school-report-list-view';
+import RolesListView from 'src/sections/roles/view/roles-list-view';
+import PermissionListView from 'src/sections/permissions/view/permissions-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -283,6 +285,13 @@ const allroutes = [
       { path: 'trainer', element: <TrainerReportListView /> },
       { path: 'student', element: <StudentReportListView /> },
       { path: 'school', element: <SchoolReportListView /> },
+    ],
+  },
+  {
+    path: 'roles-and-permission',
+    children: [
+      { path: 'roles', element: <RolesListView /> },
+      { path: 'permission', element: <PermissionListView /> },
     ],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
