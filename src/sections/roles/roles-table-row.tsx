@@ -32,16 +32,6 @@ export default function RolesTableRow({ row, onEdit, onDelete }: RolesTableRowPr
           {row?.description || 'No description'}
         </Typography>
       </TableCell>
-
-      <TableCell align="right">
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Tooltip title="Edit">
-            <IconButton size="small" onClick={() => onEdit?.(row.id)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </TableCell>
     </TableRow>
   );
 }
