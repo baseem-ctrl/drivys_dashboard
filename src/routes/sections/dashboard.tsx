@@ -61,6 +61,7 @@ import StudentReportListView from 'src/sections/student-report/view/student-repo
 import SchoolReportListView from 'src/sections/school-report/view/school-report-list-view';
 import RolesListView from 'src/sections/roles/view/roles-list-view';
 import PermissionListView from 'src/sections/permissions/view/permissions-list-view';
+import CollectedCashList from 'src/sections/collector/collected-cash-list/view/collected-cash-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -410,6 +411,7 @@ const collectorRoutes = [
     children: [
       { path: 'overview', element: <OverviewCollectorPage /> },
       { path: 'cash_in_hand', element: <TrainerCashInHand /> },
+      { path: 'collected-list', element: <CollectedCashList /> },
     ],
   },
 ];
