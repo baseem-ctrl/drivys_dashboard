@@ -49,3 +49,40 @@ export function collectCash(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+
+export function useGetCashCollectedListPerTransaction(
+  trainer_id?: string | null,
+  page: number = 1,
+  limit: number = 10
+) {
+  const getTheFullUrl = () => {
+    const queryParams: Record<string, any> = {};
+
+    if (trainer_id) queryParams.trainer_id = trainer_id;
+    queryParams.page = page;
+    queryParams.limit = limit;
+
+    return `${endpoints.collector.cashCollectedListPerTransaction}?${new URLSearchParams(
+      queryParams
+    )}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      cashCollectedList: data?.data as any,
+      cashCollectedLoading: isLoading,
+      cashCollectedError: error,
+      cashCollectedValidating: isValidating,
+      totalPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateCashCollectedList = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateCashCollectedList };
+}

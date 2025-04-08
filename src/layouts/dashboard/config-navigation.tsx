@@ -51,6 +51,7 @@ const ICONS = {
   school: icon('ic_school'),
   package: icon('ic_package'),
   map: icon('ic_map'),
+  cash: icon('ic_cash'),
 };
 
 // ----------------------------------------------------------------------
@@ -395,6 +396,11 @@ export function useNavData() {
       title: t('trainers list'),
       path: paths.dashboard.collector.trainerCashInHand,
       icon: ICONS.trainers,
+    },
+    {
+      title: t('collected cash list'),
+      path: paths.dashboard.collector.cashCollectedListPerTransaction,
+      icon: ICONS.cash,
     },
     // {
     //   title: t('dashboard'),
