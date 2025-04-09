@@ -170,6 +170,16 @@ export function useNavData() {
         },
       ],
     },
+    {
+      title: t('collector'),
+      path: paths.dashboard.collectorAdminView.cashInHand,
+      icon: ICONS.trainers,
+      children: [
+        { title: t('cash_in_hand'), path: paths.dashboard.collectorAdminView.cashInHand },
+        // { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
+      ],
+    },
+
     // HOME LISTING
     {
       title: t('home_page_listing'),
@@ -361,6 +371,7 @@ export function useNavData() {
         },
       ],
     },
+
     {
       title: t('package'),
       path: paths.dashboard.school.package,

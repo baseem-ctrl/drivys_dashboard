@@ -62,6 +62,7 @@ import SchoolReportListView from 'src/sections/school-report/view/school-report-
 import RolesListView from 'src/sections/roles/view/roles-list-view';
 import PermissionListView from 'src/sections/permissions/view/permissions-list-view';
 import CollectedCashList from 'src/sections/collector/collected-cash-list/view/collected-cash-list-view';
+import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-hand-list-admin-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -295,6 +296,13 @@ const allroutes = [
       { path: 'permission', element: <PermissionListView /> },
     ],
   },
+  {
+    path: 'collector',
+    children: [
+      { path: 'cash-in-hand', element: <CashInHandList />, index: true },
+      // { path: 'permission', element: <PermissionListView /> },
+    ],
+  },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
   { path: 'loyality/:id', element: <LoyaltyProgramDetails /> },
 
@@ -374,6 +382,7 @@ const schooladminRoutes = [
       { path: 'certificate-commission-trainer', element: <CertificateCommissionTrainer /> },
     ],
   },
+
   {
     path: 'review',
     children: [

@@ -395,4 +395,8 @@ export const endpoints = {
     createRole: 'admin/role/create-update',
     createPermission: 'admin/permission/create-update',
   },
+  collectorAdminView: {
+    collectorCashInHand: `admin/cash-collection/get-collector-cash-in-hand-list`,
+    collectCash: 'admin/cash-collection/cash-collection',
+  },
 };
