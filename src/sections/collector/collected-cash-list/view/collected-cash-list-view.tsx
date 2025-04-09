@@ -28,6 +28,7 @@ import {
 
 // import ReviewFilters from '../review-filters';
 import {
+  useGetCashCollectedListPerTrainer,
   useGetCashCollectedListPerTransaction,
   useGetCollectorCashInHand,
 } from 'src/api/collector';
@@ -36,12 +37,10 @@ import CollectedCashListRow from '../collected-cash-list-table-row';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer', width: 180 },
-  { id: 'amount_to_be_collected', label: 'Amount', width: 180 },
-  { id: 'payment_method', label: 'Payment Method', width: 180 },
-  { id: 'payment_status', label: 'Payment Status', width: 180 },
-  { id: 'time', label: 'Time', width: 180 },
-
+  { id: 'trainer-id', label: 'Trainer', width: 180 },
+  { id: 'collected-amount', label: 'Amount Collected', width: 180 },
+  { id: 'last-collected-at', label: 'Last Collected At', width: 180 },
+  { id: 'total-bookings', label: 'Total Bookings', width: 180 },
   { id: 'remarks', label: 'Remarks', width: 180 },
 ];
 
@@ -63,7 +62,7 @@ export default function CollectedCashList() {
     cashCollectedValidating,
     totalPages,
     revalidateCashCollectedList,
-  } = useGetCashCollectedListPerTransaction(trainerId, table.page + 1, table.rowsPerPage);
+  } = useGetCashCollectedListPerTrainer(trainerId, table.page + 1, table.rowsPerPage);
 
   useEffect(() => {
     if (cashCollectedList?.length) {
