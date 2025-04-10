@@ -1,6 +1,9 @@
 // @mui
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
+import { differenceInDays, parseISO } from 'date-fns';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
 // import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -365,6 +368,21 @@ export default function UserDetailsContent({
       }
     }
   };
+  const expiryDate = details?.certificate_expiry_date
+    ? parseISO(details.certificate_expiry_date)
+    : null;
+
+  const today = new Date();
+  const daysRemaining = expiryDate ? differenceInDays(expiryDate, today) : null;
+
+  const statusColor = daysRemaining <= 0 ? 'error' : daysRemaining <= 30 ? 'warning' : 'success';
+
+  const statusLabel =
+    daysRemaining > 0
+      ? `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} remaining`
+      : daysRemaining === 0
+      ? 'Expires today'
+      : `Expired ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) > 1 ? 's' : ''} ago`;
   const router = useRouter();
   const handleEditRow = useCallback(() => {
     router.push(paths.dashboard.user.edit(details?.id));
@@ -496,7 +514,13 @@ export default function UserDetailsContent({
               {[
                 { label: t('name'), value: details?.name ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER'
-                  ? [{ label: t('name_ar'), value: details?.name_ar ?? 'N/A' }]
+                  ? [
+                      { label: t('name_ar'), value: details?.name_ar ?? 'N/A' },
+                      {
+                        label: t('certificate_expiry_date'),
+                        value: details?.certificate_expiry_date ?? 'N/A',
+                      },
+                    ]
                   : []),
 
                 { label: t('email'), value: details?.email ?? 'N/A' },
@@ -508,6 +532,7 @@ export default function UserDetailsContent({
                 },
                 { label: t('user_type'), value: details?.user_type ?? 'N/A' },
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
+
                 {
                   label: t('preferred_language'),
                   value: details?.locale !== 'undefined' ? details.locale : 'N/A',
@@ -1878,6 +1903,54 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
+          {details?.user_type === 'TRAINER' && expiryDate && (
+            <Card
+              sx={{
+                mt: 3,
+                px: 3,
+                py: 2.5,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                mb: 4,
+              }}
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Box
+                  sx={{
+                    backgroundColor: '#e3f2fd',
+                    borderRadius: '50%',
+                    p: 1.2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CalendarMonthIcon sx={{ color: '#1976d2', fontSize: 28 }} />
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Trainer Certificate Expiry
+                  </Typography>
+                  <Typography variant="h6" fontWeight={600}>
+                    {details.certificate_expiry_date}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Chip
+                label={statusLabel}
+                color={statusColor as 'error' | 'warning' | 'success'}
+                variant="outlined"
+                sx={{ mt: { xs: 2, md: 0 }, fontWeight: 500 }}
+              />
+            </Card>
+          )}
+
           {details?.user_type === 'STUDENT' && renderStudentTabs}
 
           <Grid container spacing={1} rowGap={1}>

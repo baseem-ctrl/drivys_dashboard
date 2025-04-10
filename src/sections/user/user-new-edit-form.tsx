@@ -150,6 +150,7 @@ export default function UserNewEditForm({
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required(t('name_required')),
     name_ar: Yup.string(),
+    certificate_expiry_date: Yup.mixed(),
     email: Yup.string()
       .required(t('email_required'))
       .matches(/^[^@]+@[^@]+\.[^@]+$/, t('email_invalid')),
@@ -253,7 +254,7 @@ export default function UserNewEditForm({
     ),
     cash_in_hand: Yup.string(),
     max_cash_in_hand_allowed: Yup.string(),
-    school_commission_in_percentage: Yup.number().when('user_type', {
+    vendor_commission_in_percentage: Yup.number().when('user_type', {
       is: 'TRAINER',
       then: (schema) =>
         schema.required(t('school_commission_required')).when([], {
@@ -286,6 +287,7 @@ export default function UserNewEditForm({
       user_type: currentUser?.user_type || '',
       email: currentUser?.email || '',
       name_ar: currentUser?.name_ar || '',
+      certificate_expiry_date: currentUser?.certificate_expiry_date || '',
       password: '',
       phone: currentUser?.phone || '',
       // city_assigned: currentUser?.city_assigned || [],
@@ -351,8 +353,8 @@ export default function UserNewEditForm({
           }
         : '',
       vendor_commission_in_percentage: currentUser?.vendor_commission_in_percentage,
-      school_commission_in_percentage:
-        currentUser?.user_preference?.school_commission_in_percentage,
+      // school_commission_in_percentage:
+      //   currentUser?.user_preference?.school_commission_in_percentage,
       doc_side: currentUser?.user_preference?.doc_side || '',
       max_radius_in_km: currentUser?.user_preference?.max_radius_in_km || '',
       is_pickup_enabled: !!currentUser?.user_preference?.is_pickup_enabled,
@@ -473,7 +475,6 @@ export default function UserNewEditForm({
   const handleCancel = () => {
     router.back();
   };
-  console.log('data', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -513,7 +514,6 @@ export default function UserNewEditForm({
           body.append('vendor_id', data.vendor_id.value);
         }
       }
-      console.log('datadata', data);
       if (data?.user_type === 'COLLECTOR') {
         data.city_assigned?.forEach((c) => {
           if (c?.value) {
@@ -539,9 +539,12 @@ export default function UserNewEditForm({
         // if (data?.is_pickup_enabled)
         body.append('is_pickup_enabled', data.is_pickup_enabled ? 1 : 0);
         if (data?.name_ar) body.append('name_ar', data?.name_ar);
+        if (data?.certificate_expiry_date)
+          body.append('certificate_expiry_date', data?.certificate_expiry_date);
+
         if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
-        if (data?.school_commission_in_percentage)
-          body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
+        // if (data?.school_commission_in_percentage)
+        //   body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
         if (data?.vendor_commission_in_percentage)
           body.append('vendor_commission_in_percentage', data?.vendor_commission_in_percentage);
         if (data?.certificate_commission_in_percentage)
@@ -876,6 +879,14 @@ export default function UserNewEditForm({
                 InputLabelProps={{ shrink: true }}
               />
 
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name={`certificate_expiry_date`}
+                  label={t('certificate_expiry_date')}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
               {values.user_type === 'TRAINER' && (
                 <RHFSwitch name="is_pickup_enabled" label={t('is_pickup_enabled')} />
               )}
