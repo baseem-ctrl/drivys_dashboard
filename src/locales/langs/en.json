@@ -1010,5 +1010,6 @@
   "Add New Trainer": "Add New Trainer",
   "report": "Report",
   "student": "Student",
-  "roles-and-permission": "Roles & Permission"
+  "roles-and-permission": "Roles & Permission",
+  "certificate_expiry_date": "Certificate Expiry Date"
 }
