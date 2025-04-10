@@ -16,6 +16,8 @@ import {
 import moment from 'moment';
 import { useSnackbar } from 'src/components/snackbar';
 import { collectCashAdmin } from 'src/api/admin-collector';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 interface RowProps {
   name: any;
@@ -78,9 +80,21 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
       setAmount(null);
     }
   };
+  const router = useRouter();
+  const handleClickDetails = (id) => {
+    router.push(paths.dashboard.user.details(id));
+  };
   return (
     <TableRow hover>
-      <TableCell>
+      <TableCell
+        onClick={() => handleClickDetails(row?.id)}
+        sx={{
+          cursor: 'pointer',
+          '&:hover': {
+            textDecoration: 'underline',
+          },
+        }}
+      >
         <Typography variant="body2">{row?.name ?? 'N/A'}</Typography>
       </TableCell>
 

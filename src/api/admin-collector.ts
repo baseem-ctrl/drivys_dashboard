@@ -116,3 +116,39 @@ export function useGetCashCollectedListPerTrainer(
 
   return { ...memoizedValue, revalidateCashCollectedList };
 }
+export function useGetAdminCashCollectedListPerTransaction(
+  collector_id?: string | null,
+  page: number = 1,
+  limit: number = 10
+) {
+  const getTheFullUrl = () => {
+    const queryParams: Record<string, any> = {};
+
+    if (collector_id) queryParams.trainer_id = collector_id;
+    queryParams.page = page;
+    queryParams.limit = limit;
+
+    return `${endpoints.collectorAdminView.collectorCollectedCashInHand}?${new URLSearchParams(
+      queryParams
+    )}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      adminCashCollectedList: data?.data as any,
+      adminCashCollectedLoading: isLoading,
+      adminCashCollectedError: error,
+      adminCashCollectedValidating: isValidating,
+      totalPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateAdminCashCollectedList = () => {
+    mutate(getTheFullUrl);
+  };
+
+  return { ...memoizedValue, revalidateAdminCashCollectedList };
+}
