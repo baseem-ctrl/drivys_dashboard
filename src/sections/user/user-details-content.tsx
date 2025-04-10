@@ -514,7 +514,13 @@ export default function UserDetailsContent({
               {[
                 { label: t('name'), value: details?.name ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER'
-                  ? [{ label: t('name_ar'), value: details?.name_ar ?? 'N/A' }]
+                  ? [
+                      { label: t('name_ar'), value: details?.name_ar ?? 'N/A' },
+                      {
+                        label: t('certificate_expiry_date'),
+                        value: details?.certificate_expiry_date ?? 'N/A',
+                      },
+                    ]
                   : []),
 
                 { label: t('email'), value: details?.email ?? 'N/A' },
@@ -526,6 +532,7 @@ export default function UserDetailsContent({
                 },
                 { label: t('user_type'), value: details?.user_type ?? 'N/A' },
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
+
                 {
                   label: t('preferred_language'),
                   value: details?.locale !== 'undefined' ? details.locale : 'N/A',
