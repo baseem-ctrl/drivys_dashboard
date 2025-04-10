@@ -397,6 +397,8 @@ export const endpoints = {
   },
   collectorAdminView: {
     collectorCashInHand: `admin/cash-collection/get-collector-cash-in-hand-list`,
+    collectorCollectedCashInHand: `admin/cash-collection/cash-collected-list-per-transaction`,
+
     collectCash: 'admin/cash-collection/cash-collection',
   },
 };

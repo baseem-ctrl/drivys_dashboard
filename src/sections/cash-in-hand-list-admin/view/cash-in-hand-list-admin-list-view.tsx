@@ -7,12 +7,16 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Skeleton, Tab, TableCell, TableRow, Tabs } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import {
+  useGetAdminCashCollectedListPerTransaction,
+  useGetAdminCollectorCashInHand,
+} from 'src/api/admin-collector';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -27,13 +31,9 @@ import {
 // types
 
 // import ReviewFilters from '../review-filters';
-import {
-  useGetCashCollectedListPerTrainer,
-  useGetCashCollectedListPerTransaction,
-  useGetCollectorCashInHand,
-} from 'src/api/collector';
+
 import CashInHandListRow from '../cash-in-hand-list-admin-table-row';
-import { useGetAdminCollectorCashInHand } from 'src/api/admin-collector';
+import CashCollectedRow from '../cash-collected-row';
 
 // ----------------------------------------------------------------------
 
@@ -42,6 +42,15 @@ const TABLE_HEAD = [
   { id: 'collected-cash-in-hand', label: 'Collected Cash', width: 180 },
   { id: 'max-collected-cash-in-hand', label: 'Max Cash In Hand', width: 180 },
   { id: 'action', label: '', width: 180 },
+];
+
+const COLECTED_TABLE_HEAD = [
+  { id: 'collector-id', label: 'Collector', width: 180 },
+  { id: 'payment_method', label: 'Payment Method', width: 180 },
+  { id: 'txn_amount', label: 'Amount', width: 120 },
+  { id: 'payment_status', label: 'Payment Status', width: 150 },
+  { id: 'remarks', label: 'Remarks', width: 250 },
+  { id: 'collected_on', label: 'Collected On', width: 180 },
 ];
 
 // ----------------------------------------------------------------------
@@ -54,17 +63,40 @@ export default function CashInHandList() {
   const [viewMode, setViewMode] = useState('table');
 
   const [trainerId, setTrainerId] = useState<string | null>(null);
+  const [collectorId, setCollectorId] = useState<string | null>(null);
+
   const [vendorId, setVendorId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const [toCollectList, setToCollectList] = useState<any>([]);
+  const [collectedList, setCollectedList] = useState<any>([]);
 
   const { cashInHand, cashLoading, cashError, totalPages, revalidateCollectorCashInHand } =
     useGetAdminCollectorCashInHand(trainerId, vendorId, table.page + 1, table.rowsPerPage);
+  const {
+    adminCashCollectedList,
+    adminCashCollectedLoading,
+    totalPages: total,
+  } = useGetAdminCashCollectedListPerTransaction(collectorId, table.page + 1, table.rowsPerPage);
+  useEffect(() => {
+    if (adminCashCollectedList?.length) {
+      setCollectedList(adminCashCollectedList);
+    } else {
+      setCollectedList([]);
+    }
+  }, [adminCashCollectedList]);
   useEffect(() => {
     if (cashInHand?.length) {
-      setTableData(cashInHand);
+      setToCollectList(cashInHand);
     } else {
-      setTableData([]);
+      setToCollectList([]);
     }
   }, [cashInHand]);
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  const currentData = activeTab === 0 ? toCollectList : collectedList;
+  const totalPagesToUse = activeTab === 0 ? totalPages : total;
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -90,16 +122,21 @@ export default function CashInHandList() {
       />
       {/* <CashInHandFilter /> */}
       <Card>
+        <Tabs value={activeTab} onChange={handleTabChange}>
+          <Tab label="Pending Collections" />
+          <Tab label="Completed Collections" />
+        </Tabs>
+
         {viewMode === 'table' && (
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 3 }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
+              rowCount={currentData.length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  currentData.map((row) => row.id)
                 )
               }
               action={
@@ -116,7 +153,7 @@ export default function CashInHandList() {
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
+                  headLabel={activeTab === 0 ? TABLE_HEAD : COLECTED_TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                 />
@@ -124,19 +161,36 @@ export default function CashInHandList() {
                   {cashLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <TableCell
+                            colSpan={
+                              activeTab === 'collected'
+                                ? COLECTED_TABLE_HEAD.length
+                                : TABLE_HEAD.length
+                            }
+                          >
                             <Skeleton animation="wave" height={40} />
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <CashInHandListRow
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateCollectorCashInHand}
-                        />
-                      ))}
+                    : currentData?.map((row) =>
+                        activeTab === 0 ? (
+                          <CashInHandListRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateCollectorCashInHand}
+                          />
+                        ) : (
+                          <CashCollectedRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateCollectorCashInHand}
+                          />
+                        )
+                      )}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -145,7 +199,7 @@ export default function CashInHandList() {
 
         {viewMode === 'table' && (
           <TablePaginationCustom
-            count={totalPages}
+            count={totalPagesToUse}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
