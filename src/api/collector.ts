@@ -2,23 +2,22 @@ import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 
-// Fetch collector's cash in hand list
-import { fetcher, endpoints, drivysFetcher } from 'src/utils/axios';
-import useSWR, { mutate } from 'swr';
-import { useMemo } from 'react';
-
 // Fetch collector's cash in hand list with optional filters
 export function useGetCollectorCashInHand(
   trainer_id?: string | null,
   vendor_id?: string | null,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  cash_clearance_date_from?: string | null,
+  cash_clearance_date_to?: string | null
 ) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 
     if (trainer_id) queryParams.trainer_id = trainer_id;
     if (vendor_id) queryParams.vendor_id = vendor_id;
+    if (cash_clearance_date_from) queryParams.cash_clearance_date_from = cash_clearance_date_from;
+    if (cash_clearance_date_to) queryParams.cash_clearance_date_to = cash_clearance_date_to;
     queryParams.page = page;
     queryParams.limit = limit;
 
@@ -44,6 +43,7 @@ export function useGetCollectorCashInHand(
 
   return { ...memoizedValue, revalidateCollectorCashInHand };
 }
+
 export function collectCash(body: any) {
   const URL = endpoints.collector.collectCash;
   const response = drivysCreator([URL, body]);

@@ -42,7 +42,10 @@ const TABLE_HEAD = [
   { id: 'cash_clearance_date', label: 'Cash Clearance Date', width: 180 },
   { id: 'action', label: '', width: 180 },
 ];
-
+const defaultFilters = {
+  cash_clearance_date_from: null,
+  cash_clearance_date_to: null,
+};
 // ----------------------------------------------------------------------
 
 export default function TrainerCashInHand() {
@@ -51,12 +54,20 @@ export default function TrainerCashInHand() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
+  const [filters, setFilters] = useState(defaultFilters);
 
   const [trainerId, setTrainerId] = useState<string | null>(null);
   const [vendorId, setVendorId] = useState<string | null>(null);
 
   const { cashInHand, cashLoading, totalPages, revalidateCollectorCashInHand } =
-    useGetCollectorCashInHand(trainerId, vendorId, table.page + 1, table.rowsPerPage);
+    useGetCollectorCashInHand(
+      trainerId,
+      vendorId,
+      table.page + 1,
+      table.rowsPerPage,
+      filters.cash_clearance_date_from,
+      filters.cash_clearance_date_to
+    );
 
   useEffect(() => {
     if (cashInHand?.length) {
@@ -71,6 +82,16 @@ export default function TrainerCashInHand() {
     // // setViewMode('detail');
     //No Need on click
   };
+  const handleFilters = useCallback(
+    (name, value) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -88,7 +109,7 @@ export default function TrainerCashInHand() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {/* <CashInHandFilter /> */}
+      <CashInHandFilter filters={filters} onFilters={handleFilters} />
       <Card>
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
