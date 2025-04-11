@@ -1109,7 +1109,7 @@ export default function UserNewEditForm({
                         ))}
                     </RHFSelect>
 
-                    {values.user_type === 'TRAINER' && (
+                    {(values.user_type === 'TRAINER' || values.user_type === 'STUDENT') && (
                       <RHFSelect name="gender" label={t('gender')}>
                         {genderData?.length > 0 &&
                           genderData?.map((option: any) => (
