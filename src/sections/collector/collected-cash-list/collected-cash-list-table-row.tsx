@@ -14,6 +14,8 @@ import moment from 'moment';
 
 import { Typography } from '@mui/material';
 import axios from 'axios';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 interface RowProps {
   trainer_id: number;
@@ -23,6 +25,7 @@ interface RowProps {
   collected_amount: number;
   last_collected_at: string;
   total_number_of_bookings: number;
+  trainer_name: any;
 }
 
 interface CollectedCashListRowProps {
@@ -63,7 +66,10 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
       fetchTransactionData(row.trainer_id); // Fetch data when the row is clicked
     }
   };
-
+  const router = useRouter();
+  const handleClickDetails = (id) => {
+    router.push(paths.dashboard.user.details(id));
+  };
   return (
     <>
       {/* Main Row */}
@@ -78,8 +84,16 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
           },
         }}
       >
-        <TableCell>
-          <Typography variant="body2">{row?.trainer_id || 'N/A'}</Typography>
+        <TableCell
+        // onClick={() => handleClickDetails(row?.trainer_id)}
+        // sx={{
+        //   cursor: 'pointer',
+        //   '&:hover': {
+        //     textDecoration: 'underline',
+        //   },
+        // }}
+        >
+          <Typography variant="body2">{row?.trainer_name || 'N/A'}</Typography>
         </TableCell>
         <TableCell>
           {typeof row?.collected_amount === 'number' ? row.collected_amount.toFixed(2) : 'N/A'}
