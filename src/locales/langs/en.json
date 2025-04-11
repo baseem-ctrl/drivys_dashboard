@@ -295,7 +295,7 @@
   "gender": "Gender",
   "school_commission_trainer": "School Commission (Trainer Preference)",
   "vehicle_type": "Vehicle Type",
-  "trainer_language": "Trainer Language",
+  "trainer_language": "Preferred Trainer Language",
   "bank_details": "Bank Details",
   "account_holder_name": "Account Holder Name",
   "account_number": "Account Number",
