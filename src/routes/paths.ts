@@ -314,6 +314,8 @@ export const paths = {
     },
     collectorAdminView: {
       cashInHand: `${ROOTS.DASHBOARD}/collector/cash-in-hand`,
+      detailsCollector: (id: string) => `${ROOTS.DASHBOARD}/collector/${id}`,
+
       // permission: `${ROOTS.DASHBOARD}/roles-and-permission/permission`,
     },
   },

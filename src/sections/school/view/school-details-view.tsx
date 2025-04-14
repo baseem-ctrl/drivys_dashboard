@@ -24,6 +24,7 @@ import Iconify from 'src/components/iconify';
 import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolPackageDetails from './school-package-details';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +35,7 @@ type Props = {
 export default function SchoolDetailsView({ id }: Props) {
   const settings = useSettingsContext();
   const { t } = useLocales();
-
+  const { user } = useAuthContext();
   const { details, detailsLoading, revalidateDetails } = useGetSchoolById(id);
 
   const currentJob = details;
@@ -45,9 +46,12 @@ export default function SchoolDetailsView({ id }: Props) {
     { value: 'trainers', label: t('trainers') },
     { value: 'package', label: t('packages') },
   ];
-
+  const filteredTabs =
+    user?.user?.user_type === 'COLLECTOR'
+      ? SCHOOL_DETAILS_TABS.filter((tab) => tab.value === 'details')
+      : SCHOOL_DETAILS_TABS;
   const [currentTab, setCurrentTab] = useState('details');
-
+  console.log('user?.user?.user_type ', user?.user?.user_type);
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
@@ -64,7 +68,7 @@ export default function SchoolDetailsView({ id }: Props) {
         mb: { xs: 3, md: 5 },
       }}
     >
-      {SCHOOL_DETAILS_TABS.map((tab) => (
+      {filteredTabs.map((tab) => (
         <Tab
           key={tab.value}
           iconPosition="end"
@@ -91,31 +95,33 @@ export default function SchoolDetailsView({ id }: Props) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading={t('schools_details')}
-        links={[
-          { name: t('dashboard'), href: paths.dashboard.root },
-          {
-            name: `${
-              currentJob?.vendor_translations?.length > 0
-                ? currentJob?.vendor_translations[0]?.name
-                : t('school')
-            }`,
-            href: paths.dashboard.school.root,
-          },
-          { name: t('details') },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-        action={
-          currentTab === 'trainers' && (
-            <Button onClick={quickCreate.onTrue} variant="contained">
-              {t('add_trainer')}
-            </Button>
-          )
-        }
-      />
+      {user?.user?.user_type !== 'COLLECTOR' && (
+        <CustomBreadcrumbs
+          heading={t('schools_details')}
+          links={[
+            { name: t('dashboard'), href: paths.dashboard.root },
+            {
+              name: `${
+                currentJob?.vendor_translations?.length > 0
+                  ? currentJob?.vendor_translations[0]?.name
+                  : t('school')
+              }`,
+              href: paths.dashboard.school.root,
+            },
+            { name: t('details') },
+          ]}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+          action={
+            currentTab === 'trainers' && (
+              <Button onClick={quickCreate.onTrue} variant="contained">
+                {t('add_trainer')}
+              </Button>
+            )
+          }
+        />
+      )}
 
       {/* <JobDetailsToolbar
         backLink={paths.dashboard.job.root}
@@ -135,10 +141,11 @@ export default function SchoolDetailsView({ id }: Props) {
               details={currentJob}
               loading={detailsLoading}
               reload={revalidateDetails}
+              user={user.user?.user_type}
             />
           )}
 
-          {currentTab === 'trainers' && (
+          {currentTab === 'trainers' && user?.user?.user_type !== 'COLLECTOR' && (
             <SchoolTrainers
               t={t}
               candidates={details}

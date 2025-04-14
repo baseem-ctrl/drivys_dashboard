@@ -59,9 +59,10 @@ type Props = {
   details: any;
   loading?: any;
   t: any;
+  user: any;
   reload: VoidFunction;
 };
-export default function SchoolDetailsContent({ details, loading, reload, t }: Props) {
+export default function SchoolDetailsContent({ details, loading, reload, t, user }: Props) {
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
@@ -371,7 +372,7 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
 
   const renderContent = (
     <Stack spacing={3} sx={{ p: 3 }}>
-      {!editMode && (
+      {!editMode && user !== 'COLLECTOR' && (
         <Stack
           alignItems="end"
           sx={{
@@ -1369,9 +1370,11 @@ export default function SchoolDetailsContent({ details, loading, reload, t }: Pr
             </Card>
           </Grid>
 
-          <Grid item xs={12}>
-            {renderAddress}
-          </Grid>
+          {user !== 'COLLECTOR' && (
+            <Grid item xs={12}>
+              {renderAddress}
+            </Grid>
+          )}
         </Grid>
       )}
     </>

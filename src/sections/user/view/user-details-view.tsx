@@ -26,6 +26,7 @@ import { useGetUserDetails } from 'src/api/users';
 import UserProfileView from './user-profile-view';
 import { useGetAddressList } from 'src/api/users';
 import UserDetailsContent from '../user-details-content';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,8 @@ type Props = {
 
 export default function UserDetailsView({ id }: Props) {
   const { t } = useLocales();
-
+  const { user } = useAuthContext();
+  console.log('user', user?.user?.user_type);
   const settings = useSettingsContext();
   const userId = Number(window.location.pathname.split('/').pop());
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
@@ -88,17 +90,19 @@ export default function UserDetailsView({ id }: Props) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <CustomBreadcrumbs
-        heading={t('user_details')}
-        links={[
-          { name: t('dashboard'), href: paths.dashboard.root },
-          { name: t('users'), href: paths.dashboard.user.list },
-          { name: `${details?.user?.name ?? t('details')}` },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
+      {user?.user?.user_type !== 'COLLECTOR' && (
+        <CustomBreadcrumbs
+          heading={t('user_details')}
+          links={[
+            { name: t('dashboard'), href: paths.dashboard.root },
+            { name: t('users'), href: paths.dashboard.user.list },
+            { name: `${details?.user?.name ?? t('details')}` },
+          ]}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        />
+      )}
 
       <UserDetailsContent
         details={details}
@@ -106,6 +110,7 @@ export default function UserDetailsView({ id }: Props) {
         loading={detailsLoading}
         addressesLoading={addressesLoading}
         reload={revalidateAddresses}
+        user={user?.user?.user_type}
       />
     </Container>
   );

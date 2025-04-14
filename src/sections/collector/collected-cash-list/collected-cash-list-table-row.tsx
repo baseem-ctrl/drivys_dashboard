@@ -85,13 +85,13 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
         }}
       >
         <TableCell
-        // onClick={() => handleClickDetails(row?.trainer_id)}
-        // sx={{
-        //   cursor: 'pointer',
-        //   '&:hover': {
-        //     textDecoration: 'underline',
-        //   },
-        // }}
+          onClick={() => handleClickDetails(row?.trainer_id)}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          }}
         >
           <Typography variant="body2">{row?.trainer_name || 'N/A'}</Typography>
         </TableCell>
