@@ -9,7 +9,8 @@ export function useGetCollectorCashInHand(
   page: number = 1,
   limit: number = 10,
   cash_clearance_date_from?: string | null,
-  cash_clearance_date_to?: string | null
+  cash_clearance_date_to?: string | null,
+  search?: string | null // New search filter
 ) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
@@ -18,6 +19,7 @@ export function useGetCollectorCashInHand(
     if (vendor_id) queryParams.vendor_id = vendor_id;
     if (cash_clearance_date_from) queryParams.cash_clearance_date_from = cash_clearance_date_from;
     if (cash_clearance_date_to) queryParams.cash_clearance_date_to = cash_clearance_date_to;
+    if (search) queryParams.search = search;
     queryParams.page = page;
     queryParams.limit = limit;
 
