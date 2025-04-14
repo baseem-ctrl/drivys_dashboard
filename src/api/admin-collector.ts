@@ -6,13 +6,19 @@ export function useGetAdminCollectorCashInHand(
   trainer_id?: string | null,
   vendor_id?: string | null,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  search?: string | null,
+  cash_clearance_date_from?: string | null,
+  cash_clearance_date_to?: string | null
 ) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 
     if (trainer_id) queryParams.trainer_id = trainer_id;
     if (vendor_id) queryParams.vendor_id = vendor_id;
+    if (search) queryParams.search = search;
+    if (cash_clearance_date_from) queryParams.cash_clearance_date_from = cash_clearance_date_from;
+    if (cash_clearance_date_to) queryParams.cash_clearance_date_to = cash_clearance_date_to;
     queryParams.page = page;
     queryParams.limit = limit;
 
@@ -40,6 +46,7 @@ export function useGetAdminCollectorCashInHand(
 
   return { ...memoizedValue, revalidateCollectorCashInHand };
 }
+
 export function collectCashAdmin(body: any) {
   const URL = endpoints.collectorAdminView.collectCash;
   const response = drivysCreator([URL, body]);
