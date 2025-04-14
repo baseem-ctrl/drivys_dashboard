@@ -52,7 +52,13 @@ const COLECTED_TABLE_HEAD = [
   { id: 'remarks', label: 'Remarks', width: 250 },
   { id: 'collected_on', label: 'Collected On', width: 180 },
 ];
-
+const defaultFilters = {
+  cash_clearance_date_from: null,
+  cash_clearance_date_to: null,
+  search: '',
+  trainerId: null,
+  vendorId: null,
+};
 // ----------------------------------------------------------------------
 
 export default function CashInHandList() {
@@ -61,6 +67,7 @@ export default function CashInHandList() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
+  const [filters, setFilters] = useState(defaultFilters);
 
   const [trainerId, setTrainerId] = useState<string | null>(null);
   const [collectorId, setCollectorId] = useState<string | null>(null);
@@ -71,7 +78,15 @@ export default function CashInHandList() {
   const [collectedList, setCollectedList] = useState<any>([]);
 
   const { cashInHand, cashLoading, cashError, totalPages, revalidateCollectorCashInHand } =
-    useGetAdminCollectorCashInHand(trainerId, vendorId, table.page + 1, table.rowsPerPage);
+    useGetAdminCollectorCashInHand(
+      trainerId,
+      vendorId,
+      table.page + 1,
+      table.rowsPerPage,
+      filters.search,
+      filters.cash_clearance_date_from,
+      filters.cash_clearance_date_to
+    );
   const {
     adminCashCollectedList,
     adminCashCollectedLoading,
@@ -120,7 +135,7 @@ export default function CashInHandList() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {/* <CashInHandFilter /> */}
+      <CashInHandFilter filters={filters} onFilters={handleFilters} />
       <Card>
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Pending Collections" />
