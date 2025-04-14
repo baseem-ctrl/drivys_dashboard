@@ -45,7 +45,11 @@ const TABLE_HEAD = [
 const defaultFilters = {
   cash_clearance_date_from: null,
   cash_clearance_date_to: null,
+  search: '',
+  trainerId: null,
+  vendorId: null,
 };
+
 // ----------------------------------------------------------------------
 
 export default function TrainerCashInHand() {
@@ -56,17 +60,15 @@ export default function TrainerCashInHand() {
   const [viewMode, setViewMode] = useState('table');
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [trainerId, setTrainerId] = useState<string | null>(null);
-  const [vendorId, setVendorId] = useState<string | null>(null);
-
   const { cashInHand, cashLoading, totalPages, revalidateCollectorCashInHand } =
     useGetCollectorCashInHand(
-      trainerId,
-      vendorId,
+      filters.trainerId,
+      filters.vendorId,
       table.page + 1,
       table.rowsPerPage,
       filters.cash_clearance_date_from,
-      filters.cash_clearance_date_to
+      filters.cash_clearance_date_to,
+      filters.search
     );
 
   useEffect(() => {

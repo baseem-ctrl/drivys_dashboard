@@ -1,12 +1,20 @@
-import { Box, TextField, Autocomplete, Grid, Button, IconButton } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Autocomplete,
+  Grid,
+  Button,
+  IconButton,
+  InputAdornment,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { useGetUsers } from 'src/api/users';
 import { DateRangePicker } from 'react-date-range';
 import { enUS } from 'date-fns/locale';
 import { format } from 'date-fns';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function CashInHandFilter({ filters, onFilters }: any) {
   const { t } = useTranslation();
@@ -19,16 +27,6 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
     key: 'selection',
   });
 
-  const { users } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'STUDENT',
-  });
-  const { users: trainerUsers } = useGetUsers({
-    page: 0,
-    limit: 1000,
-    user_types: 'TRAINER',
-  });
   const handleClearDates = () => {
     onFilters('cash_clearance_date_from', '');
     onFilters('cash_clearance_date_to', '');
@@ -75,18 +73,8 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
     onFilters('cash_clearance_date_to', formattedTo);
   };
 
-  const handleStudentChange = (event: any, value: any) => {
-    onFilters((prevFilters: any) => ({
-      ...prevFilters,
-      student_id: value?.value || null,
-    }));
-  };
-
-  const handleTrainerChange = (event: any, value: any) => {
-    onFilters((prevFilters: any) => ({
-      ...prevFilters,
-      trainer_id: value?.value || null,
-    }));
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFilters('search', event.target.value);
   };
 
   return (
@@ -101,41 +89,28 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
         },
       }}
     >
-      {/* Student Filter */}
-      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
-        <Autocomplete
+      <Box flex={1} display="flex" alignItems="center" gap={1}>
+        <TextField
           fullWidth
-          options={
-            users?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
-              value: item.id,
-            })) ?? []
-          }
-          value={users.find((item) => item.id === filters.student_id) || null}
-          getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Student" {...params} fullWidth />}
-          onChange={handleStudentChange}
+          variant="outlined"
+          placeholder={t('Search')}
+          value={filters.search}
+          onChange={handleSearchChange}
+          InputProps={{
+            endAdornment: filters.search ? (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="clear search"
+                  onClick={() => onFilters('search', '')}
+                  edge="end"
+                >
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ) : null,
+          }}
         />
-      </Box> */}
-
-      {/* Trainer Filter */}
-      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
-        <Autocomplete
-          fullWidth
-          options={
-            trainerUsers?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
-              value: item.id,
-            })) ?? []
-          }
-          value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
-          getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Trainer" {...params} fullWidth />}
-          onChange={handleTrainerChange}
-        />
-      </Box> */}
+      </Box>
       {showDatePicker && (
         <Box
           ref={datePickerRef}
