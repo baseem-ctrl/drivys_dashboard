@@ -34,6 +34,7 @@ import {
 
 import CashInHandListRow from '../cash-in-hand-list-admin-table-row';
 import CashCollectedRow from '../cash-collected-row';
+import CashInHandFilter from '../cash-in-hand-list-admin-filters';
 
 // ----------------------------------------------------------------------
 
@@ -118,7 +119,16 @@ export default function CashInHandList() {
     // // setViewMode('detail');
     //No Need on click
   };
-
+  const handleFilters = useCallback(
+    (name, value) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
