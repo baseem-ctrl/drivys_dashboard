@@ -35,7 +35,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
   const [amount, setAmount] = useState<null | HTMLElement>(null);
   const [trainerId, setTrainerId] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
@@ -80,7 +80,6 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
       setAmount(null);
     }
   };
-  const router = useRouter();
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };

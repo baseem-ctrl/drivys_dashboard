@@ -5,6 +5,8 @@ import TableCell from '@mui/material/TableCell';
 import { Button, Typography, Popover, TextField } from '@mui/material';
 import { useSnackbar } from 'src/components/snackbar';
 import { collectCash } from 'src/api/collector';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 interface RowProps {
   certificate_commission_in_percentage: any;
@@ -25,6 +27,7 @@ interface StudentReviewRowProps {
 
 export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [amount, setAmount] = useState<null | HTMLElement>(null);
   const [trainerId, setTrainerId] = useState<string | null>(null);
@@ -73,14 +76,38 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
     }
   };
 
+  const handleVendorClick = (vendor_id: any) => {
+    router.push(paths.dashboard.school.details(vendor_id));
+  };
+  const handleTrainerClick = (trainer_id: any) => {
+    router.push(paths.dashboard.user.details(trainer_id));
+  };
   return (
     <TableRow hover>
-      <TableCell>
+      <TableCell
+        onClick={() => handleVendorClick(row?.vendor?.id)}
+        sx={{
+          cursor: 'pointer',
+          '&:hover': {
+            textDecoration: 'underline',
+          },
+        }}
+      >
         <Typography variant="body2">
           {row?.vendor?.vendor_translations[0]?.name || 'N/A'}
         </Typography>
       </TableCell>
-      <TableCell>{row?.user?.name || 'N/A'}</TableCell>
+      <TableCell
+        sx={{
+          cursor: 'pointer',
+          '&:hover': {
+            textDecoration: 'underline',
+          },
+        }}
+        onClick={() => handleTrainerClick(row?.user_id)}
+      >
+        {row?.user?.name || 'N/A'}
+      </TableCell>
       <TableCell>
         {row?.amount_to_be_collected !== undefined && row?.amount_to_be_collected !== null
           ? row.amount_to_be_collected.toFixed(2)

@@ -423,6 +423,19 @@ const collectorRoutes = [
       { path: 'collected-list', element: <CollectedCashList /> },
     ],
   },
+  {
+    path: 'school',
+    children: [
+      { element: <SchoolListPage />, index: true },
+      { path: ':id', element: <SchoolDetailsPage /> },
+      { path: 'admin', element: <SchoolAdminDetailsPage /> },
+      { path: 'admin/:id', element: <UserDetailsAdminPage /> },
+    ],
+  },
+  {
+    path: 'user',
+    children: [{ path: ':id', element: <UserDetailsPage /> }],
+  },
 ];
 
 const userType = localStorage.getItem('user_type');

@@ -101,6 +101,7 @@ type Props = {
   addressesLoading: any;
   details: any;
   loading?: any;
+  user: any;
   reload?: VoidFunction;
 };
 
@@ -110,6 +111,7 @@ export default function UserDetailsContent({
   details,
   loading,
   reload,
+  user,
 }: Props) {
   const { reset, control } = useForm();
   const { t } = useLocales();
@@ -476,18 +478,20 @@ export default function UserDetailsContent({
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Stack
-        alignItems="end"
-        sx={{
-          width: '-webkit-fill-available',
-          cursor: 'pointer',
-          position: 'absolute',
-          // top: '1.5rem',
-          right: '1rem',
-        }}
-      >
-        <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} />
-      </Stack>
+      {user !== 'COLLECTOR' && (
+        <Stack
+          alignItems="end"
+          sx={{
+            width: '-webkit-fill-available',
+            cursor: 'pointer',
+            position: 'absolute',
+            // top: '1.5rem',
+            right: '1rem',
+          }}
+        >
+          <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} />
+        </Stack>
+      )}
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
@@ -1005,7 +1009,10 @@ export default function UserDetailsContent({
         )}
     </Stack>
   );
-
+  const filteredTrainerTabs =
+    user?.user?.user_type !== 'COLLECTOR'
+      ? TRAINER_DETAILS_TABS.filter((tab) => tab.value === 'details')
+      : TRAINER_DETAILS_TABS;
   const renderStudentTabs = (
     <Tabs
       value={studentTab}
@@ -1027,7 +1034,7 @@ export default function UserDetailsContent({
         mb: { xs: 3, md: 5 },
       }}
     >
-      {TRAINER_DETAILS_TABS.map((tab) => (
+      {filteredTrainerTabs.map((tab) => (
         <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
       ))}
     </Tabs>
@@ -1887,6 +1894,7 @@ export default function UserDetailsContent({
       </Scrollbar>
     </Stack>
   );
+  console.log('user?.user?.user_type', user?.user?.user_type);
   return (
     <>
       {loading || !details.id ? (
@@ -1984,7 +1992,10 @@ export default function UserDetailsContent({
             </Grid>
 
             <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' && currentTab === 'details' && renderAddress}
+              {details?.user_type === 'TRAINER' &&
+                currentTab === 'details' &&
+                user !== 'COLLECTOR' &&
+                renderAddress}
             </Grid>
 
             <Grid xs={12} md={12}>
