@@ -35,7 +35,7 @@ export default function CreateTrainerShiftForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   // Validation schema
   const ShiftHoursSchema = Yup.object().shape({
@@ -91,7 +91,6 @@ export default function CreateTrainerShiftForm({
       setValue('working_hours', [{ start_time: null, end_time: null }]);
     }
   }, [isOffDay, setValue]);
-  console.log('errors', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -101,13 +100,13 @@ export default function CreateTrainerShiftForm({
         ...(data.is_24_shours
           ? {}
           : {
-            shift_start_time: data.shift_start_time
-              ? moment(data.shift_start_time).format('HH:mm')
-              : null,
-            shift_end_time: data.shift_end_time
-              ? moment(data.shift_end_time).format('HH:mm')
-              : null,
-          }),
+              shift_start_time: data.shift_start_time
+                ? moment(data.shift_start_time).format('HH:mm')
+                : null,
+              shift_end_time: data.shift_end_time
+                ? moment(data.shift_end_time).format('HH:mm')
+                : null,
+            }),
       };
 
       await createShift(formData);
@@ -147,7 +146,7 @@ export default function CreateTrainerShiftForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{t("Create Shift")}</DialogTitle>
+        <DialogTitle>{t('Create Shift')}</DialogTitle>
 
         <DialogContent>
           {/* Shifts */}
@@ -160,7 +159,7 @@ export default function CreateTrainerShiftForm({
                 render={({ field }) => (
                   <TimePicker
                     {...field}
-                    label={t("Shift Start Time")}
+                    label={t('Shift Start Time')}
                     ampm={false}
                     disabled={watch('is_24_shours')}
                   />
@@ -172,7 +171,7 @@ export default function CreateTrainerShiftForm({
                 render={({ field }) => (
                   <TimePicker
                     {...field}
-                    label={t("Shift End Time")}
+                    label={t('Shift End Time')}
                     ampm={false}
                     disabled={watch('is_24_shours')}
                   />
@@ -180,13 +179,13 @@ export default function CreateTrainerShiftForm({
               />
             </Box>
 
-            <RHFSwitch name="is_24_shours" label={t("Available 24 hours")} />
+            <RHFSwitch name="is_24_shours" label={t('Available 24 hours')} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             {currentWorkingHour?.id ? t('Update') : t('Create')}

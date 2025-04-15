@@ -51,7 +51,6 @@ export default function SchoolDetailsView({ id }: Props) {
       ? SCHOOL_DETAILS_TABS.filter((tab) => tab.value === 'details')
       : SCHOOL_DETAILS_TABS;
   const [currentTab, setCurrentTab] = useState('details');
-  console.log('user?.user?.user_type ', user?.user?.user_type);
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);

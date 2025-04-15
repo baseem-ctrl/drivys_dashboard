@@ -394,11 +394,13 @@ export const endpoints = {
     getPermissions: 'admin/permission/get-list',
     createRole: 'admin/role/create-update',
     createPermission: 'admin/permission/create-update',
+    mapRoleToPermission: 'admin/role/permission-mapping/role-permission-mapping',
+    listMappedRoles: 'admin/role/permission-mapping/get-list',
   },
   collectorAdminView: {
     collectorCashInHand: `admin/cash-collection/get-collector-cash-in-hand-list`,
     collectorCollectedCashInHand: `admin/cash-collection/cash-collected-list-per-transaction`,
 
-    collectCash: 'admin/cash-collection/cash-collection',
+    collectCash: 'admin/cash-colmapRoleToPermissionlection/cash-collection',
   },
 };

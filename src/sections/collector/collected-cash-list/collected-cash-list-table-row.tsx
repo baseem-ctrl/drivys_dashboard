@@ -58,7 +58,6 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
       console.error('Error fetching transaction data:', error);
     }
   };
-  console.log('transactionData', transactionData);
   // Toggle the visibility of the nested table
   const handleRowClick = () => {
     setIsOpen(!isOpen); // Toggle the open state

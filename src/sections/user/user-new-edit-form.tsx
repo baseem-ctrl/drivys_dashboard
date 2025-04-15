@@ -108,7 +108,6 @@ export default function UserNewEditForm({
     0,
     1000
   );
-  console.log('roles', roles);
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
@@ -389,7 +388,6 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-  console.log('current user', currentUser);
   const {
     reset,
     watch,

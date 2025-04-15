@@ -311,6 +311,7 @@ export const paths = {
     rolesAndPermission: {
       roles: `${ROOTS.DASHBOARD}/roles-and-permission/roles`,
       permission: `${ROOTS.DASHBOARD}/roles-and-permission/permission`,
+      rolePermissionMapping: `${ROOTS.DASHBOARD}/roles-and-permission/mapping`,
     },
     collectorAdminView: {
       cashInHand: `${ROOTS.DASHBOARD}/collector/cash-in-hand`,

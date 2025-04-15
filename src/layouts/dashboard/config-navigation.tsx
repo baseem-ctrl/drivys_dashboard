@@ -264,6 +264,10 @@ export function useNavData() {
       children: [
         { title: t('roles'), path: paths.dashboard.rolesAndPermission.roles },
         { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
+        {
+          title: t('role-permission-mapping'),
+          path: paths.dashboard.rolesAndPermission.rolePermissionMapping,
+        },
       ],
     },
 

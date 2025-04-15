@@ -1914,7 +1914,6 @@ export default function UserDetailsContent({
       </Scrollbar>
     </Stack>
   );
-  console.log('user?.user?.user_type', user?.user?.user_type);
   return (
     <>
       {loading || !details.id ? (

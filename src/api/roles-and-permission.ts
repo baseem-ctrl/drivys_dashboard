@@ -68,3 +68,37 @@ export function createRole(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+export function mapRoleToPermission(body: any) {
+  const URL = endpoints.rolesAndPermission.mapRoleToPermission;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+export function useMappedRoles(page: number, limit: number) {
+  const queryParams: Record<string, any> = {
+    page: page + 1,
+    limit,
+  };
+
+  const endpoint = `${endpoints.rolesAndPermission.listMappedRoles}?${new URLSearchParams(
+    queryParams
+  )}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(endpoint, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      mappedRoles: data?.data || [],
+      mappedRolesLoading: isLoading,
+      mappedRolesError: error,
+      mappedRolesValidating: isValidating,
+      mappedRolesTotal: data?.total || 0,
+    }),
+    [data?.data, isLoading, error, isValidating, data?.total]
+  );
+
+  const revalidateMappedRoles = () => {
+    mutate(endpoint);
+  };
+
+  return { ...memoizedValue, revalidateMappedRoles };
+}
