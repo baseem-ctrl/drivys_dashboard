@@ -788,16 +788,18 @@ export default function UserNewEditForm({
                     </MenuItem>
                   ))}
               </RHFSelect>
-              <RHFAutocompleteSearch
-                name="roles"
-                label="Select Roles"
-                multiple
-                options={roles?.map((role: any) => ({
-                  value: role.id,
-                  label: role?.name || 'N/A',
-                }))}
-                loading={rolesLoading}
-              />
+              {values.user_type === 'ADMIN' && (
+                <RHFAutocompleteSearch
+                  name="roles"
+                  label="Select Roles"
+                  multiple
+                  options={roles?.map((role: any) => ({
+                    value: role.id,
+                    label: role?.name || 'N/A',
+                  }))}
+                  loading={rolesLoading}
+                />
+              )}
 
               <RHFTextField
                 name="name"
