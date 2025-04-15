@@ -37,7 +37,6 @@ type Props = {
 export default function UserDetailsView({ id }: Props) {
   const { t } = useLocales();
   const { user } = useAuthContext();
-  console.log('user', user?.user?.user_type);
   const settings = useSettingsContext();
   const userId = Number(window.location.pathname.split('/').pop());
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);

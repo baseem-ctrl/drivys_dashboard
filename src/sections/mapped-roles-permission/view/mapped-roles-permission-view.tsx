@@ -9,14 +9,19 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import {
+  Box,
   Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
+  Paper,
   Skeleton,
   Stack,
   TableCell,
+  TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 
@@ -37,13 +42,9 @@ import {
 } from 'src/components/table';
 // types
 
-import { useGetAllLanguage } from 'src/api/language';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetPermissions } from 'src/api/roles-and-permission';
-import { useRouter } from 'src/routes/hooks';
-import PermissionFilter from '../permissions-filters';
+import { useMappedRoles } from 'src/api/roles-and-permission';
 import PermissionTableRow from '../permissions-table-row';
-import CreatePermission from '../create-permission';
 
 // ----------------------------------------------------------------------
 
@@ -55,134 +56,32 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export default function PermissionListView() {
+export default function MappedRolePermissionListView() {
   const { user } = useAuthContext();
-  const router = useRouter();
-
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
-  const openFilters = useBoolean();
-  const [open, setOpen] = useState(false);
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
-  const [localeFilter, setLocaleFilter] = useState('');
-  const [filters, setFilters] = useState<{
-    startDate?: string;
-    endDate?: string;
-    booking_status?: string;
-    payment_method?: number;
-    category_id?: any;
-  }>({});
 
-  const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const { mappedRoles, mappedRolesLoading, mappedRolesTotal } = useMappedRoles(
+    table.page,
+    table.rowsPerPage
+  );
 
-  const {
-    permissions,
-    permissionsLoading,
-    permissionsError,
-    permissionsTotalPages,
-    revalidatePermissions,
-  } = useGetPermissions(table.page, table.rowsPerPage);
-  const handleFiltersChange = (newFilters: any) => {
-    setFilters(newFilters);
-  };
-  const { language } = useGetAllLanguage(0, 1000);
-  const localeOptions = (language || []).map((lang) => ({
-    value: lang.language_culture,
-    label: lang.name,
-  }));
   useEffect(() => {
-    if (permissions?.length) {
-      setTableData(permissions);
+    if (mappedRoles?.length) {
+      setTableData(mappedRoles);
     } else {
       setTableData([]);
     }
-  }, [permissions]);
+  }, [mappedRoles]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
     // // setViewMode('detail');
     //No Need on click
   };
-
-  const handleFilters = useCallback(
-    // (name: string) => {
-    //   table.onResetPage();
-    //   setFilters((prevState) => ({
-    //     ...prevState,
-    //     [name]: value,
-    //   }));
-    // },
-    [table]
-  );
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOrderChange = (event) => {
-    const value = event.target.value;
-
-    if (value === '') {
-      setSelectedOrder(undefined);
-      setLocaleFilter('');
-      // setFilters(defaultFilters);
-    } else {
-      setSelectedOrder(value);
-    }
-  };
-  const handleLocaleFilterChange = (locale: string) => {
-    setLocaleFilter(locale);
-  };
-  // const canReset = !isEqual(defaultFilters, filters);
-
-  const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
-  }, []);
-  const handleClearAllFilters = () => {
-    handleFiltersChange({
-      student_id: null,
-      trainer_id: null,
-      startDate: undefined,
-      endDate: undefined,
-    });
-  };
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <PermissionFilter
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          handleOrderChange={handleOrderChange}
-          selectedOrder={selectedOrder}
-          filters={filters}
-          setFilters={setFilters}
-          onFilters={handleFiltersChange}
-          startDate={startDate}
-          endDate={endDate}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          // canReset={canReset}
-          onResetFilters={handleResetFilters}
-          localeOptions={localeOptions}
-          onLocaleChange={handleLocaleFilterChange}
-        />
-      </Stack>
-    </Stack>
-  );
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -226,15 +125,6 @@ export default function PermissionListView() {
           alignItems="center"
           sx={{ px: 2, pt: 2, pb: 1, mb: 3 }}
         >
-          <Button
-            variant="contained"
-            size="small"
-            color="primary"
-            onClick={() => router.push(paths.dashboard.rolesAndPermission.rolePermissionMapping)}
-          >
-            View Mapped List
-          </Button>
-
           {/* <Button color="primary" variant="contained" endIcon={<AddIcon />} onClick={handleOpen}>
             Create New
           </Button> */}
@@ -271,7 +161,7 @@ export default function PermissionListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {permissionsLoading
+                  {mappedRolesLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
                           <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -285,7 +175,6 @@ export default function PermissionListView() {
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
-                          reload={revalidatePermissions}
                         />
                       ))}
                 </TableBody>
@@ -296,7 +185,7 @@ export default function PermissionListView() {
 
         {viewMode === 'table' && (
           <TablePaginationCustom
-            count={permissionsTotalPages}
+            count={mappedRolesTotal}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -306,12 +195,6 @@ export default function PermissionListView() {
           />
         )}
       </Card>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Create New Permission</DialogTitle>
-        <DialogContent>
-          <CreatePermission onClose={handleClose} reload={revalidatePermissions} />
-        </DialogContent>
-      </Dialog>
     </Container>
   );
 }

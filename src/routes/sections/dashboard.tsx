@@ -63,6 +63,7 @@ import RolesListView from 'src/sections/roles/view/roles-list-view';
 import PermissionListView from 'src/sections/permissions/view/permissions-list-view';
 import CollectedCashList from 'src/sections/collector/collected-cash-list/view/collected-cash-list-view';
 import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-hand-list-admin-list-view';
+import MappedRolePermissionListView from 'src/sections/mapped-roles-permission/view/mapped-roles-permission-view';
 
 // ----------------------------------------------------------------------
 
@@ -294,6 +295,7 @@ const allroutes = [
     children: [
       { path: 'roles', element: <RolesListView /> },
       { path: 'permission', element: <PermissionListView /> },
+      { path: 'mapping', element: <MappedRolePermissionListView /> },
     ],
   },
   {
