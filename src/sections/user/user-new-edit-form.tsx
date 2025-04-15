@@ -70,6 +70,7 @@ import moment from 'moment';
 import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { InfoOutlined } from '@mui/icons-material';
+import { useGetRoles } from 'src/api/roles-and-permission';
 
 // ----------------------------------------------------------------------
 
@@ -103,6 +104,11 @@ export default function UserNewEditForm({
   const { t } = useLocales();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
+  const { roles, rolesLoading, rolesError, rolesTotalPages, revalidateRoles } = useGetRoles(
+    0,
+    1000
+  );
+  console.log('roles', roles);
   const { enumData, enumLoading } = useGetUserTypeEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
@@ -284,6 +290,12 @@ export default function UserNewEditForm({
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.name || '',
+      roles:
+        currentUser?.roles?.map((r) => ({
+          value: r.role?.id,
+          label: r.role?.name || 'N/A',
+        })) || [],
+
       user_type: currentUser?.user_type || '',
       email: currentUser?.email || '',
       name_ar: currentUser?.name_ar || '',
@@ -377,7 +389,7 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-
+  console.log('current user', currentUser);
   const {
     reset,
     watch,
@@ -485,6 +497,11 @@ export default function UserNewEditForm({
       if (data?.password) body.append('password', data?.password);
       body.append('phone', data?.phone);
       // Only append gear if it exists
+      if (data?.roles?.length > 0) {
+        data.roles.forEach((role: any) => {
+          body.append('roles[]', role.value);
+        });
+      }
       if (
         (data?.user_type === 'TRAINER' || data?.user_type === 'STUDENT') &&
         (data?.gear !== null || data?.gear !== undefined)
@@ -524,7 +541,8 @@ export default function UserNewEditForm({
 
       if (
         (data?.vendor_id?.value === undefined || data?.vendor_id?.value === null) &&
-        data?.user_type !== 'COLLECTOR'
+        data?.user_type !== 'COLLECTOR' &&
+        data?.school_name
       ) {
         body.append('school_name', data?.school_name);
       }
@@ -603,6 +621,8 @@ export default function UserNewEditForm({
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
+    } finally {
+      revalidateDetails();
     }
   });
 
@@ -768,6 +788,17 @@ export default function UserNewEditForm({
                     </MenuItem>
                   ))}
               </RHFSelect>
+              <RHFAutocompleteSearch
+                name="roles"
+                label="Select Roles"
+                multiple
+                options={roles?.map((role: any) => ({
+                  value: role.id,
+                  label: role?.name || 'N/A',
+                }))}
+                loading={rolesLoading}
+              />
+
               <RHFTextField
                 name="name"
                 label={t('full_name')}
