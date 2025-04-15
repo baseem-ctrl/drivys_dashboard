@@ -526,8 +526,8 @@ export default function UserDetailsContent({
                       },
                     ]
                   : []),
-
                 { label: t('email'), value: details?.email ?? 'N/A' },
+
                 {
                   label: t('phone_number'),
                   value: details?.country_code
@@ -551,6 +551,27 @@ export default function UserDetailsContent({
                         : 'NA',
                     }))
                   : []),
+
+                {
+                  label: t('roles'),
+                  value:
+                    details?.roles?.length > 0 ? (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {details.roles.map((r) => (
+                          <Chip
+                            key={r.role?.id}
+                            label={r.role?.name}
+                            color="success"
+                            variant="soft"
+                            size="small"
+                          />
+                        ))}
+                      </Box>
+                    ) : (
+                      'N/A'
+                    ),
+                },
+
                 // ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
                 //   ? details?.city_assigned.map((city, index) => ({
                 //       label: `${t('city')} ${index + 1}
@@ -625,7 +646,6 @@ export default function UserDetailsContent({
                 </Box>
               ))}
               {[
-                { label: t('name'), value: details?.name ?? 'N/A' },
                 ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
                   ? [
                       {

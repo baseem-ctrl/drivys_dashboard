@@ -1066,5 +1066,6 @@
   "report": "تقرير",
   "student": "طالب",
   "roles-and-permission": "الصلاحيات والأدوار",
-  "certificate_expiry_date": "تاريخ انتهاء الشهادة"
+  "certificate_expiry_date": "تاريخ انتهاء الشهادة",
+  "roles": "الأدوار"
 }
