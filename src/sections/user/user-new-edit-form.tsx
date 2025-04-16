@@ -382,7 +382,15 @@ export default function UserNewEditForm({
       cash_in_hand: currentUser?.cash_in_hand || 0,
       max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
     }),
-    [currentUser?.locale, dialect, language, schoolList, currentUser?.user_preference]
+    [
+      currentUser?.locale,
+      dialect,
+      language,
+      schoolList,
+      currentUser?.user_preference,
+      genderData,
+      gearData,
+    ]
   );
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -422,6 +430,64 @@ export default function UserNewEditForm({
       setValue('area_id', ''); // Clear the area_id field
     }
   }, [selectedCity, setValue]);
+  useEffect(() => {
+    // Set gender
+    if (genderData?.length > 0 && currentUser?.gender) {
+      const gender = genderData.find(
+        (option) => option?.name?.toLowerCase() === currentUser?.gender?.toLowerCase()
+      )?.value;
+      if (gender) {
+        setValue('gender', gender);
+      }
+    }
+
+    // Set vehicle_type_id (category)
+    if (category?.length > 0 && currentUser?.user_preference?.vehicle_type_id) {
+      const vehicleType = category.find(
+        (item) => item?.id === currentUser?.user_preference?.vehicle_type_id
+      );
+      const vehicleTypeLabel = vehicleType?.category_translations
+        ?.map((translation) => translation?.name)
+        .join(' - ');
+
+      if (vehicleTypeLabel) {
+        setValue('vehicle_type_id', vehicleTypeLabel);
+      }
+    }
+  }, [
+    genderData,
+    gearData,
+    category,
+    currentUser?.gender,
+    currentUser?.user_preference?.gear,
+    currentUser?.user_preference?.vehicle_type_id,
+
+    setValue,
+  ]);
+  useEffect(() => {
+    // Handle Gear
+    if (gearData?.length > 0 && currentUser?.user_preference?.gear) {
+      const gearOption = gearData.find(
+        (option) =>
+          option?.name?.toLowerCase() === String(currentUser?.user_preference?.gear).toLowerCase()
+      );
+
+      if (gearOption) {
+        setValue('gear', gearOption.value);
+      }
+    }
+
+    // Handle Languages
+    if (dialect?.length > 0 && currentUser?.languages?.length > 0) {
+      const mappedLanguages = currentUser.languages.map((lang) => ({
+        id: dialect.find((option) => option?.id === lang?.dialect?.id) || '',
+        fluency_level: lang?.fluency_level || '',
+      }));
+
+      setValue('languages', mappedLanguages);
+    }
+  }, [gearData, currentUser?.user_preference?.gear, dialect, currentUser?.languages]);
+
   useEffect(() => {
     if (currentUser?.id) {
       // reset(defaultValues);
