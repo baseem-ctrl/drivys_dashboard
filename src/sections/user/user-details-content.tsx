@@ -304,6 +304,7 @@ export default function UserDetailsContent({
       schoolSetValue('name', '');
     }
   };
+  console.log('details', details);
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -504,22 +505,65 @@ export default function UserDetailsContent({
           // pr: { xs: 2.5, md: 1 },
         }}
       >
-        {/* <Grid item xs={12} sm={8} md={8}> */}
-        <Avatar
-          alt={details?.name}
-          src={details?.photo_url}
-          sx={{ width: 300, height: 300, borderRadius: 2, mb: 2, mr: 3 }}
-          variant="square"
-        />
-        {/* </Grid> */}
+        <Grid item xs={12} sm={8} md={8}>
+          <Card
+            elevation={3}
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              backgroundColor: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 3,
+            }}
+          >
+            <Avatar
+              alt={details?.name}
+              src={details?.photo_url}
+              sx={{ width: 220, height: 220, borderRadius: 2 }}
+              variant="square"
+            />
+
+            {details?.user_preference?.bio && (
+              <Box sx={{ width: '100%', textAlign: 'center' }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Bio (English)
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                  {details.user_preference.bio}
+                </Typography>
+              </Box>
+            )}
+
+            {details?.user_preference?.bio_ar && (
+              <Box sx={{ width: '100%', textAlign: 'center' }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Bio (Arabic)
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: 'Tahoma, sans-serif',
+                    color: '#333',
+                    whiteSpace: 'pre-line',
+                  }}
+                >
+                  {details.user_preference.bio_ar}
+                </Typography>
+              </Box>
+            )}
+          </Card>
+        </Grid>
+
         <Grid item xs={12} sm={8} md={8}>
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: t('name'), value: details?.name ?? 'N/A' },
+                { label: t('name_as_per_profile_card'), value: details?.name ?? 'N/A' },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      { label: t('name_ar'), value: details?.name_ar ?? 'N/A' },
+                      { label: t('name_as_per_profile_card_ar'), value: details?.name_ar ?? 'N/A' },
                       {
                         label: t('certificate_expiry_date'),
                         value: details?.certificate_expiry_date ?? 'N/A',
@@ -860,8 +904,10 @@ export default function UserDetailsContent({
                   { label: t('cash_in_hand'), value: details?.cash_in_hand ?? t('n/a') },
                   {
                     label: t('cash_clearance_date'),
-                    value: details?.cash_clearance_date ?? t('n/a'),
+
+                    value: moment.utc(details?.cash_clearance_date).format('lll') ?? t('n/a'),
                   },
+
                   {
                     label: t('last_booking_at'),
                     value: details?.last_booking_was
