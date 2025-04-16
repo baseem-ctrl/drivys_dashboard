@@ -156,6 +156,8 @@ export default function UserNewEditForm({
     name: Yup.string().required(t('name_required')),
     name_ar: Yup.string(),
     certificate_expiry_date: Yup.mixed(),
+    cash_clearance_date: Yup.mixed(),
+
     email: Yup.string()
       .required(t('email_required'))
       .matches(/^[^@]+@[^@]+\.[^@]+$/, t('email_invalid')),
@@ -299,6 +301,10 @@ export default function UserNewEditForm({
       email: currentUser?.email || '',
       name_ar: currentUser?.name_ar || '',
       certificate_expiry_date: currentUser?.certificate_expiry_date || '',
+      cash_clearance_date: currentUser?.cash_clearance_date
+        ? new Date(currentUser.cash_clearance_date).toISOString().split('T')[0]
+        : '',
+
       password: '',
       phone: currentUser?.phone || '',
       // city_assigned: currentUser?.city_assigned || [],
@@ -372,6 +378,8 @@ export default function UserNewEditForm({
       certificate_commission_in_percentage:
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
+      bio_ar: currentUser?.user_preference?.bio_ar || '',
+
       vehicle_number: currentUser?.vehicle_number || '',
       license_file: currentUser?.user_preference?.license_file || '',
       school_name: currentUser?.school_name || '',
@@ -392,6 +400,7 @@ export default function UserNewEditForm({
       gearData,
     ]
   );
+  console.log('default value', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -623,7 +632,8 @@ export default function UserNewEditForm({
         if (data?.name_ar) body.append('name_ar', data?.name_ar);
         if (data?.certificate_expiry_date)
           body.append('certificate_expiry_date', data?.certificate_expiry_date);
-
+        if (data?.cash_clearance_date)
+          body.append('cash_clearance_date', data?.cash_clearance_date);
         if (data?.max_radius_in_km) body.append('max_radius_in_km', data?.max_radius_in_km);
         // if (data?.school_commission_in_percentage)
         //   body.append('school_commission_in_percentage', data?.school_commission_in_percentage);
@@ -635,6 +645,7 @@ export default function UserNewEditForm({
             data?.certificate_commission_in_percentage
           );
         if (data?.bio) body.append('bio', data?.bio);
+        if (data?.bio_ar) body.append('bio_ar', data?.bio_ar);
       }
 
       if (data?.locale) body.append('locale', data?.locale?.language_culture);
@@ -827,6 +838,15 @@ export default function UserNewEditForm({
                       type="text"
                     />
                   )}
+                  {values.user_type === 'TRAINER' && (
+                    <RHFTextField
+                      name="bio_ar"
+                      label={t('about_you_ar')}
+                      multiline
+                      rows={4}
+                      type="text"
+                    />
+                  )}
                 </Box>
               </Card>
             )}
@@ -867,14 +887,14 @@ export default function UserNewEditForm({
 
               <RHFTextField
                 name="name"
-                label={t('full_name')}
+                label={t('name_as_per_profile_card')}
                 error={!!errors.name}
                 helperText={errors.name?.message || ''}
               />
               {values.user_type === 'TRAINER' && (
                 <RHFTextField
                   name="name_ar"
-                  label={t('name_ar')}
+                  label={t('name_as_per_profile_card_ar')}
                   error={!!errors.name_ar}
                   helperText={errors.name_ar?.message || ''}
                 />
@@ -980,6 +1000,14 @@ export default function UserNewEditForm({
                 <RHFTextField
                   name={`certificate_expiry_date`}
                   label={t('certificate_expiry_date')}
+                  type="date"
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+              {values.user_type === 'TRAINER' && (
+                <RHFTextField
+                  name={`cash_clearance_date`}
+                  label={t('cash_clearance_date')}
                   type="date"
                   InputLabelProps={{ shrink: true }}
                 />
