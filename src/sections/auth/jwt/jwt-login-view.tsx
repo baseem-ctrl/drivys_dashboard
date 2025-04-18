@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useSnackbar } from 'src/components/snackbar';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Link from '@mui/material/Link';
@@ -24,14 +25,19 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Box, MenuItem, Select } from '@mui/material';
 import Logo from 'src/components/logo';
-import { CollectorLogin } from 'src/api/auth';
+import { CollectorLogin, ForgotPassword, VerifyOTP } from 'src/api/auth';
+import emailInboxIcon from 'src/assets/icons/email-inbox-icon';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
+  const [showOtpField, setShowOtpField] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
   const password = useBoolean();
@@ -44,12 +50,16 @@ export default function JwtLoginView() {
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    password: showOtpField ? Yup.string() : Yup.string().required('Password is required'),
+    otp: showOtpField ? Yup.string().required('OTP is required') : Yup.string(),
+    new_password: isOtpVerified ? Yup.string().required('New Password is required') : Yup.string(),
   });
 
   const defaultValues = {
     email: '',
     password: '',
+    otp: '',
+    new_password: '',
   };
 
   const methods = useForm({
@@ -92,42 +102,160 @@ export default function JwtLoginView() {
       </Typography>
     </Stack>
   );
+  const handleClickForgotPassword = async (data: any) => {
+    try {
+      let userType = '';
 
+      if (selectedTab === 0) {
+        userType = 'ADMIN';
+      } else if (selectedTab === 1) {
+        userType = 'SCHOOL_ADMIN';
+      } else {
+        userType = 'COLLECTOR';
+      }
+      const mapRole = {
+        email: data.email,
+        user_type: userType,
+      };
+      const response = await ForgotPassword(mapRole);
+      if (response.status === 'success') {
+        enqueueSnackbar('OTP Sent to your Email!', {
+          variant: 'success',
+        });
+        setShowOtpField(true);
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
+  const handleVerifyOTP = async (data: any) => {
+    try {
+      let userType = '';
+
+      if (selectedTab === 0) {
+        userType = 'ADMIN';
+      } else if (selectedTab === 1) {
+        userType = 'SCHOOL_ADMIN';
+      } else {
+        userType = 'COLLECTOR';
+      }
+      const mapRole = {
+        email: data.email,
+        user_type: userType,
+        otp_code: data?.otp,
+        new_password: data?.new_password,
+      };
+      const response = await VerifyOTP(mapRole);
+      if (response.status === 'success') {
+        enqueueSnackbar('OTP Verified successfully!', {
+          variant: 'success',
+        });
+        setShowOtpField(false);
+        setIsOtpVerified(false);
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const renderForm = (
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+      <RHFTextField name="email" label="Email address" disabled={showOtpField} />
+      {!showOtpField && (
+        <RHFTextField
+          name="password"
+          label="Password"
+          type={password.value ? 'text' : 'password'}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={password.onToggle} edge="end">
+                  <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
 
-      <RHFTextField name="email" label="Email address" />
+      {showOtpField && <RHFTextField name="otp" label="Enter OTP" />}
+      {isOtpVerified && <RHFTextField name="new_password" label="Enter New Password" />}
 
-      <RHFTextField
-        name="password"
-        label="Password"
-        type={password.value ? 'text' : 'password'}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
+      <Link
+        variant="body2"
+        color="inherit"
+        underline="always"
+        sx={{
+          alignSelf: 'flex-end',
+          cursor: 'pointer',
+          transition: 'color 0.3s',
+          '&:hover': {
+            color: '#cf5a0d',
+            textDecoration: 'underline',
+          },
         }}
-      />
-
-      <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+        onClick={() => handleClickForgotPassword(methods.getValues())}
+      >
         Forgot password?
       </Link>
 
-      <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-      >
-        Login
-      </LoadingButton>
+      {!showOtpField && (
+        <LoadingButton
+          fullWidth
+          color="inherit"
+          size="large"
+          type="submit"
+          variant="contained"
+          loading={isSubmitting}
+        >
+          Login
+        </LoadingButton>
+      )}
+      {showOtpField && !isOtpVerified && (
+        <LoadingButton
+          fullWidth
+          color="inherit"
+          size="large"
+          type="button"
+          variant="contained"
+          onClick={() => setIsOtpVerified(true)}
+        >
+          Verify OTP
+        </LoadingButton>
+      )}
+
+      {isOtpVerified && (
+        <LoadingButton
+          fullWidth
+          color="inherit"
+          size="large"
+          type="button"
+          variant="contained"
+          onClick={() => handleVerifyOTP(methods.getValues())}
+        >
+          Set New Password
+        </LoadingButton>
+      )}
     </Stack>
   );
   const renderLogo = (
