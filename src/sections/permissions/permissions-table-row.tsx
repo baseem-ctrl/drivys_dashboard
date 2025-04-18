@@ -16,7 +16,7 @@ import {
   InputLabel,
   FormControl,
 } from '@mui/material';
-import { mapRoleToPermission, useGetRoles } from 'src/api/roles-and-permission';
+import { mapRoleToPermission, useGetRoles, useMappedRoles } from 'src/api/roles-and-permission';
 
 type PermissionTableRowProps = {
   row: {
@@ -31,6 +31,7 @@ type PermissionTableRowProps = {
 export default function PermissionTableRow({ row, reload }: PermissionTableRowProps) {
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { mappedRoles, mappedRolesLoading, mappedRolesTotal } = useMappedRoles(0, 10000);
   const [selectedRoleId, setSelectedRoleId] = useState<number | ''>('');
   const [rights, setRights] = useState({
     create: false,
@@ -46,16 +47,44 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
     }));
   };
 
+  React.useEffect(() => {
+    if (selectedRoleId && mappedRoles?.length > 0) {
+      const matched = mappedRoles.find(
+        (item) => item.role_id === selectedRoleId && item.permission_id === row.id
+      );
+      if (matched) {
+        setRights({
+          create: matched.create,
+          read: matched.read,
+          update: matched.update,
+          delete: matched.delete,
+        });
+      } else {
+        setRights({
+          create: false,
+          read: true,
+          update: false,
+          delete: false,
+        });
+      }
+    }
+  }, [selectedRoleId, mappedRoles, row.id]);
+
   const handleSubmitRoleMapping = async (data: any) => {
     try {
       const mapRole = {
-        role_id: [selectedRoleId],
-        permission_id: [row.id],
-        create: rights.create ?? false,
-        read: rights.read ?? false,
-        update: rights.update ?? false,
-        delete: rights.delete ?? false,
+        rolePermissioMapping: [
+          {
+            permission_id: row.id,
+            role_id: selectedRoleId,
+            create: rights.create ?? false,
+            read: rights.read ?? false,
+            update: rights.update ?? false,
+            delete: rights.delete ?? false,
+          },
+        ],
       };
+
       const response = await mapRoleToPermission(mapRole);
       if (response.status === 'success') {
         enqueueSnackbar('Role And Permission Mapped successfully!', {
