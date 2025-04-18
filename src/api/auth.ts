@@ -56,3 +56,18 @@ export async function DeleteUserProfile(userId: string) {
 }
 
 // ----------------------------------------------------------------------
+
+// Function that handles forgot passowrd
+export function ForgotPassword(body: any) {
+  const URL = endpoints.auth.forgotPassword;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+// ----------------------------------------------------------------------
+
+// Function that verifies OTP
+export function VerifyOTP(body: any) {
+  const URL = endpoints.auth.verifyOTP;
+  const response = drivysCreator([URL, body]);
+  return response;
+}

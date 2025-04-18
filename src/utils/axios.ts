@@ -86,6 +86,8 @@ export const endpoints = {
     update: 'admin/auth/update-profile', // To update user profile
     delete: 'admin/auth/delete-profile', // To delete user profile
     collectorLogin: 'consumer/auth/login',
+    forgotPassword: 'consumer/auth/forgot-password-using-email',
+    verifyOTP: 'consumer/auth/verify-password-using-email',
   },
   mail: {
     list: '/api/mail/list',
