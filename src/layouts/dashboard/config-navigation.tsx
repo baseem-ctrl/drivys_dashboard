@@ -156,7 +156,7 @@ export function useNavData() {
 
     {
       title: t('commission'),
-      path: paths.dashboard.review.root,
+      path: paths.dashboard.commission.root,
       icon: ICONS.commission,
       children: [
         { title: t('trainer_commission'), path: paths.dashboard.commission.root },
@@ -365,7 +365,7 @@ export function useNavData() {
     },
     {
       title: t('commission'),
-      path: paths.dashboard.review.root,
+      path: paths.dashboard.commission,
       icon: ICONS.commission,
       children: [
         { title: t('trainer_commission'), path: paths.dashboard.commission.root },
