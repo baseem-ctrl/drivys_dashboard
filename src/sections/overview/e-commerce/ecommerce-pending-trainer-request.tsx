@@ -213,53 +213,56 @@ export default function PendingRequests({
                       >
                         {request?.user?.name || 'N/A'}
                       </Typography>
-                      <Tooltip title={t('school_name')} arrow>
-                        {' '}
+                      {/* <Tooltip title={t('school_name')} arrow> */}{' '}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+
+                          cursor: 'pointer',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                        onClick={() =>
+                          request?.vendor?.vendor_translations[0]?.vendor_id
+                            ? handleClickSchoolDetails(
+                                request?.vendor?.vendor_translations[0]?.vendor_id
+                              )
+                            : ''
+                        }
+                      >
+                        {t('school_name')} :{' '}
+                        {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                      </Typography>
+                      {/* </Tooltip> */}
+                      <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
+                        {t('requested_time')} :{' '}
+                        {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
+                      </Typography>
+                      {request?.user?.user_preference?.city?.city_translations[0]?.name && (
                         <Typography
                           variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-
-                            cursor: 'pointer',
-                            '&:hover': {
-                              textDecoration: 'underline',
-                            },
-                          }}
-                          onClick={() =>
-                            request?.vendor?.vendor_translations[0]?.vendor_id
-                              ? handleClickSchoolDetails(
-                                  request?.vendor?.vendor_translations[0]?.vendor_id
-                                )
-                              : ''
-                          }
+                          sx={{ cursor: 'default', color: 'text.secondary' }}
                         >
-                          {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                          Trainer from{' '}
+                          {request?.user?.user_preference?.city?.city_translations[0]?.name ||
+                            'N / A'}
                         </Typography>
-                      </Tooltip>
-
-                      <Tooltip title={t('requested_time')} arrow>
-                        <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
-                          {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
+                      )}
+                      {request?.user?.user_preference?.vehicle_type?.category_translations[0]
+                        ?.name && (
+                        <Typography
+                          variant="body2"
+                          sx={{ cursor: 'default', color: 'text.secondary' }}
+                        >
+                          {request?.user?.user_preference?.vehicle_type?.category_translations[0]
+                            ?.name || 'N / A'}
                         </Typography>
-                      </Tooltip>
-                      <Typography
-                        variant="body2"
-                        sx={{ cursor: 'default', color: 'text.secondary' }}
-                      >
-                        Trainer from{' '}
-                        {request?.user?.user_preference?.city?.city_translations[0]?.name ||
-                          'N / A'}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ cursor: 'default', color: 'text.secondary' }}
-                      >
-                        {request?.user?.user_preference?.vehicle_type?.category_translations[0]
-                          ?.name || 'N / A'}
-                      </Typography>
+                      )}
                     </Stack>
                   </Box>
-                  <Box sx={{ display: 'flex', width: '90%', mt: 2 }}>
+                  <Box sx={{ display: 'flex', width: '90%', mt: 2, mb: 2 }}>
                     <Button
                       fullWidth
                       sx={{ flex: 1, mr: 1 }}
