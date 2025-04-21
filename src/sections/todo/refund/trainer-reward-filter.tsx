@@ -104,7 +104,7 @@ export default function TrainerRewardFilters({
         getOptionLabel={(option) => option.label || ''}
         value={vendorOptions?.find((item) => item.value === filters.trainer_id) || null}
         onChange={(event, newValue) => {
-          handleFilterChange('trainer_id', newValue?.value || filters.trainer_id);
+          handleFilterChange('trainer_id', newValue ? newValue.value : null);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
         renderInput={(params) => <TextField placeholder={t('select_trainer')} {...params} />}
