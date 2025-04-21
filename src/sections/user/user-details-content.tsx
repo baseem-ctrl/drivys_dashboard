@@ -969,13 +969,7 @@ export default function UserDetailsContent({
               },
               { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
               { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
-              {
-                label: t('school_commission_trainer'),
-                value:
-                  details?.user_preference?.school_commission_in_percentage != null
-                    ? `${details?.user_preference?.school_commission_in_percentage} %`
-                    : t('n/a'),
-              },
+
               {
                 label: t('vehicle_type'),
                 value:
