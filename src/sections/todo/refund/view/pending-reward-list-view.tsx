@@ -87,8 +87,13 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
-  const canReset = !isEqual(defaultFilters, filters);
+  const cleanedFilters = {
+    trainer_id: filters.trainer_id ?? null,
+  };
+  const canReset = !isEqual(defaultFilters, cleanedFilters);
 
+  console.log('canReset', canReset);
+  console.log('defaultFilters', defaultFilters);
   const renderFilters = (
     <Stack
       spacing={3}
