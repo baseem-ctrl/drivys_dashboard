@@ -28,7 +28,6 @@ export const generateToken = async () => {
         // Request permission for notifications in response to a user gesture
         await window.Notification.requestPermission();
         const permission = window.Notification.permission;
-
         if (permission === 'granted') {
           const token = await getToken(messaging, {
             vapidKey: import.meta.env.APP_PUSH_NOTIFI_KEY,
@@ -60,7 +59,7 @@ export const generateToken = async () => {
 onMessage(messaging, (payload) => {
   const title = payload?.notification?.title;
   const body = payload?.notification?.body;
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
 
   if (Notification.permission === 'granted') {
     new Notification(title, {
@@ -79,5 +78,5 @@ onMessage(messaging, (payload) => {
 
   // ✅ Store the updated notifications in localStorage
   localStorage.setItem('notifications', JSON.stringify(notifications));
-  enqueueSnackbar(title, { variant: 'success' });
+  // enqueueSnackbar(title, { variant: 'success' });
 });

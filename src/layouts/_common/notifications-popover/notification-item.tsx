@@ -12,6 +12,7 @@ import { fToNow } from 'src/utils/format-time';
 // components
 import Label from 'src/components/label';
 import FileThumbnail from 'src/components/file-thumbnail';
+import { ListItem } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,8 @@ type NotificationItemProps = {
     category: string;
     createdAt: Date;
     isUnRead: boolean;
+    body: any;
+    timestamp: any;
     type: string;
     avatarUrl: string | null;
   };
@@ -59,31 +62,25 @@ export default function NotificationItem({ notification }: NotificationItemProps
   );
 
   const renderText = (
-    <ListItemText
-      disableTypography
-      primary={reader(notification.title)}
-      secondary={
-        <Stack
-          direction="row"
-          alignItems="center"
-          sx={{ typography: 'caption', color: 'text.disabled' }}
-          divider={
-            <Box
-              sx={{
-                width: 2,
-                height: 2,
-                bgcolor: 'currentColor',
-                mx: 0.5,
-                borderRadius: '50%',
-              }}
-            />
-          }
-        >
-          {fToNow(notification.createdAt)}
-          {notification.category}
-        </Stack>
-      }
-    />
+    <ListItem alignItems="flex-start">
+      <ListItemText
+        primary={
+          <Typography variant="subtitle1" color="textPrimary">
+            {notification.title}
+          </Typography>
+        }
+        secondary={
+          <>
+            <Typography variant="body2" color="textSecondary">
+              {notification.body}
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              {new Date(notification.timestamp).toLocaleString()}
+            </Typography>
+          </>
+        }
+      />
+    </ListItem>
   );
 
   const renderUnReadBadge = notification.isUnRead && (
@@ -222,7 +219,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
     >
       {renderUnReadBadge}
 
-      {renderAvatar}
+      {/* {renderAvatar} */}
 
       <Stack sx={{ flexGrow: 1 }}>
         {renderText}
