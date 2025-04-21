@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -28,24 +28,6 @@ import NotificationItem from './notification-item';
 
 // ----------------------------------------------------------------------
 
-const TABS = [
-  {
-    value: 'all',
-    label: 'All',
-    count: 22,
-  },
-  {
-    value: 'unread',
-    label: 'Unread',
-    count: 12,
-  },
-  {
-    value: 'archived',
-    label: 'Archived',
-    count: 10,
-  },
-];
-
 // ----------------------------------------------------------------------
 
 export default function NotificationsPopover() {
@@ -55,14 +37,50 @@ export default function NotificationsPopover() {
   const notificationList = JSON.parse(localStorage.getItem('notifications') || '[]');
   console.log('notificationList', notificationList);
   const [currentTab, setCurrentTab] = useState('all');
-
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
 
-  const [notifications, setNotifications] = useState(_notifications);
+  // const [notifications, setNotifications] = useState(_notifications);
+  const [notifications, setNotifications] = useState(() => {
+    const storedNotifications = localStorage.getItem('notifications');
+    return storedNotifications ? JSON.parse(storedNotifications) : [];
+  });
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'notifications') {
+        const updatedNotifications = event.newValue ? JSON.parse(event.newValue) : [];
+        setNotifications(updatedNotifications);
+      }
+    };
 
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+  const totalAll = notifications.length;
+  const totalUnread = notifications.filter((item) => item.isUnRead).length;
+  const totalArchived = notifications.filter((item) => item.isArchived).length;
+  const TABS = [
+    {
+      value: 'all',
+      label: 'All',
+      count: totalAll,
+    },
+    {
+      value: 'unread',
+      label: 'Unread',
+      count: totalUnread,
+    },
+    {
+      value: 'archived',
+      label: 'Archived',
+      count: totalArchived,
+    },
+  ];
 
   const handleMarkAllAsRead = () => {
     setNotifications(
@@ -128,8 +146,8 @@ export default function NotificationsPopover() {
   const renderList = (
     <Scrollbar>
       <List disablePadding>
-        {notifications.map((notification) => (
-          <NotificationItem key={notification.id} notification={notification} />
+        {notifications.map((notification, index) => (
+          <NotificationItem key={index} notification={notification} />
         ))}
       </List>
     </Scrollbar>
