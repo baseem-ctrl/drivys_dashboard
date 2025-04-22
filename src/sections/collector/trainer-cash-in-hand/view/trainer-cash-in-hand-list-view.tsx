@@ -48,6 +48,7 @@ const defaultFilters = {
   search: '',
   trainerId: null,
   vendorId: null,
+  check_cash_in_hand: null,
 };
 
 // ----------------------------------------------------------------------
@@ -68,7 +69,8 @@ export default function TrainerCashInHand() {
       table.rowsPerPage,
       filters.cash_clearance_date_from,
       filters.cash_clearance_date_to,
-      filters.search
+      filters.search,
+      filters.check_cash_in_hand
     );
 
   useEffect(() => {

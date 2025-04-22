@@ -6,6 +6,9 @@ import {
   Button,
   IconButton,
   InputAdornment,
+  FormControlLabel,
+  Switch,
+  Checkbox,
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { DateRangePicker } from 'react-date-range';
@@ -38,6 +41,10 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
 
     clearFilterClicked.current = true;
   };
+  const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFilters('check_cash_in_hand', event.target.checked ? 1 : 0);
+  };
+
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
@@ -111,6 +118,19 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
           }}
         />
       </Box>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={filters.check_cash_in_hand === 1}
+            onChange={(e) => onFilters('check_cash_in_hand', e.target.checked ? 1 : 0)}
+            name="check_cash_in_hand"
+            color="primary"
+          />
+        }
+        label={t('Check Cash In Hand')}
+        sx={{ alignSelf: 'center', marginLeft: 1 }}
+      />
+
       {showDatePicker && (
         <Box
           ref={datePickerRef}
