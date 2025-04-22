@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -39,7 +39,7 @@ export default function PackageDocumentCreateUpdate({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const DocumentSchema = Yup.object().shape({
-    title: Yup.string(),
+    title: Yup.string().required('Title is required'),
     type: Yup.string(),
     status: Yup.string(),
     session_no: Yup.number().when([], {
@@ -59,7 +59,7 @@ export default function PackageDocumentCreateUpdate({
       title: currentDocument?.title || '',
       type: currentDocument?.type || 'image',
       status: currentDocument?.status || 'active',
-      session: currentDocument?.session_no || '',
+      session_no: currentDocument?.session_no || '',
       icon: currentDocument?.icon || null,
     }),
     [currentDocument, packageId]
@@ -73,7 +73,7 @@ export default function PackageDocumentCreateUpdate({
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     setValue,
     watch,
   } = methods;
@@ -90,8 +90,8 @@ export default function PackageDocumentCreateUpdate({
   } else if (fileType === 'pdf') {
     acceptedFileTypes = '.pdf';
   }
-
   const onSubmit = async (data: any) => {
+    console.log('', data);
     try {
       // Create a new FormData object
       const updatedDocument = new FormData();
@@ -157,7 +157,11 @@ export default function PackageDocumentCreateUpdate({
     { value: 'inactive', label: 'Inactive' },
     { value: 'pending', label: 'Pending' },
   ];
-
+  useEffect(() => {
+    if (currentDocument) {
+      methods.trigger();
+    }
+  }, [currentDocument, methods]);
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -167,17 +171,22 @@ export default function PackageDocumentCreateUpdate({
           <Box mt={2}>
             <Grid container spacing={2}>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="session_no" label={t("Session Number")} type="number" fullWidth />
+                <RHFTextField
+                  name="session_no"
+                  label={t('Session Number')}
+                  type="number"
+                  fullWidth
+                />
               </Grid>
 
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="title" label={t("Title")} fullWidth />
+                <RHFTextField name="title" label={t('Title')} fullWidth />
               </Grid>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="description" label={t("Description")} fullWidth />
+                <RHFTextField name="description" label={t('Description')} fullWidth />
               </Grid>
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFSelect name="type" label={t("Type")} fullWidth>
+                <RHFSelect name="type" label={t('Type')} fullWidth>
                   {typeOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -187,7 +196,7 @@ export default function PackageDocumentCreateUpdate({
               </Grid>
 
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFSelect name="status" label={t("Status")} fullWidth>
+                <RHFSelect name="status" label={t('Status')} fullWidth>
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -200,15 +209,15 @@ export default function PackageDocumentCreateUpdate({
                 <Box
                   sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
                 >
-                  {t("Package Document Upload")}
+                  {t('Package Document Upload')}
                 </Box>
               </Grid>
 
               <Grid item xs={12} sx={{ mb: 1 }}>
                 <RHFFileUpload
                   name="file"
-                  label={t("Upload Package Document")}
-                  helperText={t("Please upload a package document")}
+                  label={t('Upload Package Document')}
+                  helperText={t('Please upload a package document')}
                 />
               </Grid>
 
@@ -216,15 +225,15 @@ export default function PackageDocumentCreateUpdate({
                 <Box
                   sx={{ fontWeight: 'bold', fontSize: '1.125rem', mb: 1, color: 'primary.main' }}
                 >
-                  {t("Package Icon Upload")}
+                  {t('Package Icon Upload')}
                 </Box>
               </Grid>
 
               <Grid item xs={12} sx={{ mb: 1 }}>
                 <RHFFileUpload
                   name="icon"
-                  label={t("Upload Icon")}
-                  helperText={t("Upload an icon image (optional)")}
+                  label={t('Upload Icon')}
+                  helperText={t('Upload an icon image (optional)')}
                 />
               </Grid>
             </Grid>
@@ -233,7 +242,7 @@ export default function PackageDocumentCreateUpdate({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             {currentDocument ? t('Update') : t('Create')}
