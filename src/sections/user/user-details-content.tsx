@@ -579,6 +579,7 @@ export default function UserDetailsContent({
                     : details.phone ?? 'N/A',
                 },
                 { label: t('user_type'), value: details?.user_type ?? 'N/A' },
+
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
 
                 {
@@ -692,6 +693,13 @@ export default function UserDetailsContent({
               {[
                 ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
                   ? [
+                      {
+                        label: t('max_cash_allowed'),
+                        value: details.collected_max_cash_in_hand_allowed
+                          ? `${details.collected_max_cash_in_hand_allowed} AED`
+                          : 'N/A',
+                      },
+
                       {
                         label: 'City Assigned',
                         value: details.city_assigned.map(

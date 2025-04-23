@@ -261,6 +261,7 @@ export default function UserNewEditForm({
     ),
     cash_in_hand: Yup.string(),
     max_cash_in_hand_allowed: Yup.string(),
+    collected_max_cash_in_hand_allowed: Yup.mixed(),
     vendor_commission_in_percentage: Yup.number().when('user_type', {
       is: 'TRAINER',
       then: (schema) =>
@@ -389,6 +390,7 @@ export default function UserNewEditForm({
       })),
       cash_in_hand: currentUser?.cash_in_hand || 0,
       max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
+      collected_max_cash_in_hand_allowed: currentUser?.collected_max_cash_in_hand_allowed || '',
     }),
     [
       currentUser?.locale,
@@ -669,6 +671,8 @@ export default function UserNewEditForm({
       }
       if (data?.max_cash_in_hand_allowed)
         body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
+      if (data?.collected_max_cash_in_hand_allowed)
+        body.append('collected_max_cash_in_hand_allowed', data?.collected_max_cash_in_hand_allowed);
       if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR')
         body.append('cash_in_hand', data?.cash_in_hand);
 
@@ -979,7 +983,13 @@ export default function UserNewEditForm({
                   ),
                 }}
               />
-
+              {values.user_type === 'COLLECTOR' && (
+                <RHFTextField
+                  name="collected_max_cash_in_hand_allowed"
+                  label={t('max_cash_in_hand_allowed')}
+                  type="number"
+                />
+              )}
               <Stack direction="row" spacing={1} alignItems="center">
                 <RHFTextField
                   name="phone"
