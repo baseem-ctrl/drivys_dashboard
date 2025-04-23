@@ -59,6 +59,35 @@ const OverviewCollectorPage = () => {
               />
             </Grid>
           </Grid>
+          {/* Cash Info Card */}
+          <Card sx={{ mb: 3, p: 2, borderRadius: 3, boxShadow: 3 }}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={12} sm={6}>
+                <Box
+                  sx={{ textAlign: 'center', p: 2, backgroundColor: '#e8f5e9', borderRadius: 2 }}
+                >
+                  <Typography variant="body2" fontWeight="bold" color="text.secondary">
+                    Collected Cash In Hand
+                  </Typography>
+                  <Typography variant="h6" color="#4caf50" fontWeight="bold">
+                    ₹ {user?.user?.collected_cash_in_hand || '0'}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box
+                  sx={{ textAlign: 'center', p: 2, backgroundColor: '#ffebee', borderRadius: 2 }}
+                >
+                  <Typography variant="body2" fontWeight="bold" color="text.secondary">
+                    Max Cash In Hand Allowed
+                  </Typography>
+                  <Typography variant="h6" color="#f44336" fontWeight="bold">
+                    ₹ {user?.user?.collected_max_cash_in_hand_allowed || '0'}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
         </Card>
 
         <Card sx={{ mb: 2, p: 2, borderRadius: 3 }}>
