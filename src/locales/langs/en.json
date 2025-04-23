@@ -232,7 +232,7 @@
   "phone_number": "Phone Number",
   "dob": "Date of Birth",
   "vendor": "School",
-  "max_cash_allowed": "Max Cash Allowed",
+  "max_cash_allowed": "Max Cash In Hand Allowed",
   "cash_in_hand": "Cash in Hand",
   "suspended": "Suspended",
   "delete_confirmation": "Are you sure you want to delete <strong>{{count}}</strong> items?",
