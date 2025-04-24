@@ -304,7 +304,6 @@ export default function UserDetailsContent({
       schoolSetValue('name', '');
     }
   };
-  console.log('details', details);
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -1078,9 +1077,10 @@ export default function UserDetailsContent({
     </Stack>
   );
   const filteredTrainerTabs =
-    user?.user?.user_type !== 'COLLECTOR'
+    user === 'COLLECTOR'
       ? TRAINER_DETAILS_TABS.filter((tab) => tab.value === 'details')
       : TRAINER_DETAILS_TABS;
+
   const renderStudentTabs = (
     <Tabs
       value={studentTab}

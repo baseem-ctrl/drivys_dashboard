@@ -348,15 +348,17 @@ export default function TrainerWorkingHour({ userId, details }: Props) {
             </TableContainer>
           </Card>
         )}
-        <TablePaginationCustom
-          count={totalLeaveDates}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
-        />
+        {totalLeaveDates > 0 && (
+          <TablePaginationCustom
+            count={totalLeaveDates}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
+          />
+        )}
       </Grid>
 
       <CustomPopover
