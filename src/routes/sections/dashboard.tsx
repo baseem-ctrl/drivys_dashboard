@@ -65,6 +65,7 @@ import CollectedCashList from 'src/sections/collector/collected-cash-list/view/c
 import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-hand-list-admin-list-view';
 import MappedRolePermissionListView from 'src/sections/mapped-roles-permission/view/mapped-roles-permission-view';
 import SupportlistingListView from 'src/sections/support/view/support-list-view';
+import SchoolAdminPayoutPage from 'src/sections/school-payout/school-payouts-view';
 
 // ----------------------------------------------------------------------
 
@@ -371,9 +372,13 @@ const schooladminRoutes = [
         element: <SchoolTrainersListView />,
       },
       { path: 'package-list', element: <SchoolPackageListView /> },
+      // { path: 'package-list', element: <SchoolPackageListView /> },
+
+      // { path: 'school-payouts', element: <SchoolAdminPayoutPage /> },
     ],
   },
   { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
+
   {
     path: 'booking',
     children: [

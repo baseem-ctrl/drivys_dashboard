@@ -318,3 +318,52 @@ export function useGetPayoutByBooking({
     revalidatePayoutByBooking,
   };
 }
+
+// Function to fetch the payout by school
+export function useGetPayoutBySchool({
+  trainer_id,
+  limit,
+  page,
+}: {
+  trainer_id?: number;
+  limit?: number;
+  page?: number;
+} = {}) {
+  // Construct query parameters dynamically
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (trainer_id) params.trainer_id = trainer_id;
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    return params;
+  }, [trainer_id, limit, page]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.payouts.getPayoutBySchool}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePayoutBySchool = () => {
+    mutate(fullUrl);
+  };
+
+  const memoizedValue = useMemo(() => {
+    return {
+      payoutBySchoolList: data?.data || [],
+      payoutBySchoolLoading: isLoading,
+      payoutBySchoolError: error,
+      payoutBySchoolValidating: isValidating,
+      payoutBySchoolEmpty: data?.data?.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePayoutBySchool,
+  };
+}

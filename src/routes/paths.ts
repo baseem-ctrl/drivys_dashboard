@@ -230,6 +230,9 @@ export const paths = {
       package: `${ROOTS.DASHBOARD}/school/package-list`,
       awatingCertificate: `${ROOTS.DASHBOARD}/school/awaiting-certificate`,
       approvedCertificate: `${ROOTS.DASHBOARD}/school/approved-certificate`,
+      // payout: `${ROOTS.DASHBOARD}/school/package-list`,
+
+      // listSchoolPayout: `${ROOTS.DASHBOARD}/school/school-payouts`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,
