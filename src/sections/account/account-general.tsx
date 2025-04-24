@@ -27,6 +27,7 @@ import { countries } from 'src/assets/data';
 import { UpdateProfile, DeleteUserProfile } from 'src/api/auth';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAllLanguage } from 'src/api/language';
+import { RHFUploadAvatarWithCrop } from 'src/components/hook-form/rhf-upload-with-crop';
 
 // ----------------------------------------------------------------------
 
@@ -154,10 +155,9 @@ export default function AccountGeneral() {
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
-            <RHFUploadAvatar
+            <RHFUploadAvatarWithCrop
               name="photoURL"
               maxSize={3145728}
-              onDrop={handleDrop}
               helperText={
                 <Typography
                   variant="caption"
