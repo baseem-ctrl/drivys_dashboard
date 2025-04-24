@@ -1069,5 +1069,10 @@
   "certificate_expiry_date": "تاريخ انتهاء الشهادة",
   "roles": "الأدوار",
   "name_as_per_profile_card": "الاسم كما هو في بطاقة الملف الشخصي",
-  "name_as_per_profile_card_ar": "الاسم كما هو في بطاقة الملف الشخصي"
+  "name_as_per_profile_card_ar": "الاسم كما هو في بطاقة الملف الشخصي",
+  "support": "الدعم",
+  "booking_date": "تاريخ الحجز",
+  "priority": "الأولوية",
+  "message": "الرسالة",
+  "subject": "الموضوع"
 }
