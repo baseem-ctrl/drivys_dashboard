@@ -64,6 +64,7 @@ import PermissionListView from 'src/sections/permissions/view/permissions-list-v
 import CollectedCashList from 'src/sections/collector/collected-cash-list/view/collected-cash-list-view';
 import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-hand-list-admin-list-view';
 import MappedRolePermissionListView from 'src/sections/mapped-roles-permission/view/mapped-roles-permission-view';
+import SupportlistingListView from 'src/sections/support/view/support-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -304,6 +305,10 @@ const allroutes = [
       { path: 'cash-in-hand', element: <CashInHandList />, index: true },
       // { path: 'permission', element: <PermissionListView /> },
     ],
+  },
+  {
+    path: 'support',
+    children: [{ element: <SupportlistingListView />, index: true }],
   },
   { path: 'loyality', element: <LoyalityProgramListView />, index: true },
   { path: 'loyality/:id', element: <LoyaltyProgramDetails /> },

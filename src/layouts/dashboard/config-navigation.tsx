@@ -52,6 +52,7 @@ const ICONS = {
   package: icon('ic_package'),
   map: icon('ic_map'),
   cash: icon('ic_cash'),
+  support: icon('ic_support'),
 };
 
 // ----------------------------------------------------------------------
@@ -178,6 +179,11 @@ export function useNavData() {
         { title: t('cash_in_hand'), path: paths.dashboard.collectorAdminView.cashInHand },
         // { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
       ],
+    },
+    {
+      title: t('support'),
+      path: paths.dashboard.support.list,
+      icon: ICONS.support,
     },
 
     // HOME LISTING

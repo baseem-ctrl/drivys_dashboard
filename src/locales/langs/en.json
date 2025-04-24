@@ -1014,5 +1014,10 @@
   "certificate_expiry_date": "Certificate Expiry Date",
   "roles": "Roles",
   "name_as_per_profile_card": "Name as Per Profile Card (En)",
-  "name_as_per_profile_card_ar": "Name as Per Profile Card (Ar)"
+  "name_as_per_profile_card_ar": "Name as Per Profile Card (Ar)",
+  "support": "Support",
+  "booking_date": "Booking Date",
+  "priority": "Priority",
+  "message": "Message",
+  "subject": "Subject"
 }
