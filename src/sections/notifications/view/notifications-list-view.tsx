@@ -50,8 +50,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-
-
 const defaultFilters: any = {
   name: '',
   is_active: '',
@@ -69,7 +67,7 @@ export default function NotificationlistingListView() {
 
   const confirm = useBoolean();
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const TABLE_HEAD = [
     { id: 'user_id', label: t('User ID') },
@@ -157,7 +155,7 @@ export default function NotificationlistingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading={t("Notification List")}
+          heading={t('Notification List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             {
@@ -181,7 +179,7 @@ export default function NotificationlistingListView() {
               onClick={handleOpenPopup}
               endIcon={<AddIcon />}
             >
-              {t("Send Notification")}
+              {t('Send Notification')}
             </Button>
           </Box>
         )}
@@ -236,32 +234,32 @@ export default function NotificationlistingListView() {
                     rowCount={tableData?.length}
                     numSelected={table.selected.length}
                     onSort={table.onSort}
-                  // onSelectAllRows={(checked) =>
-                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                  // }
+                    // onSelectAllRows={(checked) =>
+                    //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                    // }
                   />
 
                   <TableBody>
                     {notificationsLoading
                       ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
+                          <TableRow key={index}>
+                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                              <Skeleton animation="wave" height={40} />
+                            </TableCell>
+                          </TableRow>
+                        ))
                       : tableData?.map((row) => (
-                        <NotificationTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={(e: any) => handleEditRow(e, row.id)}
-                        // revalidateHomeListing={revalidateNotifications}
-                        // onViewRow={() => handleRowClick(row)}
-                        />
-                      ))}
+                          <NotificationTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            // onDeleteRow={() => handleDeleteRow(row.id)}
+                            // onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            // revalidateHomeListing={revalidateNotifications}
+                            // onViewRow={() => handleRowClick(row)}
+                          />
+                        ))}
 
                     {/* <TableEmptyRows
                     height={denseHeight}
@@ -290,17 +288,17 @@ export default function NotificationlistingListView() {
           <NotificationDetails
             selectedNotification={selectedNotification}
             setViewMode={setViewMode}
-          // onEdit={handleEditClick}
-          // onBack={handleBackToList}
-          // reload={revalidateCities}
-          // cityId={rowId}
-          // index={index}
-          // setOpenEditPopup={setOpenEditPopup}
+            // onEdit={handleEditClick}
+            // onBack={handleBackToList}
+            // reload={revalidateCities}
+            // cityId={rowId}
+            // index={index}
+            // setOpenEditPopup={setOpenEditPopup}
           />
         )}
       </Container>
       <Dialog open={openPopup} onClose={handleClosePopup} fullWidth>
-        <DialogTitle>{t("Send Notification")}</DialogTitle>
+        <DialogTitle>{t('Send Notification')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <SendNotificationForm
             revalidateNotifications={revalidateNotifications}

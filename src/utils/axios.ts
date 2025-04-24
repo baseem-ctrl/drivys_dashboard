@@ -405,4 +405,7 @@ export const endpoints = {
 
     collectCash: 'admin/cash-colmapRoleToPermissionlection/cash-collection',
   },
+  support: {
+    list: 'admin/support/get-list',
+  },
 };

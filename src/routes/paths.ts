@@ -319,5 +319,8 @@ export const paths = {
 
       // permission: `${ROOTS.DASHBOARD}/roles-and-permission/permission`,
     },
+    support: {
+      list: `${ROOTS.DASHBOARD}/support`,
+    },
   },
 };
