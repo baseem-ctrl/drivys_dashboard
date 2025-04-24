@@ -125,8 +125,9 @@ export default function TrainerCommissionRow({ reload, row }) {
               <Typography sx={{ color: error ? 'error.main' : 'primary.main', fontSize: 14 }}>
                 {' '}
                 {error ||
-                  `${t("School Commission must be between")} ${minCommission !== null ? `${minCommission}%` : 'N/A'
-                  } ${t("and")} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+                  `${t('School Commission must be between')} ${
+                    minCommission !== null ? `${minCommission}%` : 'N/A'
+                  } ${t('and')} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
               </Typography>
             }
           />
@@ -144,7 +145,7 @@ export default function TrainerCommissionRow({ reload, row }) {
               disabled={isUpdating}
               sx={{ marginRight: '10px' }}
             >
-              {t("Save")}
+              {t('Save')}
             </Button>
             <Button
               variant="outlined"
@@ -155,7 +156,7 @@ export default function TrainerCommissionRow({ reload, row }) {
               }}
               disabled={isUpdating}
             >
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
           </>
         ) : (
@@ -165,7 +166,7 @@ export default function TrainerCommissionRow({ reload, row }) {
             onClick={() => setIsEditing(true)}
             disabled={isUpdating}
           >
-            {isUpdating ? t('Updating...') : t('Update Commission')}
+            {isUpdating ? t('Updating...') : t('Update')}
           </Button>
         )}
       </TableCell>

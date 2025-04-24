@@ -385,8 +385,15 @@ const schooladminRoutes = [
   {
     path: 'commission',
     children: [
-      { path: 'trainer-commission', element: <TrainerCommission />, index: true },
-      { path: 'certificate-commission-trainer', element: <CertificateCommissionTrainer /> },
+      {
+        path: 'trainer-commission',
+        element: <TrainerCommission />,
+        index: true,
+      },
+      {
+        path: 'certificate-commission-trainer',
+        element: <CertificateCommissionTrainer />,
+      },
     ],
   },
 
@@ -407,15 +414,15 @@ const schooladminRoutes = [
       { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
     ],
   },
-  // {
-  //   path: 'certificate',
-  //   children: [
-  //     { element: <CertificateListView />, index: true },
-  //     // { path: 'certificate', element: <CertificateListView /> },
-  //     // { path: 'request/:id', element: <CertificateRequestDetailsComponent /> },
-  //     // { path: ':id', element: <CertificateDetailsComponent /> },
-  //   ],
-  // },
+  {
+    path: 'certificate',
+    children: [
+      { element: <CertificateListView />, index: true },
+      // { path: 'certificate', element: <CertificateListView /> },
+      // { path: 'request/:id', element: <CertificateRequestDetailsComponent /> },
+      // { path: ':id', element: <CertificateDetailsComponent /> },
+    ],
+  },
 ];
 const collectorRoutes = [
   {

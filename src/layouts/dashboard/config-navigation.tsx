@@ -369,14 +369,18 @@ export function useNavData() {
         { title: t('trainer_notifications'), path: paths.dashboard.school.trainerNotifications },
       ],
     },
+
     {
       title: t('commission'),
-      path: paths.dashboard.commission,
+      path: paths.dashboard.commission.root,
       icon: ICONS.commission,
       children: [
-        { title: t('trainer_commission'), path: paths.dashboard.commission.root },
         {
-          title: t('trainer_certificate_commission'),
+          title: t('trainer_commission'),
+          path: paths.dashboard.commission.root,
+        },
+        {
+          title: t('certificate_commission'),
           path: paths.dashboard.commission.certificateCommissionTrainer,
         },
       ],
