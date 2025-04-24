@@ -355,6 +355,7 @@ export const endpoints = {
     getPayoutHistory: 'admin/payout/transfer/get-list',
     getPayoutByBooking: 'admin/payout/get-by-bookings',
     payToSchool: 'admin/payout/transfer/vendor-pay',
+    getPayoutBySchool: 'admin/payout/get-trainers-payout-by-school',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',

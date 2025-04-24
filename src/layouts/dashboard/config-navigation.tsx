@@ -391,6 +391,12 @@ export function useNavData() {
       path: paths.dashboard.school.package,
       icon: ICONS.blank,
     },
+
+    {
+      title: t('payout'),
+      path: paths.dashboard.school.listSchoolPayout,
+      icon: ICONS.invoice,
+    },
     {
       title: t('booking'),
       path: paths.dashboard.booking.root,

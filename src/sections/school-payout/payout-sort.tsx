@@ -1,0 +1,68 @@
+// @mui
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+// components
+import Iconify from 'src/components/iconify';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useTranslation } from 'react-i18next';
+
+// ----------------------------------------------------------------------
+
+type Props = {
+  sort: string;
+  onSort: (newValue: string) => void;
+  sortOptions: {
+    value: string;
+    label: string;
+  }[];
+};
+
+export default function PayoutSort({ sort, onSort, sortOptions }: Props) {
+  const popover = usePopover();
+  const { t } = useTranslation();
+  const sortted = sortOptions.find((item) => item.value === sort);
+
+  return (
+    <>
+      <Button
+        disableRipple
+        color="inherit"
+        onClick={popover.onOpen}
+        endIcon={
+          <Iconify
+            icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+          />
+        }
+        sx={{ fontWeight: 'fontWeightSemiBold' }}
+      >
+        {t("Sort By")}:
+        <Box
+          component="span"
+          sx={{
+            ml: 0.5,
+            fontWeight: 'fontWeightBold',
+            textTransform: 'capitalize',
+          }}
+        >
+          {sortted?.label}
+        </Box>
+      </Button>
+
+      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
+        {sortOptions.map((option) => (
+          <MenuItem
+            key={option.value}
+            selected={option.value === sort}
+            onClick={() => {
+              popover.onClose();
+              onSort(option.value);
+            }}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
+      </CustomPopover>
+    </>
+  );
+}
