@@ -52,7 +52,7 @@ export default function PayoutSearch({
       }}
     >
       {/* Trainer Filter */}
-      {/* <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%' }}>
         <Autocomplete
           fullWidth
           options={
@@ -92,7 +92,7 @@ export default function PayoutSearch({
             </li>
           )}
         />
-      </Box> */}
+      </Box>
 
       {/* School Filter */}
       <Box sx={{ width: '100%' }}>
@@ -113,7 +113,7 @@ export default function PayoutSearch({
           loading={schoolLoading}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select School")}
+              placeholder={t('Select School')}
               {...params}
               InputProps={{
                 ...params.InputProps,

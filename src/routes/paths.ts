@@ -232,7 +232,7 @@ export const paths = {
       approvedCertificate: `${ROOTS.DASHBOARD}/school/approved-certificate`,
       // payout: `${ROOTS.DASHBOARD}/school/package-list`,
 
-      // listSchoolPayout: `${ROOTS.DASHBOARD}/school/school-payouts`,
+      listSchoolPayout: `${ROOTS.DASHBOARD}/school/school-payouts`,
     },
     homelisting: {
       root: `${ROOTS.DASHBOARD}/homelisting`,

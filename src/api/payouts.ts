@@ -324,19 +324,24 @@ export function useGetPayoutBySchool({
   trainer_id,
   limit,
   page,
+  sort_dir,
+  sorting_by,
 }: {
   trainer_id?: number;
   limit?: number;
   page?: number;
+  sort_dir?: 'asc' | 'desc';
+  sorting_by?: string;
 } = {}) {
-  // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (trainer_id) params.trainer_id = trainer_id;
     if (limit) params.limit = limit;
     if (page) params.page = page;
+    if (sort_dir) params.sort_dir = sort_dir;
+    if (sorting_by) params.sorting_by = sorting_by;
     return params;
-  }, [trainer_id, limit, page]);
+  }, [trainer_id, limit, page, sort_dir, sorting_by]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.getPayoutBySchool}?${new URLSearchParams(queryParams)}`,

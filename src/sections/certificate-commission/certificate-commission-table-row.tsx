@@ -33,7 +33,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
     vendor_id,
   } = row;
   const { user } = useAuthContext();
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [newCommission, setNewCommission] = useState(certificate_commission_in_percentage);
   const [isEditing, setIsEditing] = useState(false);
@@ -105,7 +105,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               disabled={isUpdating}
               sx={{ marginRight: '10px' }}
             >
-              {t("Save")}
+              {t('Save')}
             </Button>
             <Button
               variant="outlined"
@@ -116,7 +116,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               }}
               disabled={isUpdating}
             >
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
           </>
         ) : (
@@ -126,7 +126,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
             onClick={() => setIsEditing(true)}
             disabled={isUpdating}
           >
-            {isUpdating ? t('Updating...') : t('Update Commission')}
+            {isUpdating ? t('Updating...') : t('Update')}
           </Button>
         )}
       </TableCell>

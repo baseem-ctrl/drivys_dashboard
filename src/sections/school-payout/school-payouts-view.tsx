@@ -28,7 +28,7 @@ import PayoutSort from './payout-sort';
 import PayoutSearch from './payout-search';
 // import TourFilters from '../tour-filters';
 import PayoutFiltersResult from './payout-filters-result';
-import { useGetSchoolPayouts, useGetTrainerPayouts } from 'src/api/payouts';
+import { useGetPayoutBySchool, useGetSchoolPayouts, useGetTrainerPayouts } from 'src/api/payouts';
 import { Box, Card, CardContent, Chip, Tooltip, Typography } from '@mui/material';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { TablePaginationCustom, useTable } from 'src/components/table';
@@ -72,14 +72,21 @@ export default function SchoolAdminPayoutPage() {
   const [searchValue, setSearchValue] = useState('');
 
   const [filters, setFilters] = useState(defaultFilters);
-  const { payoutsList, payoutsLoading, payoutsError, payoutsEmpty, totalPages, revalidatePayouts } =
-    useGetSchoolPayouts({
-      page: table?.page + 1,
-      limit: table?.rowsPerPage,
-      vendor_id: filters?.vendor_id,
-      sort_dir: table.order,
-      sorting_by: sortBy,
-    });
+  const {
+    payoutBySchoolList,
+    payoutBySchoolLoading,
+    payoutBySchoolError,
+    totalPages,
+    revalidatePayoutBySchool,
+  } = useGetPayoutBySchool({
+    trainer_id: filters?.trainer_id,
+    limit: table?.rowsPerPage,
+    page: table?.page + 1,
+    sort_dir: table.order,
+    sorting_by: sortBy,
+  });
+  console.log('payoutBySchoolList', payoutBySchoolList);
+
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
     page: 0,
     limit: 1000,
@@ -174,15 +181,16 @@ export default function SchoolAdminPayoutPage() {
     />
   );
   const renderLargeScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
-
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
     const fields = [
       { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: t('Total Earnings'), value: `${item?.total_earning_from_booking ?? 0} ${t('AED')}` },
+      {
+        label: t('Total Earnings'),
+        value: `${item?.total_amount_earned_from_booking ?? 0} ${t('AED')}`,
+      },
       {
         label: t('Last Paid'),
         value: (
@@ -202,35 +210,12 @@ export default function SchoolAdminPayoutPage() {
         label: t('Admin Payable Amount'),
         value: `${item?.amount_required_from_admin} ${t('AED')}` ?? 'NA',
       },
-      {
-        label: t('Action'),
-        value: (
-          <Tooltip title={!isPayoutAvailable ? t('No payout remaining') : ''} arrow>
-            <span>
-              {' '}
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!isPayoutAvailable}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  quickCreate.onTrue();
-                  setVendorId(item?.vendor_id);
-                  setAmount(item?.amount_required_from_admin);
-                }}
-              >
-                {t('Payouts')}
-              </Button>
-            </span>
-          </Tooltip>
-        ),
-      },
     ];
 
     return (
       <Box
         display="grid"
-        gridTemplateColumns="repeat(6, 1fr)"
+        gridTemplateColumns="repeat(5, 1fr)"
         gap={2}
         sx={{ alignItems: 'center' }}
       >
@@ -266,8 +251,6 @@ export default function SchoolAdminPayoutPage() {
   };
 
   const renderSmallScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
-
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : 'NA';
@@ -276,7 +259,7 @@ export default function SchoolAdminPayoutPage() {
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Total Eranings '),
-        value: `${item?.total_earning_from_booking} ${t('AED')}` ?? '0 ${t("AED")}',
+        value: `${item?.total_amount_earned_from_booking} ${t('AED')}` ?? '0 ${t("AED")}',
       },
       {
         label: t('Last Paid'),
@@ -296,29 +279,6 @@ export default function SchoolAdminPayoutPage() {
       {
         label: t('Admin Payable Amount'),
         value: `${item?.amount_required_from_admin} ${t('AED')}` ?? 'NA',
-      },
-      {
-        label: t('Action'),
-        value: (
-          <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
-            <span>
-              {' '}
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!isPayoutAvailable} // Disable button if no payout
-                onClick={(e) => {
-                  e.stopPropagation();
-                  quickCreate.onTrue();
-                  setVendorId(item?.vendor_id);
-                  setAmount(item?.amount_required_from_admin);
-                }}
-              >
-                ${t('Payouts')}
-              </Button>
-            </span>
-          </Tooltip>
-        ),
       },
     ];
 
@@ -371,7 +331,7 @@ export default function SchoolAdminPayoutPage() {
           mb: { xs: 3, md: 5 },
         }}
       >
-        {renderFilters}
+        {/* {renderFilters} */}
 
         {canReset && renderResults}
       </Stack>
@@ -379,24 +339,24 @@ export default function SchoolAdminPayoutPage() {
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
       <Box display="flex" flexDirection="column" gap={3}>
-        {payoutsList.map((tour: any) => (
+        {payoutBySchoolList.map((tour: any) => (
           <Card
             key={tour.id}
-            sx={{
-              p: 2,
-              border: '1px solid #ddd',
-              borderRadius: 2,
-              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-              cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
-            }}
-            onClick={() =>
-              tour.total_paid_and_completed_booking > 0 &&
-              handleCardClick(
-                tour.vendor_id,
-                tour.amount_required_from_admin > 0,
-                tour.amount_required_from_admin
-              )
-            }
+            // sx={{
+            //   p: 2,
+            //   border: '1px solid #ddd',
+            //   borderRadius: 2,
+            //   boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+            //   cursor: tour.total_paid_and_completed_booking > 0 ? 'pointer' : 'not-allowed',
+            // }}
+            // onClick={() =>
+            //   tour.total_paid_and_completed_booking > 0 &&
+            //   handleCardClick(
+            //     tour.vendor_id,
+            //     tour.amount_required_from_admin > 0,
+            //     tour.amount_required_from_admin
+            //   )
+            // }
 
             // onClick={() => handleView(tour.id)}
           >
