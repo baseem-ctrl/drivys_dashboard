@@ -42,6 +42,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     price_per_km: Yup.string(),
     min_price: Yup.string(),
     reschedule_fee: Yup.mixed(),
+    max_slot: Yup.mixed(),
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
   });
@@ -56,6 +57,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       certificate_price: city?.certificate_price || 0,
       certificate_link: city?.certificate_link || '',
       reschedule_fee: city?.reschedule_fee ?? '',
+      max_slot: city?.max_slot ?? '',
       price_per_km: city?.price_per_km || 0,
       min_price: city?.min_price || 0,
       free_reschedule_before: city?.free_reschedule_before ?? '',
@@ -120,6 +122,9 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
       }
       if (city?.reschedule_fee) {
         formData.append('reschedule_fee', city.reschedule_fee ?? '0');
+      }
+      if (city?.max_slot) {
+        formData.append('max_slot', city.max_slot ?? '0');
       }
       if (city?.price_per_km) {
         formData.append('price_per_km', city.price_per_km ?? '0');
@@ -202,6 +207,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
                 type="number"
                 inputProps={{ min: 2, max: 999999 }}
               />
+              <RHFTextField name="max_slot" label="Max Slot" type="number" />
               <Box display="flex" alignItems="center" gap={1}>
                 <RHFSelect name="free_reschedule_before_type" label="Free Reschedule Before Type">
                   <MenuItem value={1}>Day</MenuItem>

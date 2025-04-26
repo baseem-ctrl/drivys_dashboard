@@ -36,7 +36,7 @@ export default function CityTableRow({
   handleCheckboxClick,
 }: Props) {
   const { t } = useTranslation();
-  const { is_published, display_order, city_translations } = row;
+  const { is_published, display_order, city_translations, max_slot } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -64,6 +64,10 @@ export default function CityTableRow({
         </TableCell>
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
           {city_translations[zerothIndex].locale}
+        </TableCell>
+
+        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
+          {max_slot ?? 'N/A'}
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
@@ -108,7 +112,7 @@ export default function CityTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -118,7 +122,7 @@ export default function CityTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
       </CustomPopover>
 

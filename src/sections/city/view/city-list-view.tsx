@@ -71,6 +71,8 @@ export default function CityListView() {
 
     { id: 'name', label: t('Name') },
     { id: 'locale', label: t('Locale'), width: 180 },
+    { id: 'max_slot', label: t('max_slot'), width: 180 },
+
     { id: 'is_published', label: t('Published'), width: 180 },
     { id: 'action1', label: '', width: 180 },
     { id: 'action2', label: '', width: 88 },
@@ -232,7 +234,7 @@ export default function CityListView() {
               updateRescheduleFee.onTrue();
             }}
           >
-            {t("Update Bulk Commission")}
+            {t('Update Bulk Commission')}
           </MenuItem>
         </CustomPopover>
       </Stack>
@@ -242,7 +244,7 @@ export default function CityListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading={t("List")}
+          heading={t('List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             {
@@ -263,7 +265,7 @@ export default function CityListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t("New City")}
+                {t('New City')}
               </Button>
             )
           }
@@ -285,7 +287,7 @@ export default function CityListView() {
                 )
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -305,24 +307,24 @@ export default function CityListView() {
                 <TableBody>
                   {cityLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : dataFiltered?.map((row) => (
-                      <CityTableRow
-                        key={row.id}
-                        row={row}
-                        selected={selectedCityIds.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        handleCheckboxClick={handleCheckboxClick}
-                        selectedCityIds={selectedCityIds}
-                        reload={revalidateCities}
-                      />
-                    ))}
+                        <CityTableRow
+                          key={row.id}
+                          row={row}
+                          selected={selectedCityIds.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          handleCheckboxClick={handleCheckboxClick}
+                          selectedCityIds={selectedCityIds}
+                          reload={revalidateCities}
+                        />
+                      ))}
                 </TableBody>
               </Table>
             </Scrollbar>
