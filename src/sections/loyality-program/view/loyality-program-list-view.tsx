@@ -64,7 +64,6 @@ const isPublishMap = {
 // ----------------------------------------------------------------------
 
 export default function LoyalityProgramListView() {
-
   const { t } = useTranslation();
   const settings = useSettingsContext();
 
@@ -79,6 +78,7 @@ export default function LoyalityProgramListView() {
   const is_published_value = isPublishMap[filters.published] || null;
 
   const [searchQuery, setSearchQuery] = useState(''); // Search query input
+  const [creating, setCreating] = useState('');
 
   const {
     loyaltyPrograms,
@@ -151,6 +151,8 @@ export default function LoyalityProgramListView() {
   }, []);
 
   const handleAddNewCategory = () => {
+    setCreating('create-mode');
+    console.log('heyhhh');
     if (!addOnlyOneCategory) {
       setTableData((prevTableData: any) => [
         {
@@ -209,11 +211,11 @@ export default function LoyalityProgramListView() {
   //     results={tableData.length}
   //   />
   // );
-
+  console.log('creating', creating);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Loyality Program List")}
+        heading={t('Loyality Program List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -231,7 +233,7 @@ export default function LoyalityProgramListView() {
             startIcon={<Iconify icon="mingcute:add-line" />}
             disabled={addOnlyOneCategory}
           >
-            {t("New Loyality Program")}
+            {t('New Loyality Program')}
           </Button>
         }
         sx={{
@@ -252,6 +254,9 @@ export default function LoyalityProgramListView() {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
       <TableRow>{loyaltyProgramsLoading && <CardSkeleton />}</TableRow>
+      {loyaltyPrograms.length < 1 && !loyaltyProgramsLoading && creating !== 'create-mode' && (
+        <EmptyContent filled title="No Data" sx={{ py: 10 }} />
+      )}
 
       <LoyalityProgramList
         tableData={tableData}
@@ -259,19 +264,21 @@ export default function LoyalityProgramListView() {
         reload={revalidateLoyaltyPrograms}
         setTableData={setTableData}
         setAddOnlyOneCategory={setAddOnlyOneCategory}
-      // parentCategoryValues={category}
+        // parentCategoryValues={category}
       />
-      <TablePaginationCustom
-        count={totalpages}
-        page={table.page ?? 0}
-        rowsPerPage={table?.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
+      {loyaltyPrograms.length > 0 && (
+        <TablePaginationCustom
+          count={totalpages}
+          page={table.page ?? 0}
+          rowsPerPage={table?.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
 
-      // dense={table.dense}
-      // onChangeDense={table.onChangeDense}
-      //
-      />
+          // dense={table.dense}
+          // onChangeDense={table.onChangeDense}
+          //
+        />
+      )}
     </Container>
   );
 }

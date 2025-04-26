@@ -32,13 +32,14 @@ export default function LoyalityProgramList({
 }: Props) {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
+
   const {
     loyaltyPrograms,
     loyaltyProgramsLoading,
     loyaltyProgramsError,
     totalpages,
     revalidateLoyaltyPrograms,
-  } = useGetLoyaltyProgramList({ limit: 1000, page: 1, search: searchValue ?? '' });
+  } = useGetLoyaltyProgramList({ limit: 1000, page: 0, search: searchValue ?? '' });
   // const { category, categoryLoading, totalpages, categoryError, revalidateCategory } =
   //   useGetAllCategory({
   //     limit: 1000,
