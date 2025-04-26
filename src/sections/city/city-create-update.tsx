@@ -33,7 +33,6 @@ type Props = {
 };
 
 export default function CityCreateEditForm({ title, currentCity, open, onClose, reload }: Props) {
-
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -49,6 +48,8 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     min_price: Yup.string(),
 
     reschedule_fee: Yup.mixed(),
+    max_slot: Yup.mixed(),
+
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
   });
@@ -70,6 +71,8 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
 
       certificate_link: currentCity?.certificate_link || '',
       reschedule_fee: currentCity?.reschedule_fee ?? '',
+      max_slot: currentCity?.max_slot ?? '',
+
       free_reschedule_before: currentCity?.free_reschedule_before ?? '',
       free_reschedule_before_type: currentCity?.free_reschedule_before_type ?? '',
     }),
@@ -94,9 +97,13 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
   if (!rescheduleType) {
     tooltipTitle = t('A reschedule fee applies every time the student reschedules the slot.');
   } else if (rescheduleType === 1) {
-    tooltipTitle = `${t("The reschedule fee applies only after")} ${rescheduleValue} ${t("day(s).")} `;
+    tooltipTitle = `${t('The reschedule fee applies only after')} ${rescheduleValue} ${t(
+      'day(s).'
+    )} `;
   } else {
-    tooltipTitle = ` ${t("The reschedule fee applies only after")} ${rescheduleValue} ${t("hour(s).")} `;
+    tooltipTitle = ` ${t('The reschedule fee applies only after')} ${rescheduleValue} ${t(
+      'hour(s).'
+    )} `;
   }
 
   useEffect(() => {
@@ -131,6 +138,9 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
       }
       if (data?.reschedule_fee) {
         formData.append('reschedule_fee', data.reschedule_fee ?? '0');
+      }
+      if (data?.max_slot) {
+        formData.append('max_slot', data.max_slot ?? '0');
       }
       if (data?.price_per_km) {
         formData.append('price_per_km', data.price_per_km ?? '0');
@@ -213,7 +223,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
             </MenuItem>
           ))}
         </Select> */}
-            <RHFSelect name="locale" label={t("Locale")}>
+            <RHFSelect name="locale" label={t('Locale')}>
               <MenuItem value="" disabled>
                 Select Locale
               </MenuItem>
@@ -229,30 +239,34 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
                 </MenuItem>
               )}
             </RHFSelect>
-            <RHFTextField name="name" label={t("Name")} />
-            <RHFSwitch name="published" label={t("Published")} />
-            <RHFSwitch name="is_certificate_available" label={t("Is Certificate Available")} />
+            <RHFTextField name="name" label={t('Name')} />
+            <RHFSwitch name="published" label={t('Published')} />
+            <RHFSwitch name="is_certificate_available" label={t('Is Certificate Available')} />
             {values?.is_certificate_available && (
               <>
                 <RHFTextField
                   name="certificate_price"
-                  label={t("Certificate Price")}
-                  prefix={t("AED")}
+                  label={t('Certificate Price')}
+                  prefix={t('AED')}
                   type="number"
                 />
-                <RHFTextField name="certificate_link" label={t("Certificate Link")} type="url" />
+                <RHFTextField name="certificate_link" label={t('Certificate Link')} type="url" />
               </>
             )}
             <RHFTextField
               name="reschedule_fee"
-              label={t("Reschedule Fee")}
+              label={t('Reschedule Fee')}
               type="number"
               inputProps={{ min: 2, max: 999999 }}
             />
-            <RHFTextField name="price_per_km" label={t("Price Per Km")} type="number" />
-            <RHFTextField name="min_price" label={t("Min. Price")} type="number" />
+            <RHFTextField name="max_slot" label={t('max_slot')} type="number" />
+            <RHFTextField name="price_per_km" label={t('Price Per Km')} type="number" />
+            <RHFTextField name="min_price" label={t('Min. Price')} type="number" />
             <Box display="flex" alignItems="center" gap={1}>
-              <RHFSelect name="free_reschedule_before_type" label={t("Free Reschedule Before Type")}>
+              <RHFSelect
+                name="free_reschedule_before_type"
+                label={t('Free Reschedule Before Type')}
+              >
                 <MenuItem value={1}>Day</MenuItem>
                 <MenuItem value={0}>Hour</MenuItem>
               </RHFSelect>
@@ -261,7 +275,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
               {' '}
               <RHFTextField
                 name="free_reschedule_before"
-                label={t("Free Reschedule Before")}
+                label={t('Free Reschedule Before')}
                 type="number"
               />
               <Tooltip title={tooltipTitle} arrow placement="top">
@@ -275,7 +289,7 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

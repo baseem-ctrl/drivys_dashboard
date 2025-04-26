@@ -53,6 +53,17 @@ export default function CityDetails({ onEdit, city }) {
                               {translation.locale ?? 'N/A'}
                             </Box>
                           </Box>
+                          <Box sx={{ display: 'flex', width: '100%' }}>
+                            <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                              Maximum Slot
+                            </Box>
+                            <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                              :
+                            </Box>
+                            <Box component="span" sx={{ flex: 1 }}>
+                              {city.max_slot ?? 'N/A'}
+                            </Box>
+                          </Box>
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>

@@ -1019,5 +1019,6 @@
   "booking_date": "Booking Date",
   "priority": "Priority",
   "message": "Message",
-  "subject": "Subject"
+  "subject": "Subject",
+  "max_slot": "Max Slot"
 }
