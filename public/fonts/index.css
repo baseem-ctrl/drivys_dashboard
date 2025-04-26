@@ -1,7 +1,8 @@
+
 @font-face {
   font-family: 'CircularStd';
   font-weight: 400;
-  font-style: normal;
+font-style: normal;
   src: local('CircularStd'), url('CircularStd-Book.otf') format('opentype');
 }
 
@@ -18,5 +19,3 @@
   font-style: normal;
   src: local('CircularStd'), url('CircularStd-Bold.otf') format('opentype');
 }
-
- 

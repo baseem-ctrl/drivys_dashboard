@@ -152,7 +152,6 @@ export default function LoyalityProgramListView() {
 
   const handleAddNewCategory = () => {
     setCreating('create-mode');
-    console.log('heyhhh');
     if (!addOnlyOneCategory) {
       setTableData((prevTableData: any) => [
         {
@@ -211,7 +210,6 @@ export default function LoyalityProgramListView() {
   //     results={tableData.length}
   //   />
   // );
-  console.log('creating', creating);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
