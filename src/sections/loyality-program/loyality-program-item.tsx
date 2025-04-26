@@ -44,7 +44,7 @@ type Props = {
 
 export default function LoyalityProgramItem({
   category,
-
+  setCreating,
   reload,
   setTableData,
   setAddOnlyOneCategory,
@@ -54,7 +54,7 @@ export default function LoyalityProgramItem({
 }: Props) {
   const deletecustomer = useBoolean();
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -64,7 +64,7 @@ export default function LoyalityProgramItem({
   //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.trainer_reward_translation || [];
-    return translations?.find((trans) => trans.locale.toLowerCase() === 'en')?.locale;
+    return translations[0]?.locale || '';
   });
 
   const isCreateCategory = category?.newCategory;
@@ -82,11 +82,11 @@ export default function LoyalityProgramItem({
       // Ensure newLocales is an array
       const newLocales = Array.isArray(category?.trainer_reward_translation)
         ? category?.trainer_reward_translation
-          ?.map((category: any) => category.locale)
-          ?.filter(
-            (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
-          )
-          ?.map((locale: any) => ({ label: locale, value: locale }))
+            ?.map((category: any) => category.locale)
+            ?.filter(
+              (locale: any) => !initialLocaleOptions?.some((option: any) => option.value === locale)
+            )
+            ?.map((locale: any) => ({ label: locale, value: locale }))
         : [];
 
       setLocaleOptions([...initialLocaleOptions, ...newLocales]);
@@ -243,7 +243,7 @@ export default function LoyalityProgramItem({
         }}
         sx={{ mb: 2 }}
       >
-        <RHFTextField name="name" label={t("Name")} borderRadius="0px" />
+        <RHFTextField name="name" label={t('Name')} borderRadius="0px" />
 
         <RHFSelect
           value={selectedLanguage}
@@ -263,7 +263,7 @@ export default function LoyalityProgramItem({
 
       <RHFTextField
         name="no_of_sessions_required"
-        label={t("Number of Sessions Required")}
+        label={t('Number of Sessions Required')}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{
@@ -281,7 +281,7 @@ export default function LoyalityProgramItem({
                 <Box sx={{ flex: 1 }}>
                   <DatePicker
                     {...field}
-                    label={t("Start Date")}
+                    label={t('Start Date')}
                     format="yyyy-MM-dd"
                     value={field.value ? new Date(field.value) : null}
                     onChange={(date) => {
@@ -311,7 +311,7 @@ export default function LoyalityProgramItem({
                 <Box sx={{ flex: 1 }}>
                   <DatePicker
                     {...field}
-                    label={t("End Date")}
+                    label={t('End Date')}
                     format="yyyy-MM-dd"
                     value={field.value ? new Date(field.value) : null}
                     onChange={(date) => {
@@ -340,7 +340,7 @@ export default function LoyalityProgramItem({
 
       <RHFTextField
         name="reward_amount"
-        label={t("Reward Amount")}
+        label={t('Reward Amount')}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{
@@ -359,7 +359,7 @@ export default function LoyalityProgramItem({
                 onChange={(e) => field.onChange(e.target.checked ? 1 : 0)}
               />
             }
-            label={t("Is Periodic")}
+            label={t('Is Periodic')}
             sx={{ mb: 2 }}
           />
         )}
@@ -397,7 +397,8 @@ export default function LoyalityProgramItem({
           {isCreateCategory ? t('Create') : t('Save')}
         </LoadingButton>
         <LoadingButton
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (!isCreateCategory) {
               deletecustomer.onTrue();
             } else {
