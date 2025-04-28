@@ -114,7 +114,7 @@ export default function UserDetailsContent({
   user,
 }: Props) {
   const { reset, control } = useForm();
-  const { t } = useLocales();
+  const { t, currentLang } = useLocales();
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
@@ -524,10 +524,10 @@ export default function UserDetailsContent({
               variant="square"
             />
 
-            {details?.user_preference?.bio && (
+            {details?.user_preference?.bio && currentLang.value === 'en' && (
               <Box sx={{ width: '100%', textAlign: 'center' }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Bio (English)
+                  Bio
                 </Typography>
                 <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
                   {details.user_preference.bio}
@@ -535,10 +535,10 @@ export default function UserDetailsContent({
               </Box>
             )}
 
-            {details?.user_preference?.bio_ar && (
+            {details?.user_preference?.bio_ar && currentLang.value === 'ar' && (
               <Box sx={{ width: '100%', textAlign: 'center' }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Bio (Arabic)
+                  Bio
                 </Typography>
                 <Typography
                   variant="body1"

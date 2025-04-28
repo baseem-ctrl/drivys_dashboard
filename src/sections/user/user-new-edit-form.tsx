@@ -101,7 +101,7 @@ export default function UserNewEditForm({
   // const currentUser = currentUser ?? "";
   const router = useRouter();
   const { user } = useAuthContext();
-  const { t } = useLocales();
+  const { t, currentLang } = useLocales();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { roles, rolesLoading, rolesError, rolesTotalPages, revalidateRoles } = useGetRoles(
@@ -402,7 +402,6 @@ export default function UserNewEditForm({
       gearData,
     ]
   );
-  console.log('default value', defaultValues);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -833,7 +832,7 @@ export default function UserNewEditForm({
                   m={3}
                   // mb={3}
                 >
-                  {values.user_type === 'TRAINER' && (
+                  {values.user_type === 'TRAINER' && currentLang.value === 'en' && (
                     <RHFTextField
                       name="bio"
                       label={t('about_you')}
@@ -842,14 +841,8 @@ export default function UserNewEditForm({
                       type="text"
                     />
                   )}
-                  {values.user_type === 'TRAINER' && (
-                    <RHFTextField
-                      name="bio_ar"
-                      label={t('about_you_ar')}
-                      multiline
-                      rows={4}
-                      type="text"
-                    />
+                  {values.user_type === 'TRAINER' && currentLang.value === 'ar' && (
+                    <RHFTextField name="bio_ar" label={t('about')} multiline rows={4} type="text" />
                   )}
                 </Box>
               </Card>
@@ -889,13 +882,15 @@ export default function UserNewEditForm({
                 />
               )}
 
-              <RHFTextField
-                name="name"
-                label={t('name_as_per_profile_card')}
-                error={!!errors.name}
-                helperText={errors.name?.message || ''}
-              />
-              {values.user_type === 'TRAINER' && (
+              {currentLang.value === 'en' && (
+                <RHFTextField
+                  name="name"
+                  label={t('name_as_per_profile_card')}
+                  error={!!errors.name}
+                  helperText={errors.name?.message || ''}
+                />
+              )}
+              {values.user_type === 'TRAINER' && currentLang.value === 'ar' && (
                 <RHFTextField
                   name="name_ar"
                   label={t('name_as_per_profile_card_ar')}
