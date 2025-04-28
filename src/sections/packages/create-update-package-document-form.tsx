@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -18,6 +18,7 @@ import FormProvider, { RHFTextField, RHFSelect } from 'src/components/hook-form'
 import { createOrUpdatePackageDocument } from 'src/api/packageDocument';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { useTranslation } from 'react-i18next';
+import { useGetAllLanguage } from 'src/api/language';
 
 type Props = {
   open: boolean;
@@ -38,8 +39,23 @@ export default function PackageDocumentCreateUpdate({
 }: Props) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { language } = useGetAllLanguage(0, 1000);
+  const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
+
+  const localeOptions = language?.map((item: any) => ({
+    label: item.language_culture,
+    value: item.language_culture,
+  }));
   const DocumentSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
+    translations: Yup.array()
+      .of(
+        Yup.object().shape({
+          locale: Yup.string().required('Locale is required'),
+          title: Yup.string().required('Title is required'),
+          description: Yup.string().required('Description is required'),
+        })
+      )
+      .min(1),
     type: Yup.string(),
     status: Yup.string(),
     session_no: Yup.number().when([], {
@@ -56,13 +72,19 @@ export default function PackageDocumentCreateUpdate({
   const defaultValues = useMemo(
     () => ({
       package_id: packageId || '',
-      title: currentDocument?.title || '',
+      translations: [
+        {
+          locale: currentDocument?.translations?.[0]?.locale || selectedLocale || 'en',
+          title: currentDocument?.translations?.[0]?.title || '',
+          description: currentDocument?.translations?.[0]?.description || '',
+        },
+      ],
       type: currentDocument?.type || 'image',
       status: currentDocument?.status || 'active',
       session_no: currentDocument?.session_no || '',
       icon: currentDocument?.icon || null,
     }),
-    [currentDocument, packageId]
+    [currentDocument, packageId, selectedLocale]
   );
 
   const methods = useForm({
@@ -77,7 +99,6 @@ export default function PackageDocumentCreateUpdate({
     setValue,
     watch,
   } = methods;
-
   // Watch the type field
   const fileType = watch('type');
   let acceptedFileTypes = '';
@@ -91,41 +112,37 @@ export default function PackageDocumentCreateUpdate({
     acceptedFileTypes = '.pdf';
   }
   const onSubmit = async (data: any) => {
-    console.log('', data);
     try {
-      // Create a new FormData object
       const updatedDocument = new FormData();
 
       if (data.icon) {
-        const icon = data.icon;
-        updatedDocument.append('icon', icon);
-      } else {
-        console.warn('No icon selected');
+        updatedDocument.append('icon', data.icon);
       }
 
       if (data.file) {
-        const file = data.file;
-        updatedDocument.append('file', file);
-      } else {
-        console.warn('No file selected');
+        updatedDocument.append('file', data.file);
       }
 
-      // Append other form data
       updatedDocument.append('package_id', packageId);
-      updatedDocument.append('title', data.title || '');
       updatedDocument.append('session_no', data.session_no || '');
       updatedDocument.append('type', data.type || '');
       updatedDocument.append('status', data.status || '');
-      updatedDocument.append('description', data.description || '');
 
-      // Call the API to create/update the document
+      if (data.translations && data.translations.length > 0) {
+        updatedDocument.append('translations[0][locale]', data.translations[0].locale || '');
+        updatedDocument.append('translations[0][title]', data.translations[0].title || '');
+        updatedDocument.append(
+          'translations[0][description]',
+          data.translations[0].description || ''
+        );
+      }
+
       const response = await createOrUpdatePackageDocument(updatedDocument);
       enqueueSnackbar(response?.message, { variant: 'success' });
       reload();
       reset();
       onClose();
     } catch (error) {
-      console.error('Error submitting the form:', error);
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
         Object.values(error?.errors).forEach((errorMessage) => {
           if (typeof errorMessage === 'object') {
@@ -162,6 +179,11 @@ export default function PackageDocumentCreateUpdate({
       methods.trigger();
     }
   }, [currentDocument, methods]);
+  const handleLocaleChange = (newLocale: string) => {
+    if (newLocale !== selectedLocale) {
+      setSelectedLocale(newLocale);
+    }
+  };
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -170,6 +192,23 @@ export default function PackageDocumentCreateUpdate({
         <DialogContent>
           <Box mt={2}>
             <Grid container spacing={2}>
+              <Grid item xs={6} sx={{ mb: 1 }}>
+                <RHFSelect
+                  name="translations[0].locale"
+                  label={t('Locale')}
+                  onChange={(e) => {
+                    handleLocaleChange(e.target.value);
+                    setValue('translations[0].locale', e.target.value);
+                  }}
+                >
+                  {localeOptions?.map((option: any) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+              </Grid>
+
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFTextField
                   name="session_no"
@@ -180,11 +219,17 @@ export default function PackageDocumentCreateUpdate({
               </Grid>
 
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="title" label={t('Title')} fullWidth />
+                <RHFTextField name="translations[0].title" label={t('Title')} fullWidth />
               </Grid>
+
               <Grid item xs={6} sx={{ mb: 1 }}>
-                <RHFTextField name="description" label={t('Description')} fullWidth />
+                <RHFTextField
+                  name="translations[0].description"
+                  label={t('Description')}
+                  fullWidth
+                />
               </Grid>
+
               <Grid item xs={6} sx={{ mb: 1 }}>
                 <RHFSelect name="type" label={t('Type')} fullWidth>
                   {typeOptions.map((option) => (

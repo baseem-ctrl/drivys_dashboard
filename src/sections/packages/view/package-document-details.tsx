@@ -7,11 +7,12 @@ import Iconify from 'src/components/iconify';
 import { Box, Button, TextField, Menu, MenuItem } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { enqueueSnackbar } from 'src/components/snackbar';
+import { useGetAllLanguage } from 'src/api/language';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { createOrUpdatePackageDocument, deletePackageDocumentById } from 'src/api/packageDocument';
@@ -48,6 +49,14 @@ export default function PackageDocumentDetails({
   const [filePreviewURL, setFilePreviewURL] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const { language } = useGetAllLanguage(0, 1000);
+  const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
+
+  const localeOptions = language?.map((item: any) => ({
+    label: item.language_culture,
+    value: item.language_culture,
+  }));
+
   // Function to handle image file selection
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,9 +84,17 @@ export default function PackageDocumentDetails({
     onFalse: () => setConfirm({ ...confirm, value: false }),
   });
   const DocumentSchema = Yup.object().shape({
-    title: Yup.string(),
-    description: Yup.string(),
-    file: Yup.mixed(),
+    translations: Yup.array()
+      .of(
+        Yup.object().shape({
+          locale: Yup.string().required('Locale is required'),
+          title: Yup.string().default('N/A').required('Title is required'),
+          description: Yup.string().default('N/A').required('Description is required'),
+        })
+      )
+      .min(1),
+    type: Yup.string(),
+    status: Yup.string(),
     session_no: Yup.number().when([], {
       is: () => sessionNumber === -1,
       then: (schema) => schema.required('Session number is required'),
@@ -130,6 +147,10 @@ export default function PackageDocumentDetails({
       setValue('file', document.file || '');
       setValue('session_no', document.session_no || '');
       setValue('file', document.file || '');
+      if (document.package_doc_translations && document.package_doc_translations.length > 0) {
+        setValue('locale', document.package_doc_translations[0].locale || 'En');
+      }
+
       // setFilePreviewURL(document.file || '');
     }
   }, [documents, editMode]);
@@ -137,6 +158,22 @@ export default function PackageDocumentDetails({
     reset();
     setEditMode(null);
   };
+  const selectedLang = watch('locale');
+
+  useEffect(() => {
+    if (selectedLang) {
+      const translation = documents[0].package_doc_translations.find(
+        (translation) => translation.locale.toLowerCase() === selectedLang.toLowerCase()
+      );
+      if (translation) {
+        setValue('title', translation.title || '');
+        setValue('description', translation.description || '');
+      } else {
+        setValue('title', '');
+        setValue('description', '');
+      }
+    }
+  }, [selectedLang, documents, setValue, editMode]);
   const handleClickEdit = () => {
     setEditMode(editIndex);
     setAnchorEl(null);
@@ -144,20 +181,37 @@ export default function PackageDocumentDetails({
   const handleClickEditPackageDocument = async (formData: any, document: any) => {
     try {
       const updatedDocument = new FormData();
+
       if (filePreviewURL) {
         updatedDocument.append('file', filePreviewURL);
       }
       if (uploadedFile) {
         updatedDocument.append('icon', uploadedFile);
       }
+
+      // Basic document fields
       updatedDocument.append('doc_id', document.id);
-      updatedDocument.append('title', formData.title || document.title);
+      updatedDocument.append('package_id', document.package_id);
       updatedDocument.append('session_no', formData.session_no || document.session_no);
-      updatedDocument.append('description', formData.description || document.description);
       updatedDocument.append('type', formData.type || document.type);
       updatedDocument.append('status', formData.status || document.status);
 
-      // Now pass this `updatedDocument` to the API
+      const existingTranslations = document.package_doc_translations || [];
+      const formLocale = formData.locale;
+
+      const existingIndex = existingTranslations.findIndex((t: any) => t.locale === formLocale);
+      if (existingIndex !== -1) {
+        updatedDocument.append(`translations[${existingIndex}][locale]`, formLocale);
+        updatedDocument.append(`translations[${existingIndex}][title]`, formData.title);
+        updatedDocument.append(`translations[${existingIndex}][description]`, formData.description);
+      } else {
+        // If locale is not there then add at next available index
+        const newIndex = existingTranslations.length;
+        updatedDocument.append(`translations[${newIndex}][locale]`, formLocale);
+        updatedDocument.append(`translations[${newIndex}][title]`, formData.title);
+        updatedDocument.append(`translations[${newIndex}][description]`, formData.description);
+      }
+
       const response = await createOrUpdatePackageDocument(updatedDocument);
 
       if (response) {
@@ -229,19 +283,19 @@ export default function PackageDocumentDetails({
   };
   return (
     <>
-      <Stack spacing={3} sx={{ p: 3 }}>
+      <Stack spacing={3} sx={{ p: 0 }}>
         <Scrollbar>
           {documents && documents.length > 0 ? (
             <Grid container>
               {documents.map((doc, index) => (
-                <Grid item xs={12} sm={6} key={doc.id}>
+                <Grid item xs={12} lg={6} key={doc.id}>
                   <Stack
                     component={Card}
                     spacing={3}
                     sx={{
                       mb: 3,
 
-                      p: 5,
+                      p: 2,
                       borderRadius: '10px',
                       position: 'relative',
                       height: 'auto',
@@ -270,6 +324,12 @@ export default function PackageDocumentDetails({
                           padding: 2,
                           width: '100%',
                           height: '690px',
+                          overflowY: 'auto',
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                          '&::-webkit-scrollbar': {
+                            display: 'none',
+                          },
                         }}
                       >
                         <Stack
@@ -364,60 +424,137 @@ export default function PackageDocumentDetails({
                           alignItems="flex-start"
                           sx={{ typography: 'body2', padding: 2, width: '100%' }}
                         >
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              width: '100%',
-                              borderRadius: 1,
-                              padding: 1,
-                              backgroundColor: 'background.default',
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
-                            >
-                              {t('Title')}
-                            </Typography>
-                            <Typography
-                              variant="h6"
-                              sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
-                            >
-                              :
-                            </Typography>
-                            <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
-                            >
-                              {doc.title ?? 'N/A'}
-                            </Typography>
-                          </Box>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              width: '100%',
-                              borderRadius: 1,
-                              padding: 1,
-                              backgroundColor: 'background.default',
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
-                            >
-                              {t('Description')}
-                            </Typography>
-                            <Typography
-                              variant="h6"
-                              sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
-                            >
-                              :
-                            </Typography>
-                            <Typography
-                              sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
-                            >
-                              {doc.description ?? 'N/A'}
-                            </Typography>
-                          </Box>
+                          {doc.package_doc_translations?.length > 0 ? (
+                            doc.package_doc_translations.map((translation) => (
+                              <React.Fragment key={translation.locale}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    width: '100%',
+                                    borderRadius: 1,
+                                    padding: 1,
+                                    backgroundColor: 'background.default',
+                                    mb: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                                  >
+                                    {t('Title')} ({translation.locale})
+                                  </Typography>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                                  >
+                                    :
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      flex: '1',
+                                      textAlign: 'left',
+                                      marginLeft: 2,
+                                      fontSize: 17,
+                                    }}
+                                  >
+                                    {translation.title || 'N/A'}
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    width: '100%',
+                                    borderRadius: 1,
+                                    padding: 1,
+                                    backgroundColor: 'background.default',
+                                    mb: 2,
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                                  >
+                                    {t('Description')} ({translation.locale})
+                                  </Typography>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 'bold', flex: '0 0 20%', marginRight: 2 }}
+                                  >
+                                    :
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      flex: '1',
+                                      textAlign: 'left',
+                                      marginLeft: 2,
+                                      fontSize: 17,
+                                    }}
+                                  >
+                                    {translation.description || 'N/A'}
+                                  </Typography>
+                                </Box>
+                              </React.Fragment>
+                            ))
+                          ) : (
+                            <>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  borderRadius: 1,
+                                  padding: 1,
+                                  backgroundColor: 'background.default',
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography
+                                  sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                                >
+                                  {t('Title')}
+                                </Typography>
+                                <Typography
+                                  variant="h6"
+                                  sx={{ fontWeight: 'bold', flex: '0 0 5%', marginRight: 2 }}
+                                >
+                                  :
+                                </Typography>
+                                <Typography
+                                  sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
+                                >
+                                  {doc.title || 'N/A'}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  borderRadius: 1,
+                                  padding: 1,
+                                  backgroundColor: 'background.default',
+                                  mb: 2,
+                                }}
+                              >
+                                <Typography
+                                  sx={{ fontWeight: 'bold', flex: '0 0 30%', marginRight: 2 }}
+                                >
+                                  {t('Description')}
+                                </Typography>
+                                <Typography
+                                  variant="h6"
+                                  sx={{ fontWeight: 'bold', flex: '0 0 5%', marginRight: 2 }}
+                                >
+                                  :
+                                </Typography>
+                                <Typography
+                                  sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
+                                >
+                                  {doc.description || 'N/A'}
+                                </Typography>
+                              </Box>
+                            </>
+                          )}
                           <Box
                             sx={{
                               display: 'flex',
@@ -737,6 +874,28 @@ export default function PackageDocumentDetails({
                           style={{ display: 'none' }}
                           onChange={handleClickFileUpload}
                         />
+                        <Controller
+                          name="locale"
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              select
+                              label={t('Locale')}
+                              variant="outlined"
+                              fullWidth
+                              value={field.value || 'En'}
+                              error={Boolean(errors.translations?.[0]?.locale)}
+                              helperText={errors.translations?.[0]?.locale?.message}
+                            >
+                              {localeOptions?.map((option: any) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          )}
+                        />
 
                         <Controller
                           name="title"
@@ -748,9 +907,11 @@ export default function PackageDocumentDetails({
                               variant="outlined"
                               error={Boolean(errors.title)}
                               helperText={errors.title?.message}
+                              InputLabelProps={{ shrink: true }}
                             />
                           )}
                         />
+
                         <Controller
                           name="description"
                           control={control}
@@ -761,6 +922,7 @@ export default function PackageDocumentDetails({
                               variant="outlined"
                               error={Boolean(errors.description)}
                               helperText={errors.description?.message}
+                              InputLabelProps={{ shrink: true }}
                             />
                           )}
                         />
