@@ -8,6 +8,7 @@ import { useLocales } from 'src/locales';
 import Chart, { useChart } from 'src/components/chart';
 import { useGetTrainerInsights } from 'src/api/anlytics';
 import { Select, MenuItem, FormControl, InputLabel, Autocomplete, TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends CardProps {
   title?: string;
@@ -17,7 +18,11 @@ interface Props extends CardProps {
 export default function TotalTrainersSession({ title, subheader, ...other }: Props) {
   const { t } = useLocales();
   const theme = useTheme();
-  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights();
+  const { i18n } = useTranslation();
+
+  const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights({
+    locale: i18n.language,
+  });
   const sessionsPerTrainer = trainerInsights?.sessionsPerTrainer || [];
 
   const [selectedTrainer, setSelectedTrainer] = useState<string>('');
@@ -117,7 +122,7 @@ export default function TotalTrainersSession({ title, subheader, ...other }: Pro
               value={selectedTrainer}
               onChange={(event, newValue) => setSelectedTrainer(newValue || '')}
               options={sessionsPerTrainer.map((trainer) => trainer.trainer_name)}
-              renderInput={(params) => <TextField {...params} label={t("Select Trainer")} />}
+              renderInput={(params) => <TextField {...params} label={t('Select Trainer')} />}
               isOptionEqualToValue={(option, value) => option === value}
               disableClearable
             />

@@ -15,33 +15,29 @@ import { useAuthContext } from 'src/auth/hooks';
 interface UseGetPendingVerificationRequestProps {
   year?: any;
 }
-export function useGetAnalytics({ startDate, endDate, city_id }) {
+export function useGetAnalytics({ startDate, endDate, city_id, locale }) {
   const { user } = useAuthContext();
+
   const getTheFullUrl = useMemo(() => {
     let url = '';
 
     if (user?.user?.user_type) {
-      if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-        url = `${endpoints.analytics.schoolAdmin}`;
-      } else {
-        url = `${endpoints.analytics.admin}`;
-      }
+      url =
+        user.user.user_type === 'SCHOOL_ADMIN'
+          ? `${endpoints.analytics.schoolAdmin}`
+          : `${endpoints.analytics.admin}`;
 
       const params = new URLSearchParams();
       if (startDate) params.append('start_date', moment(startDate).format('YYYY-MM-DD'));
       if (endDate) params.append('end_date', moment(endDate).format('YYYY-MM-DD'));
       if (city_id) params.append('city_id', city_id);
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
+      if (locale) params.append('locale', locale);
+
+      if (params.toString()) url += `?${params.toString()}`;
     }
 
-    // else {
-    //   window.location.reload();
-    // }
-
     return url;
-  }, [user?.user?.user_type, startDate, endDate, city_id]);
+  }, [user?.user?.user_type, startDate, endDate, city_id, locale]);
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
@@ -64,7 +60,7 @@ export function useGetAnalytics({ startDate, endDate, city_id }) {
 }
 
 // ----------------------------------------------------------------------
-export function useGetRevenue({ city_id, start_date, end_date }) {
+export function useGetRevenue({ city_id, start_date, end_date, locale }) {
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const { user } = useAuthContext();
 
@@ -85,15 +81,20 @@ export function useGetRevenue({ city_id, start_date, end_date }) {
       if (start_date) {
         url += `&start_date=${moment(start_date).format('YYYY-MM-DD')}`;
       }
+
       if (end_date) {
         url += `&end_date=${moment(end_date).format('YYYY-MM-DD')}`;
+      }
+
+      if (locale) {
+        url += `&locale=${locale}`;
       }
 
       return url;
     } else {
       window.location.reload();
     }
-  }, [year, city_id, start_date, end_date, user?.user?.user_type]);
+  }, [year, city_id, start_date, end_date, locale, user?.user?.user_type]);
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
@@ -110,7 +111,7 @@ export function useGetRevenue({ city_id, start_date, end_date }) {
     [data?.data, error, isLoading, isValidating, data?.total]
   );
 
-  const revalidateAnalytics = (newValue: any) => {
+  const revalidateAnalytics = (newValue) => {
     if (newValue) {
       setYear(newValue);
       mutate(getTheFullUrl);
@@ -124,11 +125,15 @@ export function useGetRevenue({ city_id, start_date, end_date }) {
 interface UseGetStudentInsightsProps {
   start_date?: string;
   end_date?: string;
+  city_id?: string;
+  locale?: string;
 }
+
 export function useGetStudentInsights({
   start_date,
   end_date,
   city_id,
+  locale,
 }: UseGetStudentInsightsProps = {}) {
   const getTheFullUrl = useMemo(() => {
     const baseUrl = endpoints.analytics.getStudentInsights;
@@ -137,9 +142,10 @@ export function useGetStudentInsights({
     if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
     if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
     if (city_id) params.append('city_id', city_id);
+    if (locale) params.append('locale', locale);
 
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
-  }, [start_date, end_date, city_id]);
+  }, [start_date, end_date, city_id, locale]);
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
@@ -164,12 +170,15 @@ export function useGetStudentInsights({
 interface UseGetTrainerInsightsProps {
   start_date?: string;
   end_date?: string;
+  city_id?: string;
+  locale?: string;
 }
 
 export function useGetTrainerInsights({
   start_date,
   end_date,
   city_id,
+  locale,
 }: UseGetTrainerInsightsProps = {}) {
   const getTheFullUrl = useMemo(() => {
     const baseUrl = endpoints.analytics.getTrainerInsights;
@@ -177,11 +186,11 @@ export function useGetTrainerInsights({
 
     if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
     if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
-
     if (city_id) params.append('city_id', city_id);
+    if (locale) params.append('locale', locale);
 
     return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
-  }, [start_date, end_date, city_id]);
+  }, [start_date, end_date, city_id, locale]);
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
 
