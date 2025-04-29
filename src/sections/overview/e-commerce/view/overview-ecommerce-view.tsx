@@ -79,12 +79,13 @@ import SessionOverview from '../ecommerce-session-overview';
 import SchoolPerformanceDetails from '../ecommerce-school-performance';
 import RHFAutocompleteSearch from 'src/components/hook-form/rhf-autocomplete-search';
 import { useGetAllCity } from 'src/api/city';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function OverviewEcommerceView() {
   const { t } = useLocales();
-
+  const { i18n } = useTranslation();
   const { user } = useAuthContext();
   const settings = useSettingsContext();
 
@@ -110,6 +111,7 @@ export default function OverviewEcommerceView() {
     startDate: applyClicked ? startDate : undefined,
     endDate: applyClicked ? endDate : undefined,
     city_id: filters.city_id,
+    locale: i18n.language,
   });
 
   const { city, cityLoading } = useGetAllCity({
@@ -122,12 +124,14 @@ export default function OverviewEcommerceView() {
       start_date: applyClicked ? startDate : undefined,
       end_date: applyClicked ? endDate : undefined,
       city_id: filters.city_id,
+      locale: i18n.language,
     });
 
   const { trainerInsights, trainerInsightsLoading } = useGetTrainerInsights({
     start_date: applyClicked ? startDate : undefined,
     end_date: applyClicked ? endDate : undefined,
     city_id: filters.city_id,
+    locale: i18n.language,
   });
   const sessionsData = trainerInsights?.sessionsPerTrainer;
   const totalSessions = sessionsData?.reduce(
@@ -166,6 +170,7 @@ export default function OverviewEcommerceView() {
     start_date: applyClicked ? startDate : undefined,
     end_date: applyClicked ? endDate : undefined,
     city_id: filters.city_id,
+    locale: i18n.language,
   });
 
   const chartData = {
