@@ -68,7 +68,7 @@ export default function PackageTableRow({
     drivys_commision,
     vendor_id,
   } = row;
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { category } = useGetAllCategory({
@@ -341,7 +341,11 @@ export default function PackageTableRow({
                     field.onChange(newValue?.id || '');
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} label={t("Select School")} placeholder="Search School..." />
+                    <TextField
+                      {...params}
+                      label={t('Select School')}
+                      placeholder="Search School..."
+                    />
                   )}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
@@ -364,7 +368,7 @@ export default function PackageTableRow({
           )}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {' '}
+          <span className="dirham-symbol">&#x00EA;</span>
           {editingRowId === row.id ? (
             <Controller
               name="drivys_commision"
@@ -381,7 +385,11 @@ export default function PackageTableRow({
                     endAdornment: (
                       <InputAdornment position="end">
                         <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
-                          {values?.is_percentage ? '%' : 'AED'}
+                          {values?.is_percentage ? (
+                            '%'
+                          ) : (
+                            <span className="dirham-symbol">&#x00EA;</span>
+                          )}
                         </div>
                       </InputAdornment>
                     ),
@@ -394,7 +402,6 @@ export default function PackageTableRow({
           ) : (
             'N/A'
           )}{' '}
-          AED
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -474,15 +481,15 @@ export default function PackageTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            {t("Delete")}
+            {t('Delete')}
           </Button>
         }
       />
@@ -499,7 +506,7 @@ export default function PackageTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          {t("View")}
+          {t('View')}
         </MenuItem>
 
         <MenuItem
@@ -509,7 +516,7 @@ export default function PackageTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
 
         <MenuItem
@@ -520,7 +527,7 @@ export default function PackageTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
       </CustomPopover>
     </>

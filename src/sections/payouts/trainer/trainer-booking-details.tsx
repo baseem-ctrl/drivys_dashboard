@@ -237,46 +237,62 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Revenue Amount")}
+            {t('Total Revenue Amount')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalRevenueValue ?? '0'} {t("AED")}
+            <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+              &#x00EA;
+            </span>
+            {totalRevenueValue ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Drivys Commission")}
+            {t('Total Drivys Commission')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalDrivysCommission ?? '0'} {t("AED")}
+            <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+              &#x00EA;
+            </span>
+            {totalDrivysCommission ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Trainer Earning")}
+            {t('Total Trainer Earning')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalTrainerEarning ?? '0'} {t("AED")}
+            <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+              &#x00EA;
+            </span>
+            {totalTrainerEarning ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total School Earning")}
+            {t('Total School Earning')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalVendorEarning ?? '0'} {t("AED")}
+            <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+              &#x00EA;
+            </span>
+            {totalVendorEarning ?? '0'}
           </Typography>
         </Box>
 
         <Typography variant="subtitle2" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
-          {t("Amount Required From Admin is")}   {amount} {t("AED")}
+          {t('Amount Required From Admin is')}{' '}
+          <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+            &#x00EA;
+          </span>{' '}
+          {amount}
         </Typography>
 
         <Tooltip title={isPayoutDisabled ? t('No payout remaining') : ''} arrow>
@@ -299,7 +315,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                 quickCreate.onTrue();
               }}
             >
-              {t("Payout")}
+              {t('Payout')}
             </Button>
           </span>
         </Tooltip>
@@ -310,7 +326,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Trainer Payout Details")}
+        heading={t('Trainer Payout Details')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -366,11 +382,19 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                       {renderCell(item?.booking_id)}
                     </TableCell>
                     <TableCell>
+                      <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+                        &#x00EA;
+                      </span>{' '}
                       {renderCell(item?.transaction_details[0]?.txn_amount)}{' '}
-                      {renderCell(item?.transaction_details[0]?.currency)}
                     </TableCell>
                     <TableCell>{renderCell(item?.sessions?.length || '0')} </TableCell>
-                    <TableCell>{renderCell(item?.trainer_payout)} AED</TableCell>
+                    <TableCell>
+                      {' '}
+                      <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+                        &#x00EA;
+                      </span>
+                      {renderCell(item?.trainer_payout)}{' '}
+                    </TableCell>
                     <TableCell>
                       <Chip
                         icon={<AccessTimeIcon fontSize="small" />}
@@ -489,7 +513,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
       <Divider sx={{ my: 4, borderColor: '#ddd' }} />
 
       <Typography variant="h6" color="primary" sx={{ mt: 4, mb: 2 }}>
-        {t("Payout History")}
+        {t('Payout History')}
       </Typography>
       <TableContainer component={Paper} sx={{ mt: 2 }}>
         <Table stickyHeader>
@@ -506,13 +530,19 @@ export const BookingDetailsTable: React.FC<{}> = () => {
             {payoutHistoryList?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} sx={{ textAlign: 'center', fontStyle: 'italic' }}>
-                  {t("No records available")}
+                  {t('No records available')}
                 </TableCell>
               </TableRow>
             ) : (
               payoutHistoryList?.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>{renderCell(item?.amount)} AED</TableCell>
+                  <TableCell>
+                    {' '}
+                    <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+                      &#x00EA;
+                    </span>
+                    {renderCell(item?.amount)}{' '}
+                  </TableCell>
                   <TableCell>{renderCell(item?.notes)}</TableCell>
                   <TableCell>{renderCell(item?.payment_method)}</TableCell>
                   <TableCell>{renderCell(item?.payment_method_details)}</TableCell>
@@ -542,10 +572,10 @@ export const BookingDetailsTable: React.FC<{}> = () => {
                           item.status === 'Processed'
                             ? 'success'
                             : item.status === 'Pending'
-                              ? 'warning'
-                              : item.status === 'Failed'
-                                ? 'error'
-                                : 'default'
+                            ? 'warning'
+                            : item.status === 'Failed'
+                            ? 'error'
+                            : 'default'
                         }
                         variant="soft"
                         size="small"

@@ -100,7 +100,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
         {Array.isArray(packageDetails) && packageDetails.length <= 0 && (
           <Grid item xs={12}>
             <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-              {t("No packages available. Click Add Package to create a new one.")}
+              {t('No packages available. Click Add Package to create a new one.')}
             </Typography>
           </Grid>
         )}
@@ -118,7 +118,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
               },
             }}
           >
-            {t("Add Package")}
+            {t('Add Package')}
           </Button>
         </Grid>
       </Grid>
@@ -165,11 +165,14 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                 />
                 <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
                   <Box display={'flex'}>
-                    {/* <Typography variant="h6">{' AED'}</Typography> */}
                     <Typography variant="h6">
+                      <span className="dirham-symbol">&#x00EA;</span>
                       {packageItem?.min_price ? parseFloat(packageItem?.min_price) : '0'}
-                      {t('AED ')}- {packageItem?.max_price ? parseFloat(packageItem?.max_price) : '0'}{' '}
-                      {t('AED ')}
+                      {' - '}
+                      <span className="dirham-symbol" style={{ marginLeft: 8 }}>
+                        &#x00EA;
+                      </span>
+                      {packageItem?.max_price ? parseFloat(packageItem?.max_price) : '0'}
                     </Typography>
                   </Box>
 
@@ -193,20 +196,22 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
           ))}
 
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
-          <DialogTitle>{t("Delete Package")}</DialogTitle>
+          <DialogTitle>{t('Delete Package')}</DialogTitle>
           <DialogContent>
-            <DialogContentText>{t("Are you sure you want to delete this package?")}</DialogContentText>
+            <DialogContentText>
+              {t('Are you sure you want to delete this package?')}
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={confirm.onFalse} color="primary">
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
             <Button
               variant="contained"
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
-              {t("Delete")}
+              {t('Delete')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -218,7 +223,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
             handleEditPackage(selectedPackage);
           }}
         >
-          {t("Edit Package")}
+          {t('Edit Package')}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -226,7 +231,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
             handleClose();
           }}
         >
-          {t("Delete Package")}
+          {t('Delete Package')}
         </MenuItem>
       </Menu>
       <PackageCreateEditForm

@@ -196,7 +196,7 @@ export default function TrainerPayoutPage() {
           <Box display="flex" flexDirection="column" alignItems="center">
             <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
             <Chip
-              label={`${t("Time")}: ${lastPaidDate}`}
+              label={`${t('Time')}: ${lastPaidDate}`}
               size="small"
               color="success"
               variant="soft"
@@ -208,10 +208,33 @@ export default function TrainerPayoutPage() {
 
       {
         label: t('Total Earnings'),
-        value: `${item?.total_amount_earned_from_booking} ${t("AED")}` ?? '0 AED',
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_amount_earned_from_booking ?? '0'}
+          </>
+        ),
       },
-      { label: t('Earnings In Cash'), value: `${item?.total_cash_amount_received} ${t("AED")}` ?? 'NA' },
-      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
+
+      {
+        label: t('Earnings In Cash'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_cash_amount_received ?? 'NA'}
+          </>
+        ),
+      },
+      {
+        label: t('Admin Payable Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
+      },
+
       {
         label: t('Action'),
         value: (
@@ -229,7 +252,7 @@ export default function TrainerPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                {t("Payouts")}
+                {t('Payouts')}
               </Button>
             </span>
           </Tooltip>
@@ -300,10 +323,32 @@ export default function TrainerPayoutPage() {
       },
       {
         label: t('Total Earnings'),
-        value: `${item?.total_amount_earned_from_booking} AED` ?? '0 AED',
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_amount_earned_from_booking ?? '0'}
+          </>
+        ),
       },
-      { label: t('Earnings In Cash'), value: `${item?.total_cash_amount_received} AED` ?? 'NA' },
-      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} AED` ?? 'NA' },
+      {
+        label: t('Earnings In Cash'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_cash_amount_received ?? 'NA'}
+          </>
+        ),
+      },
+      {
+        label: t('Admin Payable Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
+      },
+
       {
         label: t('Action'),
         value: (
@@ -359,7 +404,7 @@ export default function TrainerPayoutPage() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Trainer Payout")}
+        heading={t('Trainer Payout')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {

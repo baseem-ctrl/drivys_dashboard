@@ -59,7 +59,11 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
       </TableCell>
 
       <TableCell>
-        <Typography variant="body2">{row?.txn_amount ?? 'N/A'} AED</Typography>
+        <Typography variant="body2">
+          {' '}
+          <span className="dirham-symbol">&#x00EA;</span>
+          {row?.txn_amount ?? '0'}{' '}
+        </Typography>
       </TableCell>
 
       <TableCell>

@@ -170,46 +170,53 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
       <CardContent sx={{ flex: 1, textAlign: isSmallScreen ? 'center' : 'left' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Revenue Amount")}
+            {t('Total Revenue Amount')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalRevenueValue ?? '0'} {t("AED")}
+            <span className="dirham-symbol">&#x00EA;</span>
+            {totalRevenueValue ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Drivys Commission")}
+            {t('Total Drivys Commission')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalDrivysCommission ?? '0'} {t("AED")}
+            <span className="dirham-symbol">&#x00EA;</span>
+            {totalDrivysCommission ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total Trainer Earning")}
+            {t('Total Trainer Earning')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalTrainerEarning ?? '0'} {t("AED")}
+            <span className="dirham-symbol">&#x00EA;</span>
+
+            {totalTrainerEarning ?? '0'}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
-            {t("Total School Earning")}
+            {t('Total School Earning')}
           </Typography>
           <Typography variant="subtitle2">:</Typography>
           <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
-            {totalVendorEarning ?? '0'} {t("AED")}
+            <span className="dirham-symbol">&#x00EA;</span>
+
+            {totalVendorEarning ?? '0'}
           </Typography>
         </Box>
 
         <Typography variant="subtitle2" sx={{ fontSize: '14px', color: '#CF5A0D', mt: 2 }}>
-          {t("Amount Required From Admin is")}  {amount} {t("AED")}
+          <span className="dirham-symbol">&#x00EA;</span>
+          {t('Amount Required From Admin is')} {amount}
         </Typography>
 
         <Tooltip title={isPayoutDisabled ? t('No payout remaining') : ''} arrow>
@@ -232,7 +239,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
                 quickCreate.onTrue();
               }}
             >
-              {t("Payout")}
+              {t('Payout')}
             </Button>
           </span>
         </Tooltip>
@@ -242,7 +249,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("School Payout Details")}
+        heading={t('School Payout Details')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -285,10 +292,26 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
                 >
                   {renderCell(booking?.booking_id)}
                 </TableCell>
-                <TableCell>{renderCell(booking?.total_booking_revenue)} AED </TableCell>
-                <TableCell>{renderCell(booking?.drivys_commission)} AED</TableCell>
-                <TableCell>{Math.round(booking?.vendor_payout?.earning * 100) / 100} AED</TableCell>
-                <TableCell>{renderCell(booking?.trainer_details?.trainer_earning)} AED</TableCell>
+                <TableCell>
+                  {' '}
+                  <span className="dirham-symbol">&#x00EA;</span>
+                  {renderCell(booking?.total_booking_revenue)}{' '}
+                </TableCell>
+                <TableCell>
+                  {' '}
+                  <span className="dirham-symbol">&#x00EA;</span>
+                  {renderCell(booking?.drivys_commission)}{' '}
+                </TableCell>
+                <TableCell>
+                  {' '}
+                  <span className="dirham-symbol">&#x00EA;</span>
+                  {Math.round(booking?.vendor_payout?.earning * 100) / 100}{' '}
+                </TableCell>
+                <TableCell>
+                  {' '}
+                  <span className="dirham-symbol">&#x00EA;</span>
+                  {renderCell(booking?.trainer_details?.trainer_earning)}{' '}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

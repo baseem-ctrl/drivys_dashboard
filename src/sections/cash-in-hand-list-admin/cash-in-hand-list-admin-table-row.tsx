@@ -98,14 +98,23 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
       </TableCell>
 
       <TableCell>
-        <Typography variant="body2">{row?.collected_cash_in_hand ?? 'N/A'} AED</Typography>
+        <Typography variant="body2">
+          {' '}
+          <span className="dirham-symbol">&#x00EA;</span>
+          {row?.collected_cash_in_hand ?? '0'}{' '}
+        </Typography>
       </TableCell>
 
       <TableCell>
         <Typography variant="body2">
-          {row?.collected_max_cash_in_hand_allowed !== null
-            ? `${row?.collected_max_cash_in_hand_allowed} AED`
-            : 'N/A'}
+          {row?.collected_max_cash_in_hand_allowed !== null ? (
+            <>
+              <span className="dirham-symbol">&#x00EA;</span>
+              {row?.collected_max_cash_in_hand_allowed}
+            </>
+          ) : (
+            'N/A'
+          )}
         </Typography>
       </TableCell>
 

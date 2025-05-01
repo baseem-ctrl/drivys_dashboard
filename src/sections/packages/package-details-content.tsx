@@ -546,7 +546,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               ]) || []),
 
               { label: t('Number of sessions'), value: details?.number_of_sessions ?? 'NA' },
-              { label: t('Drivys Commission'), value: `${details?.drivys_commision ?? 'NA'} AED` },
+              {
+                label: t('Drivys Commission'),
+                value: (
+                  <>
+                    <span className="dirham-symbol">&#x00EA;</span>
+                    {details?.drivys_commision ?? '0'}
+                  </>
+                ),
+              },
 
               {
                 label: t('Category'),
@@ -750,9 +758,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     name="drivys_commision"
                     label={t('Drivys Commission')}
                     InputProps={{
-                      endAdornment: <Typography sx={{ ml: 1 }}>{t('AED')}</Typography>,
+                      endAdornment: <Typography className="dirham-symbol">&#x00EA;</Typography>,
                     }}
                   />
+
                   <Grid item xs={12}>
                     <Stack spacing={2} mt={2}>
                       <Typography variant="subtitle2" fontWeight={600}>

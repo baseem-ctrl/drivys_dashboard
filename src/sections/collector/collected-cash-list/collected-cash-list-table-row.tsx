@@ -127,7 +127,9 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
                     <TableRow key={index}>
                       <TableCell>
                         <Typography variant="body2">
-                          {transaction.txn_amount ?? 'N/A'} AED
+                          {' '}
+                          <span className="dirham-symbol">&#x00EA;</span>
+                          {transaction.txn_amount ?? '0'}{' '}
                         </Typography>
                       </TableCell>
 

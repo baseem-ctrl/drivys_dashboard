@@ -61,7 +61,7 @@ export default function PackageCreateForm({
   onClose,
   revalidateDeliverey,
 }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [searchValue, setSearchValue] = useState('');
   const [searchValueCat, setSearchValueCat] = useState('');
@@ -354,7 +354,7 @@ export default function PackageCreateForm({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>{t("Create Package")}</DialogTitle>
+        <DialogTitle>{t('Create Package')}</DialogTitle>
 
         <DialogContent>
           <Box mt={2} rowGap={3} columnGap={2} display="grid" gridTemplateColumns="repeat(1, 1fr)">
@@ -368,7 +368,7 @@ export default function PackageCreateForm({
             >
               <RHFSelect
                 name="locale (Language)"
-                label={t("Locale")}
+                label={t('Locale')}
                 value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
               >
@@ -379,7 +379,7 @@ export default function PackageCreateForm({
                 ))}
               </RHFSelect>
 
-              <RHFTextField name="name" label={t("Name")} />
+              <RHFTextField name="name" label={t('Name')} />
             </Box>
             {/* <RHFTextField name="description" label="Description" /> */}
           </Box>
@@ -390,11 +390,11 @@ export default function PackageCreateForm({
             <Grid item xs={13}>
               <RHFTextField
                 name="number_of_sessions"
-                label={t("Number of sessions")}
+                label={t('Number of sessions')}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Tooltip title={t("Enter -1 for unlimited Packages")} placement="top">
+                      <Tooltip title={t('Enter -1 for unlimited Packages')} placement="top">
                         <InfoOutlined sx={{ color: '#006C9B', cursor: 'pointer' }} />
                       </Tooltip>
                     </InputAdornment>
@@ -420,11 +420,12 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFAutocompleteSearch
                 name="vendor_id"
-                label={t("Select School")}
+                label={t('Select School')}
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={schoolList?.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}${item.email ? ` - ${item.email}` : ''
-                    }`,
+                  label: `${item.vendor_translations?.[0]?.name}${
+                    item.email ? ` - ${item.email}` : ''
+                  }`,
                   value: item.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
@@ -441,7 +442,11 @@ export default function PackageCreateForm({
                   endAdornment: (
                     <InputAdornment position="end">
                       <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
-                        {values?.is_drivys_commision_percentage ? '%' : t('AED')}
+                        {values?.is_drivys_commision_percentage ? (
+                          '%'
+                        ) : (
+                          <span className="dirham-symbol">&#x00EA;</span>
+                        )}
                       </div>
                     </InputAdornment>
                   ),
@@ -453,7 +458,7 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFAutocompleteSearch
                 name="category_id"
-                label={t("Select Category")}
+                label={t('Select Category')}
                 // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={category?.map((item) => ({
                   label:
@@ -539,28 +544,40 @@ export default function PackageCreateForm({
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][min_price]`}
-                        label={t("City Min Price")}
+                        label={t('City Min Price')}
                         type="number"
                         inputProps={{ min: 0 }}
                         value={cityField.min_price}
                         onChange={(event) =>
                           handleCityFieldChange(index, 'min_price', event.target.value)
                         }
-                        suffix={t("AED")}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <span className="dirham-symbol">&#x00EA;</span>
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     </Grid>
 
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][max_price]`}
-                        label={t("City Max Price")}
+                        label={t('City Max Price')}
                         type="number"
                         inputProps={{ min: 0 }}
                         value={cityField.max_price}
                         onChange={(event) =>
                           handleCityFieldChange(index, 'max_price', event.target.value)
                         }
-                        suffix={t("AED")}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <span className="dirham-symbol">&#x00EA;</span>
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     </Grid>
 
@@ -580,7 +597,7 @@ export default function PackageCreateForm({
                 []}
 
               <Button variant="contained" onClick={handleAddCity} sx={{ mt: 2 }}>
-                {t("Add City")}
+                {t('Add City')}
               </Button>
             </Box>
 
@@ -593,7 +610,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label={t("Publish")}
+                label={t('Publish')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -605,7 +622,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label={t("Pickup Fee Included")}
+                label={t('Pickup Fee Included')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -617,7 +634,7 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label={t("Certificate Fee Included")}
+                label={t('Certificate Fee Included')}
               />
             </Grid>
             <Grid item xs={12} mt={1}>
@@ -629,12 +646,12 @@ export default function PackageCreateForm({
                     onChange={handleSwitchChange}
                   />
                 }
-                label={t("Pay By Cash")}
+                label={t('Pay By Cash')}
               />
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
-                <Typography variant="subtitle2">{t("Session inclusions")}</Typography>
+                <Typography variant="subtitle2">{t('Session inclusions')}</Typography>
                 <RHFEditor name="session_inclusions" />
               </Stack>
               {/* <RHFTextField name="session_inclusions" label="Session inclusions" /> */}
@@ -644,10 +661,10 @@ export default function PackageCreateForm({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {t("Create")}
+            {t('Create')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

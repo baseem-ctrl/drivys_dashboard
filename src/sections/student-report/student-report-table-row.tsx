@@ -51,7 +51,11 @@ export default function StudentReportsRow({ row }) {
       <TableCell>{row['Total Sessions'] ?? '0'}</TableCell>
       <TableCell>{row['Completed Sessions'] ?? '0'}</TableCell>
       <TableCell>{row['Category'] ?? 'N/A'}</TableCell>
-      <TableCell>{row['Amount Paid'] ?? '0'} AED</TableCell>
+      <TableCell>
+        {' '}
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row['Amount Paid'] ?? '0'}{' '}
+      </TableCell>
       <TableCell>
         <Chip
           label={row['Certificate Issued'] ? 'Yes' : 'No'}

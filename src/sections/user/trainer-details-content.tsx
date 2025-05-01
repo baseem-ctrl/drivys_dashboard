@@ -67,7 +67,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
     Trainerdetails?.id
   );
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const quickEdit = useBoolean();
   const confirm = useBoolean();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -182,24 +182,24 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                    {
-                      label: 'Max Cash Allowded in Hand',
-                      value: details?.max_cash_in_hand_allowed ?? 'N/A',
-                    },
-                    { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
-                    {
-                      label: 'Cash Clearance Date',
-                      value: details?.cash_clearance_date ?? 'N/A',
-                    },
-                    {
-                      label: 'Last Booking At',
-                      value: details?.last_booking_was ?? 'N/A',
-                    },
-                    {
-                      label: 'School Commission',
-                      value: details?.vendor_commission_in_percentage ?? 'N/A',
-                    },
-                  ]
+                      {
+                        label: 'Max Cash Allowded in Hand',
+                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                      },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      {
+                        label: 'Cash Clearance Date',
+                        value: details?.cash_clearance_date ?? 'N/A',
+                      },
+                      {
+                        label: 'Last Booking At',
+                        value: details?.last_booking_was ?? 'N/A',
+                      },
+                      {
+                        label: 'School Commission',
+                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                      },
+                    ]
                   : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -304,7 +304,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
       {details?.length < 1 && (
         <Grid item xs={12}>
           <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-            {t("No packages available. Click Add Package to create a new one.")}
+            {t('No packages available. Click Add Package to create a new one.')}
           </Typography>
         </Grid>
       )}
@@ -326,7 +326,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               },
             }}
           >
-            {t("Add Package")}
+            {t('Add Package')}
           </Button>
         </Grid>
       </Grid>
@@ -390,7 +390,10 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                     {/* Scrollable content box */}
                     <Box sx={{ px: 3, pt: 3, pb: 2, maxHeight: '180px', overflowY: 'auto' }}>
                       <Box display={'flex'}>
-                        <Typography variant="h6">{' AED'}</Typography>
+                        <Typography variant="h6">
+                          {' '}
+                          <span className="dirham-symbol">&#x00EA;</span>
+                        </Typography>
                         <Typography variant="h4">
                           {item?.price ? parseFloat(item?.price) : '0'}
                         </Typography>
@@ -421,13 +424,15 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
       )}
       <>
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
-          <DialogTitle>{t("Delete Package")}</DialogTitle>
+          <DialogTitle>{t('Delete Package')}</DialogTitle>
           <DialogContent>
-            <DialogContentText>{t("Are you sure you want to delete this package?")}</DialogContentText>
+            <DialogContentText>
+              {t('Are you sure you want to delete this package?')}
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={confirm.onFalse} color="primary">
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
 
             <LoadingButton
@@ -436,7 +441,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
-              {t("Delete")}
+              {t('Delete')}
             </LoadingButton>
           </DialogActions>
         </Dialog>
@@ -446,7 +451,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               handleEditPackage(selectedPackage);
             }}
           >
-            {t("Edit Package")}
+            {t('Edit Package')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -454,7 +459,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
               handleClose();
             }}
           >
-            {t("Delete Package")}
+            {t('Delete Package')}
           </MenuItem>
         </Menu>
         <TrainerPackageCreateEditForm
