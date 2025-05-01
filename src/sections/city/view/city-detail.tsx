@@ -124,7 +124,10 @@ export default function CityDetails({ onEdit, city }) {
                                 </Box>
                                 <Box component="span" sx={{ flex: 1 }}>
                                   <Typography variant="body2">
-                                    {`${city.certificate_price ?? '0'} AED`}
+                                    <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+                                      &#x00EA;
+                                    </span>{' '}
+                                    {city.certificate_price ?? '0'}
                                   </Typography>
                                 </Box>
                               </Box>

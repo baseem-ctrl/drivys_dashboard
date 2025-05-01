@@ -42,7 +42,11 @@ export default function RevenueReportRow({ row }) {
           <Typography variant="body2">{row['School Name'] || 'N/A'}</Typography>
         </TableCell>
         <TableCell>
-          <Typography variant="body2">{row['Bookings Revenue By School'] || '0'} AED</Typography>
+          <Typography variant="body2">
+            {' '}
+            <span className="dirham-symbol">&#x00EA;</span>
+            {row['Bookings Revenue By School'] || '0'}{' '}
+          </Typography>
         </TableCell>
         <TableCell>
           <Typography variant="body2">{row['Total Number Of Bookings'] || '0'}</Typography>

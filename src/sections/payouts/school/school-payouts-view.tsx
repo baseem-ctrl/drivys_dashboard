@@ -183,7 +183,15 @@ export default function SchoolPayoutPage() {
     const fields = [
       { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: t('Total Earnings'), value: `${item?.total_earning_from_booking ?? 0} ${t("AED")}` },
+      {
+        label: t('Total Earnings'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_earning_from_booking ?? 0}
+          </>
+        ),
+      },
       {
         label: t('Last Paid'),
         value: (
@@ -199,7 +207,16 @@ export default function SchoolPayoutPage() {
           </Box>
         ),
       },
-      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
+      {
+        label: t('Admin Payable Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
+      },
+
       {
         label: t('Action'),
         value: (
@@ -217,7 +234,7 @@ export default function SchoolPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                {t("Payouts")}
+                {t('Payouts')}
               </Button>
             </span>
           </Tooltip>
@@ -272,7 +289,16 @@ export default function SchoolPayoutPage() {
     const fields = [
       { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
-      { label: t('Total Eranings '), value: `${item?.total_earning_from_booking} ${t("AED")}` ?? '0 ${t("AED")}' },
+      {
+        label: t('Total Earnings'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_earning_from_booking ?? '0'}
+          </>
+        ),
+      },
+
       {
         label: t('Last Paid'),
         value: (
@@ -288,7 +314,17 @@ export default function SchoolPayoutPage() {
           </Box>
         ),
       },
-      { label: t('Admin Payable Amount'), value: `${item?.amount_required_from_admin} ${t("AED")}` ?? 'NA' },
+      {
+        label: t('Admin Payable Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
+      },
+
       {
         label: t('Action'),
         value: (
@@ -306,7 +342,7 @@ export default function SchoolPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                ${t("Payouts")}
+                ${t('Payouts')}
               </Button>
             </span>
           </Tooltip>
@@ -343,7 +379,7 @@ export default function SchoolPayoutPage() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("School Payout")}
+        heading={t('School Payout')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -390,7 +426,7 @@ export default function SchoolPayoutPage() {
               )
             }
 
-          // onClick={() => handleView(tour.id)}
+            // onClick={() => handleView(tour.id)}
           >
             <CardContent
               sx={{

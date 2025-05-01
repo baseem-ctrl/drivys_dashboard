@@ -663,9 +663,13 @@ const BookingDetailsComponent = () => {
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Payment Method')} :
+                        {t('Amount')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.sub_total || 'N/A'} AED`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.sub_total || 'N/A'}`}
+                      </Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
@@ -681,29 +685,42 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
+                        <span className="dirham-symbol">&#x00EA;</span>
                         {t('Amount Due')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.amount_due || 'N/A'} AED`}</Typography>
+                      <Typography>{`${bookingDetails?.amount_due || 'N/A'}`}</Typography>
                     </Box>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                         {t('Amount Paid')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.amount_paid || 'N/A'} AED`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.amount_paid || 'N/A'}`}
+                      </Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                         {t('Amount Refunded')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.amount_refunded || 'N/A'} AED`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.amount_refunded || 'N/A'}`}
+                      </Typography>
                     </Box>
                     {bookingDetails?.coupon_code && (
                       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                           {t('Coupon Used')} :
                         </Typography>
-                        <Typography>{`${bookingDetails?.coupon_code || 'N/A'} AED`}</Typography>
+                        <Typography>
+                          {' '}
+                          <span className="dirham-symbol">&#x00EA;</span>
+                          {`${bookingDetails?.coupon_code || 'N/A'}`}
+                        </Typography>
                       </Box>
                     )}
                     {bookingDetails?.wallet_amount_used !== '0.00' && (
@@ -711,9 +728,11 @@ const BookingDetailsComponent = () => {
                         <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                           {t('Wallet Amount Used')} :
                         </Typography>
-                        <Typography>{`${bookingDetails?.wallet_amount_used || 'N/A'} ${t(
-                          'AED'
-                        )}`}</Typography>
+                        <Typography>
+                          {' '}
+                          <span className="dirham-symbol">&#x00EA;</span>
+                          {`${bookingDetails?.wallet_amount_used || 'N/A'} `}
+                        </Typography>
                       </Box>
                     )}
                   </Grid>
@@ -723,14 +742,22 @@ const BookingDetailsComponent = () => {
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                         {t('Discount')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.discount || 'N/A'} AED`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.discount || 'N/A'}`}
+                      </Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                         {t('Total Amount')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.total || 'N/A'} AED`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.total || 'N/A'}`}
+                      </Typography>
                     </Box>
                   </Grid>
                 </Grid>

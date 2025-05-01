@@ -15,7 +15,7 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, InputAdornment, Tooltip } from '@mui/material';
 
 // utils
 import { useSnackbar } from 'src/components/snackbar';
@@ -195,9 +195,16 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
               <RHFTextField
                 name="certificate_price"
                 label="Certificate Price"
-                prefix="AED"
                 type="number"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <span className="dirham-symbol">&#x00EA;</span>
+                    </InputAdornment>
+                  ),
+                }}
               />
+
               <RHFTextField name="certificate_link" label="Certificate Link" type="url" />
               <RHFTextField name="price_per_km" label="Price Per Km" type="number" />
               <RHFTextField name="min_price" label="Min. Price" type="number" />

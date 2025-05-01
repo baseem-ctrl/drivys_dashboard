@@ -342,7 +342,10 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                     />
                     <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
                       <Box display={'flex'}>
-                        <Typography variant="h6">{' AED'}</Typography>
+                        <Typography variant="h6">
+                          {' '}
+                          <span className="dirham-symbol">&#x00EA;</span>
+                        </Typography>
                         <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
                       </Box>
 

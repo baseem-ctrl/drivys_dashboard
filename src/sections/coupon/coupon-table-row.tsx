@@ -80,11 +80,11 @@ export default function LanguageTableRow({
           </Label> */}
           {discount_type_id === 1 ? (
             <Label variant="soft" color="info">
-              {t("linked to")} {row?.package?.length} {t("packages")}
+              {t('linked to')} {row?.package?.length} {t('packages')}
             </Label>
           ) : discount_type_id === 2 ? (
             <Label variant="soft" color="info">
-              {t("linked to")} {categories?.length}  {t("categories")}
+              {t('linked to')} {categories?.length} {t('categories')}
             </Label>
           ) : (
             ''
@@ -97,8 +97,9 @@ export default function LanguageTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {use_percentage === 1 ? Number(value).toFixed(0) : value}
-          {use_percentage === 1 ? '%' : ' AED'}
+          {use_percentage === 1 ? '%' : <span className="dirham-symbol">&#x00EA;</span>}
         </TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{ending_date}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{limitation_times}</TableCell>
@@ -116,7 +117,7 @@ export default function LanguageTableRow({
       </TableRow>
 
       <LanguageCreateEditForm
-        title={t("Edit Coupon")}
+        title={t('Edit Coupon')}
         updateValue={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
@@ -137,7 +138,7 @@ export default function LanguageTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -147,22 +148,22 @@ export default function LanguageTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            {t("Delete")}
+            {t('Delete')}
           </Button>
         }
       />

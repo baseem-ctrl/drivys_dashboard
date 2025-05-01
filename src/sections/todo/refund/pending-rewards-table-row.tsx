@@ -104,7 +104,8 @@ export default function PendingRewardTableRow({ row, selected, reload }: Props) 
 
       <TableCell>
         <Typography fontSize="0.875rem">
-          {row?.reward_details?.reward_amount ?? t('n_a')} {t('aed')}
+          <span className="dirham-symbol">&#x00EA;</span>
+          {row?.reward_details?.reward_amount ?? '0'}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>

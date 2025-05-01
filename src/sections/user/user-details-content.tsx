@@ -694,9 +694,13 @@ export default function UserDetailsContent({
                   ? [
                       {
                         label: t('max_cash_allowed'),
-                        value: details.collected_max_cash_in_hand_allowed
-                          ? `${details.collected_max_cash_in_hand_allowed} AED`
-                          : 'N/A',
+                        value: (
+                          <>
+                            <span className="dirham-symbol">&#x00EA;</span>
+
+                            {details.collected_max_cash_in_hand_allowed ?? 'N/A'}
+                          </>
+                        ),
                       },
 
                       {

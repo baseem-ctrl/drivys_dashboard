@@ -131,14 +131,14 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>{t("User")}</TableCell>
-            <TableCell>{t("Email")}</TableCell>
-            <TableCell align="center">{t("Total")}</TableCell>
-            <TableCell align="center">{t("Total Sessions")}</TableCell>
-            <TableCell align="center">{t("Total Sessions Booked")}</TableCell>
-            <TableCell align="center">{t("Completed Sessions")}</TableCell>
-            <TableCell align="center">{t("Booking Status")}</TableCell>
-            <TableCell align="center">{t("Payment Status")}</TableCell>
+            <TableCell>{t('User')}</TableCell>
+            <TableCell>{t('Email')}</TableCell>
+            <TableCell align="center">{t('Total')}</TableCell>
+            <TableCell align="center">{t('Total Sessions')}</TableCell>
+            <TableCell align="center">{t('Total Sessions Booked')}</TableCell>
+            <TableCell align="center">{t('Completed Sessions')}</TableCell>
+            <TableCell align="center">{t('Booking Status')}</TableCell>
+            <TableCell align="center">{t('Payment Status')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -172,7 +172,11 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                   </Grid>
                 </TableCell>
                 <TableCell>{booking?.user?.email || 'N/A'}</TableCell>
-                <TableCell align="center">{booking?.total || 'N/A'} AED</TableCell>
+                <TableCell align="center">
+                  {' '}
+                  <span className="dirham-symbol">&#x00EA;</span>
+                  {booking?.total || 'N/A'}{' '}
+                </TableCell>
                 <TableCell>{booking?.package?.number_of_sessions || 'N/A'}</TableCell>
                 <TableCell>{booking?.no_of_sessions || 'N/A'}</TableCell>
                 <TableCell>{booking?.no_of_sessions_completed || 'N/A'}</TableCell>
@@ -183,12 +187,12 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.booking_status === 'PENDING'
                         ? 'info'
                         : booking?.booking_status === 'CANCELLED'
-                          ? 'error'
-                          : booking?.booking_status === 'IN PROGRESS'
-                            ? 'warning'
-                            : booking?.booking_status === 'CONFIRMED'
-                              ? 'secondary'
-                              : 'success'
+                        ? 'error'
+                        : booking?.booking_status === 'IN PROGRESS'
+                        ? 'warning'
+                        : booking?.booking_status === 'CONFIRMED'
+                        ? 'secondary'
+                        : 'success'
                     }
                     variant="soft"
                   />
@@ -200,12 +204,12 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                       booking?.payment_status === 'PENDING'
                         ? 'info'
                         : booking?.payment_status === 'FAILED'
-                          ? 'error'
-                          : booking?.payment_status === 'REFUNDED'
-                            ? 'warning'
-                            : booking?.payment_status === 'PARTIALLY PAID'
-                              ? 'primary'
-                              : 'success'
+                        ? 'error'
+                        : booking?.payment_status === 'REFUNDED'
+                        ? 'warning'
+                        : booking?.payment_status === 'PARTIALLY PAID'
+                        ? 'primary'
+                        : 'success'
                     }
                     variant="soft"
                   />
@@ -217,7 +221,7 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
               <TableCell colSpan={6} align="center">
                 <Box sx={{ py: 2 }}>
                   <Typography variant="h6" color="textSecondary">
-                    {t("No bookings available under this trainer")}
+                    {t('No bookings available under this trainer')}
                   </Typography>
                 </Box>
               </TableCell>

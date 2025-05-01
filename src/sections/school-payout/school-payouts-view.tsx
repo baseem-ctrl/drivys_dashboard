@@ -189,8 +189,14 @@ export default function SchoolAdminPayoutPage() {
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Total Earnings'),
-        value: `${item?.total_amount_earned_from_booking ?? 0} ${t('AED')}`,
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.total_amount_earned_from_booking ?? 0}
+          </>
+        ),
       },
+
       {
         label: t('Last Paid'),
         value: (
@@ -208,7 +214,12 @@ export default function SchoolAdminPayoutPage() {
       },
       {
         label: t('Admin Payable Amount'),
-        value: `${item?.amount_required_from_admin} ${t('AED')}` ?? 'NA',
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
       },
     ];
 
@@ -258,9 +269,16 @@ export default function SchoolAdminPayoutPage() {
       { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
-        label: t('Total Eranings '),
-        value: `${item?.total_amount_earned_from_booking} ${t('AED')}` ?? '0 ${t("AED")}',
+        label: t('Total Earnings'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+
+            {item?.total_amount_earned_from_booking ?? 0}
+          </>
+        ),
       },
+
       {
         label: t('Last Paid'),
         value: (
@@ -278,7 +296,12 @@ export default function SchoolAdminPayoutPage() {
       },
       {
         label: t('Admin Payable Amount'),
-        value: `${item?.amount_required_from_admin} ${t('AED')}` ?? 'NA',
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.amount_required_from_admin ?? 'NA'}
+          </>
+        ),
       },
     ];
 

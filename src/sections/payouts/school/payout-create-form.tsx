@@ -28,7 +28,7 @@ const PayoutSchema = Yup.object().shape({
 });
 
 export default function PayoutCreateForm({ open, onClose, vendorId, reload, amount }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const defaultValues = useMemo(
     () => ({
       amount: '',
@@ -81,7 +81,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{t("Create Payout")}</DialogTitle>
+      <DialogTitle>{t('Create Payout')}</DialogTitle>
       <DialogContent>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Box
@@ -98,7 +98,8 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             }}
           >
             <Typography sx={{ fontSize: '16px', fontWeight: 'bold', color: 'green' }}>
-              {t("Amount Required From Admin is")} {amount} {t("AED")}
+              {t('Amount Required From Admin is ')}
+              <span className="dirham-symbol">&#x00EA;</span> {amount}
             </Typography>
           </Box>
 
@@ -106,14 +107,19 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
               <RHFTextField
                 name="amount"
-                label={t("Amount")}
+                label={t('Amount')}
                 type="number"
                 control={control}
                 fullWidth
               />
 
-              <RHFSelect name="payment_method" label={t("Payment Method")} control={control} fullWidth>
-                <MenuItem value="">{t("Select Payment Method")} </MenuItem>
+              <RHFSelect
+                name="payment_method"
+                label={t('Payment Method')}
+                control={control}
+                fullWidth
+              >
+                <MenuItem value="">{t('Select Payment Method')} </MenuItem>
                 {paymentMethodEnum.map((method) => (
                   <MenuItem key={method.value} value={method.value}>
                     {method.name}
@@ -125,7 +131,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
               <RHFTextField
                 name="payment_method_details"
-                label={t("Payment Method Details")}
+                label={t('Payment Method Details')}
                 control={control}
                 multiline
                 rows={3}
@@ -133,7 +139,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
               />
               <RHFTextField
                 name="notes"
-                label={t("Notes")}
+                label={t('Notes')}
                 multiline
                 rows={3}
                 control={control}
@@ -142,11 +148,11 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
             </Box>
             <Box sx={{ width: '100%' }}>
               <Typography variant="subtitle1" color="primary" gutterBottom>
-                {t("Upload Proof of Payment")}
+                {t('Upload Proof of Payment')}
               </Typography>
               <RHFFileUpload
                 name="proof_file"
-                label={t("Proof of Payment")}
+                label={t('Proof of Payment')}
                 control={control}
                 accept="image/*"
                 required
@@ -156,14 +162,14 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
         </FormProvider>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t("Cancel")}</Button>
+        <Button onClick={onClose}>{t('Cancel')}</Button>
         <LoadingButton
           type="submit"
           variant="contained"
           loading={isSubmitting}
           onClick={handleSubmit(onSubmit)}
         >
-          {t("Submit")}
+          {t('Submit')}
         </LoadingButton>
       </DialogActions>
     </Dialog>

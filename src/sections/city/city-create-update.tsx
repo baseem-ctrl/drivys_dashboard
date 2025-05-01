@@ -19,7 +19,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFSwitch } from 'src/components/hook-form';
 import { createCityTranslation, updateCityTranslation } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, InputAdornment, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
@@ -247,8 +247,14 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
                 <RHFTextField
                   name="certificate_price"
                   label={t('Certificate Price')}
-                  prefix={t('AED')}
                   type="number"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <span className="dirham-symbol">&#x00EA;</span>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <RHFTextField name="certificate_link" label={t('Certificate Link')} type="url" />
               </>

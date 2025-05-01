@@ -95,7 +95,8 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
       </TableCell>
       <TableCell>
         <Typography fontSize="0.875rem">
-          {row?.reward_details?.reward_amount ?? 'N/A'} AED{' '}
+          <span className="dirham-symbol">&#x00EA;</span>
+          {row?.reward_details?.reward_amount ?? '0'}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>
