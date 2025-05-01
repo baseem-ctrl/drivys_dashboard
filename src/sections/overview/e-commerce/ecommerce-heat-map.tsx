@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import TrainerMap from './ecommerce-school-admin-map';
 import profile from '../../../../public/logo/avatar.png';
+import { useTranslation } from 'react-i18next';
 
 const containerStyle = {
   width: '100%',
@@ -48,6 +49,7 @@ interface Person {
 const HeatMap: React.FC = () => {
   const { isLoaded } = useGoogleMaps();
   const { t } = useLocales();
+  const { i18n } = useTranslation();
 
   const [trainers, setTrainers] = useState<Person[]>([]);
   const [students, setStudents] = useState<Person[]>([]);
@@ -66,7 +68,12 @@ const HeatMap: React.FC = () => {
         `${import.meta.env.VITE_HOST_API}admin/trainers/get-nearest-trainers-list`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
+          params: {
+            latitude: defaultLatitude,
+            longitude: defaultLongitude,
+            radius: 500,
+            locale: i18n.language,
+          },
         }
       );
       if (response?.data?.data) {
@@ -94,7 +101,12 @@ const HeatMap: React.FC = () => {
         `${import.meta.env.VITE_HOST_API}admin/studentMap/get-student-under-radius`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
+          params: {
+            latitude: defaultLatitude,
+            longitude: defaultLongitude,
+            radius: 500,
+            locale: i18n.language,
+          },
         }
       );
       if (response?.data?.data) {

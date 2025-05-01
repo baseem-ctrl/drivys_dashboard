@@ -411,6 +411,18 @@ export function useNavData() {
         { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
+    {
+      title: t('report'),
+      path: paths.dashboard.schoolReport.booking,
+      icon: ICONS.file,
+      children: [
+        { title: t('bookings'), path: paths.dashboard.schoolReport.booking },
+        { title: t('revenue'), path: paths.dashboard.schoolReport.revenue },
+        { title: t('trainer'), path: paths.dashboard.schoolReport.trainer },
+        { title: t('student'), path: paths.dashboard.schoolReport.student },
+        { title: t('school'), path: paths.dashboard.schoolReport.school },
+      ],
+    },
   ];
   const collectorRoutes = [
     // {

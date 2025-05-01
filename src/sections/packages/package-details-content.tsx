@@ -1076,7 +1076,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             packageId={details?.id}
             sessionNumber={details?.number_of_sessions}
           />{' '}
-          {documents && documents.length > 0 && (
+          {documents && documents.length > 0 && selectedTab === 0 && (
             <PackageDocumentDetails
               documents={documents}
               reload={revalidateDocuments}
