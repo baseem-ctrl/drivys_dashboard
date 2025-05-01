@@ -66,6 +66,11 @@ import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-ha
 import MappedRolePermissionListView from 'src/sections/mapped-roles-permission/view/mapped-roles-permission-view';
 import SupportlistingListView from 'src/sections/support/view/support-list-view';
 import SchoolAdminPayoutPage from 'src/sections/school-payout/school-payouts-view';
+import BookingReportListSchoolAdminView from 'src/sections/school-report-section/booking-report/view/booking-report-list-view';
+import RevenueReportListSchoolAdminView from 'src/sections/school-report-section/revenue-report/view/revenue-report-list-view';
+import TrainerReportListSchoolAdminView from 'src/sections/school-report-section/trainer-report/view/trainer-report-list-view';
+import SchoolReportListSchoolAdminView from 'src/sections/school-report-section/school-report/view/school-report-list-view';
+import StudentReportListSchoolAdminView from 'src/sections/school-report-section/student-report/view/student-report-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -385,6 +390,16 @@ const schooladminRoutes = [
       { element: <BookingSchoolAdminListView />, index: true },
       { path: ':id', element: <BookingSchoolAdminDetailsComponent /> },
       // { path: 'new', element: <HomeSliderCreatePage /> },
+    ],
+  },
+  {
+    path: 'report',
+    children: [
+      { path: 'school-bookings', element: <BookingReportListSchoolAdminView /> },
+      { path: 'school-revenue', element: <RevenueReportListSchoolAdminView /> },
+      { path: 'school-trainer', element: <TrainerReportListSchoolAdminView /> },
+      { path: 'school-student', element: <StudentReportListSchoolAdminView /> },
+      { path: 'school-reports', element: <SchoolReportListSchoolAdminView /> },
     ],
   },
   {
