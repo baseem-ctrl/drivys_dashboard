@@ -325,5 +325,12 @@ export const paths = {
     support: {
       list: `${ROOTS.DASHBOARD}/support`,
     },
+    schoolReport: {
+      booking: `${ROOTS.DASHBOARD}/report/school-bookings`,
+      revenue: `${ROOTS.DASHBOARD}/report/school-revenue`,
+      trainer: `${ROOTS.DASHBOARD}/report/school-trainer`,
+      student: `${ROOTS.DASHBOARD}/report/school-student`,
+      school: `${ROOTS.DASHBOARD}/report/school-reports`,
+    },
   },
 };

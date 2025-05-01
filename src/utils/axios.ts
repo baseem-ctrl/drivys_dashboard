@@ -409,4 +409,11 @@ export const endpoints = {
   support: {
     list: 'admin/support/get-list',
   },
+  schoolReportSessionPreview: {
+    booking: 'admin/reportBySchool/bookings',
+    revenue: 'admin/reportBySchool/revenues',
+    trainer: 'admin/reportBySchool/trainers',
+    student: 'admin/reportBySchool/students',
+    school: 'admin/reportBySchool/school',
+  },
 };
