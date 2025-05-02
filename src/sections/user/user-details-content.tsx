@@ -559,16 +559,23 @@ export default function UserDetailsContent({
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: t('name_as_per_profile_card'), value: details?.name ?? 'N/A' },
+                {
+                  label:
+                    currentLang.value === 'ar'
+                      ? t('name_as_per_profile_card_ar')
+                      : t('name_as_per_profile_card'),
+                  value:
+                    currentLang.value === 'ar' ? details?.name_ar ?? 'N/A' : details?.name ?? 'N/A',
+                },
                 ...(details?.user_type === 'TRAINER'
                   ? [
-                      { label: t('name_as_per_profile_card_ar'), value: details?.name_ar ?? 'N/A' },
                       {
                         label: t('certificate_expiry_date'),
                         value: details?.certificate_expiry_date ?? 'N/A',
                       },
                     ]
                   : []),
+
                 { label: t('email'), value: details?.email ?? 'N/A' },
 
                 {
