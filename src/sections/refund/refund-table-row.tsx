@@ -218,8 +218,8 @@ export default function RefundTableRow({
             row?.booking_status === 'PENDING'
               ? 'info'
               : row?.booking_status === 'CANCELLED'
-                ? 'error'
-                : 'success'
+              ? 'error'
+              : 'success'
           }
         >
           {row?.booking?.booking_status || 'N/A'}
@@ -232,24 +232,35 @@ export default function RefundTableRow({
             row.payment_status === 'PENDING'
               ? 'warning'
               : row.payment_status === 'FAILED'
-                ? 'error'
-                : 'success'
+              ? 'error'
+              : 'success'
           }
         >
           {row.booking?.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.refund_amount_sanctioned}</TableCell>
-      <TableCell>{row?.remaining_amount_to_refund}</TableCell>
+      <TableCell>
+        {' '}
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.refund_amount_sanctioned}
+      </TableCell>
+      <TableCell>
+        {' '}
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.remaining_amount_to_refund}
+      </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
       <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
       <TableCell>
-        <Tooltip title={refundStatus === 'approved' ? t('You can process the refund now') : ''} arrow>
+        <Tooltip
+          title={refundStatus === 'approved' ? t('You can process the refund now') : ''}
+          arrow
+        >
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {refundStatus === 'approved' ? (
               <Button variant="outlined" color="primary" onClick={handleRefundAmountClick}>
-                {t("Refund")}
+                {t('Refund')}
               </Button>
             ) : (
               <Select
@@ -290,7 +301,7 @@ export default function RefundTableRow({
         >
           <div style={{ padding: 16 }}>
             <TextField
-              label={t("Refund Amount")}
+              label={t('Refund Amount')}
               value={refundAmount}
               onChange={handleRefundAmountChange}
               type="number"
@@ -304,7 +315,7 @@ export default function RefundTableRow({
               onClick={handleRefundSubmit}
               disabled={!refundAmount || Number(refundAmount) <= 0}
             >
-              {t("Submit Refund")}
+              {t('Submit Refund')}
             </Button>
           </div>
         </Popover>
@@ -315,7 +326,7 @@ export default function RefundTableRow({
           .local()
           .format('DD/MM/YY h:mm a')}
         <Typography color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-          {t("Updated")} {' '}
+          {t('Updated')}{' '}
           {moment(row?.updated_at)
             .local()
             .format('DD/MM/YY h:mm a')}

@@ -47,7 +47,7 @@ const defaultFilters = {
 };
 
 export default function RefundListView() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const TABLE_HEAD = {
     all: [
@@ -175,14 +175,13 @@ export default function RefundListView() {
       case 0:
         return TABLE_HEAD.all;
       case 1:
-        return TABLE_HEAD.all;
-      case 2:
         return TABLE_HEAD.refunded;
+      case 2:
+        return TABLE_HEAD.all;
       default:
         return TABLE_HEAD.all;
     }
   })();
-
   const handleRowClick = (row: any) => {
     // router.push(paths.dashboard.booking.refundDetails(row?.id));
   };
@@ -226,7 +225,7 @@ export default function RefundListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading={t("Refund List")}
+        heading={t('Refund List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           { name: t('Refund'), href: paths.dashboard.booking.refund },
@@ -255,7 +254,7 @@ export default function RefundListView() {
         {selectedTab === 0 && (
           <Box ml="auto" width={200}>
             <FormControl fullWidth variant="outlined" size="small">
-              <InputLabel sx={{ mb: 0.5 }}>{t("Status")}</InputLabel>
+              <InputLabel sx={{ mb: 0.5 }}>{t('Status')}</InputLabel>
               <Select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -328,8 +327,8 @@ export default function RefundListView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => handleRowClick(row)}
                         reload={revalidateRefundRequests}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
@@ -337,7 +336,7 @@ export default function RefundListView() {
                     <TableRow>
                       <TableCell colSpan={currentTableHeaders.length} align="center">
                         <Typography variant="h6" color="textSecondary">
-                          {t("No data available")}
+                          {t('No data available')}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -414,8 +413,8 @@ export default function RefundListView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => handleRowClick(row)}
                         reload={revalidateRefundedRequestsList}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 

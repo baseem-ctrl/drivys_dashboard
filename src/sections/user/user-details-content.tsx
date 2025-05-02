@@ -670,16 +670,26 @@ export default function UserDetailsContent({
                       {
                         label: t('min_price'),
                         value:
-                          details?.user_preference?.min_price != null
-                            ? `${details.user_preference?.min_price} `
-                            : 'N/A',
+                          details?.user_preference?.min_price != null ? (
+                            <>
+                              <span className="dirham-symbol">&#x00EA;</span>
+                              {details.user_preference?.min_price}
+                            </>
+                          ) : (
+                            'N/A'
+                          ),
                       },
                       {
                         label: t('price_per_km'),
                         value:
-                          details?.user_preference?.price_per_km != null
-                            ? `${details.user_preference?.price_per_km} `
-                            : 'N/A',
+                          details?.user_preference?.price_per_km != null ? (
+                            <>
+                              <span className="dirham-symbol">&#x00EA;</span>
+                              {details.user_preference?.price_per_km}
+                            </>
+                          ) : (
+                            'N/A'
+                          ),
                       },
                     ]
                   : []),

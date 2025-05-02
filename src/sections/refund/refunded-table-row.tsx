@@ -33,7 +33,6 @@ export default function RefundedTableRow({
 }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
 
@@ -188,7 +187,11 @@ export default function RefundedTableRow({
           {row.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.sub_total}</TableCell>
+      <TableCell>
+        {' '}
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.sub_total}
+      </TableCell>
       <TableCell>{row?.payment_method}</TableCell>
       <TableCell>{row.refund_reason ? row.refund_reason : 'N/A'}</TableCell>
 

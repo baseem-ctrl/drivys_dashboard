@@ -239,8 +239,14 @@ export default function RefundTableRow({
           {row.booking?.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.refund_amount_sanctioned}</TableCell>
-      <TableCell>{row?.remaining_amount_to_refund}</TableCell>
+      <TableCell>
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.refund_amount_sanctioned || '0'}
+      </TableCell>
+      <TableCell>
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.remaining_amount_to_refund || '0'}
+      </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
       <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>

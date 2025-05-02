@@ -26,7 +26,7 @@
 }
 @font-face {
   font-family: 'UAESymbol';
-  font-weight: 700;
+  font-weight: lighter;
   font-style: normal;
   src:
     local('UAESymbol'),
@@ -35,4 +35,5 @@
 .dirham-symbol {
   font-family: 'UAESymbol';
   margin-right: 3px;
+  font-size: 16px;
 }

@@ -179,31 +179,37 @@ export default function SupportlistingListView() {
                 />
 
                 <TableBody>
-                  {supportLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData?.map((row) => (
-                        <SupportTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          // onDeleteRow={() => handleDeleteRow(row.id)}
-                          // onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          // revalidateHomeListing={revalidateNotifications}
-                          // onViewRow={() => handleRowClick(row)}
-                        />
-                      ))}
+                  {supportLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
-                  {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
-                  /> */}
+                  {!supportLoading &&
+                    tableData?.length > 0 &&
+                    tableData.map((row) => (
+                      <SupportTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={(e: any) => handleEditRow(e, row.id)}
+                        // revalidateHomeListing={revalidateNotifications}
+                        // onViewRow={() => handleRowClick(row)}
+                      />
+                    ))}
+
+                  {!supportLoading && (!tableData || tableData.length === 0) && (
+                    <TableRow>
+                      <TableCell colSpan={TABLE_HEAD?.length || 6} align="center">
+                        No data available
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Scrollbar>

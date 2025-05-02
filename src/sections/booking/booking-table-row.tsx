@@ -97,12 +97,12 @@ export default function BookingTableRow({
             row?.booking_status === 'PENDING'
               ? 'info'
               : row?.booking_status === 'CANCELLED'
-                ? 'error'
-                : row?.booking_status === 'IN PROGRESS'
-                  ? 'warning'
-                  : row?.booking_status === 'CONFIRMED'
-                    ? 'secondary'
-                    : 'success'
+              ? 'error'
+              : row?.booking_status === 'IN PROGRESS'
+              ? 'warning'
+              : row?.booking_status === 'CONFIRMED'
+              ? 'secondary'
+              : 'success'
           }
         >
           {row?.booking_status || 'N/A'}
@@ -115,18 +115,21 @@ export default function BookingTableRow({
             row.payment_status === 'PENDING'
               ? 'info'
               : row.payment_status === 'REFUNDED'
-                ? 'warning'
-                : row.payment_status === 'PARTIALLY PAID'
-                  ? 'default'
-                  : row.payment_status === 'FAILED'
-                    ? 'error'
-                    : 'success'
+              ? 'warning'
+              : row.payment_status === 'PARTIALLY PAID'
+              ? 'default'
+              : row.payment_status === 'FAILED'
+              ? 'error'
+              : 'success'
           }
         >
           {row.payment_status || 'N/A'}
         </Label>
       </TableCell>
-      <TableCell>{row?.sub_total}</TableCell>
+      <TableCell>
+        <span className="dirham-symbol">&#x00EA;</span>
+        {row?.sub_total}
+      </TableCell>
       <TableCell>{row?.payment_method}</TableCell>
       <TableCell>{row.coupon_code ? row.coupon_code : t('No Coupon')}</TableCell>
       <TableCell onClick={() => handleRowClick(row.id)}>

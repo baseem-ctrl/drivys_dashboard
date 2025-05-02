@@ -96,8 +96,13 @@ export default function LanguageTableRow({
           {is_applicable_to_transport_fee ? 'Pickup' : discount_type_text}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {use_percentage === 1 ? Number(value).toFixed(0) : value}
-          {use_percentage === 1 ? '%' : <span className="dirham-symbol">&#x00EA;</span>}
+          {use_percentage === 1 ? (
+            <>{Number(value).toFixed(0)}%</>
+          ) : (
+            <>
+              <span className="dirham-symbol">&#x00EA;</span> {value}
+            </>
+          )}
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{starting_date}</TableCell>
