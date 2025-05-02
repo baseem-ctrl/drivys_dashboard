@@ -58,6 +58,8 @@ const EditableForm: React.FC = () => {
     ),
     SLOT_DURATION: t('The duration of each booking slot.'),
     CASH_FEE: t('Additional fee applied when the payment method is cash.'),
+    FREE_PICKUP_FEE_FOR_CHANGING_TRAINER:
+      'If a student changes trainers within the same school, the first few kilometers are free.\n\nExample:\nSetting = 2 KM\nOld distance = 100 KM\nNew distance = 105 KM\nStudent pays only for 3 KM.',
   };
   const {
     appSettings: data,
@@ -189,12 +191,12 @@ const EditableForm: React.FC = () => {
       return (
         <Grid alignItems="center" spacing={2} sx={{ ml: 2 }}>
           {/* <Grid item xs={6}> */}
-          <Typography variant="body1" sx={{ mt: 2, mb: 2 }} fontWeight="500" color="gray">
+          {/* <Typography variant="body1" sx={{ mt: 2, mb: 2 }} fontWeight="500" color="gray">
             {item.key
               .replace(/_/g, ' ')
               .toLowerCase()
               .replace(/\b\w/g, (char) => char.toUpperCase())}
-          </Typography>
+          </Typography> */}
           {/* </Grid> */}
 
           <Grid item xs={11}>
@@ -244,7 +246,7 @@ const EditableForm: React.FC = () => {
                 fontSize: '16px',
                 fontWeight: 'bold',
                 borderRadius: '8px',
-                height: '38px',
+                height: '43px',
               }}
               onClick={() => handleSave(item.id)}
             >
@@ -307,11 +309,9 @@ const EditableForm: React.FC = () => {
           <TextField
             value={item.value}
             onChange={(e) => handleChange(item.id, e.target.value)}
-            label={t(item.key.replace(/_/g, ' '))}
+            // label={t(item.key.replace(/_/g, ' '))}
             fullWidth
             variant="outlined"
-            value={item.value}
-            onChange={(e) => handleChange(item.id, e.target.value)}
             sx={{
               backgroundColor: '#F8F8F8',
               borderRadius: '8px',
@@ -326,10 +326,10 @@ const EditableForm: React.FC = () => {
             sx={{
               mt: 2,
               textTransform: 'none',
-              fontSize: '16px',
+              fontSize: '17px',
               fontWeight: 'bold',
               borderRadius: '8px',
-              height: '38px',
+              height: '43px',
             }}
             onClick={() => handleSave(item.id)}
           >
@@ -385,7 +385,7 @@ const EditableForm: React.FC = () => {
                     >
                       <Box
                         sx={{
-                          width: item.key === 'PRIVACY POLICY' ? '100%' : '60%',
+                          width: item.key === 'PRIVACY POLICY' ? '100%' : '65%',
                           marginBottom: 2,
                         }}
                       >
