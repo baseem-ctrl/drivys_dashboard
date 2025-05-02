@@ -47,13 +47,15 @@ const EditableForm: React.FC = () => {
   const methods = useForm();
   const [editedFields, setEditedFields] = useState<Record<number, boolean>>({});
   const fieldTooltips: Record<string, string> = {
-    DEFAULT_MAX_CASH_IN_HAND_ALLOWED:
-      t('The maximum amount of cash a trainer is allowed to hold for transactions.'),
+    DEFAULT_MAX_CASH_IN_HAND_ALLOWED: t(
+      'The maximum amount of cash a trainer is allowed to hold for transactions.'
+    ),
     REWARD_FEE: t('The commission deducted from the reward given to the trainer by the student.'),
     TAX_RATE: t('The percentage of tax applied to the booking amount.'),
     CANCELLATION_FEE: t('The fee charged when a student cancels a booking.'),
-    MINIMUM_KM:
-      t('The minimum distance covered that determines the base price for the pickup option.'),
+    MINIMUM_KM: t(
+      'The minimum distance covered that determines the base price for the pickup option.'
+    ),
     SLOT_DURATION: t('The duration of each booking slot.'),
     CASH_FEE: t('Additional fee applied when the payment method is cash.'),
   };
@@ -170,7 +172,7 @@ const EditableForm: React.FC = () => {
       return (
         <Box width="100%" display="flex" flexDirection="column">
           <Typography variant="body1" color="primary" gutterBottom>
-            {t("Privacy policy")}
+            {t('Privacy policy')}
           </Typography>
           <PrivacyPolicy
             item={item}
@@ -211,12 +213,12 @@ const EditableForm: React.FC = () => {
               value={
                 selectedSchool
                   ? {
-                    label: selectedSchool.vendor_translations
-                      .slice(0, 2)
-                      .map((translation) => translation.name)
-                      .join(' - '),
-                    value: selectedSchool.id,
-                  }
+                      label: selectedSchool.vendor_translations
+                        .slice(0, 2)
+                        .map((translation) => translation.name)
+                        .join(' - '),
+                      value: selectedSchool.id,
+                    }
                   : null
               }
               onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
@@ -331,7 +333,7 @@ const EditableForm: React.FC = () => {
             }}
             onClick={() => handleSave(item.id)}
           >
-            {t("Save")}
+            {t('Save')}
           </Button>
         </Box>
       );
@@ -350,10 +352,10 @@ const EditableForm: React.FC = () => {
           }}
         >
           <Typography variant="h5" component="h1" color="primary">
-            {t("App Settings")}
+            {t('App Settings')}
           </Typography>
           <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
-            <InputLabel shrink={!!selectedLocale}>{t("Locale")}</InputLabel>
+            <InputLabel shrink={!!selectedLocale}>{t('Locale')}</InputLabel>
             <Select value={selectedLocale} onChange={handleLocaleChange} label="Locale">
               {localeOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>

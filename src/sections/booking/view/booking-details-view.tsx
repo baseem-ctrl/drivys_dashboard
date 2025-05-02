@@ -685,10 +685,13 @@ const BookingDetailsComponent = () => {
                   <Grid item xs={12} md={6}>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        <span className="dirham-symbol">&#x00EA;</span>
                         {t('Amount Due')} :
                       </Typography>
-                      <Typography>{`${bookingDetails?.amount_due || 'N/A'}`}</Typography>
+                      <Typography>
+                        {' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {`${bookingDetails?.amount_due || 'N/A'}`}
+                      </Typography>
                     </Box>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
@@ -786,7 +789,9 @@ const BookingDetailsComponent = () => {
                   {t('Total Amount')} :
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.total ? `$${bookingDetails.total}` : 'N/A'}
+                  <span className="dirham-symbol">&#x00EA;</span>
+
+                  {bookingDetails.total ? `${bookingDetails.total}` : '0'}
                 </Typography>
 
                 <TableContainer component={Paper} sx={{ mt: 2 }}>

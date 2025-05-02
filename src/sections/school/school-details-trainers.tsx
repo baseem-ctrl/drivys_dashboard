@@ -378,11 +378,27 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
 
                   {
                     label: t('hand_cash_allowed'),
-                    value: trainer?.max_cash_in_hand_allowed ?? t('n/a'),
+                    value:
+                      trainer?.max_cash_in_hand_allowed != null ? (
+                        <>
+                          <span className="dirham-symbol">&#x00EA;</span>
+                          {trainer.max_cash_in_hand_allowed}
+                        </>
+                      ) : (
+                        t('n/a')
+                      ),
                   },
                   {
                     label: t('cash_in_hand'),
-                    value: trainer?.cash_in_hand ?? t('n/a'),
+                    value:
+                      trainer?.cash_in_hand != null ? (
+                        <>
+                          <span className="dirham-symbol">&#x00EA;</span>
+                          {trainer.cash_in_hand}
+                        </>
+                      ) : (
+                        t('n/a')
+                      ),
                   },
 
                   {
@@ -433,7 +449,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-        // dense={table.dense}
+          // dense={table.dense}
         />
       )}
       <ConfirmDialog
