@@ -1,9 +1,11 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
+
 // utils
 import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 // types
 import { IProductItem } from 'src/types/product';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +29,6 @@ interface useGetProductsParams {
 export function useGetProducts({
   limit,
   page,
-  locale,
   search,
   weight,
   price_max,
@@ -40,6 +41,8 @@ export function useGetProducts({
   weight_min,
   in_stock,
 }: useGetProductsParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -74,6 +77,7 @@ export function useGetProducts({
     weight_min,
     in_stock,
   ]);
+
   const fullUrl = useMemo(
     () => `${endpoints.product.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
