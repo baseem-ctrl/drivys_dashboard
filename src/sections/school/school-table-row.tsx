@@ -58,7 +58,7 @@ export default function SchoolTableRow({
   isBulkEdit,
   selectedRows,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     vendor_translations,
     email,
@@ -69,9 +69,10 @@ export default function SchoolTableRow({
     certificate_commission_in_percentage,
     id,
   } = row;
+
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
+  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1, i18n.language);
 
   const currentVendorName = vendor_user?.user?.name;
 
@@ -219,8 +220,8 @@ export default function SchoolTableRow({
           data?.user_id !== undefined
             ? data.user_id
             : vendor_user?.user !== null
-              ? vendor_user.user_id
-              : '',
+            ? vendor_user.user_id
+            : '',
         is_active: data?.is_active ? 1 : 0,
         certificate_commission_in_percentage: data?.certificate_commission_in_percentage || 0,
         create_new_user: 0,
@@ -473,11 +474,11 @@ export default function SchoolTableRow({
                 return (
                   <Select {...field} value={selectedValue} displayEmpty>
                     <MenuItem value="" disabled>
-                      {t("Select School Owner")}
+                      {t('Select School Owner')}
                     </MenuItem>
 
                     {schoolAdmins.admins.length === 0 ? (
-                      <MenuItem disabled>{t("No users available")}</MenuItem>
+                      <MenuItem disabled>{t('No users available')}</MenuItem>
                     ) : (
                       schoolAdmins.admins.map((option: any) => (
                         <MenuItem
@@ -575,7 +576,7 @@ export default function SchoolTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          {t("View")}
+          {t('View')}
         </MenuItem>
 
         {!row?.is_default && (

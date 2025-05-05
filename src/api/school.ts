@@ -279,16 +279,17 @@ export function RemoveTrainerFromSchool(id: any) {
   const response = drivysSmasher(URL);
   return response;
 }
-export function useGetAllSchoolAdmin(limit: number, page: number) {
+export function useGetAllSchoolAdmin(limit: number, page: number, locale?: string) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
+    if (locale) params.locale = locale;
     params.has_school = 0;
 
     return params;
-  }, [limit, page]);
+  }, [limit, page, locale]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
@@ -311,7 +312,6 @@ export function useGetAllSchoolAdmin(limit: number, page: number) {
     mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
     const DelivereyData = data?.data || [];
     return {
@@ -329,6 +329,7 @@ export function useGetAllSchoolAdmin(limit: number, page: number) {
     revalidateSchoolList,
   };
 }
+
 // function to fetch booking details by a student's ID
 export function useGetBookingByStudentId(studentId: string) {
   const URL = `${endpoints.booking.getBookingById}?student_id=${studentId}`;

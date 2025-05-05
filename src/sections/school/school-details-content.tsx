@@ -52,6 +52,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { InfoOutlined } from '@mui/icons-material';
 import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -67,13 +68,15 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
     details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
   );
   const [editMode, setEditMode] = useState(false);
+  const { i18n } = useTranslation();
+
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;
   const [selectedState, setSelectedState] = useState('');
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-  const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1);
+  const { schoolAdminList } = useGetAllSchoolAdmin(1000, 1, i18n.language);
 
   const currentVendorName = details?.user?.name;
 
