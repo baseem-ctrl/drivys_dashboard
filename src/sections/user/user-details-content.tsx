@@ -24,6 +24,7 @@ import {
   Paper,
   InputAdornment,
   Tooltip,
+  Popover,
 } from '@mui/material';
 // utils
 // import { fDate } from 'src/utils/format-time';
@@ -94,6 +95,7 @@ import TrainerSessionsTable from './student-review-table';
 import TrainerReviewsTable from './trainer-review-table';
 import StudentReviewRow from '../student-review/review-table-row';
 import StudentReviewsTable from './student-review-table';
+import { DatePicker } from '@mui/x-date-pickers';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -155,6 +157,22 @@ export default function UserDetailsContent({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
   });
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [expiryDate, setExpiryDate] = useState(null);
+  const handleVerifyClick = (event) => {
+    if (details?.certificate_expiry_date) {
+      handleVerify();
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'expiry-popover' : undefined;
   // Function to handle map click and update lat/lng values
   const [addressForm, setAddressForm] = useState({
     // State for form fields
@@ -333,6 +351,8 @@ export default function UserDetailsContent({
       const body = {
         user_id: details?.id,
         is_verified: details?.verified_at === null ? 1 : 0,
+        certificate_expiry_date:
+          details?.certificate_expiry_date || moment(expiryDate).format('YYYY-MM-DD'),
       };
       const response = await updateUser(body);
       if (response) {
@@ -370,12 +390,12 @@ export default function UserDetailsContent({
       }
     }
   };
-  const expiryDate = details?.certificate_expiry_date
+  const givenExpiryDate = details?.certificate_expiry_date
     ? parseISO(details.certificate_expiry_date)
     : null;
 
   const today = new Date();
-  const daysRemaining = expiryDate ? differenceInDays(expiryDate, today) : null;
+  const daysRemaining = givenExpiryDate ? differenceInDays(givenExpiryDate, today) : null;
 
   const statusColor = daysRemaining <= 0 ? 'error' : daysRemaining <= 30 ? 'warning' : 'success';
 
@@ -868,15 +888,55 @@ export default function UserDetailsContent({
                               variant="outlined"
                               sx={{ fontWeight: 'bold' }}
                             />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              startIcon={<CheckCircleIcon />}
-                              sx={{ padding: '6px 16px', minWidth: '100px' }}
-                              onClick={handleVerify}
-                            >
-                              {t('verify')}
-                            </Button>
+                            <>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<CheckCircleIcon />}
+                                sx={{ padding: '6px 16px', minWidth: '100px' }}
+                                onClick={handleVerifyClick}
+                              >
+                                Verify
+                              </Button>
+
+                              <Popover
+                                id={id}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                  vertical: 'bottom',
+                                  horizontal: 'left',
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    p: 2,
+                                    width: 250,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                  }}
+                                >
+                                  <DatePicker
+                                    label="Certificate Expiry Date"
+                                    value={expiryDate}
+                                    onChange={(newValue) => setExpiryDate(newValue)}
+                                    slotProps={{ textField: { fullWidth: true } }}
+                                  />
+
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                      handleVerify();
+                                    }}
+                                  >
+                                    Submit
+                                  </Button>
+                                </Box>
+                              </Popover>
+                            </>
                           </Box>
                         ) : (
                           <Chip
@@ -1999,7 +2059,7 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
-          {details?.user_type === 'TRAINER' && expiryDate && (
+          {details?.user_type === 'TRAINER' && givenExpiryDate && (
             <Card
               sx={{
                 mt: 3,
