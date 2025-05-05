@@ -41,18 +41,15 @@ export function useGetAllVendorCommissions(page: number, limit: number) {
 
 // Fetch all vendor commissions with pagination
 export function useGetAllVendorCommissionList(page: number, limit: number) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-    if (page) {
-      queryParams = { ...queryParams, page: page + 1 };
-    } else {
-      queryParams = { ...queryParams, page: 1 };
-    }
-    if (limit) {
-      queryParams = { ...queryParams, limit };
-    } else {
-      queryParams = { ...queryParams, limit: 10 };
-    }
+    let queryParams: Record<string, any> = {
+      page: page ? page + 1 : 1,
+      limit: limit || 10,
+      locale,
+    };
 
     return `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(queryParams)}`;
   };
@@ -76,6 +73,7 @@ export function useGetAllVendorCommissionList(page: number, limit: number) {
 
   return { ...memoizedValue, revalidateVendorCommissions };
 }
+
 export function updateCommission(body: any) {
   const URL = endpoints.commission.updateCommission;
   const response = drivysCreator([URL, body]);
