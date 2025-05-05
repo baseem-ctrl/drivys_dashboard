@@ -60,7 +60,7 @@ type Props = {
 };
 
 export default function PackageDetails({ details, loading, reload }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [openAddCityDialog, setOpenAddCityDialog] = useState(false);
   const handleOpenAddCityDialog = () => {
@@ -96,6 +96,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     limit: 1000,
     page: 1,
     search: searchCategory,
+    locale: i18n.language,
   });
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {

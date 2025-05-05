@@ -50,13 +50,17 @@ export default function CouponDialog({
   updateValue,
   ...other
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [categoryOptions, setCategoryOptions] = useState([]);
   // const [productOptions, setProductOptions] = useState([]);
   const [selectedDiscountType, setSelectedDiscountType] = useState('');
 
-  const { category } = useGetAllCategory(0, 1000);
+  const { category } = useGetAllCategory({
+    limit: 0,
+    page: 1000,
+    locale: i18n.language,
+  });
   const { products } = useGetProducts({ page: 0, limit: 1000 });
   const { packageList, packageLoading } = useGetPackage();
   const productOptions = packageList.flatMap((pkg) =>

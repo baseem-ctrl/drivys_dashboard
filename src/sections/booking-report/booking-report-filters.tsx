@@ -28,6 +28,7 @@ import {
   useGetPaymentStatusEnum,
 } from 'src/api/enum';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 export default function BookingReportFilter({ filters, onFilters }: any) {
   const { users } = useGetUsers({ page: 0, limit: 1000, user_types: 'STUDENT' });
@@ -41,11 +42,13 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
     bookingStatusValidating,
     revalidateBookingStatusEnum,
   } = useGetBookingStatusEnum();
+  const { i18n } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
   const handleFilterPaymentStatus = (newValue: string) => {
     onFilters({ ...filters, booking_status: newValue });

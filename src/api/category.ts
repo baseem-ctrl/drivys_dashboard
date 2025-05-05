@@ -26,7 +26,8 @@ export function useGetAllCategory({
   published,
   parent_id,
   has_child,
-}: useGetCategoryParams = {}) {
+  locale,
+}: useGetCategoryParams & { locale?: string } = {}) {
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
@@ -35,9 +36,11 @@ export function useGetAllCategory({
     if (parent_id) params.parent_id = parent_id;
     if (published || published === '0') params.published = published;
     if (has_child || has_child === '0') params.has_child = has_child;
+    if (locale) params.locale = locale;
 
     return params;
-  }, [limit, page, search, parent_id, published]);
+  }, [limit, page, search, parent_id, published, has_child, locale]);
+
   const getTheFullUrl = useMemo(
     () => `${endpoints.category.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
@@ -54,14 +57,16 @@ export function useGetAllCategory({
       categoryEmpty: !isLoading && data?.data?.length === 0,
       totalpages: data?.total || 0,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [data?.data, error, isLoading, isValidating]
   );
+
   const revalidateCategory = () => {
     mutate(getTheFullUrl);
   };
+
   return { ...memoizedValue, revalidateCategory };
 }
+
 // ----------------------------------------------------------------------
 
 export function deleteCategory(category_translation_id: any, pictures_ids: any) {

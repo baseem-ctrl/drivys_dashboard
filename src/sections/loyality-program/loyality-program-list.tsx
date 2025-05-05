@@ -9,7 +9,6 @@ import { useRouter } from 'src/routes/hooks';
 // types
 import { IJobItem } from 'src/types/job';
 //
-import { useGetAllCategory } from 'src/api/category';
 import LoyalityProgramItem from './loyality-program-item';
 import { useGetLoyaltyProgramList } from 'src/api/loyality';
 

@@ -27,6 +27,7 @@ import { MenuItem, OutlinedInput, Select } from '@mui/material';
 import { useGetAllCity } from 'src/api/city';
 import { useGetGearEnum } from 'src/api/users';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -63,12 +64,14 @@ export default function TrainerFilters({
 }: Props) {
   const [searchCategory, setSearchCategory] = useState('');
   const { t } = useLocales();
+  const { i18n } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
     search: searchCategory,
+    locale: i18n.language,
   });
   const { city, cityLoading } = useGetAllCity({
     limit: 1000,

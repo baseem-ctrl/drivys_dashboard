@@ -32,7 +32,6 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { IJobItem, IJobFilters, IJobFilterValue } from 'src/types/job';
 //
 import { CircularProgress, TableCell, TableRow, Box } from '@mui/material';
-import { useGetAllCategory } from 'src/api/category';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import JobSort from '../job-sort';
 import JobSearch from '../job-search';

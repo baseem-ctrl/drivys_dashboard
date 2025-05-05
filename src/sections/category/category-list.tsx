@@ -10,6 +10,7 @@ import { IJobItem } from 'src/types/job';
 //
 import CategoryItem from './category-item';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -31,12 +32,15 @@ export default function CategoryList({
 }: Props) {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState('');
+  const { i18n } = useTranslation();
+
   const { category, categoryLoading, totalpages, categoryError, revalidateCategory } =
     useGetAllCategory({
       limit: 1000,
       page: 1,
       search: searchValue ?? '',
       has_child: 1,
+      locale: i18n.language,
     });
 
   const handleView = useCallback(

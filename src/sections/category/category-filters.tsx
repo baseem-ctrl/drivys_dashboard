@@ -21,6 +21,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useGetAllCategory } from 'src/api/category';
 import { useLocales } from 'src/locales';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -68,11 +69,13 @@ export default function CategoryFilters({
   setParentId,
 }: Props) {
   const { t } = useLocales();
+  const { i18n } = useTranslation();
 
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
     has_child: 1,
+    locale: i18n.language,
   });
 
   let parentCategoryOptions = category?.map((item) => {
