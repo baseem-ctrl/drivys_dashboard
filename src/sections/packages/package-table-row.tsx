@@ -68,13 +68,14 @@ export default function PackageTableRow({
     drivys_commision,
     vendor_id,
   } = row;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
     published: 1,
+    locale: i18n.language,
   });
   const [editingRowId, setEditingRowId] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');

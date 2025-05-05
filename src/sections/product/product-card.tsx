@@ -34,6 +34,7 @@ import { createProduct, deleteProduct, deleteProductById, updateProduct } from '
 import { useGetAllLanguage } from 'src/api/language';
 import { useGetAllCategory } from 'src/api/category';
 import ImagesPerProductView from './images-dialog';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -67,6 +68,7 @@ export default function ProductCard({
   const deletecustomer = useBoolean();
 
   const { language } = useGetAllLanguage(0, 1000);
+  const { i18n } = useTranslation();
 
   const [selectedImageIds, setSelectedImageIds] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState(
@@ -98,6 +100,7 @@ export default function ProductCard({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
+    locale: i18n.language,
   });
 
   useEffect(() => {

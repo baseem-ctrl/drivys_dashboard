@@ -15,6 +15,7 @@ import { useGetAllCity } from 'src/api/city';
 import { addCertificateRequest } from 'src/api/certificate';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 // import RHFAutocompleteSearch from 'src/components/RHFAutocompleteSearch'; // Import the RHFAutocompleteSearch component
 
@@ -22,6 +23,7 @@ export default function GenerateCertificateForm() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const { i18n } = useTranslation();
 
   const { users: studentUsers, usersLoading: studentUsersLoading } = useGetUsers({
     page: 0,
@@ -38,6 +40,7 @@ export default function GenerateCertificateForm() {
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
   const categoryOptions = category?.map((cat) => {
     const firstTranslation = cat.category_translations[0];

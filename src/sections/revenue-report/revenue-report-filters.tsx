@@ -7,6 +7,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 export default function RevenueReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -17,10 +18,13 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
   });
   const datePickerRef = useRef<HTMLDivElement>(null);
   const clearFilterClicked = useRef(false);
+  const { i18n } = useTranslation();
+
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
 
   const handleFilterCategory = (newValue: string) => {

@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useRef, useState } from 'react';
 import { enUS } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 export default function StudentReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -15,6 +16,8 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     endDate: new Date(),
     key: 'selection',
   });
+  const { i18n } = useTranslation();
+
   const datePickerRef = useRef<HTMLDivElement>(null);
   const clearFilterClicked = useRef(false);
   const { city, cityLoading } = useGetAllCity({
@@ -25,6 +28,7 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
   const { users } = useGetUsers({
     page: 0,

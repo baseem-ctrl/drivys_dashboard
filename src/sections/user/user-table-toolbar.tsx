@@ -17,7 +17,6 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useGetGearEnum } from 'src/api/users';
 import { useGetSchool } from 'src/api/school';
-import { useGetAllCategory } from 'src/api/category';
 import { useGetAllCity } from 'src/api/city';
 import { useTranslation } from 'react-i18next';
 
@@ -42,7 +41,6 @@ const StatusOptions = [
 ];
 
 export default function UserTableToolbar({ filters, onFilters, user_type, roleOptions }: Props) {
-
   const { t } = useTranslation();
   const popover = usePopover();
 
@@ -83,7 +81,7 @@ export default function UserTableToolbar({ filters, onFilters, user_type, roleOp
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>{t("Status")}</InputLabel>
+          <InputLabel>{t('Status')}</InputLabel>
 
           <Select
             // multiple
@@ -111,7 +109,7 @@ export default function UserTableToolbar({ filters, onFilters, user_type, roleOp
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder={t("Search...")}
+            placeholder={t('Search...')}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

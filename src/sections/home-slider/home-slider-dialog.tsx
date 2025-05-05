@@ -19,8 +19,6 @@ import FormProvider, {
 } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import * as Yup from 'yup';
-import { useGetAllCategory } from 'src/api/category';
-import { useGetProducts } from 'src/api/product';
 import { AddSlider, EditSlider } from 'src/api/home-slider';
 import { Button, Dialog, DialogContent, DialogTitle, MenuItem, Typography } from '@mui/material';
 import { fData } from 'src/utils/format-number';
@@ -238,7 +236,7 @@ export default function HomeSliderDialog({
 
               <RHFSelect
                 name="language"
-                label={t("Language")}
+                label={t('Language')}
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
               >
@@ -249,12 +247,12 @@ export default function HomeSliderDialog({
                     </MenuItem>
                   ))
                 ) : (
-                  <MenuItem disabled>{t("No languages available")}</MenuItem> // Placeholder when no languages are available
+                  <MenuItem disabled>{t('No languages available')}</MenuItem> // Placeholder when no languages are available
                 )}
               </RHFSelect>
               <RHFSelect
                 name="position"
-                label={t("Position")}
+                label={t('Position')}
                 value={selectedPosition}
                 onChange={(e) => setSelectedPosition(e.target.value)} // Update position state
               >
@@ -269,11 +267,11 @@ export default function HomeSliderDialog({
               />
               <RHFSwitch name="published" label={t('Published')} />
             </Box>
-            <h5>{t("Images")}:</h5>
+            <h5>{t('Images')}:</h5>
             <Box>
               {/* Button to open the image selection dialog */}
               <Button variant="contained" onClick={() => setImageDialogOpen(true)}>
-                {t("Select Images")}
+                {t('Select Images')}
               </Button>
 
               {/* Image Preview Component */}
@@ -297,7 +295,7 @@ export default function HomeSliderDialog({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => { }}
+            apiCall={() => {}}
             isSubmitting={isSubmitting}
           />
         </FormProvider>

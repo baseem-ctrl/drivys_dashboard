@@ -71,6 +71,7 @@ import { useGetStateList } from 'src/api/state';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { InfoOutlined } from '@mui/icons-material';
 import { useGetRoles } from 'src/api/roles-and-permission';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -114,11 +115,14 @@ export default function UserNewEditForm({
   const [searchCategory, setSearchCategory] = useState('');
   const [filteredValues, setFilteredValues] = useState(enumData);
   const { enqueueSnackbar } = useSnackbar();
+  const { i18n } = useTranslation();
+
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
     search: searchCategory,
+    locale: i18n.language,
   });
   const [searchValue, setSearchValue] = useState('');
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({

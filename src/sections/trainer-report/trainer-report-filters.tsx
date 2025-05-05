@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { enUS } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 export default function TrainerReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -30,10 +31,13 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     user_types: 'TRAINER',
   });
+  const { i18n } = useTranslation();
+
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
 
   const handleFilterCategory = (newValue: string) => {

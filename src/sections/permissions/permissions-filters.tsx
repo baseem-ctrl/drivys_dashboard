@@ -28,9 +28,12 @@ import {
   useGetPaymentStatusEnum,
 } from 'src/api/enum';
 import { useGetAllCategory } from 'src/api/category';
+import { useTranslation } from 'react-i18next';
 
 export default function PermissionFilter({ filters, onFilters }: any) {
   const { users } = useGetUsers({ page: 0, limit: 1000, user_types: 'STUDENT' });
+  const { i18n } = useTranslation();
+
   const { users: trainerUsers } = useGetUsers({ page: 0, limit: 1000, user_types: 'TRAINER' });
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
@@ -46,6 +49,7 @@ export default function PermissionFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
   const handleFilterPaymentStatus = (newValue: string) => {
     onFilters({ ...filters, booking_status: newValue });

@@ -20,6 +20,7 @@ import { useGetAllCategory } from 'src/api/category';
 import { useGetAllCity } from 'src/api/city';
 import { useGetGearEnum, useGetUsers } from 'src/api/users';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -47,10 +48,13 @@ export default function RefundFilters({
   canReset,
   onResetFilters,
 }: Props) {
+  const { i18n } = useTranslation();
+
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 0,
     published: '1',
+    locale: i18n.language,
   });
   const { city } = useGetAllCity({
     limit: 1000,

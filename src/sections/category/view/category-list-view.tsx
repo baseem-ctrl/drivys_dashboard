@@ -42,6 +42,7 @@ import JobSearch from '../job-search';
 import CategoryFilters from '../category-filters';
 import JobFiltersResult from '../job-filters-result';
 import CardSkeleton from '../card-skeleton';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -77,6 +78,7 @@ export default function CategoryListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   const is_published_value = isPublishMap[filters.published] || null;
+  const { i18n } = useTranslation();
 
   const { category, categoryLoading, totalpages, revalidateCategory, categoryError } =
     useGetAllCategory({
@@ -85,6 +87,7 @@ export default function CategoryListView() {
       search: filters.name,
       published: is_published_value,
       parent_id: filters?.parent_id?.value,
+      locale: i18n.language,
     });
 
   const [tableData, setTableData] = useState<any>([]);
