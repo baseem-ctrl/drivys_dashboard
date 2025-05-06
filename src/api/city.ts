@@ -174,14 +174,18 @@ interface UseGetPackageCityListParams {
 }
 
 export function useGetPackageCityList({ city_id, page, limit }: UseGetPackageCityListParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (city_id) params.city_id = city_id;
     if (page) params.page = page + 1;
     if (limit) params.limit = limit;
+    if (locale) params.locale = locale;
 
     return params;
-  }, [city_id, page, limit]);
+  }, [city_id, page, limit, locale]);
 
   const fullUrl = useMemo(
     () => `${endpoints.city.getPackageList}?${new URLSearchParams(queryParams)}`,
