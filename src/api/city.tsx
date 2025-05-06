@@ -8,25 +8,29 @@ import {
 } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import React, { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Fetch all cities with pagination
+
 export function useGetAllCities(page: number, limit: number) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
-    let queryPrams = {};
-    if (page) {
-      queryPrams = { ...queryPrams, page: page + 1 };
-    } else {
-      queryPrams = { ...queryPrams, page: 1 };
+    let queryParams: Record<string, any> = {
+      page: page ? page + 1 : 1,
+      limit: limit || 10,
+    };
+
+    if (locale) {
+      queryParams.locale = locale;
     }
-    if (limit) {
-      queryPrams = { ...queryPrams, limit };
-    } else {
-      queryPrams = { ...queryPrams, limit: 10 };
-    }
-    return `${endpoints.city.getByList}?${new URLSearchParams(queryPrams)}`;
+
+    return `${endpoints.city.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
   const memoizedValue = useMemo(
     () => ({
       cities: data?.data as any,

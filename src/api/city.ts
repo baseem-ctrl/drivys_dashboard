@@ -2,6 +2,7 @@ import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 export function createCategory(body: any) {
@@ -18,6 +19,7 @@ interface useGetCategoryParams {
   is_published?: any;
   parent_id?: any;
 }
+
 export function useGetAllCity({
   limit,
   page,
@@ -25,6 +27,9 @@ export function useGetAllCity({
   is_published,
   parent_id,
 }: useGetCategoryParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
@@ -32,9 +37,10 @@ export function useGetAllCity({
     if (search) params.search = search;
     if (parent_id) params.parent_id = parent_id;
     if (is_published || is_published === '0') params.is_published = is_published;
-
+    if (locale) params.locale = locale;
     return params;
-  }, [limit, page, search, parent_id, is_published]);
+  }, [limit, page, search, parent_id, is_published, locale]);
+
   const getTheFullUrl = useMemo(
     () => `${endpoints.city.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
@@ -51,34 +57,33 @@ export function useGetAllCity({
       cityEmpty: !isLoading && data?.data?.length === 0,
       totalpages: data?.total || 0,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [data?.data, error, isLoading, isValidating]
   );
+
   const revalidateCategory = () => {
     mutate(getTheFullUrl);
   };
+
   return { ...memoizedValue, revalidateCategory };
 }
-export function useGetAllCities(page: number, limit: number, searchQuery: string, locale: string) {
+
+export function useGetAllCities(page: number, limit: number, searchQuery: string) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
-    let queryParams: any = {
+    const queryParams: Record<string, any> = {
       limit: limit || 100,
       page: page ? page + 1 : 1,
     };
-
-    // Add search query and locale to the request if provided
-    if (searchQuery) {
-      queryParams.search = searchQuery;
-    }
-
-    if (locale) {
-      queryParams.locale = locale;
-    }
+    if (searchQuery) queryParams.search = searchQuery;
+    if (locale) queryParams.locale = locale;
 
     return `${endpoints.city.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
   const memoizedValue = useMemo(
     () => ({
       cities: data?.data as any,
