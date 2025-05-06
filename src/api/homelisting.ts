@@ -2,6 +2,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -20,14 +21,16 @@ interface useGetDelivereyParams {
 export function useGetHomeListing({
   limit,
   page,
-  locale,
   search,
   status,
   is_active,
   display_order,
   catalogue_type,
   trainer_id,
-}: useGetDelivereyParams = {}) {
+}: Omit<useGetDelivereyParams, 'locale'> = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -57,7 +60,6 @@ export function useGetHomeListing({
     mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
     const DelivereyData = data?.data || [];
     return {
