@@ -1,6 +1,7 @@
 import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 // Function for creatin the state translation
@@ -36,13 +37,14 @@ type useGetStateListParams = {
 export function useGetStateList({
   limit = 10,
   page = 0,
-
   is_published,
   order,
   searchTerm = '',
-  locale = '',
   city_id,
 }: useGetStateListParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {
       limit: limit || 100,
@@ -56,7 +58,7 @@ export function useGetStateList({
     if (city_id !== undefined) queryParams.city_id = city_id;
     if (searchTerm) queryParams.search = searchTerm;
     if (locale) queryParams.locale = locale;
-    if (city_id) queryParams.city_id = city_id;
+
     return `${endpoints.state.getByList}?${new URLSearchParams(queryParams)}`;
   };
 
