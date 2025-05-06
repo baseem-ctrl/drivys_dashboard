@@ -56,8 +56,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-
-
 const defaultFilters: any = {
   name: '',
   is_active: '',
@@ -71,7 +69,7 @@ const defaultFilters: any = {
 export default function HomelistingListView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const TABLE_HEAD = [
     // { id: 'locale', label: 'Language' },
@@ -114,7 +112,6 @@ export default function HomelistingListView() {
     page: table?.page + 1,
     limit: table?.rowsPerPage,
     search: filters?.name,
-    locale: filters?.locale,
     display_order: filters?.display_order,
     catalogue_type: filters?.catalogue_type,
     trainer_id: filters?.trainer_id,
@@ -225,7 +222,7 @@ export default function HomelistingListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading={t("Home Page List")}
+          heading={t('Home Page List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             { name: t('Home Page List'), href: paths.dashboard.homelisting.root },
@@ -237,7 +234,7 @@ export default function HomelistingListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              {t("New Home Listing")}
+              {t('New Home Listing')}
             </Button>
           }
           sx={{
@@ -280,32 +277,32 @@ export default function HomelistingListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
 
                 <TableBody>
                   {homelistingLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <HomeListingTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={(e: any) => handleEditRow(e, row.id)}
-                        revalidateHomeListing={revalidateHomeListing}
-                        onViewRow={() => handleViewRow(row?.id)}
-                      />
-                    ))}
+                        <HomeListingTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={(e: any) => handleEditRow(e, row.id)}
+                          revalidateHomeListing={revalidateHomeListing}
+                          onViewRow={() => handleViewRow(row?.id)}
+                        />
+                      ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}
