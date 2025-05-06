@@ -2,6 +2,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +25,6 @@ interface useGetDelivereyParams {
 export function useGetPackage({
   limit,
   page,
-  locale,
   search,
   status,
   is_published,
@@ -35,6 +35,8 @@ export function useGetPackage({
   city_id,
   is_public,
 }: useGetDelivereyParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};

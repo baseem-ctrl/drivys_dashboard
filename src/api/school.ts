@@ -356,7 +356,10 @@ export function useGetBookingByStudentId(studentId: string) {
   return { ...memoizedValue, revalidateBookingDetails };
 }
 export function useGetPackageBySchool(schoolId: string) {
-  const URL = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}`;
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
+  const URL = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}&locale=${locale}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
     revalidateOnFocus: false,
@@ -439,22 +442,25 @@ export function useGetSchoolTrainerList({ limit, page }: any) {
   };
 }
 export function useGetSchoolPackageList({ limit, page, search }: any) {
-  // Construct query parameters dynamically
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const [searchValue, setSearchValue] = useState('');
+
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {};
+    const params: Record<string, any> = {
+      locale,
+    };
     if (limit) params.limit = limit;
     if (page) params.page = page;
     if (search) params.search = search;
-    // params.user_types = ['SCHOOL_ADMIN'];
     return params;
-  }, [limit, page, search]);
+  }, [limit, page, search, locale]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
     Object.entries(queryParams).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        // If the value is an array, append each item
         value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
       } else {
         urlSearchParams.append(key, value as string);
@@ -470,13 +476,14 @@ export function useGetSchoolPackageList({ limit, page, search }: any) {
   const revalidatePackage = () => {
     mutate(fullUrl);
   };
+
   const revalidateSearch = (search: any) => {
     if (search) {
       setSearchValue(search);
       mutate(fullUrl);
     }
   };
-  // Memoize the return value for performance
+
   const memoizedValue = useMemo(() => {
     const DelivereyData = data?.data || [];
     return {
