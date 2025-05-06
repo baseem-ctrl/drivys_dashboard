@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysSmasher, drivysCreator } from 'src/utils/axios';
 import { INotification } from 'src/types/notification';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -14,10 +15,14 @@ interface UseGetNotificationListProps {
 }
 
 export function useGetNotificationList({ page, limit }: UseGetNotificationListProps) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
-    let queryParams: any = {
+    const queryParams: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
+      locale,
     };
 
     return `${endpoints.notification.getList}?${new URLSearchParams(queryParams)}`;
@@ -42,6 +47,7 @@ export function useGetNotificationList({ page, limit }: UseGetNotificationListPr
 
   return { ...memoizedValue, revalidateNotifications };
 }
+
 export async function sendNotification(notificationData: Body) {
   const URL = endpoints.notification.send;
   try {
