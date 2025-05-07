@@ -1,8 +1,13 @@
 import { drivysFetcher, drivysCreator, endpoints } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
-export function useGetTermsAndConditions(locale) {
-  const URL = `${endpoints.termsAndConditions.getList}?locale=${locale}`;
+import { useTranslation } from 'react-i18next';
+
+export function useGetTermsAndConditions() {
+  const { i18n } = useTranslation();
+  const currentLocale = i18n.language;
+
+  const URL = `${endpoints.termsAndConditions.getList}?locale=${currentLocale}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
 
