@@ -2,6 +2,7 @@ import useSWR, { mutate } from 'swr';
 import React, { useMemo } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysSmasher, drivysCreator } from 'src/utils/axios';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -16,14 +17,18 @@ export function useGetLoyaltyProgramList({
   limit,
   searchQuery,
 }: UseGetLoyaltyProgramListProps) {
+  const { i18n } = useTranslation();
+  const currentLocale = i18n.language;
+
   const getTheFullUrl = () => {
-    let queryParams: any = {
+    const queryParams: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
+      locale: currentLocale,
     };
 
     if (searchQuery) {
-      queryParams = { ...queryParams, search: searchQuery };
+      queryParams.search = searchQuery;
     }
 
     return `${endpoints.loyalityProgram.list}?${new URLSearchParams(queryParams)}`;
