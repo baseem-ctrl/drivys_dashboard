@@ -9,8 +9,12 @@ import {
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-export function useGetAllAppSettings(page: number, limit: number, locale?: string) {
+export function useGetAllAppSettings(page: number, limit: number) {
+  const { i18n } = useTranslation();
+  const currentLocale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -19,12 +23,13 @@ export function useGetAllAppSettings(page: number, limit: number, locale?: strin
 
     queryParams.sort_order = 'asc';
     queryParams.sort_by = 'display_order';
-    queryParams.locale = locale || 'en';
+    queryParams.locale = currentLocale;
 
     return `${endpoints.appSettings.list}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+
   const memoizedValue = useMemo(
     () => ({
       appSettings: data?.data as any,
@@ -33,7 +38,6 @@ export function useGetAllAppSettings(page: number, limit: number, locale?: strin
       appSettingsValidating: isValidating,
       totalpages: data?.total || 0,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [data?.data, error, isLoading, isValidating]
   );
 

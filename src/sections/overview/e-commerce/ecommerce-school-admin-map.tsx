@@ -21,7 +21,6 @@ import {
   Typography,
 } from '@mui/material';
 import TrainerMap from './ecommerce-school-admin-map';
-import profile from '../../../../public/logo/avatar.png';
 
 const containerStyle = {
   width: '100%',
@@ -205,7 +204,7 @@ const SchoolAdminMap: React.FC = () => {
                           ) : (
                             <Avatar
                               style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
-                              src={profile}
+                              src="/logo/avatar.png"
                             />
                           )}
                           <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
@@ -250,7 +249,7 @@ const SchoolAdminMap: React.FC = () => {
                           ) : (
                             <Avatar
                               style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
-                              src={profile}
+                              src="/logo/avatar.png"
                             />
                           )}
                           <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>

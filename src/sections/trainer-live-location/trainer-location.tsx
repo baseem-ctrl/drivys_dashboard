@@ -22,7 +22,6 @@ import {
   RadioGroup,
   Typography,
 } from '@mui/material';
-import profile from '../../../public/logo/avatar.png';
 import { useGoogleMaps } from '../overview/e-commerce/GoogleMapsProvider';
 import { paths } from 'src/routes/paths';
 
@@ -172,7 +171,7 @@ const TrainerLiveLocation: React.FC = () => {
                     ) : (
                       <Avatar
                         style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
-                        src={profile}
+                        src="/logo/avatar.png"
                       />
                     )}
                     <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>{trainer.name}</h4>

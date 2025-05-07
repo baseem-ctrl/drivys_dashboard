@@ -67,7 +67,7 @@ const EditableForm: React.FC = () => {
     totalpages,
     revalidateAppSettings,
     appSettingsError,
-  } = useGetAllAppSettings(0, 1000, selectedLocale);
+  } = useGetAllAppSettings(0, 1000);
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
   });
@@ -354,16 +354,6 @@ const EditableForm: React.FC = () => {
           <Typography variant="h5" component="h1" color="primary">
             {t('App Settings')}
           </Typography>
-          <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
-            <InputLabel shrink={!!selectedLocale}>{t('Locale')}</InputLabel>
-            <Select value={selectedLocale} onChange={handleLocaleChange} label="Locale">
-              {localeOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Box>
         {appSettingsLoading ? (
           <Box

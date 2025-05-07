@@ -20,7 +20,6 @@ import {
   Typography,
 } from '@mui/material';
 import TrainerMap from './ecommerce-school-admin-map';
-import profile from '../../../../public/logo/avatar.png';
 import { useTranslation } from 'react-i18next';
 
 const containerStyle = {
@@ -249,7 +248,7 @@ const HeatMap: React.FC = () => {
                           ) : (
                             <Avatar
                               style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
-                              src={profile}
+                              src="/logo/avatar.png"
                             />
                           )}
                           <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
@@ -294,7 +293,7 @@ const HeatMap: React.FC = () => {
                           ) : (
                             <Avatar
                               style={{ width: 50, height: 50, backgroundColor: '#3f51b5' }}
-                              src={profile}
+                              src="/logo/avatar.png"
                             />
                           )}
                           <h4 style={{ margin: 0, color: 'black', fontSize: '14px' }}>
