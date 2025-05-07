@@ -25,10 +25,9 @@ import { useGetAllLanguage } from 'src/api/language';
 import { useTranslation } from 'react-i18next';
 
 const TermsPageList: React.FC = () => {
-  const { t } = useTranslation();
-  const [locale, setLocale] = useState('En');
+  const { t, i18n } = useTranslation();
   const { termsAndConditions, termsLoading, termsError, revalidateTermsAndConditions } =
-    useGetTermsAndConditions(locale);
+    useGetTermsAndConditions();
   const [open, setOpen] = useState(false);
   const [termsList, setTermsList] = useState([{ heading: '', content: '' }]);
   const [isEditing, setIsEditing] = useState(false);
@@ -77,7 +76,7 @@ const TermsPageList: React.FC = () => {
         content: isEditing
           ? [...termsList]
           : [...(termsAndConditions[0]?.value || []), ...termsList],
-        locale,
+        locale: i18n.language,
         display_order: termsAndConditions[0]?.display_order || 1,
       };
 
@@ -111,9 +110,9 @@ const TermsPageList: React.FC = () => {
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
           <Typography variant="h4" gutterBottom>
-            {t("Terms & Policies")}
+            {t('Terms & Policies')}
           </Typography>
-          <Typography color="error"> {t("Failed to load terms and conditions.")}</Typography>
+          <Typography color="error"> {t('Failed to load terms and conditions.')}</Typography>
         </Paper>
       </Container>
     );
@@ -125,21 +124,9 @@ const TermsPageList: React.FC = () => {
   return (
     <Container>
       <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
-        <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
-          <FormControl sx={{ minWidth: 250, mb: 4 }} variant="outlined">
-            <InputLabel shrink={!!locale}>Locale</InputLabel>
-            <Select value={locale} onChange={handleLocaleChange} label="Locale">
-              {localeOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" gutterBottom>
-            {t("Terms & Policies")}
+            {t('Terms & Policies')}
           </Typography>
           <Box>
             <Button
@@ -148,15 +135,15 @@ const TermsPageList: React.FC = () => {
               sx={{ mr: 2 }}
               onClick={() => handleOpen(false)}
             >
-              {t("Add T&C")}
+              {t('Add T&C')}
             </Button>
             <Button variant="outlined" color="primary" onClick={() => handleOpen(true)}>
-              {t("Update T&C")}
+              {t('Update T&C')}
             </Button>
           </Box>
         </Box>
         <Typography variant="body1" color="textSecondary" mb={2}>
-          {t("Below are our key terms and policies. Click to expand for details.")}
+          {t('Below are our key terms and policies. Click to expand for details.')}
         </Typography>
 
         {termsAndConditions.length === 0 ? (
@@ -177,7 +164,7 @@ const TermsPageList: React.FC = () => {
                 <TextField
                   fullWidth
                   margin="dense"
-                  label={t("Heading")}
+                  label={t('Heading')}
                   name="heading"
                   value={term.heading}
                   onChange={(e) => handleChange(index, e)}
@@ -185,7 +172,7 @@ const TermsPageList: React.FC = () => {
                 <TextField
                   fullWidth
                   margin="dense"
-                  label={t("Content")}
+                  label={t('Content')}
                   name="content"
                   multiline
                   rows={4}
@@ -204,12 +191,12 @@ const TermsPageList: React.FC = () => {
               </Box>
             ))}
             <Button onClick={handleAddTerm} color="primary">
-              {t("+ Add Another")}
+              {t('+ Add Another')}
             </Button>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
             <Button onClick={handleSubmit} color="primary" variant="contained">
               {isEditing ? t('Update') : t('Save')}
