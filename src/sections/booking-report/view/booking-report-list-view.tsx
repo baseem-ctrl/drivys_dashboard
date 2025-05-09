@@ -13,6 +13,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 // routes
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
+
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -66,7 +68,8 @@ export default function BookingReportListView() {
   }>({});
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
@@ -77,7 +80,6 @@ export default function BookingReportListView() {
     revalidateBookingReports,
     totalRecords,
   } = useGetBookingReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
@@ -86,19 +88,7 @@ export default function BookingReportListView() {
     filters.payment_method,
     filters.category_id
   );
-  const {
-    bookingReports: downloadReportsData,
-    revalidateBookingReports: revalidateDownloadReports,
-    bookingReportsLoading: downloadReportsLoading,
-  } = useGetBookingReportsDownload(
-    locale,
-    filters.startDate,
-    filters.endDate,
-    table.page + 1,
-    table.rowsPerPage,
-    filters.booking_status,
-    filters.payment_method
-  );
+
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -136,7 +126,7 @@ export default function BookingReportListView() {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         booking_status: filters.bookingStatus,

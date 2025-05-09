@@ -34,6 +34,7 @@ import { useGetSchoolReportsDownload } from 'src/api/reportDownload';
 
 import SchoolReportsRow from '../school-report-table-row';
 import SchoolReportFilter from '../school-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -61,9 +62,8 @@ export default function SchoolReportListSchoolAdminView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
   const {
     schoolReports,
@@ -72,30 +72,18 @@ export default function SchoolReportListSchoolAdminView() {
     revalidateSchoolReports,
     totalRecords,
   } = useGetSchoolReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
     table.rowsPerPage
     // filters.school_id
   );
-  const {
-    schoolReports: downloadReportsData,
-    revalidateSchoolReports: revalidateDownloadReports,
-    schoolReportsLoading: downloadReportsLoading,
-  } = useGetSchoolReportsDownload(
-    locale,
-    filters.startDate,
-    filters.endDate,
-    table.page + 1,
-    table.rowsPerPage,
-    filters.school_id
-  );
+
   const handleDownloadClick = async () => {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         // school_id: filters.school_id,

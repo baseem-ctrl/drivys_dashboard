@@ -66,8 +66,8 @@ export default function TrainerReportListView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
-
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const {
     trainerReports,
     trainerReportsLoading,
@@ -75,7 +75,6 @@ export default function TrainerReportListView() {
     revalidateTrainerReports,
     totalRecords,
   } = useGetTrainerReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
@@ -83,24 +82,12 @@ export default function TrainerReportListView() {
     filters.school_id,
     filters.category_id
   );
-  const {
-    trainerReports: downloadReportsData,
-    revalidateTrainerReports: revalidateDownloadReports,
-    trainerReportsLoading: downloadReportsLoading,
-  } = useGetTrainerReportsDownload(
-    locale,
-    filters.startDate,
-    filters.endDate,
-    table.page + 1,
-    table.rowsPerPage,
-    filters.city_id,
-    filters.trainer_id
-  );
+
   const handleDownloadClick = async () => {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         school_id: filters.school_id,

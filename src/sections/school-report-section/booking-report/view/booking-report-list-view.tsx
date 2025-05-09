@@ -33,6 +33,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetBookingReports } from 'src/api/school-report';
 import ReportBookingRow from '../booking-report-table-row';
 import BookingReportFilter from '../booking-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -65,7 +66,8 @@ export default function BookingReportListSchoolAdminView() {
   }>({});
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
@@ -76,7 +78,6 @@ export default function BookingReportListSchoolAdminView() {
     revalidateBookingReports,
     totalRecords,
   } = useGetBookingReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
@@ -122,7 +123,7 @@ export default function BookingReportListSchoolAdminView() {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         booking_status: filters.bookingStatus,
