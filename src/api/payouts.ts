@@ -1,7 +1,10 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 // utils
 import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
+
 interface useGetParams {
   limit?: number;
   page?: number;
@@ -110,7 +113,11 @@ export function useGetSchoolPayouts({
     revalidatePayouts,
   };
 }
+
 export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGetParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -118,9 +125,10 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     if (page) params.page = page;
     if (vendor_id) params.vendor_id = vendor_id;
     if (trainer_id) params.trainer_id = trainer_id;
+    if (locale) params.locale = locale; // ✅ Add locale here
 
     return params;
-  }, [limit, page, vendor_id, trainer_id]);
+  }, [limit, page, vendor_id, trainer_id, locale]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.getList}?${new URLSearchParams(queryParams)}`,
@@ -135,7 +143,6 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
     return {
       payoutsList: data?.data || [],
@@ -155,8 +162,9 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     error,
     isLoading,
     isValidating,
-    data?.total_revenue_amount_from_booking,
+    data?.total_revenue_amount_from_bookings,
     data?.total_trainer_earning_from_bookings,
+    data?.total_vendor_earning_from_bookings,
     data?.total_drivys_commission_from_bookings,
   ]);
 
@@ -165,6 +173,7 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     revalidatePayouts,
   };
 }
+
 export function processPayoutToTrainer(body: Record<string, any>) {
   const URL = `${endpoints.payouts.payToTrainer}`;
   return drivysCreator([URL, body]);
