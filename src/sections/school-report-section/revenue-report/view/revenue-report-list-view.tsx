@@ -33,6 +33,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetRevenueReports } from 'src/api/school-report';
 import RevenueReportRow from '../revenue-report-table-row';
 import RevenueReportFilter from '../revenue-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +60,8 @@ export default function RevenueReportListSchoolAdminView() {
   const [localeFilter, setLocaleFilter] = useState('');
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const [filters, setFilters] = useState<{
@@ -75,7 +77,6 @@ export default function RevenueReportListSchoolAdminView() {
     totalRecords,
     revalidateRevenueReports,
   } = useGetRevenueReports(
-    locale,
     filters.startDate,
     filters.endDate,
     filters.category_id,
@@ -121,7 +122,7 @@ export default function RevenueReportListSchoolAdminView() {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         category_id: filters.category_id,

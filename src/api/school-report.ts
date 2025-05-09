@@ -1,8 +1,8 @@
 import useSWR, { mutate } from 'swr';
 import { drivysFetcher, endpoints } from 'src/utils/axios';
+import { useTranslation } from 'react-i18next';
 
 export function useGetBookingReports(
-  locale?: string,
   start_date?: string,
   end_date?: string,
   page?: number,
@@ -11,6 +11,9 @@ export function useGetBookingReports(
   payment_method?: any,
   category_id?: any
 ) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -44,14 +47,15 @@ export function useGetBookingReports(
 }
 
 export function useGetRevenueReports(
-  locale?: string,
   start_date?: string,
   end_date?: string,
   category_id?: any,
-
   page?: number,
   limit?: number
 ) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -61,6 +65,7 @@ export function useGetRevenueReports(
     if (category_id) queryParams.category_id = category_id;
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
+
     console.log('apiiii', endpoints.schoolReportSessionPreview.revenue);
     return `${endpoints.schoolReportSessionPreview.revenue}?${new URLSearchParams(queryParams)}`;
   };
@@ -83,7 +88,6 @@ export function useGetRevenueReports(
 }
 
 export function useGetTrainerReports(
-  locale?: string,
   start_date?: string,
   end_date?: string,
   page?: number,
@@ -91,6 +95,9 @@ export function useGetTrainerReports(
   school_id?: number,
   category_id?: number
 ) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -123,7 +130,6 @@ export function useGetTrainerReports(
 }
 
 export function useGetStudentReports(
-  locale?: string,
   start_date?: string,
   end_date?: string,
   page?: number,
@@ -131,6 +137,9 @@ export function useGetStudentReports(
   category_id?: number,
   city_id?: number
 ) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -156,21 +165,22 @@ export function useGetStudentReports(
   };
 
   const revalidateStudentReports = () => {
-    mutate(getTheFullUrl);
+    mutate(getTheFullUrl());
   };
 
   return { ...memoizedValue, revalidateStudentReports };
 }
 
 export function useGetSchoolReports(
-  locale?: string,
   start_date?: string,
   end_date?: string,
-
   page?: number,
   limit?: number,
   school_id?: string
 ) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
 
@@ -195,7 +205,7 @@ export function useGetSchoolReports(
   };
 
   const revalidateSchoolReports = () => {
-    mutate(getTheFullUrl);
+    mutate(getTheFullUrl());
   };
 
   return { ...memoizedValue, revalidateSchoolReports };

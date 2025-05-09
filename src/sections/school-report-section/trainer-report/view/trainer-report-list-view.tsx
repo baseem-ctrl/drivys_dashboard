@@ -33,6 +33,7 @@ import { useGetTrainerReports } from 'src/api/school-report';
 
 import TrainerReportRow from '../trainer-report-table-row';
 import TrainerReportFilter from '../trainer-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -65,8 +66,8 @@ export default function TrainerReportListSchoolAdminView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
-
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const {
     trainerReports,
     trainerReportsLoading,
@@ -74,7 +75,6 @@ export default function TrainerReportListSchoolAdminView() {
     revalidateTrainerReports,
     totalRecords,
   } = useGetTrainerReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
@@ -87,7 +87,7 @@ export default function TrainerReportListSchoolAdminView() {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         school_id: filters.school_id,

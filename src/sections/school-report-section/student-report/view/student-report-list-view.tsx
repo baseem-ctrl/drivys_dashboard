@@ -33,6 +33,7 @@ import { useGetStudentReports } from 'src/api/school-report';
 
 import StudentReportsRow from '../student-report-table-row';
 import StudentReportFilter from '../student-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +64,8 @@ export default function StudentReportListSchoolAdminView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const [locale, setLocale] = useState<string | undefined>(undefined);
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const {
@@ -73,7 +75,6 @@ export default function StudentReportListSchoolAdminView() {
     revalidateStudentReports,
     totalRecords,
   } = useGetStudentReports(
-    locale,
     filters.startDate,
     filters.endDate,
     table.page + 1,
@@ -86,7 +87,7 @@ export default function StudentReportListSchoolAdminView() {
     try {
       const token = localStorage.getItem('token');
       const params = {
-        locale: locale,
+        locale,
         start_date: filters.startDate,
         end_date: filters.endDate,
         city_id: filters.city_id,
