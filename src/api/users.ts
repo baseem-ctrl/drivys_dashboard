@@ -1,4 +1,5 @@
 import useSWR, { mutate } from 'swr';
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useState } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/utils/axios';
@@ -24,29 +25,29 @@ export function useGetUsers({
   search,
   is_verified,
 }: any) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
       page: page + 1,
       limit,
     };
-    if (user_types !== 'all') {
-      queryParams['user_types[]'] = [user_types];
-    }
 
+    if (locale) queryParams.locale = locale;
+    if (user_types !== 'all') queryParams['user_types[]'] = [user_types];
     if (search) queryParams.search = search;
     if (is_active) queryParams.is_active = is_active;
     if (city_id) queryParams.city_id = city_id;
     if (vehicle_type_id) queryParams.vehicle_type_id = vehicle_type_id;
-    if (gear !== undefined && gear !== null) {
-      queryParams.gear = gear;
-    }
+    if (gear !== undefined && gear !== null) queryParams.gear = gear;
     if (vendor_id) queryParams.vendor_id = vendor_id;
-
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (type) queryParams.type = type;
     if (store_id) queryParams.store_id = store_id;
     if (is_verified) queryParams.is_verified = is_verified;
+
     return `${endpoints.users.list}?${new URLSearchParams(queryParams)}`;
   };
 
