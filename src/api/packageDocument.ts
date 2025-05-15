@@ -1,6 +1,7 @@
 import { endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 'src/utils/axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 // Function for creating or updating a package document
@@ -37,6 +38,9 @@ export function useGetPackageDocuments({
   limit,
   page,
 }: useGetPackageDocumentsParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 
@@ -50,6 +54,7 @@ export function useGetPackageDocuments({
     if (sort_dir !== undefined) queryParams.sort_dir = sort_dir;
     if (limit !== undefined) queryParams.limit = limit;
     if (page !== undefined) queryParams.page = page ? page + 1 : 1;
+    if (locale) queryParams.locale = locale;
 
     return `${endpoints.packageDocument.getList}?${new URLSearchParams(queryParams)}`;
   };
