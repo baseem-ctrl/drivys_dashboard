@@ -191,24 +191,28 @@ export function useGetSchoolById(schoolId: string) {
 
   return { ...memoizedValue, revalidateDetails };
 }
+
 export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
-  // Construct query parameters dynamically
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+
   const [searchValue, setSearchValue] = useState('');
+
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
     if (vendor_id) params.vendor_id = vendor_id;
     if (searchValue) params.search = searchValue;
+    if (locale) params.locale = locale;
     // params.user_types = ['SCHOOL_ADMIN'];
     return params;
-  }, [limit, page]);
+  }, [limit, page, vendor_id, searchValue, locale]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
     Object.entries(queryParams).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        // If the value is an array, append each item
         value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
       } else {
         urlSearchParams.append(key, value as string);
@@ -224,11 +228,12 @@ export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
   const revalidateTrainers = () => {
     mutate(fullUrl);
   };
-  const revalidateSearch = (search: any) => {
+
+  const revalidateSearch = (search: string) => {
     setSearchValue(search);
     mutate(fullUrl);
   };
-  // Memoize the return value for performance
+
   const memoizedValue = useMemo(() => {
     const DelivereyData = data?.data || [];
     return {
@@ -247,6 +252,7 @@ export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
     revalidateSearch,
   };
 }
+
 export function addTrainer(body: any) {
   const URL = endpoints.school.addTrainer;
   const response = drivysCreator([URL, body]);
