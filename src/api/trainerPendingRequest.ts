@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 // utils
 import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -21,27 +22,31 @@ export function useGetPendingVerificationRequest({
   search = '',
 }: UseGetPendingVerificationRequestProps) {
   const { user } = useAuthContext();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: any = {
+    const queryParams: Record<string, any> = {
       page,
       limit,
       sort_by,
       is_verified,
     };
+
     if (search) {
       queryParams.search = search;
     }
-    if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-      queryParams.is_school_verified = 0;
-      return `${endpoints.pendingRequest.schoolAdminTrainerPendingRequest}?${new URLSearchParams(
-        queryParams
-      )}`;
-    } else {
-      return `${endpoints.pendingRequest.trainerPendingRequest}?${new URLSearchParams(
-        queryParams
-      )}`;
+
+    if (locale) {
+      queryParams.locale = locale;
     }
+
+    const url =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.pendingRequest.schoolAdminTrainerPendingRequest
+        : endpoints.pendingRequest.trainerPendingRequest;
+
+    return `${url}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
