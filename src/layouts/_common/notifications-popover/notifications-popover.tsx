@@ -25,6 +25,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { varHover } from 'src/components/animate';
 //
 import NotificationItem from './notification-item';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +35,6 @@ export default function NotificationsPopover() {
   const drawer = useBoolean();
 
   const smUp = useResponsive('up', 'sm');
-  const notificationList = JSON.parse(localStorage.getItem('notifications') || '[]');
   const [currentTab, setCurrentTab] = useState('all');
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -141,11 +141,15 @@ export default function NotificationsPopover() {
       ))}
     </Tabs>
   );
+  const pushNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
 
+  const sortedNotifications = pushNotifications?.sort(
+    (a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
   const renderList = (
     <Scrollbar>
       <List disablePadding>
-        {notifications.map((notification, index) => (
+        {sortedNotifications.map((notification: any, index: any) => (
           <NotificationItem key={index} notification={notification} />
         ))}
       </List>
@@ -162,7 +166,7 @@ export default function NotificationsPopover() {
         color={drawer.value ? 'primary' : 'default'}
         onClick={drawer.onTrue}
       >
-        <Badge badgeContent={totalUnRead} color="error">
+        <Badge badgeContent={pushNotifications?.length} color="error">
           <Iconify icon="solar:bell-bing-bold-duotone" width={24} />
         </Badge>
       </IconButton>
@@ -182,7 +186,7 @@ export default function NotificationsPopover() {
 
         <Divider />
 
-        <Stack
+        {/* <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
@@ -194,12 +198,12 @@ export default function NotificationsPopover() {
           </IconButton>
         </Stack>
 
-        <Divider />
+        <Divider /> */}
 
         {renderList}
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth size="large">
+          <Button fullWidth size="large" href={paths.dashboard.notification.root}>
             View All
           </Button>
         </Box>

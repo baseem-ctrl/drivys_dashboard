@@ -1,8 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { updateFcm } from 'src/api/notification';
-import { useSnackbar } from 'src/components/snackbar';
-// import { showAlert } from './show_alert';
+import { showAlert } from './show_alert';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyD5mNFJ9qCIE4k1R4sKcFKySsI0ExhUbiU',
@@ -32,6 +31,8 @@ export const generateToken = async () => {
           const token = await getToken(messaging, {
             vapidKey: import.meta.env.APP_PUSH_NOTIFI_KEY,
           });
+          console.log('FcmToken', token);
+
           // Check if token exists before attempting to update it
           if (token) {
             const res = await updateFcm(token);
@@ -59,8 +60,9 @@ export const generateToken = async () => {
 onMessage(messaging, (payload) => {
   const title = payload?.notification?.title;
   const body = payload?.notification?.body;
-  // const { enqueueSnackbar } = useSnackbar();
+  console.log('Message received. ', payload);
 
+  // const { enqueueSnackbar } = useSnackbar();
   if (Notification.permission === 'granted') {
     new Notification(title, {
       body,
@@ -79,4 +81,5 @@ onMessage(messaging, (payload) => {
   // ✅ Store the updated notifications in localStorage
   localStorage.setItem('notifications', JSON.stringify(notifications));
   // enqueueSnackbar(title, { variant: 'success' });
+  showAlert(title, body);
 });
