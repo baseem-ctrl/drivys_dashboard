@@ -35,7 +35,6 @@ type Props = {
 };
 
 export default function UserDetailsView({ id }: Props) {
-  console.log('id', id);
   const { t } = useLocales();
   const { user } = useAuthContext();
   const settings = useSettingsContext();
