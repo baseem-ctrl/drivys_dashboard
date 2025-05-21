@@ -39,6 +39,7 @@ export default function UserDetailsView({ id }: Props) {
   const { user } = useAuthContext();
   const settings = useSettingsContext();
   const userId = Number(window.location.pathname.split('/').pop());
+  console.log('userId', userId);
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   // Use the new hook to get the address list
   const { addresses, addressesLoading, addressesError, revalidateAddresses } = useGetAddressList({
