@@ -239,7 +239,7 @@ export function useGetAddressList({
   const getAddressUrl = () => {
     const queryParams: { [key: string]: any } = {};
 
-    if (page > 0) queryParams.page = page + 1;
+    if (typeof page === 'number') queryParams.page = page + 1;
     if (limit > 0) queryParams.limit = limit;
     if (search) queryParams.search = search;
     if (userId) queryParams.user_id = userId;
