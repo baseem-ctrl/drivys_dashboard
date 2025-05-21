@@ -237,13 +237,12 @@ export function useGetAddressList({
   userId: any;
 }) {
   const getAddressUrl = () => {
-    const queryParams: { [key: string]: any } = {
-      page: page + 1,
-      limit,
-      user_id: userId,
-    };
+    const queryParams: { [key: string]: any } = {};
 
+    if (page > 0) queryParams.page = page + 1;
+    if (limit > 0) queryParams.limit = limit;
     if (search) queryParams.search = search;
+    if (userId) queryParams.user_id = userId;
 
     return `${endpoints.users.addressList}?${new URLSearchParams(queryParams)}`;
   };
