@@ -35,18 +35,17 @@ type Props = {
 };
 
 export default function UserDetailsView({ id }: Props) {
+  console.log('id', id);
   const { t } = useLocales();
   const { user } = useAuthContext();
   const settings = useSettingsContext();
-  const userId = Number(window.location.pathname.split('/').pop());
-  console.log('userId', userId);
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   // Use the new hook to get the address list
   const { addresses, addressesLoading, addressesError, revalidateAddresses } = useGetAddressList({
-    userId, // Add userId here
-    page: 0, // First page
-    limit: 10, // Limit to 10 addresses
-    search: '', // Optional search string
+    userId: id,
+    page: 0,
+    limit: 10,
+    search: '',
   });
 
   const currentJob = details;
