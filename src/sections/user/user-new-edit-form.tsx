@@ -676,7 +676,7 @@ export default function UserNewEditForm({
         body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
       if (data?.collected_max_cash_in_hand_allowed)
         body.append('collected_max_cash_in_hand_allowed', data?.collected_max_cash_in_hand_allowed);
-      if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR')
+      if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR' && data?.user_type !== 'ASSISTANT')
         body.append('cash_in_hand', data?.cash_in_hand);
 
       if (currentUser?.id) {
@@ -989,6 +989,7 @@ export default function UserNewEditForm({
                   type="number"
                 />
               )}
+
               <Stack direction="row" spacing={1} alignItems="center">
                 <RHFTextField
                   name="phone"
@@ -1012,6 +1013,16 @@ export default function UserNewEditForm({
                   type="date"
                   InputLabelProps={{ shrink: true }}
                 />
+              )}
+              {values.user_type === 'ASSISTANT' && (
+                <RHFSelect name="gender" label={t('gender')}>
+                  {genderData?.length > 0 &&
+                    genderData?.map((option: any) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                </RHFSelect>
               )}
               {values.user_type === 'TRAINER' && (
                 <RHFTextField
