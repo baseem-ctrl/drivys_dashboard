@@ -60,10 +60,15 @@ import TrainerReportListView from 'src/sections/trainer-report/view/trainer-repo
 import StudentReportListView from 'src/sections/student-report/view/student-report-list-view';
 import SchoolReportListView from 'src/sections/school-report/view/school-report-list-view';
 import RolesListView from 'src/sections/roles/view/roles-list-view';
+import RolesSchoolAdminListView from 'src/sections/roles-school-admin/view/roles-list-view';
 import PermissionListView from 'src/sections/permissions/view/permissions-list-view';
+import PermissionSchoolAdminListView from 'src/sections/permissions-school-admin/view/permissions-list-view';
+
 import CollectedCashList from 'src/sections/collector/collected-cash-list/view/collected-cash-list-view';
 import CashInHandList from 'src/sections/cash-in-hand-list-admin/view/cash-in-hand-list-admin-list-view';
 import MappedRolePermissionListView from 'src/sections/mapped-roles-permission/view/mapped-roles-permission-view';
+import MappedRolePermissionSchoolAdminListView from 'src/sections/mapped-roles-permission-school-admin/view/mapped-roles-permission-view';
+
 import SupportlistingListView from 'src/sections/support/view/support-list-view';
 import SchoolAdminPayoutPage from 'src/sections/school-payout/school-payouts-view';
 import BookingReportListSchoolAdminView from 'src/sections/school-report-section/booking-report/view/booking-report-list-view';
@@ -432,6 +437,14 @@ const schooladminRoutes = [
       { path: 'pending-verification', element: <ToDoListSchoolAdminViewVerification /> },
       // { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
       { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
+    ],
+  },
+  {
+    path: 'roles-and-permission',
+    children: [
+      { path: 'roles', element: <RolesSchoolAdminListView /> },
+      { path: 'permission', element: <PermissionSchoolAdminListView /> },
+      { path: 'mapping', element: <MappedRolePermissionSchoolAdminListView /> },
     ],
   },
   {

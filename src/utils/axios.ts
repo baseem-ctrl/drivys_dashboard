@@ -416,4 +416,13 @@ export const endpoints = {
     student: 'admin/reportBySchool/students',
     school: 'admin/reportBySchool/school',
   },
+  rolesAndPermissionSchoolAdmin: {
+    getRoles: 'admin/access-control-for-school-admin/role/get-list-by-school-admin',
+    getPermissions: 'admin/access-control-for-school-admin/permission/get-list-by-school',
+    createRole: 'admin/access-control-for-school-admin/role/create-by-school-admin',
+    createPermission: 'admin/access-control-for-school-admin/permission/create-by-school',
+    mapRoleToPermission:
+      'admin/access-control-for-school-admin/permission-mapping/role-permission-mapping-by-school',
+    listMappedRoles: 'admin/access-control-for-school-admin/permission-mapping/get-list-by-school',
+  },
 };
