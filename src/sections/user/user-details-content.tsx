@@ -600,48 +600,65 @@ export default function UserDetailsContent({
 
                 {
                   label: t('phone_number'),
-                  value: details?.country_code
-                    ? `${details.country_code}-${details.phone}`
-                    : details.phone ?? 'N/A',
+                  value:
+                    details?.country_code && details?.phone
+                      ? `${details.country_code}-${details.phone.trim().replace(/["\n]/g, '')}`
+                      : details?.phone?.trim().replace(/["\n]/g, '') || 'N/A',
                 },
+
                 { label: t('user_type'), value: details?.user_type ?? 'N/A' },
+                ...(details?.user_type === 'ASSISTANT'
+                  ? [{ label: t('gender'), value: details?.gender ?? 'N/A' }]
+                  : []),
 
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
 
-                {
-                  label: t('preferred_language'),
-                  value: details?.locale !== 'undefined' ? details.locale : 'N/A',
-                },
-                { label: t('wallet_balance'), value: details?.wallet_balance ?? 'N/A' },
-                { label: t('wallet_points'), value: details?.wallet_points ?? 'N/A' },
-                ...(details?.user_type === 'TRAINER' && details?.languages?.length
-                  ? details?.languages.map((lang, index) => ({
-                      label: `${t('language')} ${index + 1}`,
-                      value: lang?.dialect?.id
-                        ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
-                        : 'NA',
-                    }))
+                ...(details?.user_type !== 'ASSISTANT'
+                  ? [
+                      {
+                        label: t('preferred_language'),
+                        value: details?.locale !== 'undefined' ? details.locale : 'N/A',
+                      },
+                    ]
+                  : []),
+                ...(details?.user_type !== 'ASSISTANT'
+                  ? [
+                      { label: t('wallet_balance'), value: details?.wallet_balance ?? 'N/A' },
+                      { label: t('wallet_points'), value: details?.wallet_points ?? 'N/A' },
+                      ...(details?.user_type === 'TRAINER' && details?.languages?.length
+                        ? details?.languages.map((lang, index) => ({
+                            label: `${t('language')} ${index + 1}`,
+                            value: lang?.dialect?.id
+                              ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
+                              : 'NA',
+                          }))
+                        : []),
+                    ]
                   : []),
 
-                {
-                  label: t('roles'),
-                  value:
-                    details?.roles?.length > 0 ? (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {details.roles.map((r) => (
-                          <Chip
-                            key={r.role?.id}
-                            label={r.role?.name}
-                            color="success"
-                            variant="soft"
-                            size="small"
-                          />
-                        ))}
-                      </Box>
-                    ) : (
-                      'N/A'
-                    ),
-                },
+                ...(details?.user_type !== 'ASSISTANT'
+                  ? [
+                      {
+                        label: t('roles'),
+                        value:
+                          details?.roles?.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                              {details.roles.map((r) => (
+                                <Chip
+                                  key={r.role?.id}
+                                  label={r.role?.name}
+                                  color="success"
+                                  variant="soft"
+                                  size="small"
+                                />
+                              ))}
+                            </Box>
+                          ) : (
+                            'N/A'
+                          ),
+                      },
+                    ]
+                  : []),
 
                 // ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
                 //   ? details?.city_assigned.map((city, index) => ({

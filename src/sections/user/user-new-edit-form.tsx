@@ -232,8 +232,8 @@ export default function UserNewEditForm({
     vehicle_type_id: Yup.mixed().nullable(),
     vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
+    user_gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
-
     area_id: Yup.mixed().nullable(),
     languages: Yup.array().of(
       Yup.object().shape({
@@ -361,6 +361,8 @@ export default function UserNewEditForm({
                 option?.name?.toLowerCase() === currentUser?.user_preference?.gender?.toLowerCase()
             )?.value
           : '',
+      user_gender: currentUser?.gender,
+
       city_id: currentUser?.user_preference?.city_id
         ? {
             value: currentUser?.user_preference?.city_id,
@@ -452,6 +454,15 @@ export default function UserNewEditForm({
       )?.value;
       if (gender) {
         setValue('gender', gender);
+      }
+    }
+    if (genderData?.length > 0 && currentUser?.gender) {
+      const gender = genderData.find(
+        (option) => option?.name?.toLowerCase() === currentUser?.gender?.toLowerCase()
+      )?.value;
+
+      if (gender) {
+        setValue('user_gender', gender); // <- this is the key field name
       }
     }
 
@@ -625,6 +636,8 @@ export default function UserNewEditForm({
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
+      if (data?.user_gender) body.append('user_gender', data?.user_gender);
+
       if (data?.city_id) body.append('city_id', data?.city_id.value);
       if (data?.area_id) body.append('area_id', data?.area_id?.value);
       if (data?.phone) body.append('country_code', data?.country_code ?? '971');
@@ -676,7 +689,7 @@ export default function UserNewEditForm({
         body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
       if (data?.collected_max_cash_in_hand_allowed)
         body.append('collected_max_cash_in_hand_allowed', data?.collected_max_cash_in_hand_allowed);
-      if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR')
+      if (data?.cash_in_hand && data?.user_type !== 'COLLECTOR' && data?.user_type !== 'ASSISTANT')
         body.append('cash_in_hand', data?.cash_in_hand);
 
       if (currentUser?.id) {
@@ -989,6 +1002,7 @@ export default function UserNewEditForm({
                   type="number"
                 />
               )}
+
               <Stack direction="row" spacing={1} alignItems="center">
                 <RHFTextField
                   name="phone"
@@ -1012,6 +1026,16 @@ export default function UserNewEditForm({
                   type="date"
                   InputLabelProps={{ shrink: true }}
                 />
+              )}
+              {values.user_type === 'ASSISTANT' && (
+                <RHFSelect name="user_gender" label={t('gender')}>
+                  {genderData?.length > 0 &&
+                    genderData?.map((option: any) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                </RHFSelect>
               )}
               {values.user_type === 'TRAINER' && (
                 <RHFTextField
