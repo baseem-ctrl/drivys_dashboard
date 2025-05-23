@@ -120,7 +120,6 @@ export default function UserDetailsContent({
   const [selectedLanguage, setSelectedLanguage] = useState(
     details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   );
-  console.log('details', details);
   const [load, setLoad] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
