@@ -79,14 +79,22 @@ export default function JwtLoginView() {
         await login?.(data.email, data.password, 'ADMIN');
       } else if (selectedTab === 1) {
         await login?.(data.email, data.password, 'SCHOOL_ADMIN');
-      } else {
+      } else if (selectedTab === 2) {
         await login?.(data.email, data.password, 'COLLECTOR');
+      } else {
+        await login?.(data.email, data.password, 'ASSISTANT');
       }
-      if (localStorage.getItem('user_type') === 'COLLECTOR') {
+
+      const userType = localStorage.getItem('user_type');
+
+      if (userType === 'COLLECTOR') {
         router.push(PATH_AFTER_LOGIN_COLLECTOR);
+      } else if (userType === 'ASSISTANT') {
+        router.push(PATH_AFTER_LOGIN_ASSISTANT);
       } else {
         router.push(returnTo || PATH_AFTER_LOGIN);
       }
+
       window.location.reload();
     } catch (error) {
       console.error(error);
@@ -110,8 +118,10 @@ export default function JwtLoginView() {
         userType = 'ADMIN';
       } else if (selectedTab === 1) {
         userType = 'SCHOOL_ADMIN';
-      } else {
+      } else if (selectedTab === 2) {
         userType = 'COLLECTOR';
+      } else {
+        userType = 'ASSISTANT';
       }
       const mapRole = {
         email: data.email,
@@ -146,8 +156,10 @@ export default function JwtLoginView() {
         userType = 'ADMIN';
       } else if (selectedTab === 1) {
         userType = 'SCHOOL_ADMIN';
-      } else {
+      } else if (selectedTab === 2) {
         userType = 'COLLECTOR';
+      } else {
+        userType = 'ASSISTANT';
       }
       const mapRole = {
         email: data.email,
@@ -295,6 +307,7 @@ export default function JwtLoginView() {
           <MenuItem value={0}>Login As Admin</MenuItem>
           <MenuItem value={1}>Login As School</MenuItem>
           <MenuItem value={2}>Login As Collector</MenuItem>
+          <MenuItem value={3}>Login As Assistant</MenuItem>
         </Select>
       </Box>
       {renderForm}

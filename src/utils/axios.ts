@@ -81,6 +81,7 @@ export const endpoints = {
   auth: {
     me: 'admin/auth/who-am-i',
     meCollector: 'consumer/auth/who-am-i',
+    meAssistant: 'consumer/auth/who-am-i',
     login: 'admin/auth/login',
     register: '/api/auth/register',
     update: 'admin/auth/update-profile', // To update user profile
@@ -424,5 +425,8 @@ export const endpoints = {
     mapRoleToPermission:
       'admin/access-control-for-school-admin/permission-mapping/role-permission-mapping-by-school',
     listMappedRoles: 'admin/access-control-for-school-admin/permission-mapping/get-list-by-school',
+  },
+  assistant: {
+    updateProfile: 'consumer/auth/update-profile',
   },
 };

@@ -76,6 +76,7 @@ import RevenueReportListSchoolAdminView from 'src/sections/school-report-section
 import TrainerReportListSchoolAdminView from 'src/sections/school-report-section/trainer-report/view/trainer-report-list-view';
 import SchoolReportListSchoolAdminView from 'src/sections/school-report-section/school-report/view/school-report-list-view';
 import StudentReportListSchoolAdminView from 'src/sections/school-report-section/student-report/view/student-report-list-view';
+import OverviewAssistant from 'src/sections/assistant/overview-assistant';
 
 // ----------------------------------------------------------------------
 
@@ -484,7 +485,16 @@ const collectorRoutes = [
     children: [{ path: ':id', element: <UserDetailsPage /> }],
   },
 ];
-
+const assistantRoutes = [
+  {
+    path: 'ecommerce',
+    element: <OverviewAssistant />,
+  },
+  {
+    path: 'collector',
+    children: [{ path: 'overview', element: <OverviewAssistant /> }],
+  },
+];
 const userType = localStorage.getItem('user_type');
 const routes = (() => {
   switch (userType) {
@@ -492,6 +502,8 @@ const routes = (() => {
       return schooladminRoutes;
     case 'COLLECTOR':
       return collectorRoutes;
+    case 'ASSISTANT':
+      return assistantRoutes;
     default:
       return allroutes;
   }
