@@ -418,13 +418,13 @@ export const endpoints = {
     school: 'admin/reportBySchool/school',
   },
   rolesAndPermissionSchoolAdmin: {
-    getRoles: 'admin/access-control-for-school-admin/role/get-list-by-school-admin',
+    getRoles: 'admin/access-control-for-school-admin/role/get-list-by-admin',
     getPermissions: 'admin/access-control-for-school-admin/permission/get-list-by-school',
-    createRole: 'admin/access-control-for-school-admin/role/create-by-school-admin',
-    createPermission: 'admin/access-control-for-school-admin/permission/create-by-school',
+    createRole: 'admin/access-control-for-school-admin/role/create-by-admin',
+    createPermission: 'admin/access-control-for-school-admin/permission/create-by-admin',
     mapRoleToPermission:
-      'admin/access-control-for-school-admin/permission-mapping/role-permission-mapping-by-school',
-    listMappedRoles: 'admin/access-control-for-school-admin/permission-mapping/get-list-by-school',
+      ' admin/access-control-for-school-admin/permission-mapping/role-permission-mapping-by-admin',
+    listMappedRoles: ' admin/access-control-for-school-admin/permission-mapping/get-list-by-admin',
   },
   assistant: {
     updateProfile: 'consumer/auth/update-profile',

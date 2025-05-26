@@ -138,7 +138,7 @@ const OverviewAssistant = () => {
               alignItems: 'center',
               rowGap: 2,
               fontSize: '16px !important',
-              color: 'text.secondary',
+              color: 'black',
               mt: 4,
               p: 5,
             }}
