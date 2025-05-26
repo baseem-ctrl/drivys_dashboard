@@ -491,7 +491,7 @@ const assistantRoutes = [
     element: <OverviewAssistant />,
   },
   {
-    path: 'collector',
+    path: 'assistant',
     children: [{ path: 'overview', element: <OverviewAssistant /> }],
   },
 ];

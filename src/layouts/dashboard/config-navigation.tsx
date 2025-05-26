@@ -465,14 +465,23 @@ export function useNavData() {
     //   children: [{ title: t('overview'), path: paths.dashboard.collector.overview }],
     // },
   ];
-
+  const assistantRoutes = [
+    {
+      title: t('profile'),
+      path: paths.dashboard.assistant.overview,
+      icon: ICONS.user,
+    },
+  ];
   const userType = localStorage.getItem('user_type');
+
   const routes = (() => {
     switch (userType) {
       case 'SCHOOL_ADMIN':
         return schooladminRoutes;
       case 'COLLECTOR':
         return collectorRoutes;
+      case 'ASSISTANT':
+        return assistantRoutes;
       default:
         return allroutes;
     }
@@ -481,7 +490,7 @@ export function useNavData() {
   const data = useMemo(() => {
     const menuItems = [];
 
-    if (userType !== 'COLLECTOR') {
+    if (userType !== 'COLLECTOR' && userType !== 'ASSISTANT') {
       menuItems.push({
         subheader: t('overview'),
         items: [

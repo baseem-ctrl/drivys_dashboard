@@ -1,29 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Avatar,
-  Box,
-  Divider,
-  Chip,
-  Button,
-  TextField,
-  MenuItem,
-} from '@mui/material';
-import { useAuthContext } from 'src/auth/hooks';
+import { useEffect, useState } from 'react';
+import { Card, Typography, Avatar, Box, Switch, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetGenderEnum } from 'src/api/users';
 
 const OverviewAssistant = () => {
   const { user } = useAuthContext();
   const [isEditing, setIsEditing] = useState(false);
   const { genderData, genderLoading } = useGetGenderEnum();
-  console.log('user', user);
-  console.log('genderData', genderData);
-
   const [formData, setFormData] = useState({
     name: user?.user?.name || '',
     email: user?.user?.email || '',
@@ -32,7 +16,7 @@ const OverviewAssistant = () => {
     gender: '',
   });
   useEffect(() => {
-    if (genderData?.length && user?.user?.gender) {
+    if (genderData && genderData?.length && user?.user?.gender) {
       const matchedGender = genderData.find(
         (option) => option.name.toLowerCase() === user.user.gender.toLowerCase()
       )?.value;
@@ -42,6 +26,11 @@ const OverviewAssistant = () => {
       }
     }
   }, [genderData, user?.user?.gender]);
+  const [isActive, setIsActive] = useState(user?.user?.is_active || false);
+
+  const handleToggle = (event) => {
+    setIsActive(event.target.checked);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,168 +41,163 @@ const OverviewAssistant = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3, backgroundColor: '#f4f6f8' }}>
-      <Box sx={{ width: '90%', maxWidth: 900 }}>
-        <Card sx={{ mb: 2, p: 2, borderRadius: 3 }}>
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item>
-              <Avatar
-                sx={{ width: 80, height: 80 }}
-                src={user?.user?.photo_url || '/static/images/avatar_placeholder.png'}
-              />
-            </Grid>
-            <Grid item xs>
-              <Typography variant="h5" fontWeight="bold">
-                {user?.user?.name || 'Collector'}
+    <Box
+      sx={{
+        display: 'flex',
+        p: 4,
+        minHeight: '100vh',
+      }}
+    >
+      <Box sx={{ width: '100%', maxWidth: 600 }}>
+        <Card
+          elevation={4}
+          sx={{
+            borderRadius: 5,
+            overflow: 'hidden',
+            position: 'relative',
+            bgcolor: '#ffffff',
+          }}
+        >
+          <Box
+            sx={{
+              height: 140,
+              background: 'linear-gradient(to right, #ff9a8b, #ff6a88, #ff99ac)',
+              position: 'relative',
+              color: 'white',
+              textAlign: 'center',
+              pt: 3,
+            }}
+          >
+            <Avatar
+              src={user?.user?.photo_url || '/static/images/avatar_placeholder.png'}
+              sx={{
+                width: 96,
+                height: 96,
+                border: '4px solid white',
+                position: 'absolute',
+                bottom: -28,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                boxShadow: 2,
+              }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              mt: 3,
+              mx: 1,
+              display: 'flex',
+              gap: 5,
+              justifyContent: 'center',
+            }}
+          >
+            <Box
+              sx={{
+                flex: 1,
+                p: 1.8,
+                borderRadius: 4,
+                bgcolor: '#fff7f5',
+                textAlign: 'center',
+                cursor: 'default',
+              }}
+            >
+              <Typography
+                fontWeight={600}
+                color="primary.main"
+                sx={{ letterSpacing: 0.5, fontSize: '12px' }}
+              >
+                {user?.user?.name?.toUpperCase() || 'N/A'}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {user?.user?.user_type || 'User Role'}
+            </Box>
+
+            <Box
+              sx={{
+                flex: 1,
+                p: 1.8,
+                borderRadius: 4,
+                bgcolor: '#fff0f0',
+                textAlign: 'center',
+                cursor: 'default',
+              }}
+            >
+              <Typography
+                fontWeight={600}
+                color="primary.main"
+                sx={{ letterSpacing: 0.5, fontSize: '12px' }}
+              >
+                {user?.user?.user_type || 'N/A'}
               </Typography>
-            </Grid>
-            <Grid item>
-              <Chip
-                label={user?.user?.is_active ? 'Active' : 'Inactive'}
-                color={user?.user?.is_active ? 'success' : 'error'}
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 30px 1fr',
+              alignItems: 'center',
+              rowGap: 2,
+              fontSize: '16px !important',
+              color: 'text.secondary',
+              mt: 4,
+              p: 5,
+            }}
+          >
+            <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
+              Gender
+            </Typography>
+            <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
+            <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
+              {user?.user?.gender || 'N/A'}
+            </Typography>
+
+            <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
+              DOB
+            </Typography>
+            <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
+            <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
+              {user?.user?.dob || 'N/A'}
+            </Typography>
+
+            <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
+              Phone
+            </Typography>
+            <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
+            <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
+              +971 {user?.user?.phone || 'N/A'}
+            </Typography>
+
+            <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
+              Status
+            </Typography>
+            <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
+            <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
+              <Switch
+                checked={user?.user?.is_active}
+                onChange={handleToggle}
+                color="primary"
+                disabled
               />
-            </Grid>
-          </Grid>
-        </Card>
-
-        <Card sx={{ mb: 2, p: 2, borderRadius: 3 }}>
-          <CardContent>
-            <Grid container justifyContent="space-between" alignItems="center">
-              <Typography variant="h6">Personal Information</Typography>
-              <Box>
-                {isEditing && (
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    sx={{ mr: 1 }}
-                    onClick={() => {
-                      let matchedGender = '';
-                      if (genderData?.length && user?.user?.gender) {
-                        matchedGender =
-                          genderData.find(
-                            (option) => option.name.toLowerCase() === user.user.gender.toLowerCase()
-                          )?.value || '';
-                      }
-
-                      setFormData({
-                        name: user?.user?.name || '',
-                        email: user?.user?.email || '',
-                        phone: user?.user?.phone || '',
-                        dob: user?.user?.dob || '',
-                        gender: matchedGender,
-                      });
-                      setIsEditing(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
-                  onClick={toggleEdit}
-                >
-                  {isEditing ? 'Save' : 'Edit'}
-                </Button>
-              </Box>
-            </Grid>
-
-            <Divider sx={{ my: 1 }} />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight="bold">
-                  First Name
-                </Typography>
-                <TextField
-                  name="name"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={formData.name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight="bold">
-                  Email
-                </Typography>
-                <TextField
-                  name="email"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight="bold">
-                  Phone
-                </Typography>
-                <TextField
-                  name="phone"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight="bold">
-                  Date of Birth
-                </Typography>
-                <TextField
-                  name="dob"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" fontWeight="bold">
-                  Gender
-                </Typography>
-                <TextField
-                  select={isEditing}
-                  name="gender"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={
-                    isEditing
-                      ? formData.gender
-                      : genderData?.find((option) => option.value === formData.gender)?.name || ''
-                  }
-                  onChange={handleChange}
-                  disabled={!isEditing || genderLoading}
-                >
-                  {isEditing &&
-                    !genderLoading &&
-                    genderData?.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.name}
-                      </MenuItem>
-                    ))}
-                </TextField>
-              </Grid>
-            </Grid>
-          </CardContent>
+            </Typography>
+          </Box>
+          <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', mb: 3 }}>
+            <Button
+              variant="outlined"
+              startIcon={<EditIcon />}
+              sx={{
+                color: '#ff99ac',
+                px: 3,
+                borderRadius: 8,
+                textTransform: 'none',
+                fontSize: '12px',
+                '&:hover': {
+                  background: 'linear-gradient(to right, #ff4e77, #ff89a1)',
+                },
+              }}
+            >
+              Edit Profile
+            </Button>
+          </Box>
         </Card>
       </Box>
     </Box>
