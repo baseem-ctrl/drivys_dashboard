@@ -636,7 +636,8 @@ export default function UserNewEditForm({
         body.append('school_name', data?.school_name);
       }
       if (data?.gender) body.append('gender', data?.gender);
-      if (data?.user_gender) body.append('user_gender', data?.user_gender);
+      if (data?.user_gender && data?.user_type === 'ASSISTANT')
+        body.append('user_gender', data?.user_gender);
 
       if (data?.city_id) body.append('city_id', data?.city_id.value);
       if (data?.area_id) body.append('area_id', data?.area_id?.value);
