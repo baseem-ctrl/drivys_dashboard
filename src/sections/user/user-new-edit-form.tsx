@@ -159,7 +159,17 @@ export default function UserNewEditForm({
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required(t('name_required')),
     name_ar: Yup.string(),
-    certificate_expiry_date: Yup.mixed(),
+    certificate_expiry_date: Yup.mixed().test(
+      'is-future-date',
+      'Expiry date must be in future',
+      function (value) {
+        if (!value) return true;
+        const date = new Date(value);
+        const now = new Date();
+        return date > now;
+      }
+    ),
+
     cash_clearance_date: Yup.mixed(),
 
     email: Yup.string()
