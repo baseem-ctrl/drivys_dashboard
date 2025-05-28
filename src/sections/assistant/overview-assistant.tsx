@@ -1,8 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Card, Typography, Avatar, Box, Switch, Button } from '@mui/material';
+import {
+  Card,
+  Typography,
+  Avatar,
+  Box,
+  Switch,
+  Button,
+  Popover,
+  TextField,
+  MenuItem,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGenderEnum } from 'src/api/users';
+import EditProfilePopover from './edit-profile';
 
 const OverviewAssistant = () => {
   const { user } = useAuthContext();
@@ -13,8 +27,12 @@ const OverviewAssistant = () => {
     email: user?.user?.email || '',
     phone: user?.user?.phone || '',
     dob: user?.user?.dob || '',
+    status: user?.user?.is_active || '',
     gender: '',
+    profileUrl: user?.user?.photo_url || '',
   });
+  const [anchorEl, setAnchorEl] = useState(null);
+
   useEffect(() => {
     if (genderData && genderData?.length && user?.user?.gender) {
       const matchedGender = genderData.find(
@@ -65,6 +83,7 @@ const OverviewAssistant = () => {
               position: 'relative',
               color: 'white',
               textAlign: 'center',
+
               pt: 3,
             }}
           >
@@ -79,6 +98,7 @@ const OverviewAssistant = () => {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 boxShadow: 2,
+                background: '#fff0f0',
               }}
             />
           </Box>
@@ -181,7 +201,7 @@ const OverviewAssistant = () => {
             </Typography>
           </Box>
           <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center', mb: 3 }}>
-            <Button
+            {/* <Button
               variant="outlined"
               startIcon={<EditIcon />}
               sx={{
@@ -196,7 +216,12 @@ const OverviewAssistant = () => {
               }}
             >
               Edit Profile
-            </Button>
+            </Button> */}
+            <EditProfilePopover
+              formData={formData}
+              setFormData={setFormData}
+              genderData={genderData}
+            />
           </Box>
         </Card>
       </Box>
