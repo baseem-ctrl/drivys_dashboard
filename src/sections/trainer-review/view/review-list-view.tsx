@@ -33,8 +33,6 @@ import ReviewFilters from '../review-filters';
 import { useAuthContext } from 'src/auth/hooks';
 import { useTranslation } from 'react-i18next';
 
-
-
 // ----------------------------------------------------------------------
 
 export default function TrainerReviewListView() {
@@ -61,6 +59,7 @@ export default function TrainerReviewListView() {
   const [filters, setFilters] = useState({
     student_id: null,
     trainer_id: null,
+    sort_dir: 'desc',
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
 
@@ -68,6 +67,7 @@ export default function TrainerReviewListView() {
     useGetTrainerReview({
       student_id: filters.student_id,
       trainer_id: filters.trainer_id,
+      sort_dir: filters.sort_dir,
     });
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -127,35 +127,27 @@ export default function TrainerReviewListView() {
   }, []);
 
   const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <ReviewFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          handleOrderChange={handleOrderChange}
-          selectedOrder={selectedOrder}
-          filters={filters}
-          setFilters={setFilters}
-          onFilters={handleFiltersChange}
-          // canReset={canReset}
-          onResetFilters={handleResetFilters}
-          localeOptions={localeOptions}
-          onLocaleChange={handleLocaleFilterChange}
-        />
-      </Stack>
+    <Stack direction="row" spacing={1} sx={{ marginBottom: 3 }}>
+      <ReviewFilters
+        open={openFilters.value}
+        onOpen={openFilters.onTrue}
+        onClose={openFilters.onFalse}
+        handleOrderChange={handleOrderChange}
+        selectedOrder={selectedOrder}
+        filters={filters}
+        setFilters={setFilters}
+        onFilters={handleFiltersChange}
+        // canReset={canReset}
+        onResetFilters={handleResetFilters}
+        localeOptions={localeOptions}
+        onLocaleChange={handleLocaleFilterChange}
+      />
     </Stack>
   );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Trainer Review List")}
+        heading={t('Trainer Review List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -206,21 +198,21 @@ export default function TrainerReviewListView() {
                 <TableBody>
                   {trainerReviewsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <TrainerReviewRow
-                        userType={user?.user?.user_type}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        reload={revalidateTrainerReviews}
-                      />
-                    ))}
+                        <TrainerReviewRow
+                          userType={user?.user?.user_type}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          reload={revalidateTrainerReviews}
+                        />
+                      ))}
                 </TableBody>
               </Table>
             </Scrollbar>

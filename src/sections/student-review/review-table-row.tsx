@@ -51,7 +51,6 @@ interface StudentReviewRowProps {
 }
 
 export default function StudentReviewRow({ reload, row, userType }: StudentReviewRowProps) {
-
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -165,8 +164,23 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
         </TableCell>
         <TableCell>{student_email || 'N/A'}</TableCell>
         <TableCell>{student_phone || 'N/A'}</TableCell>
-
-        <TableCell>{reviews.length}  {t("Reviews")}</TableCell>
+        <TableCell>{student_phone || 'N/A'}</TableCell>
+        <TableCell>
+          <Box display="flex" alignItems="center">
+            {avg_rating
+              ? Array.from({ length: 5 }).map((_, index) =>
+                  index < avg_rating ? (
+                    <StarIcon key={index} style={{ color: '#CF5A0D' }} />
+                  ) : (
+                    <StarBorderIcon key={index} style={{ color: '#CF5A0D' }} />
+                  )
+                )
+              : t('No Ratings')}
+          </Box>
+        </TableCell>
+        <TableCell>
+          {reviews.length} {t('Reviews')}
+        </TableCell>
       </TableRow>
 
       {isReviewsVisible && (
@@ -178,7 +192,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                 gutterBottom
                 sx={{ color: 'primary.main', mt: 3, fontSize: '22px' }}
               >
-                {t("Reviews")}
+                {t('Reviews')}
               </Typography>
 
               <Table>
@@ -186,10 +200,10 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                   {' '}
                   <TableRow>
                     <TableCell sx={{ borderTopLeftRadius: '12px' }}>Session ID</TableCell>
-                    <TableCell>{t("Booking ID")}</TableCell>
-                    <TableCell>{t("Trainer Name")}</TableCell>
-                    <TableCell>{t("Rating")}</TableCell>
-                    <TableCell>{t("Comments")}</TableCell>
+                    <TableCell>{t('Booking ID')}</TableCell>
+                    <TableCell>{t('Trainer Name')}</TableCell>
+                    <TableCell>{t('Rating')}</TableCell>
+                    <TableCell>{t('Comments')}</TableCell>
                     <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                   </TableRow>
                 </TableHead>
@@ -268,7 +282,9 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                           <Box display="flex" alignItems="center">
                             <Tooltip
                               title={
-                                review.driver_comments ? t('Delete Comment') : t('No comments to delete')
+                                review.driver_comments
+                                  ? t('Delete Comment')
+                                  : t('No comments to delete')
                               }
                               arrow
                             >

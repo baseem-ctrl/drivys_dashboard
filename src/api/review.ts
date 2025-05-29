@@ -12,12 +12,14 @@ type useGetStudentReviewParams = {
 export function useGetStudentReview({
   student_id,
   trainer_id,
-}: Partial<useGetStudentReviewParams> = {}) {
+  sort_dir,
+}: Partial<useGetStudentReviewParams> & { sort_dir?: 'asc' | 'desc' } = {}) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 
     if (student_id) queryParams.student_id = student_id;
     if (trainer_id) queryParams.trainer_id = trainer_id;
+    if (sort_dir) queryParams.sort_dir = sort_dir;
 
     return `${endpoints.review.getStudentReview}?${new URLSearchParams(queryParams)}`;
   };
@@ -48,16 +50,17 @@ type useGetTrainerReviewParams = {
   trainer_id: number;
   student_id?: number;
 };
-
 export function useGetTrainerReview({
   student_id,
   trainer_id,
-}: Partial<useGetTrainerReviewParams> = {}) {
+  sort_dir,
+}: Partial<useGetTrainerReviewParams> & { sort_dir?: 'highest' | 'lowest' } = {}) {
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {};
 
     if (student_id) queryParams.student_id = student_id;
     if (trainer_id) queryParams.trainer_id = trainer_id;
+    if (sort_dir) queryParams.sort_dir = sort_dir;
 
     return `${endpoints.review.getTrainerReview}?${new URLSearchParams(queryParams)}`;
   };
