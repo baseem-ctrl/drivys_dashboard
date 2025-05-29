@@ -77,6 +77,7 @@ import TrainerReportListSchoolAdminView from 'src/sections/school-report-section
 import SchoolReportListSchoolAdminView from 'src/sections/school-report-section/school-report/view/school-report-list-view';
 import StudentReportListSchoolAdminView from 'src/sections/school-report-section/student-report/view/student-report-list-view';
 import OverviewAssistant from 'src/sections/assistant/overview-assistant';
+import EditProfilePopover from 'src/sections/assistant/edit-profile';
 
 // ----------------------------------------------------------------------
 
@@ -492,7 +493,10 @@ const assistantRoutes = [
   },
   {
     path: 'assistant',
-    children: [{ path: 'overview', element: <OverviewAssistant /> }],
+    children: [
+      { path: 'overview', element: <OverviewAssistant /> },
+      { path: 'edit', element: <EditProfilePopover /> },
+    ],
   },
 ];
 const userType = localStorage.getItem('user_type');

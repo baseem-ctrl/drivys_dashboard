@@ -1,20 +1,39 @@
 import { useEffect, useState } from 'react';
-import { Card, Typography, Avatar, Box, Switch, Button } from '@mui/material';
+import {
+  Card,
+  Typography,
+  Avatar,
+  Box,
+  Switch,
+  Button,
+  Popover,
+  TextField,
+  MenuItem,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGenderEnum } from 'src/api/users';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 const OverviewAssistant = () => {
   const { user } = useAuthContext();
-  const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
+
   const { genderData, genderLoading } = useGetGenderEnum();
   const [formData, setFormData] = useState({
     name: user?.user?.name || '',
     email: user?.user?.email || '',
     phone: user?.user?.phone || '',
     dob: user?.user?.dob || '',
+    status: user?.user?.is_active || '',
     gender: '',
+    profileUrl: user?.user?.photo_url || '',
   });
+
   useEffect(() => {
     if (genderData && genderData?.length && user?.user?.gender) {
       const matchedGender = genderData.find(
@@ -36,8 +55,8 @@ const OverviewAssistant = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
+  const handleClickSave = () => {
+    router.push(paths.dashboard.assistant.edit);
   };
 
   return (
@@ -65,6 +84,7 @@ const OverviewAssistant = () => {
               position: 'relative',
               color: 'white',
               textAlign: 'center',
+
               pt: 3,
             }}
           >
@@ -79,6 +99,7 @@ const OverviewAssistant = () => {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 boxShadow: 2,
+                background: '#fff0f0',
               }}
             />
           </Box>
@@ -184,6 +205,7 @@ const OverviewAssistant = () => {
             <Button
               variant="outlined"
               startIcon={<EditIcon />}
+              onClick={handleClickSave}
               sx={{
                 color: '#ff99ac',
                 px: 3,
@@ -197,6 +219,11 @@ const OverviewAssistant = () => {
             >
               Edit Profile
             </Button>
+            {/* <EditProfilePopover
+              formData={formData}
+              setFormData={setFormData}
+              genderData={genderData}
+            /> */}
           </Box>
         </Card>
       </Box>

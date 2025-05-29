@@ -250,6 +250,7 @@ export const paths = {
     },
     assistant: {
       overview: `${ROOTS.DASHBOARD}/assistant/overview`,
+      edit: `${ROOTS.DASHBOARD}/assistant/edit`,
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,
