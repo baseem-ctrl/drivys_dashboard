@@ -112,7 +112,7 @@ export default function StudentListView() {
     [table]
   );
   const handleClickNewStudent = () => {
-    router.push(paths.dashboard.assistant.student.addNew);
+    // router.push(paths.dashboard.assistant.student.addNew);
   };
   const handleOrderChange = (event) => {
     const value = event.target.value;
