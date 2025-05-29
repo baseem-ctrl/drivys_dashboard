@@ -58,6 +58,7 @@ export default function StudentReviewListView() {
   const [filters, setFilters] = useState({
     student_id: null,
     trainer_id: null,
+    sort_dir: 'desc',
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
 
@@ -65,6 +66,7 @@ export default function StudentReviewListView() {
     useGetStudentReview({
       student_id: filters.student_id,
       trainer_id: filters.trainer_id,
+      sort_dir: filters.sort_dir,
     });
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -123,35 +125,27 @@ export default function StudentReviewListView() {
   }, []);
 
   const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <ReviewFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          handleOrderChange={handleOrderChange}
-          selectedOrder={selectedOrder}
-          filters={filters}
-          setFilters={setFilters}
-          onFilters={handleFiltersChange}
-          // canReset={canReset}
-          onResetFilters={handleResetFilters}
-          localeOptions={localeOptions}
-          onLocaleChange={handleLocaleFilterChange}
-        />
-      </Stack>
+    <Stack direction="row" spacing={1} flexShrink={0} sx={{ marginBottom: 3 }}>
+      <ReviewFilters
+        open={openFilters.value}
+        onOpen={openFilters.onTrue}
+        onClose={openFilters.onFalse}
+        handleOrderChange={handleOrderChange}
+        selectedOrder={selectedOrder}
+        filters={filters}
+        setFilters={setFilters}
+        onFilters={handleFiltersChange}
+        // canReset={canReset}
+        onResetFilters={handleResetFilters}
+        localeOptions={localeOptions}
+        onLocaleChange={handleLocaleFilterChange}
+      />
     </Stack>
   );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Student Review List")}
+        heading={t('Student Review List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -182,7 +176,7 @@ export default function StudentReviewListView() {
                 )
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -202,21 +196,21 @@ export default function StudentReviewListView() {
                 <TableBody>
                   {studentReviewsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <StudentReviewRow
-                        userType={user?.user?.user_type}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        reload={revalidateStudentReviews}
-                      />
-                    ))}
+                        <StudentReviewRow
+                          userType={user?.user?.user_type}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          reload={revalidateStudentReviews}
+                        />
+                      ))}
                 </TableBody>
               </Table>
             </Scrollbar>

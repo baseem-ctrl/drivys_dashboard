@@ -163,17 +163,14 @@ export default function StudentListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Revenue Report List"
+        heading="Student List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Report',
-            href: paths.dashboard.report.booking,
-            onClick: (event) => {
-              setViewMode('table');
-            },
+            name: 'Student',
+            href: paths.dashboard.assistant.student.list,
           },
-          { name: 'Revenue Report' },
+          { name: 'List' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
