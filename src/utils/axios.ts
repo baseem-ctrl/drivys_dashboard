@@ -428,5 +428,9 @@ export const endpoints = {
   },
   assistant: {
     updateProfile: 'consumer/auth/update-profile',
+    student: {
+      list: 'assistant/student/get-student-list',
+      addStudent: 'assistant/student/register',
+    },
   },
 };

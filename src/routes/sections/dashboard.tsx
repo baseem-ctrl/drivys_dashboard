@@ -78,6 +78,8 @@ import SchoolReportListSchoolAdminView from 'src/sections/school-report-section/
 import StudentReportListSchoolAdminView from 'src/sections/school-report-section/student-report/view/student-report-list-view';
 import OverviewAssistant from 'src/sections/assistant/overview-assistant';
 import EditProfilePopover from 'src/sections/assistant/edit-profile';
+import StudentListView from 'src/sections/assistant/student/view/student-list-view';
+import AddNewStudent from 'src/sections/assistant/student/new-student';
 
 // ----------------------------------------------------------------------
 
@@ -496,6 +498,8 @@ const assistantRoutes = [
     children: [
       { path: 'overview', element: <OverviewAssistant /> },
       { path: 'edit', element: <EditProfilePopover /> },
+      { path: 'students', element: <StudentListView /> },
+      { path: 'new-student', element: <AddNewStudent /> },
     ],
   },
 ];

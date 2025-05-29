@@ -53,6 +53,7 @@ const ICONS = {
   map: icon('ic_map'),
   cash: icon('ic_cash'),
   support: icon('ic_support'),
+  student: icon('ic_student'),
 };
 
 // ----------------------------------------------------------------------
@@ -470,6 +471,11 @@ export function useNavData() {
       title: t('profile'),
       path: paths.dashboard.assistant.overview,
       icon: ICONS.user,
+    },
+    {
+      title: t('student'),
+      path: paths.dashboard.assistant.student.list,
+      icon: ICONS.student,
     },
   ];
   const userType = localStorage.getItem('user_type');
