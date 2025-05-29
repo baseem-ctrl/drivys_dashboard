@@ -66,7 +66,6 @@ export function useGetRevenueReports(
     if (limit) queryParams.limit = limit;
     if (page) queryParams.page = page;
 
-    console.log('apiiii', endpoints.schoolReportSessionPreview.revenue);
     return `${endpoints.schoolReportSessionPreview.revenue}?${new URLSearchParams(queryParams)}`;
   };
 

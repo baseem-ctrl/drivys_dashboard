@@ -92,8 +92,6 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
   };
   const canReset = !isEqual(defaultFilters, cleanedFilters);
 
-  console.log('canReset', canReset);
-  console.log('defaultFilters', defaultFilters);
   const renderFilters = (
     <Stack
       spacing={3}

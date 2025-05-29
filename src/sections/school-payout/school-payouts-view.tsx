@@ -85,7 +85,6 @@ export default function SchoolAdminPayoutPage() {
     sort_dir: table.order,
     sorting_by: sortBy,
   });
-  console.log('payoutBySchoolList', payoutBySchoolList);
 
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
     page: 0,
