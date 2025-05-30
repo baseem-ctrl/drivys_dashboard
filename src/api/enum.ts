@@ -239,3 +239,81 @@ export function usePaymentMethodEnum() {
 
   return { ...memoizedValue, revalidatePaymentMethodEnum };
 }
+export function useGetLanguages(page = 1, limit = 10) {
+  const URL = `${endpoints.users.listLanguages}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      languages: data?.data || [],
+      languagesLoading: isLoading,
+      languagesError: error,
+      languagesValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}
+export function useGetCategories(page = 1, limit = 10) {
+  const URL = `${endpoints.users.listCategories}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      categories: data?.data || [],
+      categoriesLoading: isLoading,
+      categoriesError: error,
+      categoriesValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}
+export function useGetCities(page = 1, limit = 10) {
+  const URL = `${endpoints.users.listCities}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      cities: data?.data || [],
+      citiesLoading: isLoading,
+      citiesError: error,
+      citiesValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}
+export function useGetAreas(page = 1, limit = 10, city_id = '') {
+  const URL = `${endpoints.users.listAreas}?page=${page}&limit=${limit}${
+    city_id ? `&city_id=${city_id}` : ''
+  }`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      areas: data?.data || [],
+      areasLoading: isLoading,
+      areasError: error,
+      areasValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Box, MenuItem, Card } from '@mui/material';
 import { useGetGearEnum, useGetGenderEnum } from 'src/api/users';
 import { useGetAllLanguage } from 'src/api/language';
+import { useGetLanguages, useGetCategories, useGetCities, useGetAreas } from 'src/api/enum';
+import { useTranslation } from 'react-i18next';
 
 interface StudentFormData {
   name: string;
@@ -10,7 +12,6 @@ interface StudentFormData {
   phone: string;
   country_code: string;
   dob: string;
-  user_type: string;
   gear: string | number;
   vehicle_type_id: string;
   gender: string;
@@ -27,7 +28,6 @@ const initialFormState: StudentFormData = {
   phone: '',
   country_code: '',
   dob: '',
-  user_type: '',
   gear: '',
   vehicle_type_id: '',
   gender: '',
@@ -37,21 +37,27 @@ const initialFormState: StudentFormData = {
   traffic_file_number: '',
 };
 
-const vehicleTypes = ['1', '2', '3'];
-const cityOptions = ['101', '102', '103'];
-const localeOptions = ['en', 'ar'];
-const areaOptions = ['A1', 'A2', 'A3'];
-
 const AddNewStudent: React.FC = () => {
   const [formData, setFormData] = useState<StudentFormData>(initialFormState);
   const { gearData, gearLoading } = useGetGearEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
-  const { language } = useGetAllLanguage(0, 1000);
+  const { languages } = useGetLanguages(0, 1000);
+  const { categories } = useGetCategories(0, 1000);
+  const { cities } = useGetCities(0, 1000);
+  const { areas } = useGetAreas(0, 1000, formData.city_id);
+  const { i18n } = useTranslation();
 
-  console.log('language', language);
+  console.log('areas', areas);
+  console.log(' i18n.language', i18n.language);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      // Reset area_id if city changes
+      ...(name === 'city_id' ? { area_id: '' } : {}),
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -72,24 +78,42 @@ const AddNewStudent: React.FC = () => {
 
             let options: any[] = [];
 
-            if (
-              ['gear', 'vehicle_type_id', 'gender', 'city_id', 'locale', 'area_id'].includes(key)
-            ) {
+            if (['gear', 'vehicle_type_id', 'gender', 'city_id', 'locale', 'area_id'].includes(key))
               if (key === 'gear' && Array.isArray(gearData)) {
                 options = gearData;
               } else if (key === 'gender' && Array.isArray(genderData)) {
                 options = genderData;
-              } else if (key === 'vehicle_type_id') {
-                options = vehicleTypes;
-              } else if (key === 'city_id') {
-                options = cityOptions;
-              } else if (key === 'locale') {
-                options = localeOptions;
+              } else if (key === 'vehicle_type_id' && Array.isArray(categories)) {
+                options = categories;
+              } else if (key === 'city_id' && Array.isArray(cities)) {
+                options = cities.map((city) => {
+                  const englishName =
+                    city.city_translations.find(
+                      (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || 'Unknown City';
+                  return {
+                    value: city.id.toString(),
+                    name: englishName,
+                  };
+                });
+              } else if (key === 'locale' && Array.isArray(languages)) {
+                options = languages.map((lang) => ({
+                  value: lang.language_culture,
+                  name: lang.name,
+                }));
               } else if (key === 'area_id') {
-                options = areaOptions;
+                const areaList = areas ?? [];
+                options = areaList.map((area) => {
+                  const englishName =
+                    area.translations.find(
+                      (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || 'Unknown Area';
+                  return {
+                    value: area.id.toString(),
+                    name: englishName,
+                  };
+                });
               }
-            }
-
             if (
               ['gear', 'vehicle_type_id', 'gender', 'city_id', 'locale', 'area_id'].includes(key)
             ) {
@@ -107,7 +131,7 @@ const AddNewStudent: React.FC = () => {
                   >
                     {options.length > 0 ? (
                       options.map((option: any) => (
-                        <MenuItem key={option.value ?? option} value={option.value ?? option}>
+                        <MenuItem key={option.id ?? option} value={option.id ?? option}>
                           {option.name ?? option}
                         </MenuItem>
                       ))
