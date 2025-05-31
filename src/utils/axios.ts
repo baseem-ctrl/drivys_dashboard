@@ -150,6 +150,12 @@ export const endpoints = {
     deleteReview: 'admin/reviews/delete-review?',
     updateReview: 'admin/reviews/update-review',
   },
+  reviewSchoolAdmin: {
+    getStudentReview: 'admin/review-school/get-students-reviews',
+    getTrainerReview: 'admin/review-school/get-trainers-reviews',
+    deleteReview: 'admin/review-school/delete-review?',
+    updateReview: 'admin/reviews/update-review',
+  },
   school: {
     list: 'admin/vendor/get-vendor-list',
     details: 'admin/vendor/get-vendor/',
