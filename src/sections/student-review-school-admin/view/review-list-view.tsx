@@ -36,7 +36,7 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-export default function StudentReviewListView() {
+export default function SchoolAdminStudentReviewListView() {
   const { t } = useTranslation();
 
   const TABLE_HEAD = [

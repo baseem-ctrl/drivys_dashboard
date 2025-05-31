@@ -30,7 +30,6 @@ export default function ReviewFilter({ filters, onFilters }: any) {
     }));
   };
 
-  // Map API values 'asc'/'desc' to UI terms 'highest'/'lowest'
   const currentSort = filters.sort_dir === 'desc' ? 'lowest' : 'highest';
 
   const toggleSortOrder = () => {
@@ -52,7 +51,7 @@ export default function ReviewFilter({ filters, onFilters }: any) {
       }}
     >
       {/* Student Filter */}
-      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
+      <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
           fullWidth
           options={
@@ -69,10 +68,10 @@ export default function ReviewFilter({ filters, onFilters }: any) {
           )}
           onChange={handleStudentChange}
         />
-      </Box> */}
+      </Box>
 
       {/* Trainer Filter */}
-      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
+      <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
           fullWidth
           options={
@@ -89,7 +88,7 @@ export default function ReviewFilter({ filters, onFilters }: any) {
           )}
           onChange={handleTrainerChange}
         />
-      </Box> */}
+      </Box>
 
       <Box
         flex="none"

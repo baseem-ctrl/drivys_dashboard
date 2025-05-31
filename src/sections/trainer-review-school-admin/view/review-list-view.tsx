@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Skeleton, Stack, TableCell, TableRow } from '@mui/material';
+import { Box, Skeleton, Stack, TableCell, TableRow } from '@mui/material';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -27,26 +27,27 @@ import {
 // types
 
 import { useGetAllLanguage } from 'src/api/language';
-import { useGetStudentReview, useGetTrainerReview } from 'src/api/review-school-admin';
+import { useGetTrainerReview } from 'src/api/review-school-admin';
 import TrainerReviewRow from '../review-table-row';
 import ReviewFilters from '../review-filters';
-import StudentReviewRow from '../review-table-row';
 import { useAuthContext } from 'src/auth/hooks';
 import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-export default function StudentReviewListView() {
+export default function SchoolAdminTrainerReviewListView() {
   const { t } = useTranslation();
 
+  // ----------------------------------------------------------------------
+
   const TABLE_HEAD = [
-    { id: 'student-name', label: t('Student'), width: 180 },
-    { id: 'student-email', label: t('Student Email'), width: 180 },
-    { id: 'student-phone', label: t('Student Phone'), width: 180 },
+    { id: 'trainer-name', label: t('Trainer'), width: 180 },
+    { id: 'trainer-email', label: t('Trainer Email'), width: 180 },
+    { id: 'trainer-phone', label: t('Trainer Phone'), width: 180 },
+    { id: 'avg-rating', label: t('Average Rating'), width: 180 },
     { id: 'reviews', label: t('Reviews'), width: 180 },
   ];
 
-  // ----------------------------------------------------------------------
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -62,8 +63,8 @@ export default function StudentReviewListView() {
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
 
-  const { studentReviews, studentReviewsLoading, totalpages, revalidateStudentReviews } =
-    useGetStudentReview({
+  const { trainerReviews, trainerReviewsLoading, totalpages, revalidateTrainerReviews } =
+    useGetTrainerReview({
       student_id: filters.student_id,
       trainer_id: filters.trainer_id,
       sort_dir: filters.sort_dir,
@@ -72,17 +73,18 @@ export default function StudentReviewListView() {
     setFilters(newFilters);
   };
   const { language } = useGetAllLanguage(0, 1000);
+
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
   }));
   useEffect(() => {
-    if (studentReviews?.length) {
-      setTableData(studentReviews);
+    if (trainerReviews?.length) {
+      setTableData(trainerReviews);
     } else {
       setTableData([]);
     }
-  }, [studentReviews]);
+  }, [trainerReviews]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -125,7 +127,7 @@ export default function StudentReviewListView() {
   }, []);
 
   const renderFilters = (
-    <Stack direction="row" spacing={1} flexShrink={0} sx={{ marginBottom: 3 }}>
+    <Stack direction="row" spacing={1} sx={{ marginBottom: 3 }}>
       <ReviewFilters
         open={openFilters.value}
         onOpen={openFilters.onTrue}
@@ -145,7 +147,7 @@ export default function StudentReviewListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t('Student Review List')}
+        heading={t('Trainer Review List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -155,7 +157,7 @@ export default function StudentReviewListView() {
               setViewMode('table');
             },
           },
-          { name: t('Student Review') },
+          { name: t('Trainer Review') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -176,7 +178,7 @@ export default function StudentReviewListView() {
                 )
               }
               action={
-                <Tooltip title={t('Delete')}>
+                <Tooltip title="Delete">
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -194,7 +196,7 @@ export default function StudentReviewListView() {
                   numSelected={table.selected.length}
                 />
                 <TableBody>
-                  {studentReviewsLoading
+                  {trainerReviewsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
                         <TableRow key={index}>
                           <TableCell colSpan={TABLE_HEAD?.length || 6}>
@@ -203,12 +205,12 @@ export default function StudentReviewListView() {
                         </TableRow>
                       ))
                     : tableData?.map((row) => (
-                        <StudentReviewRow
+                        <TrainerReviewRow
                           userType={user?.user?.user_type}
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateStudentReviews}
+                          reload={revalidateTrainerReviews}
                         />
                       ))}
                 </TableBody>

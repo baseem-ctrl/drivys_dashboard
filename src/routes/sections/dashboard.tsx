@@ -80,6 +80,8 @@ import OverviewAssistant from 'src/sections/assistant/overview-assistant';
 import EditProfilePopover from 'src/sections/assistant/edit-profile';
 import StudentListView from 'src/sections/assistant/student/view/student-list-view';
 import AddNewStudent from 'src/sections/assistant/student/new-student';
+import SchoolAdminStudentReviewListView from 'src/sections/student-review-school-admin/view/review-list-view';
+import SchoolAdminTrainerReviewListView from 'src/sections/trainer-review-school-admin/view/review-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -429,8 +431,8 @@ const schooladminRoutes = [
   {
     path: 'review',
     children: [
-      { path: 'student-review', element: <StudentReviewListView /> },
-      { path: 'trainer-review', element: <TrainerReviewListView />, index: true },
+      { path: 'student-review', element: <SchoolAdminStudentReviewListView /> },
+      { path: 'trainer-review', element: <SchoolAdminTrainerReviewListView />, index: true },
     ],
   },
 
