@@ -74,6 +74,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
     search: search,
     is_active: '1',
   });
+  console.log('users', users);
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
@@ -240,12 +241,13 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
                 name="trainer_id"
                 label={t('trainer')}
                 options={users} // Use the full list of user objects as options
-                getOptionLabel={(option) => (option ? `${option.name}` : '')} // Display only the name in the input field
+                getOptionLabel={(option) => (option ? `${option.name ? option.name : 'N/A'}` : '')} // Display only the name in the input field, or 'NO Name' if empty
                 isOptionEqualToValue={(option, value) => option.id === value.id} // Compare based on IDs
                 onInputChange={(_, value) => setSearch(value)} // Set the search value when user types in the field
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name} - {option.email} {/* Show "name - email" in the dropdown */}
+                    {option.name ? `${option.name} - ${option.email}` : 'N/A'}{' '}
+                    {/* Show "name - email" in the dropdown, or 'NO Name - NO Email' if name is empty */}
                   </li>
                 )}
                 onInput={(_, value) => {
