@@ -82,6 +82,7 @@ import StudentListView from 'src/sections/assistant/student/view/student-list-vi
 import AddNewStudent from 'src/sections/assistant/student/new-student';
 import SchoolAdminStudentReviewListView from 'src/sections/student-review-school-admin/view/review-list-view';
 import SchoolAdminTrainerReviewListView from 'src/sections/trainer-review-school-admin/view/review-list-view';
+import TrainerListPage from 'src/sections/assistant/trainer/view/trainer-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -501,6 +502,7 @@ const assistantRoutes = [
       { path: 'overview', element: <OverviewAssistant /> },
       { path: 'edit', element: <EditProfilePopover /> },
       { path: 'students', element: <StudentListView /> },
+      { path: 'trainers', element: <TrainerListPage /> },
       { path: 'new-student', element: <AddNewStudent /> },
     ],
   },

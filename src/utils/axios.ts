@@ -442,5 +442,8 @@ export const endpoints = {
       list: 'assistant/student/get-student-list',
       addStudent: 'assistant/student/register',
     },
+    trainer: {
+      list: 'assistant/trainer/get-trainer-list',
+    },
   },
 };

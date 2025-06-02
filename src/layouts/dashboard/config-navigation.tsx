@@ -477,6 +477,11 @@ export function useNavData() {
       path: paths.dashboard.assistant.student.list,
       icon: ICONS.student,
     },
+    {
+      title: t('trainers'),
+      path: paths.dashboard.assistant.trainer.list,
+      icon: ICONS.trainers,
+    },
   ];
   const userType = localStorage.getItem('user_type');
 
