@@ -61,3 +61,76 @@ export function addStudent(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+export interface TrainerListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  gender?: string;
+  is_pickup_enabled?: number | string;
+  city_id?: number | string;
+  language_spoken?: string;
+  vehicle_type_id?: number | string;
+  gear?: number | string;
+  vendor_id?: number | string;
+  with_all_trainers?: number | string;
+  sort_dir?: 'asc' | 'desc';
+  id?: number | string;
+}
+
+export function useGetTrainerList(params: TrainerListParams) {
+  const getTrainerUrl = () => {
+    const {
+      page = 0,
+      limit = 10,
+      sort_dir = 'asc',
+      search,
+      gender,
+      is_pickup_enabled,
+      city_id,
+      language_spoken,
+      vehicle_type_id,
+      gear,
+      vendor_id,
+      with_all_trainers,
+      id,
+    } = params;
+
+    const queryParams: Record<string, any> = {
+      page: page + 1,
+      limit,
+      sort_dir,
+    };
+
+    if (search !== undefined) queryParams.search = search;
+    if (gender !== undefined) queryParams.gender = gender;
+    if (is_pickup_enabled !== undefined) queryParams.is_pickup_enabled = is_pickup_enabled;
+    if (city_id !== undefined) queryParams.city_id = city_id;
+    if (language_spoken !== undefined) queryParams.language_spoken = language_spoken;
+    if (vehicle_type_id !== undefined) queryParams.vehicle_type_id = vehicle_type_id;
+    if (gear !== undefined) queryParams.gear = gear;
+    if (vendor_id !== undefined) queryParams.vendor_id = vendor_id;
+    if (with_all_trainers !== undefined) queryParams.with_all_trainers = with_all_trainers;
+    if (id !== undefined) queryParams.id = id;
+
+    return `${endpoints.assistant.trainer.list}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getTrainerUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      trainers: data?.data || [],
+      trainerListLoading: isLoading,
+      trainerListError: error,
+      trainerListValidating: isValidating,
+      totalTrainerPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateTrainerList = () => {
+    mutate(getTrainerUrl);
+  };
+
+  return { ...memoizedValue, revalidateTrainerList };
+}

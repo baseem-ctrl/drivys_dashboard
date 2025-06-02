@@ -255,6 +255,9 @@ export const paths = {
         list: `${ROOTS.DASHBOARD}/assistant/students`,
         addNew: `${ROOTS.DASHBOARD}/assistant/new-student`,
       },
+      trainer: {
+        list: `${ROOTS.DASHBOARD}/assistant/trainers`,
+      },
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,
