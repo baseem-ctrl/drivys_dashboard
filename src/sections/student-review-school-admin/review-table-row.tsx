@@ -164,7 +164,6 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
         </TableCell>
         <TableCell>{student_email || 'N/A'}</TableCell>
         <TableCell>{student_phone || 'N/A'}</TableCell>
-        <TableCell>{student_phone || 'N/A'}</TableCell>
         <TableCell>
           <Box display="flex" alignItems="center">
             {avg_rating
