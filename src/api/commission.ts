@@ -7,13 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 export function useGetAllVendorCommissions(page: number, limit: number) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
 
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {
       page: page ? page + 1 : 1,
       limit: limit || 10,
-      locale,
     };
 
     return `${endpoints.commission.listAdmin}?${new URLSearchParams(queryParams)}`;

@@ -50,11 +50,10 @@ export default function SchoolCreateForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useLocales();
-  const { i18n } = useTranslation();
 
   const { language } = useGetAllLanguage(0, 1000);
   const { revalidateSearch } = useGetSchoolAdmin(1000, 1);
-  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1, i18n.language);
+  const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1);
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});

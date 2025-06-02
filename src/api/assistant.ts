@@ -13,16 +13,13 @@ interface StudentListParams {
 }
 
 export function useGetStudentList(params: StudentListParams) {
-  const { i18n } = useTranslation();
-  const currentLocale = i18n.language;
-
   const getTheFullUrl = () => {
     const { page = 0, limit = 10, search, is_active, id, sort_dir = 'asc' } = params;
 
     const queryParams: Record<string, any> = {
       page: page + 1,
       limit,
-      locale: currentLocale,
+
       sort_dir,
     };
 

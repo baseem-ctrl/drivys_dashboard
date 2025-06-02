@@ -25,16 +25,12 @@ export function useGetUsers({
   search,
   is_verified,
 }: any) {
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
-
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
       page: page + 1,
       limit,
     };
 
-    if (locale) queryParams.locale = locale;
     if (user_types !== 'all') queryParams['user_types[]'] = [user_types];
     if (search) queryParams.search = search;
     if (is_active) queryParams.is_active = is_active;

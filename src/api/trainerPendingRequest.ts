@@ -22,8 +22,6 @@ export function useGetPendingVerificationRequest({
   search = '',
 }: UseGetPendingVerificationRequestProps) {
   const { user } = useAuthContext();
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
 
   const getTheFullUrl = () => {
     const queryParams: Record<string, any> = {
@@ -35,10 +33,6 @@ export function useGetPendingVerificationRequest({
 
     if (search) {
       queryParams.search = search;
-    }
-
-    if (locale) {
-      queryParams.locale = locale;
     }
 
     const url =

@@ -115,9 +115,6 @@ export function useGetSchoolPayouts({
 }
 
 export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGetParams = {}) {
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
-
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
@@ -125,10 +122,9 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
     if (page) params.page = page;
     if (vendor_id) params.vendor_id = vendor_id;
     if (trainer_id) params.trainer_id = trainer_id;
-    if (locale) params.locale = locale; // ✅ Add locale here
 
     return params;
-  }, [limit, page, vendor_id, trainer_id, locale]);
+  }, [limit, page, vendor_id, trainer_id]);
 
   const fullUrl = useMemo(
     () => `${endpoints.payouts.getList}?${new URLSearchParams(queryParams)}`,

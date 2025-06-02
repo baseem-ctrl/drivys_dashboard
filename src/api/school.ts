@@ -193,9 +193,6 @@ export function useGetSchoolById(schoolId: string) {
 }
 
 export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
-  const { i18n } = useTranslation();
-  const locale = i18n.language;
-
   const [searchValue, setSearchValue] = useState('');
 
   const queryParams = useMemo(() => {
@@ -204,10 +201,10 @@ export function useGetSchoolTrainers({ limit, page, vendor_id }: any) {
     if (page) params.page = page;
     if (vendor_id) params.vendor_id = vendor_id;
     if (searchValue) params.search = searchValue;
-    if (locale) params.locale = locale;
+
     // params.user_types = ['SCHOOL_ADMIN'];
     return params;
-  }, [limit, page, vendor_id, searchValue, locale]);
+  }, [limit, page, vendor_id, searchValue]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
@@ -287,17 +284,16 @@ export function RemoveTrainerFromSchool(id: any) {
   const response = drivysSmasher(URL);
   return response;
 }
-export function useGetAllSchoolAdmin(limit: number, page: number, locale?: string) {
+export function useGetAllSchoolAdmin(limit: number, page: number) {
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
     params.has_school = 0;
 
     return params;
-  }, [limit, page, locale]);
+  }, [limit, page]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
