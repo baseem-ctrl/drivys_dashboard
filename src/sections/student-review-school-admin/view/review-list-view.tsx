@@ -43,6 +43,8 @@ export default function SchoolAdminStudentReviewListView() {
     { id: 'student-name', label: t('Student'), width: 180 },
     { id: 'student-email', label: t('Student Email'), width: 180 },
     { id: 'student-phone', label: t('Student Phone'), width: 180 },
+    { id: 'avg-rating', label: t('Average Rating'), width: 180 },
+
     { id: 'reviews', label: t('Reviews'), width: 180 },
   ];
 
