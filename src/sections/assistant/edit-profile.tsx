@@ -72,6 +72,7 @@ const EditProfilePopover = () => {
       formDataToSend.append('name', formData.name);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('country_code', '+971');
       formDataToSend.append('dob', formData.dob);
       formDataToSend.append('gender', formData.gender);
       formDataToSend.append('password', formData.password || '');
