@@ -27,14 +27,15 @@ type TrainerProfileCardProps = {
 };
 
 const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
-  console.log('Trainer Data:', row); // ✅ Log trainer data
+  console.log('Trainer Data:', row);
+  console.log('row?.user?.user_preference?.category', row?.user);
   const { i18n } = useTranslation();
   const locale = i18n.language;
   return (
     <Card
       sx={{
         width: '100%',
-        height: 420,
+        height: 440,
         borderRadius: 5,
         padding: 0,
         boxShadow: 4,
@@ -115,7 +116,17 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
               row?.vendor?.vendor_translations?.[0]?.name ||
               'N/A'}
           </Typography>
-
+          <Typography sx={{ fontSize: '13px' }}>
+            <strong>Category:</strong>{' '}
+            {row?.user?.user_preference?.vehicle_type?.category_translations?.find(
+              (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+            )?.name ||
+              row?.user?.user_preference?.vehicle_type?.category_translations?.[0]?.name ||
+              'N/A'}{' '}
+          </Typography>
+          <Typography sx={{ fontSize: '13px' }}>
+            <strong>Type:</strong> {row?.gear || 'N/A'}
+          </Typography>
           <Typography sx={{ fontSize: '13px' }}>
             <strong>Languages:</strong>{' '}
             {row?.user?.languages?.length > 0
