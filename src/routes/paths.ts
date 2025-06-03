@@ -257,6 +257,8 @@ export const paths = {
       },
       trainer: {
         list: `${ROOTS.DASHBOARD}/assistant/trainers`,
+        details: (trainerId: number | string) =>
+          `${ROOTS.DASHBOARD}/assistant/trainer/details/${trainerId}`,
       },
     },
     package: {
