@@ -33,7 +33,7 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
   return (
     <Card
       sx={{
-        width: 480,
+        width: '100%',
         height: 390,
         borderRadius: 5,
         boxShadow: 4,

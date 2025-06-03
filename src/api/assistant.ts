@@ -61,20 +61,22 @@ export function addStudent(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
-export interface TrainerListParams {
+
+interface TrainerListParams {
   page?: number;
   limit?: number;
+  sort_dir?: 'asc' | 'desc';
   search?: string;
   gender?: string;
-  is_pickup_enabled?: number | string;
-  city_id?: number | string;
+  is_pickup_enabled?: boolean;
+  city_id?: string;
   language_spoken?: string;
-  vehicle_type_id?: number | string;
-  gear?: number | string;
-  vendor_id?: number | string;
-  with_all_trainers?: number | string;
-  sort_dir?: 'asc' | 'desc';
-  id?: number | string;
+  vehicle_type_id?: string;
+  gear?: string;
+  vendor_id?: string;
+  with_all_trainers?: boolean;
+  id?: string;
+  trainer_id?: string; // ✅ Add this line
 }
 
 export function useGetTrainerList(params: TrainerListParams) {
@@ -93,6 +95,7 @@ export function useGetTrainerList(params: TrainerListParams) {
       vendor_id,
       with_all_trainers,
       id,
+      trainer_id,
     } = params;
 
     const queryParams: Record<string, any> = {
@@ -111,6 +114,7 @@ export function useGetTrainerList(params: TrainerListParams) {
     if (vendor_id !== undefined) queryParams.vendor_id = vendor_id;
     if (with_all_trainers !== undefined) queryParams.with_all_trainers = with_all_trainers;
     if (id !== undefined) queryParams.id = id;
+    if (trainer_id !== undefined) queryParams.trainer_id = trainer_id; // ✅ Add to query
 
     return `${endpoints.assistant.trainer.list}?${new URLSearchParams(queryParams)}`;
   };
