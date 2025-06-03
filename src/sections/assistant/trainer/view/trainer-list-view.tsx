@@ -8,7 +8,7 @@ import { useSettingsContext } from 'src/components/settings';
 import TrainerProfileCard from '../trainer-profile-card';
 
 const TrainerListPage: React.FC = () => {
-  const table = useTable({ defaultRowsPerPage: 6 });
+  const table = useTable({ defaultRowsPerPage: 3 });
   const settings = useSettingsContext();
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
@@ -50,7 +50,7 @@ const TrainerListPage: React.FC = () => {
       />{' '}
       <Grid container spacing={3} padding={3}>
         {trainers.map((trainer: any) => (
-          <Grid item xs={12} sm={12} md={6} lg={4} key={trainer.id}>
+          <Grid item xs={12} sm={10} md={10} key={trainer.id}>
             <TrainerProfileCard row={trainer} />
           </Grid>
         ))}
