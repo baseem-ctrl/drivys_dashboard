@@ -134,3 +134,44 @@ export function useGetTrainerList(params: TrainerListParams) {
 
   return { ...memoizedValue, revalidateTrainerList };
 }
+export function createBooking(body: any) {
+  const URL = endpoints.assistant.booking.create;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
+
+interface TrainerPackageListParams {
+  page?: number;
+  limit?: number;
+}
+
+export function useGetTrainerPackageList(params: TrainerPackageListParams) {
+  const { page = 0, limit = 10 } = params;
+
+  const queryParams: Record<string, any> = {
+    page: page + 1, // assuming backend is 1-based
+    limit,
+  };
+
+  const queryString = new URLSearchParams(queryParams).toString();
+  const url = `${endpoints.assistant.trainer.trainerPackageList}?${queryString}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      trainerPackages: data?.data || [],
+      trainerPackageLoading: isLoading,
+      trainerPackageError: error,
+      trainerPackageValidating: isValidating,
+      totalTrainerPackagePages: data?.total || 0,
+    }),
+    [data?.data, data?.total, isLoading, error, isValidating]
+  );
+
+  const revalidateTrainerPackageList = () => {
+    mutate(url);
+  };
+
+  return { ...memoizedValue, revalidateTrainerPackageList };
+}

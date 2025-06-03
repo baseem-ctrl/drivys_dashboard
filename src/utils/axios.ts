@@ -444,6 +444,10 @@ export const endpoints = {
     },
     trainer: {
       list: 'assistant/trainer/get-trainer-list',
+      trainerPackageList: 'assistant/trainer/get-trainer-package-mapping-list',
+    },
+    booking: {
+      create: 'assistant/booking/create-booking',
     },
   },
 };
