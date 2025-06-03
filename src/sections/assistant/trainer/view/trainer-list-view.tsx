@@ -35,7 +35,7 @@ const TrainerListPage: React.FC = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Student List"
+        heading="Trainer List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
@@ -50,7 +50,7 @@ const TrainerListPage: React.FC = () => {
       />{' '}
       <Grid container spacing={3} padding={3}>
         {trainers.map((trainer: any) => (
-          <Grid item xs={12} sm={10} md={10} key={trainer.id}>
+          <Grid item xs={12} sm={10} md={4} key={trainer.id} sx={{ padding: 0 }}>
             <TrainerProfileCard row={trainer} />
           </Grid>
         ))}

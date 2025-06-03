@@ -33,9 +33,10 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
   return (
     <Card
       sx={{
-        width: 480,
-        height: 390,
+        width: '100%',
+        height: 420,
         borderRadius: 5,
+        padding: 0,
         boxShadow: 4,
         overflow: 'hidden',
         textAlign: 'center',
@@ -45,7 +46,7 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
       <Box
         sx={{
           height: 140,
-          background: 'linear-gradient(to right, #ff9a8b, #ff6a88, #ff99ac)',
+          background: 'linear-gradient(to right, #e36c1e, #e99562, #FF9E57)',
           position: 'relative',
         }}
       >
@@ -88,7 +89,11 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
           {row?.user?.name}
         </Typography>
         <Typography sx={{ fontSize: '13px' }} color="text.secondary" fontWeight={200}>
-          {row?.gear}
+          {row?.user?.user_preference?.city?.city_translations?.find(
+            (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ||
+            row?.city?.city_translations?.[0]?.name ||
+            'N/A'}
         </Typography>
 
         <Divider
@@ -112,8 +117,15 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
           </Typography>
 
           <Typography sx={{ fontSize: '13px' }}>
-            <strong>Expiry Date:</strong> {row?.certificate_expiry_date}
+            <strong>Languages:</strong>{' '}
+            {row?.user?.languages?.length > 0
+              ? row.user.languages
+                  .map((lang: any) => lang.dialect?.language_name)
+                  .filter(Boolean)
+                  .join(', ')
+              : 'N/A'}
           </Typography>
+
           <Typography
             sx={{
               fontSize: '13px',
