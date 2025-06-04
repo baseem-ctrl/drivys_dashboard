@@ -26,6 +26,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
+import RatingOverview from './rating-overview';
 // ----------------------------------------------------------------------
 
 interface EditingState {
@@ -59,7 +60,12 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
   const router = useRouter();
   const [editedComment, setEditedComment] = useState('');
   const [editingState, setEditingState] = useState<EditingState>({});
-
+  const starCounts = [1, 2, 3, 4, 5].map((star) => {
+    return {
+      star,
+      count: reviews.filter((review) => review.driver_rating === star).length,
+    };
+  });
   const handleEditClick = (session_id: number, currentComment: string) => {
     setEditingState({
       ...editingState,
@@ -121,7 +127,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
       const response = await updateReview(body);
 
       if (response.status === 'success') {
-        enqueueSnackbar('Comment deleted successfully.');
+        enqueueSnackbar('Comment saved successfully.');
         setEditingState((prevState) => ({
           ...prevState,
           [session_id]: { isEditing: false, editedComment: '' },
@@ -164,8 +170,7 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
         </TableCell>
         <TableCell>{student_email || 'N/A'}</TableCell>
         <TableCell>{student_phone || 'N/A'}</TableCell>
-        <TableCell>{student_phone || 'N/A'}</TableCell>
-        <TableCell>
+        {/* <TableCell>
           <Box display="flex" alignItems="center">
             {avg_rating
               ? Array.from({ length: 5 }).map((_, index) =>
@@ -177,9 +182,21 @@ export default function StudentReviewRow({ reload, row, userType }: StudentRevie
                 )
               : t('No Ratings')}
           </Box>
-        </TableCell>
-        <TableCell>
-          {reviews.length} {t('Reviews')}
+        </TableCell> */}
+
+        {/* <TableCell>
+          <RatingOverview
+            avgRating={avg_rating || 0}
+            starCounts={starCounts}
+            totalRatings={reviews.length}
+          />
+        </TableCell> */}
+        <TableCell colSpan={2}>
+          <RatingOverview
+            avgRating={avg_rating || 0}
+            starCounts={starCounts}
+            totalRatings={reviews.length}
+          />
         </TableCell>
       </TableRow>
 
