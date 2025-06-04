@@ -1,5 +1,6 @@
-import React from 'react';
-import { Grid, CircularProgress, Typography, Container, Box } from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import isEqual from 'lodash/isEqual';
+import { Grid, CircularProgress, Typography, Container, Box, Stack } from '@mui/material';
 import { useGetTrainerList } from 'src/api/assistant';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -7,70 +8,132 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import TrainerProfileCard from '../trainer-profile-card';
 import { useRouter } from 'src/routes/hooks';
+import TrainerFilters from '../trainer-filter';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { IUserTableFilterValue } from 'src/types/city';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import { useGetGearEnum } from 'src/api/users';
 
+const defaultFilters: any = {
+  city_id: '',
+  vehicle_type_id: { label: '', value: '' },
+  gear: '',
+  vendor_id: { label: '', value: '' },
+};
 const TrainerListPage: React.FC = () => {
   const table = useTable({ defaultRowsPerPage: 3 });
   const settings = useSettingsContext();
   const router = useRouter();
+  const openFilters = useBoolean();
+  const [filters, setFilters] = useState(defaultFilters);
+  const { gearData, gearLoading } = useGetGearEnum();
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
     page: table.page,
     limit: 1000,
+    ...(filters.vendor_id?.value ? { vendor_id: filters.vendor_id.value } : {}),
+    ...(filters.vehicle_type_id?.value ? { vehicle_type_id: filters.vehicle_type_id.value } : {}),
+    ...(filters.gear !== '' && gearData?.length
+      ? { gear: gearData.find((g: any) => g.name === filters.gear)?.value }
+      : {}),
+    ...(filters.city_id ? { city_id: filters.city_id } : {}),
   });
 
-  if (trainerListLoading) {
-    return (
-      <Grid container justifyContent="center" mt={5}>
-        <CircularProgress />
-      </Grid>
-    );
-  }
+  const canReset = !isEqual(defaultFilters, filters);
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
+  const handleFilters = useCallback(
+    (name: string, value: IUserTableFilterValue) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
 
-  if (trainerListError) {
-    return (
-      <Typography color="error" textAlign="center" mt={5}>
-        Failed to load trainers.
-      </Typography>
-    );
-  }
   const handleClickDetails = () => {
     console.log('hagshagshaghdsags');
     // router.push(paths.dashboard.category.details(id));
   };
+
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="flex-end"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      margin={3}
+    >
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <TrainerFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          //
+          filters={filters}
+          onFilters={handleFilters}
+          //
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+        />
+
+        {/* <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} /> */}
+      </Stack>
+    </Stack>
+  );
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Trainer List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Trainer',
-            href: paths.dashboard.assistant.trainer.list,
-          },
+          { name: 'Trainer', href: paths.dashboard.assistant.trainer.list },
           { name: 'List' },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />{' '}
-      <Grid container spacing={3} padding={3}>
-        {trainers.map((trainer: any) => (
-          <Grid item xs={12} sm={10} md={4} key={trainer.id} sx={{ padding: 0 }}>
-            <Box sx={{ textDecoration: 'none' }} onclick={() => handleClickDetails()}>
-              <TrainerProfileCard row={trainer} />
-            </Box>
-          </Grid>
-        ))}
-      </Grid>{' '}
-      {/* <TablePaginationCustom
-        count={totalTrainerPages}
-        page={table.page}
-        rowsPerPage={table.rowsPerPage}
-        onPageChange={table.onChangePage}
-        onRowsPerPageChange={table.onChangeRowsPerPage}
-        dense={table.dense}
-        onChangeDense={table.onChangeDense}
-      /> */}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+
+      {renderFilters}
+
+      {trainerListLoading ? (
+        <Grid container justifyContent="center" mt={5}>
+          <CircularProgress />
+        </Grid>
+      ) : trainerListError ? (
+        <Typography color="error" textAlign="center" mt={5}>
+          Failed to load trainers.
+        </Typography>
+      ) : !trainers || trainers.length === 0 ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          mt={10}
+          sx={{ opacity: 0.75 }}
+        >
+          <HourglassEmptyIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+          <Typography variant="h6" color="text.primary">
+            No Trainers Available
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            No data matched your current filters. Please adjust your criteria and try again.
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={3} padding={3}>
+          {trainers.map((trainer: any) => (
+            <Grid item xs={12} sm={10} md={4} key={trainer.id} sx={{ padding: 0 }}>
+              <Box sx={{ textDecoration: 'none' }} onClick={handleClickDetails}>
+                <TrainerProfileCard row={trainer} />
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 };
