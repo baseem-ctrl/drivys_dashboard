@@ -205,6 +205,7 @@ export const endpoints = {
     listCategories: 'public/category/get-category-list',
     listCities: 'public/city/get-city-list',
     listAreas: 'public/state-province/get-list',
+    listVendor: 'public/vendor/get-vendor-list',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
     getbyId: 'admin/user/get-user/',

@@ -317,3 +317,27 @@ export function useGetAreas(page = 1, limit = 10, city_id = '') {
 
   return memoizedValue;
 }
+
+export function useGetVendors({ page, limit }) {
+  const URL = `${endpoints.users.listVendor}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    page && limit ? URL : null,
+    drivysFetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  const memoizedValue = useMemo(
+    () => ({
+      vendorList: data?.data || [],
+      vendorLoading: isLoading,
+      vendorError: error,
+      vendorValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}
