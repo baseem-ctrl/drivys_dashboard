@@ -15,7 +15,7 @@ const TrainerListPage: React.FC = () => {
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
     page: table.page,
-    limit: table.rowsPerPage,
+    limit: 1000,
   });
 
   if (trainerListLoading) {
@@ -62,7 +62,7 @@ const TrainerListPage: React.FC = () => {
           </Grid>
         ))}
       </Grid>{' '}
-      <TablePaginationCustom
+      {/* <TablePaginationCustom
         count={totalTrainerPages}
         page={table.page}
         rowsPerPage={table.rowsPerPage}
@@ -70,7 +70,7 @@ const TrainerListPage: React.FC = () => {
         onRowsPerPageChange={table.onChangeRowsPerPage}
         dense={table.dense}
         onChangeDense={table.onChangeDense}
-      />
+      /> */}
     </Container>
   );
 };
