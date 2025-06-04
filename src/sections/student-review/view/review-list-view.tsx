@@ -27,7 +27,7 @@ import {
 // types
 
 import { useGetAllLanguage } from 'src/api/language';
-import { useGetStudentReview, useGetTrainerReview } from 'src/api/review-school-admin';
+import { useGetStudentReview, useGetTrainerReview } from 'src/api/review';
 import TrainerReviewRow from '../review-table-row';
 import ReviewFilters from '../review-filters';
 import StudentReviewRow from '../review-table-row';
@@ -43,6 +43,8 @@ export default function StudentReviewListView() {
     { id: 'student-name', label: t('Student'), width: 180 },
     { id: 'student-email', label: t('Student Email'), width: 180 },
     { id: 'student-phone', label: t('Student Phone'), width: 180 },
+    { id: 'avg-rating', label: t('Average Rating'), width: 180 },
+
     { id: 'reviews', label: t('Reviews'), width: 180 },
   ];
 
