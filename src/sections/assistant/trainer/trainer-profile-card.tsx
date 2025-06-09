@@ -27,8 +27,6 @@ type TrainerProfileCardProps = {
 };
 
 const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
-  console.log('Trainer Data:', row);
-  console.log('row?.user?.user_preference?.category', row?.user);
   const { i18n } = useTranslation();
   const locale = i18n.language;
   return (
@@ -70,7 +68,7 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
         />
 
         <Avatar
-          src={row?.user?.photo}
+          src={row?.user?.photo_url}
           alt={row?.user?.name}
           sx={{
             width: 100,

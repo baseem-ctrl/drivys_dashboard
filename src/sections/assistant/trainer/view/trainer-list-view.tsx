@@ -54,9 +54,8 @@ const TrainerListPage: React.FC = () => {
     [table]
   );
 
-  const handleClickDetails = () => {
-    console.log('hagshagshaghdsags');
-    // router.push(paths.dashboard.category.details(id));
+  const handleClickTrainerDetails = (id) => {
+    router.push(paths.dashboard.assistant.trainer.details(id));
   };
 
   const renderFilters = (
@@ -127,7 +126,10 @@ const TrainerListPage: React.FC = () => {
         <Grid container spacing={3} padding={3}>
           {trainers.map((trainer: any) => (
             <Grid item xs={12} sm={10} md={4} key={trainer.id} sx={{ padding: 0 }}>
-              <Box sx={{ textDecoration: 'none' }} onClick={handleClickDetails}>
+              <Box
+                sx={{ textDecoration: 'none' }}
+                onClick={() => handleClickTrainerDetails(trainer?.user_id)}
+              >
                 <TrainerProfileCard row={trainer} />
               </Box>
             </Grid>
