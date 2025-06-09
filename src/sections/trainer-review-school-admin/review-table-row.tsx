@@ -26,6 +26,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTranslation } from 'react-i18next';
+import RatingOverview from '../student-review/rating-overview';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,11 @@ export default function TrainerReviewRow({ reload, row, userType }) {
   const handleRowClick = () => {
     setIsReviewsVisible(!isReviewsVisible);
   };
+  const starCounts = [1, 2, 3, 4, 5].map((star) => ({
+    star,
+    count: row.rating_breakdown?.[`${star}_star`] || 0,
+  }));
+
   const [editedComment, setEditedComment] = useState('');
   const [editingState, setEditingState] = useState({});
 
@@ -139,20 +145,13 @@ export default function TrainerReviewRow({ reload, row, userType }) {
         </TableCell>
         <TableCell>{trainer_email || 'N/A'}</TableCell>
         <TableCell>{trainer_phone || 'N/A'}</TableCell>
-        <TableCell>
-          <Box display="flex" alignItems="center">
-            {avg_rating
-              ? Array.from({ length: 5 }).map((_, index) =>
-                index < avg_rating ? (
-                  <StarIcon key={index} style={{ color: '#CF5A0D' }} />
-                ) : (
-                  <StarBorderIcon key={index} style={{ color: '#CF5A0D' }} />
-                )
-              )
-              : t('No Ratings')}
-          </Box>
+        <TableCell colSpan={2}>
+          <RatingOverview
+            avgRating={avg_rating || 0}
+            starCounts={starCounts}
+            totalRatings={reviews.length}
+          />
         </TableCell>
-        <TableCell>{reviews.length} {t("Reviews")}</TableCell>
       </TableRow>
 
       {isReviewsVisible && (
@@ -164,17 +163,17 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                 gutterBottom
                 sx={{ color: 'primary.main', mt: 3, fontSize: '22px' }}
               >
-                {t("Reviews")}:
+                {t('Reviews')}:
               </Typography>
 
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t("Session ID")}</TableCell>
-                    <TableCell>{t("Booking ID")}</TableCell>
-                    <TableCell>{t("Student Name")}</TableCell>
-                    <TableCell>{t("Rating")}</TableCell>
-                    <TableCell>{t("Comments")}</TableCell>
+                    <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t('Session ID')}</TableCell>
+                    <TableCell>{t('Booking ID')}</TableCell>
+                    <TableCell>{t('Student Name')}</TableCell>
+                    <TableCell>{t('Rating')}</TableCell>
+                    <TableCell>{t('Comments')}</TableCell>
                     <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                   </TableRow>
                 </TableHead>
@@ -252,7 +251,9 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                           <Box display="flex" alignItems="center">
                             <Tooltip
                               title={
-                                review.user_comments ? t('Delete Comment') : t('No comments to delete')
+                                review.user_comments
+                                  ? t('Delete Comment')
+                                  : t('No comments to delete')
                               }
                               arrow
                             >

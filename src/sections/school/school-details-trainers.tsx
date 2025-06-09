@@ -74,7 +74,6 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
     search: search,
     is_active: '1',
   });
-  console.log('users', users);
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({

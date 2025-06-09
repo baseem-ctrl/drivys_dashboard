@@ -20,7 +20,6 @@ export function useGetStudentReview({
     if (student_id) queryParams.student_id = student_id;
     if (trainer_id) queryParams.trainer_id = trainer_id;
     if (sort_dir) queryParams.sort_dir = sort_dir;
-    console.log('end point', endpoints.reviewSchoolAdmin.getStudentReview);
     return `${endpoints.reviewSchoolAdmin.getStudentReview}?${new URLSearchParams(queryParams)}`;
   };
 
