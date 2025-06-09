@@ -341,3 +341,62 @@ export function useGetVendors({ page, limit }) {
 
   return memoizedValue;
 }
+
+interface UseGetPackagesProps {
+  page: number;
+  limit: number;
+  trainerId: number | null;
+}
+
+export function useGetPackages({ page, limit, trainerId }: UseGetPackagesProps) {
+  const URL =
+    page && limit && trainerId
+      ? `${endpoints.users.listPackage}?trainer_id=${trainerId}&page=${page}&limit=${limit}`
+      : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      packageList: data?.data || [],
+      packageLoading: isLoading,
+      packageError: error,
+      packageValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}
+interface UseGetTrainersProps {
+  page: number;
+  limit: number;
+  search?: string;
+}
+
+export function useGetTrainers({ page, limit, search }: UseGetTrainersProps) {
+  const URL =
+    page && limit
+      ? `${endpoints.users.listTrainers}?has_package=1&page=${page}&limit=${limit}${
+          search ? `&search=${encodeURIComponent(search)}` : ''
+        }`
+      : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      trainerList: data?.data || [],
+      trainerLoading: isLoading,
+      trainerError: error,
+      trainerValidating: isValidating,
+    }),
+    [data?.data, isLoading, error, isValidating]
+  );
+
+  return memoizedValue;
+}

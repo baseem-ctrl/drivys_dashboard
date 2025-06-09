@@ -17,7 +17,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 
-interface Student {
+interface Trainer {
   id: number;
   name: string;
   email?: string;
@@ -26,29 +26,26 @@ interface Student {
   is_active?: boolean;
 }
 
-interface StudentStepProps {
-  students: Student[];
-  selectedStudentId: number | null;
-  setSelectedStudentId: (id: number) => void;
+interface TrainerStepProps {
+  trainers: Trainer[];
+  selectedTrainerId: number | null;
+  setSelectedTrainerId: (id: number) => void;
   isLoading: boolean;
   setSearchTerm: (value: string) => void;
   searchTerm: string;
-  setSelectedStudent: (student: Student) => void;
 }
 
-const StudentStep: React.FC<StudentStepProps> = ({
-  students,
-  selectedStudentId,
-  setSelectedStudentId,
+const TrainerSelectStep: React.FC<TrainerStepProps> = ({
+  trainers,
+  selectedTrainerId,
+  setSelectedTrainerId,
   isLoading,
   setSearchTerm,
   searchTerm,
-  setSelectedStudent,
 }) => {
   const { i18n } = useTranslation();
-
   const getInitials = (name?: string) => {
-    if (!name) return '?';
+    if (!name) return 'N/A';
     return name
       .split(' ')
       .map((n) => n[0])
@@ -64,7 +61,7 @@ const StudentStep: React.FC<StudentStepProps> = ({
     <>
       <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
         <TextField
-          label="Search Students"
+          label="Search Trainer"
           variant="outlined"
           fullWidth
           value={searchTerm}
@@ -87,19 +84,18 @@ const StudentStep: React.FC<StudentStepProps> = ({
             <CircularProgress />
           </Grid>
         ) : (
-          students.map((student) => (
-            <Grid item xs={12} sm={6} md={4} key={student.id}>
+          trainers.map((trainer) => (
+            <Grid item xs={12} sm={6} md={4} key={trainer.id}>
               <Card
                 onClick={() => {
-                  setSelectedStudentId(student.id);
-                  setSelectedStudent(student);
+                  setSelectedTrainerId(trainer.user_id);
                 }}
                 sx={{
                   borderRadius: 5,
                   boxShadow: 4,
                   cursor: 'pointer',
                   overflow: 'hidden',
-                  border: student.id === selectedStudentId ? '2px solid #e36c1e' : 'none',
+                  border: trainer.id === selectedTrainerId ? '2px solid #e36c1e' : 'none',
                 }}
               >
                 <Box
@@ -110,22 +106,22 @@ const StudentStep: React.FC<StudentStepProps> = ({
                   }}
                 >
                   <Chip
-                    label={student?.is_active ? 'Active' : 'Inactive'}
+                    label={trainer?.user?.is_active ? 'Active' : 'Inactive'}
                     size="small"
                     variant="outlined"
                     sx={{
                       position: 'absolute',
-                      top: 14,
-                      right: 14,
+                      top: 15,
+                      right: 15,
                       backgroundColor: 'rgba(255,255,255,0.8)',
-                      color: student?.is_active ? '#388e3c' : '#d32f2f',
+                      color: trainer?.user?.is_active ? '#388e3c' : '#d32f2f',
                       fontWeight: 600,
                       borderColor: 'rgba(255,255,255,0.5)',
                     }}
                   />
 
                   <Avatar
-                    src={student.photo_url || student.avatarUrl}
+                    src={trainer?.user?.photo_url || trainer.avatarUrl}
                     sx={{
                       width: 80,
                       height: 80,
@@ -139,16 +135,16 @@ const StudentStep: React.FC<StudentStepProps> = ({
                       color: '#444',
                     }}
                   >
-                    {getInitials(student.name)}
+                    {getInitials(trainer.name)}
                   </Avatar>
                 </Box>
 
                 <CardContent sx={{ mt: 5, textAlign: 'center' }}>
                   <Typography fontWeight={600} sx={{ fontSize: '16px' }}>
-                    {student.name || 'N/A'}
+                    {trainer?.user?.name || 'N/A'}
                   </Typography>
                   <Typography sx={{ fontSize: '13px' }} color="text.secondary">
-                    {student.email || 'N/A'}
+                    {trainer?.user?.email || 'N/A'}
                   </Typography>
 
                   <Divider
@@ -163,12 +159,12 @@ const StudentStep: React.FC<StudentStepProps> = ({
 
                   <Stack spacing={1} sx={{ fontSize: '13px', textAlign: 'left', px: 2 }}>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Type:</strong> {student?.user_preference?.gear || 'N/A'}
+                      <strong>Type:</strong> {trainer?.user?.user_preference?.gear || 'N/A'}
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
                       <strong>Languages:</strong>{' '}
-                      {student?.languages?.length > 0
-                        ? student?.languages
+                      {trainer?.user?.languages?.length > 0
+                        ? trainer?.user?.languages
                             .map((lang: any) => lang.dialect?.language_name)
                             .filter(Boolean)
                             .join(', ')
@@ -176,10 +172,11 @@ const StudentStep: React.FC<StudentStepProps> = ({
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
                       <strong>Category:</strong>{' '}
-                      {student?.user_preference?.vehicle_type?.category_translations?.find(
+                      {trainer?.user?.user_preference?.vehicle_type?.category_translations?.find(
                         (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
                       )?.name ||
-                        student?.user_preference?.vehicle_type?.category_translations?.[0]?.name ||
+                        trainer?.user?.user_preference?.vehicle_type?.category_translations?.[0]
+                          ?.name ||
                         'N/A'}{' '}
                     </Typography>
                   </Stack>
@@ -193,4 +190,4 @@ const StudentStep: React.FC<StudentStepProps> = ({
   );
 };
 
-export default StudentStep;
+export default TrainerSelectStep;

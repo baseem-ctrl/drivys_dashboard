@@ -206,6 +206,8 @@ export const endpoints = {
     listCities: 'public/city/get-city-list',
     listAreas: 'public/state-province/get-list',
     listVendor: 'public/vendor/get-vendor-list',
+    listPackage: 'public/package-trainer/get-trainer-package-vendor-list',
+    listTrainers: 'public/trainers/get-trainers-list',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
     getbyId: 'admin/user/get-user/',
