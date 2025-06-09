@@ -1020,5 +1020,13 @@
   "priority": "Priority",
   "message": "Message",
   "subject": "Subject",
-  "max_slot": "Max Slot"
+  "max_slot": "Max Slot",
+  "this_option_is_for": "This option is for drivers who offer pickup services. Additional fees apply.",
+  "pickup_option_available": "Pickup option is available for this instructor",
+  "pickup_option_not_available": "Pickup option is not available for this instructor",
+  "ratings_label": "Ratings",
+  "no_reviews": "No reviews available yet.",
+  "reviews_label": "Reviews",
+  "no_reviews_available": "No reviews available.",
+  "about_label": "About"
 }

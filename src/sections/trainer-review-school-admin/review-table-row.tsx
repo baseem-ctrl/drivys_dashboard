@@ -34,7 +34,6 @@ export default function TrainerReviewRow({ reload, row, userType }) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { trainer_name, trainer_email, trainer_phone, avg_rating, reviews = [] } = row;
-  console.log('row', row);
   const [isReviewsVisible, setIsReviewsVisible] = useState(false);
   const router = useRouter();
 
@@ -46,7 +45,6 @@ export default function TrainerReviewRow({ reload, row, userType }) {
     count: row.rating_breakdown?.[`${star}_star`] || 0,
   }));
 
-  console.log('starCounts', starCounts);
   const [editedComment, setEditedComment] = useState('');
   const [editingState, setEditingState] = useState({});
 
