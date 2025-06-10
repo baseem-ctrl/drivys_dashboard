@@ -260,6 +260,9 @@ export const paths = {
         details: (trainerId: number | string) =>
           `${ROOTS.DASHBOARD}/assistant/trainer/details/${trainerId}`,
       },
+      booking: {
+        create: `${ROOTS.DASHBOARD}/assistant/booking`,
+      },
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,

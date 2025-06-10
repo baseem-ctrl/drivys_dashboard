@@ -118,9 +118,6 @@ const TrainerListPage: React.FC = () => {
           <Typography variant="h6" color="text.primary">
             No Trainers Available
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            No data matched your current filters. Please adjust your criteria and try again.
-          </Typography>
         </Box>
       ) : (
         <Grid container spacing={3} padding={3}>
