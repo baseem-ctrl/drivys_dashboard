@@ -95,7 +95,6 @@ export function useGetTrainerList(params: TrainerListParams) {
       with_all_trainers,
       id,
       trainer_id,
-      has_package = 1,
     } = params;
 
     const queryParams: Record<string, any> = {
@@ -114,7 +113,6 @@ export function useGetTrainerList(params: TrainerListParams) {
     if (with_all_trainers !== undefined) queryParams.with_all_trainers = with_all_trainers;
     if (id !== undefined) queryParams.id = id;
     if (trainer_id !== undefined) queryParams.trainer_id = trainer_id;
-    if (has_package !== undefined) queryParams.has_package = has_package;
 
     return `${endpoints.assistant.trainer.list}?${new URLSearchParams(queryParams)}`;
   };

@@ -7,6 +7,8 @@ import {
   Rating,
   LinearProgress,
   CircularProgress,
+  Card,
+  CardContent,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 
@@ -18,6 +20,9 @@ import LocationCityIcon from '@mui/icons-material/LocationCity';
 import LanguageIcon from '@mui/icons-material/Language';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import PackageCard from '../package-card';
 
 interface TrainerProfileProps {
   trainer_id: number;
@@ -28,7 +33,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
     trainer_id: String(trainer_id),
   });
   const { i18n, t } = useTranslation();
-
+  console.log('trainers', trainers);
   const trainer = trainers?.[0];
   if (trainerListLoading) {
     return (
@@ -131,7 +136,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         }}
       >
         <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <PrecisionManufacturingIcon sx={{ fontSize: 42, color: 'grey' }} />
+          <PrecisionManufacturingIcon sx={{ fontSize: 30, color: 'grey' }} />
           <Typography variant="h6" color="grey">
             {t('Gear')}
           </Typography>
@@ -148,7 +153,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         </Box>
 
         <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <DriveEtaIcon sx={{ fontSize: 42, color: 'grey' }} />
+          <DriveEtaIcon sx={{ fontSize: 30, color: 'grey' }} />
           <Typography variant="h6" color="grey">
             {t('Car')}
           </Typography>
@@ -169,7 +174,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         </Box>
 
         <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <LocationCityIcon sx={{ fontSize: 42, color: 'grey' }} />
+          <LocationCityIcon sx={{ fontSize: 30, color: 'grey' }} />
           <Typography variant="h6" color="grey">
             {t('city')}
           </Typography>
@@ -192,6 +197,59 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
             }}
           />
         </Box>
+      </Box>
+      <Box mt={2} pb={4} sx={{ borderBottom: '1px solid #CF5A0D', paddingTop: 2 }}>
+        <Typography fontWeight={600} mb={2}>
+          {t('available_packages')}
+        </Typography>
+
+        {trainer?.packages && trainer.packages.length > 0 ? (
+          <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-between">
+            {trainer.packages.map((pkg: any) => {
+              const translation =
+                pkg.package_translations?.find((pt: any) => pt.locale === 'En') ||
+                pkg.package_translations?.[0];
+
+              const categoryTranslation =
+                pkg.category?.category_translations?.find((ct: any) => ct.locale === 'En') ||
+                pkg.category?.category_translations?.[0];
+
+              // const flagUrl = categoryTranslation?.pictures?.[0]?.virtual_path;
+              console.log('pkg', trainer);
+              const features = [
+                `${
+                  pkg.number_of_sessions === -1 ? 'Unlimited' : pkg.number_of_sessions
+                } Driving Sessions`,
+                // ...(pkg.package_city?.[0]?.min_price
+                //   ? [`${pkg.package_city?.[0]?.min_price} AED minimum price`]
+                //   : []),
+                // ...(pkg.package_city?.[0]?.max_price
+                //   ? [`${pkg.package_city?.[0]?.max_price} AED maximum price`]
+                //   : []),
+              ];
+
+              return (
+                <PackageCard
+                  key={pkg.id}
+                  title={translation?.name || 'N/A'}
+                  sessions={pkg.is_unlimited ? -1 : pkg.number_of_sessions}
+                  price={parseFloat(trainer.starting_package_price)}
+                  currency="AED"
+                  features={features}
+                  background="linear-gradient(to bottom right, #ea9650, #111111)"
+                  selected={false}
+                  onSelect={() => {
+                    console.log('Package selected!');
+                  }}
+                />
+              );
+            })}
+          </Box>
+        ) : (
+          <Typography variant="body2" color="gray" textAlign="center">
+            {t('no_packages_available')}
+          </Typography>
+        )}
       </Box>
       <Box display="flex" alignItems="center" gap={1} minWidth={100} mt={3}>
         <LanguageIcon sx={{ fontSize: 32, color: 'grey' }} />
@@ -306,12 +364,14 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
       </Box>
 
       <Box mt={3}>
-        <Typography fontWeight={600} mb={1}>
-          {t('ratings_label')}
-        </Typography>
-
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <FeedbackIcon sx={{ color: 'grey.600' }} />
+          <Typography fontWeight={600} sx={{ color: 'grey.600' }}>
+            {t('reviews_label')}
+          </Typography>
+        </Box>
         {totalRatings === 0 ? (
-          <Typography variant="body2" color="gray">
+          <Typography variant="body2" color="gray" textAlign="center">
             {t('no_reviews')}
           </Typography>
         ) : (
@@ -340,9 +400,12 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
       </Box>
 
       <Box mt={4} sx={{ borderTop: '1px solid #CF5A0D', paddingTop: 2 }}>
-        <Typography fontWeight={600} mb={1}>
-          {t('reviews_label')}
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} mb={1}>
+          <RateReviewIcon sx={{ color: 'grey.600' }} />
+          <Typography fontWeight={600} sx={{ color: 'grey.600' }}>
+            {t('reviews_label')}
+          </Typography>
+        </Box>
 
         {validReviews.length === 0 ? (
           <Typography variant="body2" color="gray" textAlign="center">

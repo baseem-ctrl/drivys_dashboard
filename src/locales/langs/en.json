@@ -1028,5 +1028,6 @@
   "no_reviews": "No reviews available yet.",
   "reviews_label": "Reviews",
   "no_reviews_available": "No reviews available.",
-  "about_label": "About"
+  "about_label": "About",
+  "available_packages": "Available Packages"
 }

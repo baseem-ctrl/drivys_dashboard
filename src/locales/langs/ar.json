@@ -1075,5 +1075,13 @@
   "priority": "الأولوية",
   "message": "الرسالة",
   "subject": "الموضوع",
-  "max_slot": "الحد الأقصي لعدد الحصص"
+  "max_slot": "الحد الأقصي لعدد الحصص",
+  "this_option_is_for": "هذا الخيار مخصص للمدربين الذين يقدمون خدمة التوصيل. تُطبق رسوم إضافية.",
+  "pickup_option_available": "خدمة التوصيل متاحة لهذا المدرب",
+  "pickup_option_not_available": "خدمة التوصيل غير متاحة لهذا المدرب",
+  "ratings_label": "التقييمات",
+  "no_reviews": "لا توجد تقييمات بعد.",
+  "reviews_label": "المراجعات",
+  "no_reviews_available": "لا توجد مراجعات متاحة.",
+  "about_label": "نبذة"
 }
