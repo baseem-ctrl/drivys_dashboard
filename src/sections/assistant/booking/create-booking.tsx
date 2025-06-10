@@ -13,10 +13,13 @@ import {
   Step,
   StepLabel,
   MenuItem,
+  Dialog,
+  DialogContent,
   Select,
   InputLabel,
   FormControl,
   TextField,
+  Popover,
 } from '@mui/material';
 import {
   createBooking,
@@ -28,13 +31,13 @@ import StudentStep from './select-student';
 import { useSnackbar } from 'src/components/snackbar';
 
 import SessionStep from './select-session';
-import PickupLocationStep from './select-pick-up-location';
 import TrainerSelectStep from './select-trainer';
 import PackageCard from './select-package';
 import { useGetPackages, useGetTrainers } from 'src/api/enum';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import AddressSelector from './select-pick-up-location';
 
 const steps = [
   'Select Student',
@@ -48,12 +51,16 @@ export default function CreateBooking() {
   const [activeStep, setActiveStep] = useState(0);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermStudent, setSearchTermStudent] = useState('');
+  const [searchTermTrainer, setSearchTermTrainer] = useState('');
+
   const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
   const [pickupLocation, setPickupLocation] = useState<number | null>(null);
   const [pickupLocationSelected, setPickupLocationSelected] = useState<number | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
+  const [loadingBooking, setLoadingBooking] = useState(false);
+
   const { i18n } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -62,12 +69,13 @@ export default function CreateBooking() {
   const { students, studentListLoading } = useGetStudentList({
     page: 0,
     limit: 1000,
-    search: searchTerm,
+    search: searchTermStudent,
   });
   const { trainers, trainerListLoading } = useGetTrainerList({
     page: 0,
     limit: 1000,
-    search: searchTerm,
+    search: searchTermTrainer,
+    has_package: 1,
   });
 
   const { packageList, packageLoading, packageError } = useGetPackages({
@@ -75,6 +83,12 @@ export default function CreateBooking() {
     limit: 1000,
     trainerId: selectedTrainerId,
   });
+  const { trainerPackages, trainerPackageLoading } = useGetTrainerPackageList({
+    page: 0,
+    limit: 10,
+    trainer_id: selectedTrainerId,
+  });
+
   const handleSessionChange = (index: number, key: string, value: string | number[]) => {
     const updatedSessions = [...sessions];
     updatedSessions[index][key as keyof (typeof updatedSessions)[number]] = value;
@@ -138,7 +152,8 @@ export default function CreateBooking() {
     setActiveStep((prev) => prev + 1);
   };
 
-  const createBookingStudent = async () => {
+  const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    setLoadingBooking(true);
     const fixedSessions = sessions.map(({ start_time, end_time, session_no }) => {
       const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
 
@@ -164,7 +179,7 @@ export default function CreateBooking() {
       const response = await createBooking(body);
       if (response.status === 'success') {
         enqueueSnackbar(`Booking Created successfully.`, { variant: 'success' });
-        router.push(paths.dashboard.assistant.booking);
+        router.push(paths.dashboard.assistant.overview);
       }
     } catch (error: any) {
       const errorDetails = error?.message?.errors;
@@ -180,6 +195,8 @@ export default function CreateBooking() {
       } else {
         enqueueSnackbar(error.message || 'Server error', { variant: 'error' });
       }
+    } finally {
+      setLoadingBooking(false);
     }
   };
 
@@ -191,8 +208,8 @@ export default function CreateBooking() {
             students={students}
             selectedStudentId={selectedStudentId}
             isLoading={studentListLoading}
-            setSearchTerm={setSearchTerm}
-            searchTerm={searchTerm}
+            setSearchTerm={setSearchTermStudent}
+            searchTerm={searchTermStudent}
             setSelectedStudentId={handleSelectStudent}
             setSelectedStudent={setSelectedStudent}
           />
@@ -204,14 +221,19 @@ export default function CreateBooking() {
             selectedTrainerId={selectedTrainerId}
             setSelectedTrainerId={handleSelecTrainer}
             isLoading={trainerListLoading}
-            setSearchTerm={setSearchTerm}
-            searchTerm={searchTerm}
+            setSearchTerm={setSearchTermTrainer}
+            searchTerm={searchTermTrainer}
           />
         );
       case 2:
         return (
           <Box>
-            {packageList.length > 0 ? (
+            {trainerPackageLoading ? (
+              <Box textAlign="center" py={5}>
+                <CircularProgress />
+                <Typography mt={2}>Loading packages...</Typography>
+              </Box>
+            ) : trainerPackages.length > 0 ? (
               <Box
                 display="grid"
                 gridTemplateColumns={{
@@ -221,7 +243,7 @@ export default function CreateBooking() {
                 }}
                 gap={3}
               >
-                {packageList.map((pkg: any, index: number) => {
+                {trainerPackages.map((pkg: any, index: number) => {
                   const translation = pkg?.package?.package_translations?.find(
                     (t: any) => t.locale.toLowerCase() === i18n.language.toLowerCase()
                   );
@@ -266,8 +288,8 @@ export default function CreateBooking() {
         );
       case 4:
         return (
-          <PickupLocationStep
-            pickupLocation={Array.isArray(pickupLocation) ? pickupLocation : []}
+          <AddressSelector
+            locations={Array.isArray(pickupLocation) ? pickupLocation : []}
             setPickupLocation={setPickupLocation}
             setPickupLocationSelected={setPickupLocationSelected}
             pickupLocationSelected={pickupLocationSelected}
@@ -281,9 +303,22 @@ export default function CreateBooking() {
   return (
     <Box sx={{ p: 4 }}>
       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label) => (
+        {steps.map((label, index) => (
           <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+            <StepLabel
+              onClick={() => setActiveStep(index)}
+              sx={{
+                cursor: 'pointer',
+                '& .MuiStepLabel-label': {
+                  transition: 'color 0.3s',
+                  '&:hover': {
+                    color: 'primary.main',
+                  },
+                },
+              }}
+            >
+              {label}
+            </StepLabel>
           </Step>
         ))}
       </Stepper>
@@ -291,20 +326,28 @@ export default function CreateBooking() {
       {renderStepContent()}
 
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-        <Button disabled={activeStep === 0} onClick={handleBack}>
+        <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
           Back
         </Button>
 
         {activeStep === steps.length - 1 ? (
-          <Button variant="contained" color="primary" onClick={createBookingStudent}>
+          <Button variant="contained" color="primary" onClick={(e) => createBookingStudent(e)}>
             Submit
           </Button>
         ) : (
-          <Button variant="contained" onClick={handleNext} disabled={packageList.length === 0}>
+          <Button variant="contained" onClick={handleNext} disabled={trainerPackages.length === 0}>
             Next
           </Button>
         )}
       </Box>
+      <Dialog open={loadingBooking} PaperProps={{ sx: { textAlign: 'center', p: 4 } }}>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <CircularProgress sx={{ mb: 2 }} />
+            <Typography variant="body1">Booking in Progess...</Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

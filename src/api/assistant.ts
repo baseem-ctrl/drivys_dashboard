@@ -95,6 +95,7 @@ export function useGetTrainerList(params: TrainerListParams) {
       with_all_trainers,
       id,
       trainer_id,
+      has_package,
     } = params;
 
     const queryParams: Record<string, any> = {
@@ -113,6 +114,7 @@ export function useGetTrainerList(params: TrainerListParams) {
     if (with_all_trainers !== undefined) queryParams.with_all_trainers = with_all_trainers;
     if (id !== undefined) queryParams.id = id;
     if (trainer_id !== undefined) queryParams.trainer_id = trainer_id;
+    if (has_package !== undefined) queryParams.has_package = has_package;
 
     return `${endpoints.assistant.trainer.list}?${new URLSearchParams(queryParams)}`;
   };
@@ -136,6 +138,7 @@ export function useGetTrainerList(params: TrainerListParams) {
 
   return { ...memoizedValue, revalidateTrainerList };
 }
+
 export function createBooking(body: any) {
   const URL = endpoints.assistant.booking.create;
   const response = drivysCreator([URL, body]);
@@ -145,15 +148,20 @@ export function createBooking(body: any) {
 interface TrainerPackageListParams {
   page?: number;
   limit?: number;
+  trainer_id?: number;
 }
 
 export function useGetTrainerPackageList(params: TrainerPackageListParams) {
-  const { page = 0, limit = 10 } = params;
+  const { page = 0, limit = 10, trainer_id } = params;
 
   const queryParams: Record<string, any> = {
-    page: page + 1, // assuming backend is 1-based
+    page: page + 1,
     limit,
   };
+
+  if (trainer_id) {
+    queryParams.trainer_id = trainer_id;
+  }
 
   const queryString = new URLSearchParams(queryParams).toString();
   const url = `${endpoints.assistant.trainer.trainerPackageList}?${queryString}`;
