@@ -33,7 +33,6 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
     trainer_id: String(trainer_id),
   });
   const { i18n, t } = useTranslation();
-  console.log('trainers', trainers);
   const trainer = trainers?.[0];
   if (trainerListLoading) {
     return (
@@ -215,7 +214,6 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
                 pkg.category?.category_translations?.[0];
 
               // const flagUrl = categoryTranslation?.pictures?.[0]?.virtual_path;
-              console.log('pkg', trainer);
               const features = [
                 `${
                   pkg.number_of_sessions === -1 ? 'Unlimited' : pkg.number_of_sessions
