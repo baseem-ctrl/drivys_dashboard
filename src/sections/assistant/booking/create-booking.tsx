@@ -64,8 +64,8 @@ export default function CreateBooking() {
     limit: 1000,
     search: searchTerm,
   });
-  const { trainerList, trainerLoading } = useGetTrainers({
-    page: 1,
+  const { trainers, trainerListLoading } = useGetTrainerList({
+    page: 0,
     limit: 1000,
     search: searchTerm,
   });
@@ -200,10 +200,10 @@ export default function CreateBooking() {
       case 1:
         return (
           <TrainerSelectStep
-            trainers={trainerList}
+            trainers={trainers}
             selectedTrainerId={selectedTrainerId}
             setSelectedTrainerId={handleSelecTrainer}
-            isLoading={trainerLoading}
+            isLoading={trainerListLoading}
             setSearchTerm={setSearchTerm}
             searchTerm={searchTerm}
           />
