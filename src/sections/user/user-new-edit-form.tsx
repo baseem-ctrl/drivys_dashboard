@@ -227,6 +227,7 @@ export default function UserNewEditForm({
         );
       }),
     locale: Yup.mixed().nullable(), // not required
+    school_ids: Yup.array().of(Yup.mixed().nullable()),
     user_type: Yup.string().required(t('user_type_required')),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
@@ -322,7 +323,11 @@ export default function UserNewEditForm({
 
       password: '',
       phone: currentUser?.phone || '',
-      // city_assigned: currentUser?.city_assigned || [],
+      school_ids:
+        currentUser?.mapped_schools?.map((school) => ({
+          value: school.vendor_id,
+          label: school.vendor_name_en || t('unknown'),
+        })) || [],
       city_assigned:
         currentUser?.city_assigned?.map((c) => ({
           value: c.city?.city_translations?.[0]?.city_id ?? '',
@@ -372,7 +377,6 @@ export default function UserNewEditForm({
             )?.value
           : '',
       user_gender: currentUser?.gender,
-
       city_id: currentUser?.user_preference?.city_id
         ? {
             value: currentUser?.user_preference?.city_id,
@@ -630,10 +634,18 @@ export default function UserNewEditForm({
           body.append('vendor_id', data.vendor_id.value);
         }
       }
-      if (data?.user_type === 'COLLECTOR') {
+      if (data?.user_type === 'COLLECTOR' || data?.user_type === 'ASSISTANT') {
         data.city_assigned?.forEach((c) => {
           if (c?.value) {
             body.append('city_assigned[]', c.value);
+          }
+        });
+      }
+      console.log(' data.school_ids', data.school_ids);
+      if (data?.user_type === 'ASSISTANT') {
+        data.school_ids?.forEach((c) => {
+          if (c?.value) {
+            body.append('school_ids[]', c.value);
           }
         });
       }
@@ -770,6 +782,14 @@ export default function UserNewEditForm({
       confirm.onFalse();
     }
   };
+  const cityAssigned = watch('city_assigned') || [];
+  const schoolIds = watch('school_ids') || [];
+
+  const citySelected = cityAssigned.length > 0;
+  const schoolSelected = schoolIds.length > 0;
+
+  const isCityDisabled = schoolSelected && !citySelected;
+  const isSchoolDisabled = citySelected && !schoolSelected;
 
   const confirm = useBoolean();
   if (
@@ -939,48 +959,45 @@ export default function UserNewEditForm({
                     })) || []
                   }
                 />
+              )}
+              {values.user_type === 'ASSISTANT' && (
+                <RHFAutocompleteSearch
+                  name="city_assigned"
+                  label={t('City Assigned')}
+                  multiple
+                  disabled={isCityDisabled}
+                  options={
+                    city?.map((c) => ({
+                      value: c.city_translations?.[0]?.city_id,
+                      label: c.city_translations?.[0]?.name ?? t('unknown'),
+                    })) || []
+                  }
+                  helperText={
+                    isCityDisabled
+                      ? t('You can only assign either a city or a school, not both.')
+                      : ''
+                  }
+                />
+              )}
 
-                // <RHFAutocompleteSearch
-                //   name="city_assigned" // Ensure you pass the name prop!
-                //   label={t('City Assigned')}
-                //   multiple
-                //   options={
-                //     Array.isArray(city)
-                //       ? city.map((option) => ({
-                //           value: option.id ?? 'unknown',
-                //           label: option.city_translations?.[0]?.name ?? t('unknown'),
-                //         }))
-                //       : []
-                //   }
-                //   value={
-                //     Array.isArray(values.city_assigned)
-                //       ? values.city_assigned
-                //           .map((id) => {
-                //             const match = city?.find((c) => c.id === id);
-                //             return match
-                //               ? {
-                //                   value: match.id,
-                //                   label: match.city_translations?.[0]?.name ?? t('unknown'),
-                //                 }
-                //               : null;
-                //           })
-                //           .filter(Boolean)
-                //       : []
-                //   }
-                //   // isOptionEqualToValue={(option, value) => option.value === value.value}
-                //   // onChange={(event, newValue) => {
-                //   //   console.log('New Selected Cities:', newValue);
-                //   //   setValue(
-                //   //     'city_assigned',
-                //   //     newValue.map((option) => option.value)
-                //   //   );
-                //   // }}
-                //   renderOption={(props, option) => (
-                //     <li {...props} key={option?.value}>
-                //       {option?.label || 'Unknown'}
-                //     </li>
-                //   )}
-                // />
+              {values.user_type === 'ASSISTANT' && (
+                <RHFAutocompleteSearch
+                  name="school_ids"
+                  label={t('School')}
+                  multiple
+                  disabled={isSchoolDisabled}
+                  options={
+                    schoolList?.map((c) => ({
+                      value: c.vendor_translations?.[0]?.vendor_id,
+                      label: c.vendor_translations?.[0]?.name ?? t('unknown'),
+                    })) || []
+                  }
+                  helperText={
+                    isSchoolDisabled
+                      ? t('You can only assign either a city or a school, not both.')
+                      : ''
+                  }
+                />
               )}
 
               <RHFTextField
