@@ -744,7 +744,8 @@ export default function UserDetailsContent({
                 </Box>
               ))}
               {[
-                ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
+                ...((details?.user_type === 'COLLECTOR' || details?.user_type === 'ASSISTANT') &&
+                details?.city_assigned?.length
                   ? [
                       {
                         label: t('max_cash_allowed'),
@@ -790,7 +791,42 @@ export default function UserDetailsContent({
                   </Box>
                 </Box>
               ))}
-
+              {[
+                ...(details?.user_type === 'ASSISTANT' && details?.mapped_schools?.length
+                  ? [
+                      {
+                        label: 'School Assigned',
+                        value: details.mapped_schools.map(
+                          (city) => city?.vendor_name_en ?? t('Unknown')
+                        ),
+                      },
+                    ]
+                  : []),
+              ].map((item, index) => (
+                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
+                    {item.label}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {Array.isArray(item.value)
+                      ? item.value.length > 0
+                        ? item.value.map((city, cityIndex) => (
+                            <Chip
+                              key={cityIndex}
+                              label={city}
+                              variant="soft"
+                              color="secondary"
+                              sx={{ marginRight: 1, marginBottom: 1 }}
+                            />
+                          ))
+                        : t('N/A')
+                      : item.value ?? t('N/A')}
+                  </Box>
+                </Box>
+              ))}
               {details?.user_type === 'TRAINER' &&
                 trainerReviews &&
                 trainerReviews[0]?.avg_rating && (
