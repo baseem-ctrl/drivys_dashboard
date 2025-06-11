@@ -78,11 +78,6 @@ export default function CreateBooking() {
     has_package: 1,
   });
 
-  const { packageList, packageLoading, packageError } = useGetPackages({
-    page: 1,
-    limit: 1000,
-    trainerId: selectedTrainerId,
-  });
   const { trainerPackages, trainerPackageLoading } = useGetTrainerPackageList({
     page: 0,
     limit: 10,
@@ -122,7 +117,45 @@ export default function CreateBooking() {
       }));
     setSessions(updated);
   };
+
   const handleNext = () => {
+    switch (activeStep) {
+      case 0:
+        if (!selectedStudentId) {
+          enqueueSnackbar('Please select a student.', { variant: 'error' });
+          return;
+        }
+        break;
+      case 1:
+        if (!selectedTrainerId) {
+          enqueueSnackbar('Please select a trainer.', { variant: 'error' });
+          return;
+        }
+        break;
+      case 2:
+        if (!selectedPackageId) {
+          enqueueSnackbar('Please select a package.', { variant: 'error' });
+          return;
+        }
+        break;
+      case 3:
+        const allSessionsValid = sessions.every(
+          (session) => session.start_time && session.end_time
+        );
+        if (!allSessionsValid) {
+          enqueueSnackbar('Please select time slots for all sessions.', { variant: 'error' });
+          return;
+        }
+        break;
+      case 4:
+        if (!pickupLocationSelected) {
+          enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
+          return;
+        }
+        break;
+      default:
+        break;
+    }
     setActiveStep((prev) => prev + 1);
   };
 
@@ -153,6 +186,10 @@ export default function CreateBooking() {
   };
 
   const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!pickupLocationSelected) {
+      enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
+      return;
+    }
     setLoadingBooking(true);
     const fixedSessions = sessions.map(({ start_time, end_time, session_no }) => {
       const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
@@ -284,6 +321,8 @@ export default function CreateBooking() {
             handleSessionChange={handleSessionChange}
             addSession={addSession}
             removeSession={removeSession}
+            driverId={selectedTrainerId}
+            handleNext={handleNext}
           />
         );
       case 4:

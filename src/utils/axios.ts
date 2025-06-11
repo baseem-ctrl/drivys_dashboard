@@ -208,6 +208,7 @@ export const endpoints = {
     listVendor: 'public/vendor/get-vendor-list',
     listPackage: 'public/package-trainer/get-trainer-package-vendor-list',
     listTrainers: 'public/trainers/get-trainers-list',
+    listAvailableSlots: 'public/trainers/get-available-slots',
     list: 'admin/user/get-list',
     details: 'admin/trainers/get-trainer/',
     getbyId: 'admin/user/get-user/',

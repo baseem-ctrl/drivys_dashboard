@@ -185,3 +185,42 @@ export function useGetTrainerPackageList(params: TrainerPackageListParams) {
 
   return { ...memoizedValue, revalidateTrainerPackageList };
 }
+interface AvailableSlotParams {
+  driver_id?: number;
+  requested_date?: string;
+}
+
+export function useGetAvailableSlots(params: AvailableSlotParams) {
+  const { driver_id, requested_date } = params;
+
+  const queryParams: Record<string, any> = {};
+
+  if (driver_id) {
+    queryParams.driver_id = driver_id;
+  }
+
+  if (requested_date) {
+    queryParams.requested_date = requested_date;
+  }
+
+  const queryString = new URLSearchParams(queryParams).toString();
+  const url = `${endpoints.users.listAvailableSlots}?${queryString}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      availableSlots: data?.available_slots || [],
+      availableSlotLoading: isLoading,
+      availableSlotError: error,
+      availableSlotValidating: isValidating,
+    }),
+    [data?.available_slots, isLoading, error, isValidating]
+  );
+
+  const revalidateAvailableSlots = () => {
+    mutate(url);
+  };
+
+  return { ...memoizedValue, revalidateAvailableSlots };
+}
