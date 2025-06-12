@@ -782,14 +782,6 @@ export default function UserNewEditForm({
       confirm.onFalse();
     }
   };
-  const cityAssigned = watch('city_assigned') || [];
-  const schoolIds = watch('school_ids') || [];
-
-  const citySelected = cityAssigned.length > 0;
-  const schoolSelected = schoolIds.length > 0;
-
-  const isCityDisabled = schoolSelected && !citySelected;
-  const isSchoolDisabled = citySelected && !schoolSelected;
 
   const confirm = useBoolean();
   if (
@@ -965,17 +957,11 @@ export default function UserNewEditForm({
                   name="city_assigned"
                   label={t('City Assigned')}
                   multiple
-                  disabled={isCityDisabled}
                   options={
                     city?.map((c) => ({
                       value: c.city_translations?.[0]?.city_id,
                       label: c.city_translations?.[0]?.name ?? t('unknown'),
                     })) || []
-                  }
-                  helperText={
-                    isCityDisabled
-                      ? t('You can only assign either a city or a school, not both.')
-                      : ''
                   }
                 />
               )}
@@ -985,17 +971,11 @@ export default function UserNewEditForm({
                   name="school_ids"
                   label={t('School')}
                   multiple
-                  disabled={isSchoolDisabled}
                   options={
                     schoolList?.map((c) => ({
                       value: c.vendor_translations?.[0]?.vendor_id,
                       label: c.vendor_translations?.[0]?.name ?? t('unknown'),
                     })) || []
-                  }
-                  helperText={
-                    isSchoolDisabled
-                      ? t('You can only assign either a city or a school, not both.')
-                      : ''
                   }
                 />
               )}
