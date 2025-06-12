@@ -23,6 +23,8 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import PackageCard from '../package-card';
+import { useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
 
 interface TrainerProfileProps {
   trainer_id: number;
@@ -33,6 +35,8 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
     trainer_id: String(trainer_id),
   });
   const { i18n, t } = useTranslation();
+  const router = useRouter();
+
   const trainer = trainers?.[0];
   if (trainerListLoading) {
     return (
@@ -208,11 +212,9 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
               const translation =
                 pkg.package_translations?.find((pt: any) => pt.locale === 'En') ||
                 pkg.package_translations?.[0];
-
               const categoryTranslation =
                 pkg.category?.category_translations?.find((ct: any) => ct.locale === 'En') ||
                 pkg.category?.category_translations?.[0];
-
               // const flagUrl = categoryTranslation?.pictures?.[0]?.virtual_path;
               const features = [
                 `${
@@ -237,7 +239,11 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
                   background="linear-gradient(to bottom right, #ea9650, #111111)"
                   selected={false}
                   onSelect={() => {
-                    console.log('Package selected!');
+                    router.push(paths.dashboard.assistant.booking.create, {
+                      step: 2,
+                      trainerId: trainer.user_id,
+                      packageId: pkg.id,
+                    });
                   }}
                 />
               );

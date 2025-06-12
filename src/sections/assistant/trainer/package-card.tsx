@@ -64,6 +64,17 @@ const PackageCard: React.FC<PackageCardProps> = ({
             </Box>
           ))}
         </Stack>
+        <Box mt={2} display="flex" justifyContent="center">
+          <Button
+            variant="contained"
+            color="primary"
+            size="medium"
+            onClick={onSelect}
+            sx={{ textTransform: 'none', fontSize: '12px', borderRadius: '12px' }}
+          >
+            Book Now
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );
