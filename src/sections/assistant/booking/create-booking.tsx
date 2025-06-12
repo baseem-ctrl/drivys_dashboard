@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -40,26 +40,37 @@ import { paths } from 'src/routes/paths';
 import AddressSelector from './select-pick-up-location';
 
 const steps = [
-  'Select Student',
   'Select Trainer',
   'Select Package',
+  'Select Student',
   'Schedule Sessions',
   'Select Location',
 ];
 
 export default function CreateBooking() {
-  const [activeStep, setActiveStep] = useState(0);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
   const [searchTermStudent, setSearchTermStudent] = useState('');
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
-
-  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(null);
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
   const [pickupLocation, setPickupLocation] = useState<number | null>(null);
   const [pickupLocationSelected, setPickupLocationSelected] = useState<number | null>(null);
-  const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const initialStep = parseInt(searchParams.get('step') || '0', 10);
+  const preselectedTrainerId = parseInt(searchParams.get('trainerId') || '', 10);
+  const preselectedPackageId = parseInt(searchParams.get('packageId') || '', 10);
+  const [activeStep, setActiveStep] = useState(initialStep);
+  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(
+    Number.isNaN(preselectedTrainerId) ? null : preselectedTrainerId
+  );
+
+  const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
+    Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
+  );
 
   const { i18n } = useTranslation();
 
@@ -90,7 +101,20 @@ export default function CreateBooking() {
     setSessions(updatedSessions);
   };
 
-  // inside CreateBooking component
+  useEffect(() => {
+    if (initialStep >= 2 && preselectedTrainerId && preselectedPackageId) {
+      setActiveStep(initialStep);
+    }
+  }, [initialStep, preselectedTrainerId, preselectedPackageId]);
+
+  useEffect(() => {
+    if (trainerPackages.length > 0 && preselectedPackageId && !selectedPackageId) {
+      const foundPkg = trainerPackages.find((pkg) => pkg.id === preselectedPackageId);
+      if (foundPkg) {
+        setSelectedPackageId(foundPkg);
+      }
+    }
+  }, [trainerPackages, preselectedPackageId]);
 
   useEffect(() => {
     if (selectedStudent && selectedStudent.user_addresses) {
@@ -207,7 +231,7 @@ export default function CreateBooking() {
     const body = {
       student_id: selectedStudentId,
       trainer_id: selectedTrainerId,
-      package_id: selectedPackageId?.package_id,
+      package_id: initialStep >= 2 ? selectedPackageId : selectedPackageId?.package_id,
       pickup_location: pickupLocationSelected,
       sessions: fixedSessions,
     };
@@ -241,18 +265,6 @@ export default function CreateBooking() {
     switch (activeStep) {
       case 0:
         return (
-          <StudentStep
-            students={students}
-            selectedStudentId={selectedStudentId}
-            isLoading={studentListLoading}
-            setSearchTerm={setSearchTermStudent}
-            searchTerm={searchTermStudent}
-            setSelectedStudentId={handleSelectStudent}
-            setSelectedStudent={setSelectedStudent}
-          />
-        );
-      case 1:
-        return (
           <TrainerSelectStep
             trainers={trainers}
             selectedTrainerId={selectedTrainerId}
@@ -262,7 +274,7 @@ export default function CreateBooking() {
             searchTerm={searchTermTrainer}
           />
         );
-      case 2:
+      case 1:
         return (
           <Box>
             {trainerPackageLoading ? (
@@ -314,6 +326,18 @@ export default function CreateBooking() {
           </Box>
         );
 
+      case 2:
+        return (
+          <StudentStep
+            students={students}
+            selectedStudentId={selectedStudentId}
+            isLoading={studentListLoading}
+            setSearchTerm={setSearchTermStudent}
+            searchTerm={searchTermStudent}
+            setSelectedStudentId={handleSelectStudent}
+            setSelectedStudent={setSelectedStudent}
+          />
+        );
       case 3:
         return (
           <SessionStep

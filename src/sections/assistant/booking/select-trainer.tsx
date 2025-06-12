@@ -85,7 +85,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
           </Grid>
         ) : (
           trainers.map((trainer) => (
-            <Grid item xs={12} sm={6} md={4} key={trainer.id}>
+            <Grid item xs={12} sm={6} md={4} key={trainer.user_id}>
               <Card
                 onClick={() => {
                   setSelectedTrainerId(trainer.user_id);
@@ -95,7 +95,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
                   boxShadow: 4,
                   cursor: 'pointer',
                   overflow: 'hidden',
-                  border: trainer.id === selectedTrainerId ? '2px solid #e36c1e' : 'none',
+                  border: trainer.user_id === selectedTrainerId ? '2px solid #e36c1e' : 'none',
                 }}
               >
                 <Box
