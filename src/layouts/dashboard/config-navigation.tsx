@@ -8,6 +8,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 import OverviewCollectorPage from 'src/sections/collector/overview-collector';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -60,6 +61,66 @@ const ICONS = {
 
 export function useNavData() {
   const { t } = useLocales();
+  const { user } = useAuthContext();
+  const userPermissions = new Set(
+    user?.user?.roles?.flatMap((role) => role.role?.permissions?.map((p) => p.name)) || []
+  );
+
+  const routePermissionMap = {
+    booking: 'booking',
+    user: 'user',
+    list: 'user',
+    create: 'user',
+    category: 'category',
+    schools: 'user_school_admin',
+    home_page_listing: 'home_listing',
+    support: 'support',
+    coupon: 'discount',
+    refund: 'refunded_list',
+    payouts: 'payout_vendor',
+    trainer_payouts: 'payout_trainer',
+    school_payouts: 'payout_vendor',
+    reviews: 'reviews',
+    trainer_review: 'reviews',
+    student_review: 'reviews',
+    package: 'package',
+    notifications: 'notification',
+    app_settings: 'app_setting',
+    roles_and_permission: 'user_school_admin',
+    report: 'reports',
+    loyality: 'trainer_reward',
+    terms_conditions: 'app_setting_tc',
+    to_do: 'trainer_profile_changed',
+    updated_trainer_profile: 'trainer_profile_changed',
+    pending_verification: 'trainer_verification',
+  };
+
+  function filterRoutesByPermission(routes, permissions) {
+    return routes
+      .map((route) => {
+        const matchedKey = Object.keys(routePermissionMap).find((key) => t(key) === route.title);
+        const permissionEntry = routePermissionMap[matchedKey];
+        const requiredPermissions = Array.isArray(permissionEntry)
+          ? permissionEntry
+          : [permissionEntry];
+
+        const hasPermission = requiredPermissions.some((p) => permissions.has(p));
+
+        if (route.children && route.children.length > 0) {
+          const filteredChildren = filterRoutesByPermission(route.children, permissions);
+
+          if (hasPermission || filteredChildren.length > 0) {
+            return { ...route, children: filteredChildren };
+          }
+          return null;
+        }
+
+        // Leaf route
+        return hasPermission ? route : null;
+      })
+      .filter(Boolean);
+  }
+
   const allroutes = [
     //TO DO list
 
@@ -323,7 +384,7 @@ export function useNavData() {
         { title: t('dialect'), path: paths.dashboard.system.dialect },
         { title: t('pickup'), path: paths.dashboard.system.pickup },
         { title: t('app_settings'), path: paths.dashboard.system.appsettings },
-        { title: t('terms & conditions'), path: paths.dashboard.system.termsConditions },
+        { title: t('terms_conditions'), path: paths.dashboard.system.termsConditions },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },
@@ -331,6 +392,8 @@ export function useNavData() {
       ],
     },
   ];
+  const filteredRoutes = filterRoutesByPermission(allroutes, userPermissions);
+
   const schooladminRoutes = [
     {
       title: t('to_do'),
@@ -499,7 +562,7 @@ export function useNavData() {
       case 'ASSISTANT':
         return assistantRoutes;
       default:
-        return allroutes;
+        return filteredRoutes;
     }
   })();
 
