@@ -11,7 +11,7 @@ import {
   CardContent,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useGetTrainerList } from 'src/api/assistant';
 import { useTranslation } from 'react-i18next';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
@@ -22,9 +22,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import FeedbackIcon from '@mui/icons-material/Feedback';
-import PackageCard from '../package-card';
+
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import PackageCard from '../package-card';
+import TrainerAddressMap from '../trainer-address-map';
 
 interface TrainerProfileProps {
   trainer_id: number;
@@ -201,8 +203,22 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
           />
         </Box>
       </Box>
+      <TrainerAddressMap
+        addresses={trainer?.user?.user_addresses || []}
+        max_radius={trainer?.user?.user_preference?.max_radius_in_km}
+      />
+
       <Box mt={2} pb={4} sx={{ borderBottom: '1px solid #CF5A0D', paddingTop: 2 }}>
-        <Typography fontWeight={600} mb={2}>
+        <Typography
+          mb={2}
+          color="grey"
+          display="flex"
+          alignItems="center"
+          gap={1}
+          variant="h6"
+          sx={{ fontSize: 18 }}
+        >
+          <LocalOfferIcon sx={{ fontSize: 30, color: 'grey' }} />
           {t('available_packages')}
         </Typography>
 
@@ -309,7 +325,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         })}
       </Box>
 
-      <Box mt={3} p={2} sx={{ paddingBottom: 3, borderBottom: '1px solid #CF5A0D' }}>
+      <Box mt={3} sx={{ paddingBottom: 3, borderBottom: '1px solid #CF5A0D' }}>
         <Box display="flex" alignItems="center" gap={1} mb={1}>
           <DirectionsCarIcon sx={{ fontSize: 32, color: 'grey' }} />
           <Typography fontWeight={600} variant="h6" color="grey" sx={{ fontSize: 18 }}>
