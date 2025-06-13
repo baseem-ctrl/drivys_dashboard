@@ -38,7 +38,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
       }}
     >
       <CardContent>
-        <Typography fontWeight={600} sx={{ fontSize: '12px' }}>
+        <Typography fontWeight={600} sx={{ fontSize: '16px' }}>
           {title}{' '}
           <Typography component="span" fontWeight={400} sx={{ fontSize: '12px' }}>
             ({sessions === -1 ? 'Unlimited Sessions' : `${sessions} Sessions`})
@@ -46,10 +46,10 @@ const PackageCard: React.FC<PackageCardProps> = ({
         </Typography>
 
         <Box mt={1} mb={1} display="flex" alignItems="center" gap={1}>
-          <Typography fontWeight={700} sx={{ fontSize: '12px' }}>
+          <Typography fontWeight={700} sx={{ fontSize: '14px' }}>
             {price}
           </Typography>
-          <Typography fontSize="12px">{currency}</Typography>
+          <Typography fontSize="14px">{currency}</Typography>
         </Box>
 
         {/* <Typography mt={1} fontWeight={500} sx={{ fontSize: '12px' }}>

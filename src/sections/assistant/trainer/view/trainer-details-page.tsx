@@ -220,12 +220,8 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
                 `${
                   pkg.number_of_sessions === -1 ? 'Unlimited' : pkg.number_of_sessions
                 } Driving Sessions`,
-                // ...(pkg.package_city?.[0]?.min_price
-                //   ? [`${pkg.package_city?.[0]?.min_price} AED minimum price`]
-                //   : []),
-                // ...(pkg.package_city?.[0]?.max_price
-                //   ? [`${pkg.package_city?.[0]?.max_price} AED maximum price`]
-                //   : []),
+                'Booking Management',
+                'Rescheduling Flexibility',
               ];
 
               return (
