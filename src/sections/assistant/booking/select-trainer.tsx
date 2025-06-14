@@ -42,6 +42,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   isLoading,
   setSearchTerm,
   searchTerm,
+  renderFilters,
 }) => {
   const { i18n } = useTranslation();
   const getInitials = (name?: string) => {
@@ -59,12 +60,19 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
 
   return (
     <>
-      <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
+      <Box
+        mb={3}
+        sx={{ width: '100%' }}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <TextField
           label="Search Trainer"
           variant="outlined"
           fullWidth
           value={searchTerm}
+          sx={{ maxWidth: '300px' }}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
             endAdornment: searchTerm && (
@@ -76,6 +84,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
             ),
           }}
         />
+        {renderFilters}
       </Box>
 
       <Grid container spacing={3}>

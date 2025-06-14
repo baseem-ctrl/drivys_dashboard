@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
+import isEqual from 'lodash/isEqual';
 import { useLocation } from 'react-router-dom';
 import {
   Box,
@@ -20,6 +21,7 @@ import {
   FormControl,
   TextField,
   Popover,
+  Stack,
 } from '@mui/material';
 import {
   createBooking,
@@ -38,6 +40,11 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import AddressSelector from './select-pick-up-location';
+import TrainerFilters from './trainer-filters';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { IUserTableFilterValue } from 'src/types/user';
+import { useTable } from 'src/components/table';
+import { useGetGearEnum } from 'src/api/users';
 
 const steps = [
   'Select Trainer',
@@ -46,6 +53,12 @@ const steps = [
   'Schedule Sessions',
   'Select Location',
 ];
+const defaultFilters: any = {
+  city_id: '',
+  vehicle_type_id: { label: '', value: '' },
+  gear: '',
+  vendor_id: { label: '', value: '' },
+};
 
 export default function CreateBooking() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
@@ -56,10 +69,12 @@ export default function CreateBooking() {
   const [pickupLocation, setPickupLocation] = useState<number | null>(null);
   const [pickupLocationSelected, setPickupLocationSelected] = useState<number | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
+  const table = useTable({ defaultRowsPerPage: 3 });
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-
+  const openFilters = useBoolean();
+  const [filters, setFilters] = useState(defaultFilters);
   const initialStep = parseInt(searchParams.get('step') || '0', 10);
   const preselectedTrainerId = parseInt(searchParams.get('trainerId') || '', 10);
   const preselectedPackageId = parseInt(searchParams.get('packageId') || '', 10);
@@ -82,11 +97,19 @@ export default function CreateBooking() {
     limit: 1000,
     search: searchTermStudent,
   });
+  const { gearData, gearLoading } = useGetGearEnum();
+
   const { trainers, trainerListLoading } = useGetTrainerList({
     page: 0,
     limit: 1000,
     search: searchTermTrainer,
     has_package: 1,
+    ...(filters.vendor_id?.value ? { vendor_id: filters.vendor_id.value } : {}),
+    ...(filters.vehicle_type_id?.value ? { vehicle_type_id: filters.vehicle_type_id.value } : {}),
+    ...(filters.gear !== '' && gearData?.length
+      ? { gear: gearData.find((g: any) => g.name === filters.gear)?.value }
+      : {}),
+    ...(filters.city_id ? { city_id: filters.city_id } : {}),
   });
 
   const { trainerPackages, trainerPackageLoading } = useGetTrainerPackageList({
@@ -208,7 +231,16 @@ export default function CreateBooking() {
     setSelectedPackageId(pkg);
     setActiveStep((prev) => prev + 1);
   };
-
+  const handleFilters = useCallback(
+    (name: string, value: IUserTableFilterValue) => {
+      table.onResetPage();
+      setFilters((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    },
+    [table]
+  );
   const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!pickupLocationSelected) {
       enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
@@ -260,19 +292,52 @@ export default function CreateBooking() {
       setLoadingBooking(false);
     }
   };
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
+  const canReset = !isEqual(defaultFilters, filters);
+
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="flex-end"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+      margin={3}
+    >
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <TrainerFilters
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          //
+          filters={filters}
+          onFilters={handleFilters}
+          //
+          canReset={canReset}
+          onResetFilters={handleResetFilters}
+        />
+      </Stack>
+    </Stack>
+  );
 
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
         return (
-          <TrainerSelectStep
-            trainers={trainers}
-            selectedTrainerId={selectedTrainerId}
-            setSelectedTrainerId={handleSelecTrainer}
-            isLoading={trainerListLoading}
-            setSearchTerm={setSearchTermTrainer}
-            searchTerm={searchTermTrainer}
-          />
+          <>
+            {' '}
+            {/* {renderFilters} */}
+            <TrainerSelectStep
+              trainers={trainers}
+              selectedTrainerId={selectedTrainerId}
+              setSelectedTrainerId={handleSelecTrainer}
+              isLoading={trainerListLoading}
+              setSearchTerm={setSearchTermTrainer}
+              searchTerm={searchTermTrainer}
+              renderFilters={renderFilters}
+            />
+          </>
         );
       case 1:
         return (
