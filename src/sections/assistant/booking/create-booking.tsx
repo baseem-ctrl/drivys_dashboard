@@ -45,6 +45,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/user';
 import { useTable } from 'src/components/table';
 import { useGetGearEnum } from 'src/api/users';
+import PaymentDetails from './payment-details';
+import TrainerPaymentDetails from './payment-details';
 
 const steps = [
   'Select Trainer',
@@ -52,6 +54,7 @@ const steps = [
   'Select Student',
   'Schedule Sessions',
   'Select Location',
+  'Payment',
 ];
 const defaultFilters: any = {
   city_id: '',
@@ -64,7 +67,9 @@ export default function CreateBooking() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
   const [selectedTrainer, setSelectedTrainer] = useState<number | null>(null);
-
+  const [txnId, setTxnId] = useState('');
+  const [remarks, setRemarks] = useState('');
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [searchTermStudent, setSearchTermStudent] = useState('');
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
@@ -196,12 +201,7 @@ export default function CreateBooking() {
           return;
         }
         break;
-      case 4:
-        if (!pickupLocationSelected) {
-          enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
-          return;
-        }
-        break;
+
       default:
         break;
     }
@@ -421,6 +421,17 @@ export default function CreateBooking() {
             setPickupLocationSelected={setPickupLocationSelected}
             pickupLocationSelected={pickupLocationSelected}
             selectedTrainer={selectedTrainer}
+          />
+        );
+      case 5:
+        return (
+          <TrainerPaymentDetails
+            txnId={txnId}
+            setTxnId={setTxnId}
+            remarks={remarks}
+            setRemarks={setRemarks}
+            paymentProof={paymentProof}
+            setPaymentProof={setPaymentProof}
           />
         );
       default:
