@@ -33,6 +33,8 @@ interface TrainerStepProps {
   isLoading: boolean;
   setSearchTerm: (value: string) => void;
   searchTerm: string;
+  renderFilters: any;
+  setSelectedTrainer: any;
 }
 
 const TrainerSelectStep: React.FC<TrainerStepProps> = ({
@@ -43,6 +45,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   setSearchTerm,
   searchTerm,
   renderFilters,
+  setSelectedTrainer,
 }) => {
   const { i18n } = useTranslation();
   const getInitials = (name?: string) => {
@@ -98,6 +101,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
               <Card
                 onClick={() => {
                   setSelectedTrainerId(trainer.user_id);
+                  setSelectedTrainer(trainer);
                 }}
                 sx={{
                   borderRadius: 5,

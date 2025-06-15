@@ -237,7 +237,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                       {availableSlots?.filter((slot: any) =>
                         showPickupOnly ? slot.is_pickup_enabled : true
                       ).length === 0 && (
-                        <Typography variant="body2" sx={{ mt: 2 }}>
+                        <Typography variant="body2" sx={{ mt: 2, ml: 2 }}>
                           No available slots for this filter.
                         </Typography>
                       )}
