@@ -63,6 +63,8 @@ const defaultFilters: any = {
 export default function CreateBooking() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
+  const [selectedTrainer, setSelectedTrainer] = useState<number | null>(null);
+
   const [searchTermStudent, setSearchTermStudent] = useState('');
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
@@ -242,10 +244,6 @@ export default function CreateBooking() {
     [table]
   );
   const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (!pickupLocationSelected) {
-      enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
-      return;
-    }
     setLoadingBooking(true);
     const fixedSessions = sessions.map(({ start_time, end_time, session_no }) => {
       const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
@@ -336,6 +334,7 @@ export default function CreateBooking() {
               setSearchTerm={setSearchTermTrainer}
               searchTerm={searchTermTrainer}
               renderFilters={renderFilters}
+              setSelectedTrainer={setSelectedTrainer}
             />
           </>
         );
@@ -421,6 +420,7 @@ export default function CreateBooking() {
             setPickupLocation={setPickupLocation}
             setPickupLocationSelected={setPickupLocationSelected}
             pickupLocationSelected={pickupLocationSelected}
+            selectedTrainer={selectedTrainer}
           />
         );
       default:
