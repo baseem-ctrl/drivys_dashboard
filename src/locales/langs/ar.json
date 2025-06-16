@@ -1083,5 +1083,12 @@
   "no_reviews": "لا توجد تقييمات بعد.",
   "reviews_label": "المراجعات",
   "no_reviews_available": "لا توجد مراجعات متاحة.",
-  "about_label": "نبذة"
+  "about_label": "نبذة",
+  "available_packages": "الباقات المتاحة",
+  "expiry_date": "تاريخ الانتهاء",
+  "upload_assistant_id": "تحميل هوية المساعد",
+  "front_side": "الجهة الأمامية",
+  "back_side": "الجهة الخلفية",
+  "document_expiry": "انتهاء صلاحية الوثيقة",
+  "view_uploaded_file": "عرض الملف المحمّل"
 }
