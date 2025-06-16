@@ -45,6 +45,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/user';
 import { useTable } from 'src/components/table';
 import { useGetGearEnum } from 'src/api/users';
+import PaymentDetails from './payment-details';
+import TrainerPaymentDetails from './payment-details';
 
 const steps = [
   'Select Trainer',
@@ -52,6 +54,7 @@ const steps = [
   'Select Student',
   'Schedule Sessions',
   'Select Location',
+  'Payment',
 ];
 const defaultFilters: any = {
   city_id: '',
@@ -64,7 +67,9 @@ export default function CreateBooking() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
   const [selectedTrainer, setSelectedTrainer] = useState<number | null>(null);
-
+  const [txnId, setTxnId] = useState('');
+  const [remarks, setRemarks] = useState('');
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [searchTermStudent, setSearchTermStudent] = useState('');
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
@@ -72,7 +77,6 @@ export default function CreateBooking() {
   const [pickupLocationSelected, setPickupLocationSelected] = useState<number | null>(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
   const table = useTable({ defaultRowsPerPage: 3 });
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const openFilters = useBoolean();
@@ -196,12 +200,7 @@ export default function CreateBooking() {
           return;
         }
         break;
-      case 4:
-        if (!pickupLocationSelected) {
-          enqueueSnackbar('Please select a pickup location.', { variant: 'error' });
-          return;
-        }
-        break;
+
       default:
         break;
     }
@@ -245,29 +244,47 @@ export default function CreateBooking() {
   );
   const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
     setLoadingBooking(true);
-    const fixedSessions = sessions.map(({ start_time, end_time, session_no }) => {
-      const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
-
-      const datePart = moment(start_time).format('YYYY-MM-DD');
-      const formattedEnd = moment(`${datePart} ${end_time}`, 'YYYY-MM-DD HH:mm').format('HH:mm');
-
-      return {
-        start_time: formattedStart,
-        end_time: formattedEnd,
-        session_no,
-      };
-    });
-
-    const body = {
-      student_id: selectedStudentId,
-      trainer_id: selectedTrainerId,
-      package_id: initialStep >= 2 ? selectedPackageId : selectedPackageId?.package_id,
-      pickup_location: pickupLocationSelected,
-      sessions: fixedSessions,
-    };
 
     try {
-      const response = await createBooking(body);
+      const formData = new FormData();
+
+      formData.append('student_id', selectedStudentId.toString());
+      formData.append('trainer_id', selectedTrainerId.toString());
+      formData.append(
+        'package_id',
+        (initialStep >= 2 ? selectedPackageId : selectedPackageId?.package_id).toString()
+      );
+      if (pickupLocationSelected && Object.keys(pickupLocationSelected).length > 0) {
+        formData.append('pickup_location', JSON.stringify(pickupLocationSelected));
+      }
+
+      formData.append('is_paid', paymentProof ? '1' : '0');
+
+      sessions.forEach(({ start_time, end_time, session_no }, index) => {
+        const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
+        const datePart = moment(start_time).format('YYYY-MM-DD');
+        const formattedEnd = moment(`${datePart} ${end_time}`, 'YYYY-MM-DD HH:mm').format('HH:mm');
+
+        formData.append(`sessions[${index}][start_time]`, formattedStart);
+        formData.append(`sessions[${index}][end_time]`, formattedEnd);
+        if (Array.isArray(session_no)) {
+          session_no.forEach((no) => {
+            formData.append(`sessions[${index}][session_no][]`, no.toString());
+          });
+        } else {
+          formData.append(`sessions[${index}][session_no][]`, session_no.toString());
+        }
+      });
+
+      if (paymentProof) {
+        formData.append('payment_proof', paymentProof); // binary file
+      }
+
+      if (remarks) formData.append('remarks', remarks);
+      if (txnId) formData.append('txn_id', txnId);
+
+      const response = await createBooking(formData);
+
       if (response.status === 'success') {
         enqueueSnackbar(`Booking Created successfully.`, { variant: 'success' });
         router.push(paths.dashboard.assistant.overview);
@@ -290,6 +307,7 @@ export default function CreateBooking() {
       setLoadingBooking(false);
     }
   };
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -423,6 +441,17 @@ export default function CreateBooking() {
             selectedTrainer={selectedTrainer}
           />
         );
+      case 5:
+        return (
+          <TrainerPaymentDetails
+            txnId={txnId}
+            setTxnId={setTxnId}
+            remarks={remarks}
+            setRemarks={setRemarks}
+            paymentProof={paymentProof}
+            setPaymentProof={setPaymentProof}
+          />
+        );
       default:
         return null;
     }
@@ -438,6 +467,7 @@ export default function CreateBooking() {
               sx={{
                 cursor: 'pointer',
                 '& .MuiStepLabel-label': {
+                  fontSize: '12px',
                   transition: 'color 0.3s',
                   '&:hover': {
                     color: 'primary.main',
