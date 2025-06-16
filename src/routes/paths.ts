@@ -262,6 +262,7 @@ export const paths = {
       },
       booking: {
         create: `${ROOTS.DASHBOARD}/assistant/booking`,
+        list: `${ROOTS.DASHBOARD}/assistant/booking-list`,
       },
     },
     package: {

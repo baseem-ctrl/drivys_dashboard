@@ -452,6 +452,7 @@ export const endpoints = {
     },
     booking: {
       create: 'assistant/booking/create-booking',
+      list: 'assistant/booking/get-booking-list',
     },
   },
 };
