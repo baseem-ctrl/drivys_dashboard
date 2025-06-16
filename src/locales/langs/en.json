@@ -1029,5 +1029,11 @@
   "reviews_label": "Reviews",
   "no_reviews_available": "No reviews available.",
   "about_label": "About",
-  "available_packages": "Available Packages"
+  "available_packages": "Available Packages",
+  "expiry_date": "Expiry Date",
+  "upload_assistant_id": "Upload Assistant ID",
+  "front_side": "Front Side",
+  "back_side": "Back Side",
+  "document_expiry": "Document Expiry",
+  "view_uploaded_file": "View Uploaded File"
 }

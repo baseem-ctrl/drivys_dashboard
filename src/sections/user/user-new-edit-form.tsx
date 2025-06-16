@@ -72,6 +72,8 @@ import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { InfoOutlined } from '@mui/icons-material';
 import { useGetRoles } from 'src/api/roles-and-permission';
 import { useTranslation } from 'react-i18next';
+import { DatePicker } from '@mui/x-date-pickers';
+import RHFDatePicker from 'src/components/hook-form/rhf-date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -246,14 +248,20 @@ export default function UserNewEditForm({
     user_gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
     area_id: Yup.mixed().nullable(),
-    languages: Yup.array().of(
-      Yup.object().shape({
-        id: Yup.mixed().required(t('language_required')), // Validate court add-on
-        fluency_level: Yup.mixed()
-          // .typeError("Number of Add Ons must be a number")
-          .required(t('fluency_required')), // Validate the number of add-ons
-      })
-    ),
+    languages: Yup.array().when('user_type', {
+      is: (val) => val?.toUpperCase() === 'ASSISTANT',
+      then: () => Yup.array().notRequired(),
+      otherwise: () =>
+        Yup.array()
+          .of(
+            Yup.object().shape({
+              id: Yup.mixed().required(t('language_required')),
+              fluency_level: Yup.mixed().required(t('fluency_required')),
+            })
+          )
+          .required(t('languages_required')),
+    }),
+
     school_name: Yup.string()
       .nullable()
       .test('school-name-required', t('school_name_required'), function (value) {
@@ -302,7 +310,33 @@ export default function UserNewEditForm({
         }),
       otherwise: (schema) => schema.notRequired(),
     }),
+    assistant_id_proof: Yup.object().when('user_type', {
+      is: (val) => val?.toUpperCase() === 'ASSISTANT',
+      then: (schema) =>
+        schema.shape({
+          front: Yup.mixed().required(t('front_id_required')),
+          back: Yup.mixed().required(t('back_id_required')),
+          expiry: Yup.date()
+            .nullable()
+            .required(t('expiry_required'))
+            .test('is-future-date', t('expiry_must_be_future'), function (value) {
+              if (!value) return true;
+              return new Date(value) > new Date();
+            }),
+        }),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
+  console.log('currentUser', currentUser);
+  const frontDoc = currentUser?.user_docs?.find(
+    (doc) => doc.doc_type === 'ASSISTANT ID PROOF' && doc.doc_side === 'FRONT'
+  );
+
+  const backDoc = currentUser?.user_docs?.find(
+    (doc) => doc.doc_type === 'ASSISTANT ID PROOF' && doc.doc_side === 'BACK'
+  );
+
+  const assistantIdExpiry = frontDoc?.expiry || backDoc?.expiry || '';
 
   const defaultValues = useMemo(
     () => ({
@@ -411,6 +445,11 @@ export default function UserNewEditForm({
       cash_in_hand: currentUser?.cash_in_hand || 0,
       max_cash_in_hand_allowed: currentUser?.max_cash_in_hand_allowed || '',
       collected_max_cash_in_hand_allowed: currentUser?.collected_max_cash_in_hand_allowed || '',
+      assistant_id_proof: {
+        front: frontDoc?.doc_file || null,
+        back: backDoc?.doc_file || null,
+        expiry: assistantIdExpiry ? new Date(assistantIdExpiry) : null,
+      },
     }),
     [
       currentUser?.locale,
@@ -426,6 +465,7 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
+  console.log('defaultValues', defaultValues.assistant_id_proof);
   const {
     reset,
     watch,
@@ -641,7 +681,6 @@ export default function UserNewEditForm({
           }
         });
       }
-      console.log(' data.school_ids', data.school_ids);
       if (data?.user_type === 'ASSISTANT') {
         data.school_ids?.forEach((c) => {
           if (c?.value) {
@@ -708,6 +747,25 @@ export default function UserNewEditForm({
           body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
         });
       }
+      if (
+        data?.user_type === 'ASSISTANT' &&
+        data?.assistant_id_proof?.front &&
+        data?.assistant_id_proof?.back
+      ) {
+        body.append(`assistant_id_proof[0]`, data.assistant_id_proof.front);
+        body.append(`assistant_id_side[0]`, 'FRONT');
+
+        body.append(`assistant_id_proof[1]`, data.assistant_id_proof.back);
+        body.append(`assistant_id_side[1]`, 'BACK');
+
+        if (data?.assistant_id_proof?.expiry) {
+          const formattedExpiry = new Date(data.assistant_id_proof.expiry)
+            .toISOString()
+            .split('T')[0];
+          body.append('assistant_id_exipry', formattedExpiry);
+        }
+      }
+
       if (data?.max_cash_in_hand_allowed)
         body.append('max_cash_in_hand_allowed', data?.max_cash_in_hand_allowed);
       if (data?.collected_max_cash_in_hand_allowed)
@@ -895,6 +953,7 @@ export default function UserNewEditForm({
             <Box
               rowGap={3}
               columnGap={2}
+              paddingBottom="10px"
               display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
@@ -1061,6 +1120,77 @@ export default function UserNewEditForm({
             </Box>
 
             <Divider />
+            {values.user_type === 'ASSISTANT' && (
+              <>
+                <Typography variant="subtitle2" sx={{ mt: 4, mb: 2, ml: 1 }} color="primary">
+                  {t('upload_assistant_id')}
+                </Typography>
+
+                <Grid container spacing={2}>
+                  {/* Front Side Upload */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2, ml: 1 }}>
+                      {t('front_side')}
+                    </Typography>
+
+                    <RHFFileUpload
+                      label={t('assistant_id_front')}
+                      name="assistant_id_proof.front"
+                      helperText={t('upload_helper_text')}
+                    />
+                    {values.assistant_id_proof?.front &&
+                      typeof values.assistant_id_proof.front === 'string' && (
+                        <Box mb={1} ml={1}>
+                          <a
+                            href={values.assistant_id_proof.front}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            color="#cf5a0d"
+                            style={{ textDecoration: 'underline' }}
+                          >
+                            {t('view_uploaded_file')}
+                          </a>
+                        </Box>
+                      )}
+                  </Grid>
+
+                  {/* Back Side Upload */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2, ml: 1 }}>
+                      {t('back_side')}
+                    </Typography>
+
+                    <RHFFileUpload
+                      label={t('assistant_id_back')}
+                      name="assistant_id_proof.back"
+                      helperText={t('upload_helper_text')}
+                    />
+                    {values.assistant_id_proof?.back &&
+                      typeof values.assistant_id_proof.back === 'string' && (
+                        <Box mb={1}>
+                          <a
+                            href={values.assistant_id_proof.back}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            color="primary"
+                            style={{ textDecoration: 'underline' }}
+                          >
+                            {t('view_uploaded_file')}
+                          </a>
+                        </Box>
+                      )}
+                  </Grid>
+
+                  {/* Expiry Date */}
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {t('document_expiry')}
+                    </Typography>
+                    <RHFDatePicker name="assistant_id_proof.expiry" label={t('expiry_date')} />
+                  </Grid>
+                </Grid>
+              </>
+            )}
 
             <Box
               rowGap={3}
