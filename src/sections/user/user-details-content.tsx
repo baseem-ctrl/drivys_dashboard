@@ -612,6 +612,10 @@ export default function UserDetailsContent({
                   : []),
 
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
+                {
+                  label: t('document_expiry'),
+                  value: details?.user_docs[0]?.expiry?.split('T')[0] ?? 'N/A',
+                },
 
                 ...(details?.user_type !== 'ASSISTANT'
                   ? [
