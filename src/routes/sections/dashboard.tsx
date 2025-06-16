@@ -85,6 +85,7 @@ import SchoolAdminTrainerReviewListView from 'src/sections/trainer-review-school
 import TrainerListPage from 'src/sections/assistant/trainer/view/trainer-list-view';
 import CreateBooking from 'src/sections/assistant/booking/create-booking';
 import { TrainerDetailsPageWrapper } from 'src/sections/assistant/trainer/view/trainer-details';
+import BookingListAssistantView from 'src/sections/assistant/booking/booking-list/view/booking-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -507,6 +508,8 @@ const assistantRoutes = [
       { path: 'trainers', element: <TrainerListPage /> },
       { path: 'new-student', element: <AddNewStudent /> },
       { path: 'booking', element: <CreateBooking /> },
+      { path: 'booking-list', element: <BookingListAssistantView /> },
+
       { path: 'trainer/details/:id', element: <TrainerDetailsPageWrapper /> },
     ],
   },

@@ -549,6 +549,10 @@ export function useNavData() {
       title: t('booking'),
       path: paths.dashboard.assistant.booking.create,
       icon: ICONS.booking,
+      children: [
+        { title: t('create'), path: paths.dashboard.assistant.booking.create },
+        { title: t('Bookings'), path: paths.dashboard.assistant.booking.list },
+      ],
     },
   ];
   const userType = localStorage.getItem('user_type');
