@@ -91,8 +91,13 @@ export function useNavData() {
     loyality: 'trainer_reward',
     terms_conditions: 'app_setting_tc',
     to_do: 'trainer_profile_changed',
+    pending_trainer_rewards: 'trainer_reward',
     updated_trainer_profile: 'trainer_profile_changed',
     pending_verification: 'trainer_verification',
+    language: 'language',
+    dialect: 'dialect',
+    city: 'city',
+    pending_refund: 'refunded_list',
   };
 
   function filterRoutesByPermission(routes, permissions) {
