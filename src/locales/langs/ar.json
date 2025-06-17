@@ -1090,5 +1090,19 @@
   "front_side": "الجهة الأمامية",
   "back_side": "الجهة الخلفية",
   "document_expiry": "انتهاء صلاحية الوثيقة",
-  "view_uploaded_file": "عرض الملف المحمّل"
+  "view_uploaded_file": "عرض الملف المحمّل",
+  "schedule_remaining_sessions": "جدولة الحصص المتبقية",
+  "Selected": "تم التحديد",
+  "Available Slots for {{date}}": "الأوقات المتاحة ليوم",
+  "Show Pickup Only": "عرض خدمة التوصيل فقط",
+  "Loading slots...": "جاري تحميل الأوقات...",
+  "No available slots for this filter.": "لا توجد أوقات متاحة لهذا الفلتر.",
+  "indicates Pickup option available": "يشير إلى توفر خيار التوصيل",
+  "Close": "إغلاق",
+  "Add Session": "إضافة حصة",
+  "Booking Created successfully.": "تم إنشاء الحجز بنجاح.",
+  "Server error": "خطأ في الخادم",
+  "payout": "الدفع",
+  "student_list": "قائمة الطلاب",
+  "payout_list": "قائمة المدفوعات"
 }
