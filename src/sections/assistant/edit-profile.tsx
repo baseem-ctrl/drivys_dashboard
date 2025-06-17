@@ -39,10 +39,29 @@ const EditProfilePopover = () => {
     status: user?.user?.is_active || '',
     gender: '',
     profileUrl: user?.user?.photo_url || '',
+    userDocs: user?.user?.user_docs || [],
   });
-
   const handleCloseEdit = () => {
     router.push(paths.dashboard.assistant.overview);
+  };
+  const handleDocChange = (index, key, value) => {
+    setFormData((prev) => {
+      const updatedDocs = [...prev.userDocs];
+      const updatedDoc = { ...updatedDocs[index], [key]: value };
+
+      if (key === 'expiry') {
+        updatedDoc.doc_file = null;
+        updatedDoc.new_file = null;
+      }
+
+      updatedDocs[index] = updatedDoc;
+      return { ...prev, userDocs: updatedDocs };
+    });
+  };
+
+  const handleDocFileChange = (index, file) => {
+    if (!file) return;
+    handleDocChange(index, 'new_file', file);
   };
 
   const open = Boolean(anchorEl);
@@ -80,11 +99,20 @@ const EditProfilePopover = () => {
       if (formData.profileFile) {
         formDataToSend.append('photo_url', formData.profileFile);
       }
+      formData.userDocs.forEach((doc, i) => {
+        formDataToSend.append(`assistant_id_side[${i}]`, doc.doc_side);
+        if (doc.new_file) {
+          formDataToSend.append(`assistant_id_proof[${i}]`, doc.new_file);
+        }
+      });
+
+      formDataToSend.append('assistant_id_exipry', formData.userDocs[0].expiry || '');
 
       const response = await updateProfile(formDataToSend);
 
       if (response.status === 'success') {
         enqueueSnackbar(`Profile Updated successfully.`, { variant: 'success' });
+        handleCloseEdit();
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -100,7 +128,7 @@ const EditProfilePopover = () => {
       }
     } finally {
       setLoading(false);
-      handleCloseEdit();
+
       initialize();
     }
   };
@@ -119,7 +147,7 @@ const EditProfilePopover = () => {
   return (
     <Box
       sx={{
-        width: '60%',
+        width: '80%',
         backgroundColor: '#fffff',
         borderRadius: 2,
         boxShadow: 3,
@@ -219,6 +247,126 @@ const EditProfilePopover = () => {
                 </MenuItem>
               ))}
           </TextField>
+        </Box>
+        <Box mt={4}>
+          <Typography fontWeight={600} fontSize={16} mb={2}>
+            Uploaded Documents
+          </Typography>
+
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap={2}
+            mb={3}
+            p={2}
+            border="1px solid #eee"
+            borderRadius={2}
+          >
+            <Typography variant="subtitle2" fontWeight={500}>
+              Assistant ID Proof
+            </Typography>
+
+            <Box display="flex" gap={2}>
+              {formData.userDocs.map((doc, index) => (
+                <Box key={doc.doc_side} textAlign="center">
+                  <Box position="relative" width={100} height={100} mx="auto">
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.pdf"
+                      style={{ display: 'none' }}
+                      id={`upload-doc-${index}`}
+                      onChange={(e) => handleDocFileChange(index, e.target.files[0])}
+                    />
+                    <label htmlFor={`upload-doc-${index}`} style={{ cursor: 'pointer' }}>
+                      {doc.new_file || doc.doc_file ? (
+                        <Box
+                          sx={{
+                            position: 'relative',
+                            width: 100,
+                            height: 100,
+                            borderRadius: 1,
+                            overflow: 'hidden',
+                            border: '1px solid #ccc',
+                            backgroundColor: '#f9f9f9',
+                            '&:hover .hover-overlay': {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={doc.new_file ? URL.createObjectURL(doc.new_file) : doc.doc_file}
+                            alt={doc.doc_side}
+                            sx={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                            }}
+                          />
+                          <Box
+                            className="hover-overlay"
+                            sx={{
+                              position: 'absolute',
+                              bottom: 0,
+                              width: '100%',
+                              textAlign: 'center',
+                              bgcolor: 'rgba(0,0,0,0.5)',
+                              color: '#fff',
+                              fontSize: 10,
+                              py: 0.5,
+                              borderBottomLeftRadius: 4,
+                              borderBottomRightRadius: 4,
+                              opacity: 0,
+                              transition: 'opacity 0.2s ease-in-out',
+                            }}
+                          >
+                            Click to change
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          sx={{
+                            width: 100,
+                            height: 100,
+                            border: '1px dashed #aaa',
+                            borderRadius: 1,
+                            cursor: 'pointer',
+                            color: '#888',
+                            fontSize: 14,
+                            backgroundColor: '#fafafa',
+                          }}
+                        >
+                          Upload {doc.doc_side}
+                        </Box>
+                      )}
+                    </label>
+                  </Box>
+
+                  {/* Label the side */}
+                  <Typography fontSize={12} mt={1} color="text.secondary">
+                    {doc.doc_side === 'front' ? 'Front Side' : 'Back Side'}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <TextField
+              label="Expiry Date"
+              type="date"
+              size="small"
+              fullWidth
+              value={formData.userDocs[0].expiry || ''}
+              onChange={(e) => {
+                formData.userDocs.forEach((_, idx) =>
+                  handleDocChange(idx, 'expiry', e.target.value)
+                );
+              }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
         </Box>
       </Box>
       <Box sx={{ px: 3, pb: 2, display: 'flex', justifyContent: 'end', gap: 1 }}>
