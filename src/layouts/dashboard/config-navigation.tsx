@@ -87,7 +87,6 @@ export function useNavData() {
     notifications: 'notification',
     app_settings: 'app_setting',
     roles_and_permission: 'user_school_admin',
-    report: 'reports',
     loyality: 'trainer_reward',
     terms_conditions: 'app_setting_tc',
     to_do: 'trainer_profile_changed',
@@ -98,6 +97,20 @@ export function useNavData() {
     dialect: 'dialect',
     city: 'city',
     pending_refund: 'refunded_list',
+    areas: 'state_province',
+    certificates: 'certificate',
+    awaiting_certificates: 'certificate',
+    approved_certificates: 'certificate',
+    report: 'reports',
+    bookings: 'reports',
+    revenue: 'reports',
+    trainer: 'reports',
+    student: 'reports',
+    school: 'reports',
+    collector: 'collector',
+    cash_in_hand: 'collector',
+    pickup: 'pickup',
+    slider: 'slider',
   };
 
   function filterRoutesByPermission(routes, permissions) {
@@ -212,6 +225,7 @@ export function useNavData() {
       //   ,{ title: t('details'), path: paths.dashboard.school.details }
       // ],
     },
+
     {
       title: t('certificates'),
       path: paths.dashboard.awatingCertificate,
@@ -238,6 +252,7 @@ export function useNavData() {
         },
       ],
     },
+
     {
       title: t('collector'),
       path: paths.dashboard.collectorAdminView.cashInHand,
@@ -318,6 +333,7 @@ export function useNavData() {
         { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
+
     {
       title: t('report'),
       path: paths.dashboard.report.booking,
