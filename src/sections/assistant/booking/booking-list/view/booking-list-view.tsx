@@ -60,6 +60,7 @@ const TABLE_HEAD = {
     { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
     { id: 'coupon', label: t('Coupon'), width: 200 },
     { id: 'created', label: t('Created'), width: 200 },
+    { id: 'action', label: '', width: 200 },
   ],
   confirmed: [
     { id: 'customerName', label: t('Student Name'), width: 180 },

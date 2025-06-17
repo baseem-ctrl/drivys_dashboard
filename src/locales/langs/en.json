@@ -1035,5 +1035,16 @@
   "front_side": "Front Side",
   "back_side": "Back Side",
   "document_expiry": "Document Expiry",
-  "view_uploaded_file": "View Uploaded File"
+  "view_uploaded_file": "View Uploaded File",
+  "schedule_remaining_sessions": "Schedule Remaining Sessions",
+  "Selected": "Selected",
+  "Available Slots for {{date}}": "Available Slots for {{date}}",
+  "Show Pickup Only": "Show Pickup Only",
+  "Loading slots...": "Loading slots...",
+  "No available slots for this filter.": "No available slots for this filter.",
+  "indicates Pickup option available": "Indicates Pickup option available",
+  "Close": "Close",
+  "Add Session": "Add Session",
+  "Booking Created successfully.": "Booking created successfully.",
+  "Server error": "Server error"
 }
