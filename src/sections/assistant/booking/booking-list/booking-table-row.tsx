@@ -4,11 +4,24 @@ import TableCell from '@mui/material/TableCell';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
-import { usePopover } from 'src/components/custom-popover';
-import { Link, Typography } from '@mui/material';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Link,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useTranslation } from 'react-i18next';
+import Iconify from 'src/components/iconify';
+import RescheduleSession from './re-schedule-session';
 
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
@@ -88,7 +101,7 @@ export default function BookingTableRow({
           }
         }}
       >
-        {driver?.name || 'N/A'}
+        {driver?.name || t('n/a')}
       </TableCell>
       <TableCell>
         <Label
@@ -105,7 +118,7 @@ export default function BookingTableRow({
               : 'success'
           }
         >
-          {row?.booking_status || 'N/A'}
+          {row?.booking_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -123,7 +136,7 @@ export default function BookingTableRow({
               : 'success'
           }
         >
-          {row.payment_status || 'N/A'}
+          {row.payment_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -143,6 +156,49 @@ export default function BookingTableRow({
             .format('DD/MM/YY h:mm a')}
         </Typography>
       </TableCell>
+      <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        <IconButton
+          color={popover.open ? 'inherit' : 'default'}
+          onClick={(e) => {
+            e.stopPropagation();
+            popover.onOpen(e);
+          }}
+        >
+          <Iconify icon="eva:more-vertical-fill" />
+        </IconButton>
+      </TableCell>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 300 }}
+      >
+        <MenuItem
+          onClick={() => {
+            quickEdit.onTrue();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          {t('schedule_remaining_sessions')}
+        </MenuItem>
+      </CustomPopover>
+      {quickEdit.value && (
+        <Dialog open={quickEdit.value} onClose={quickEdit.onFalse} maxWidth="md" fullWidth>
+          <DialogTitle>{t('schedule_remaining_sessions')}</DialogTitle>
+
+          <DialogContent dividers>
+            <RescheduleSession
+              driverId={driver_id}
+              bookingId={row.id}
+              sessions={row.sessions}
+              open={quickEdit.value}
+              onClose={quickEdit.onFalse}
+              t={t}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </TableRow>
   );
 }

@@ -453,6 +453,7 @@ export const endpoints = {
     booking: {
       create: 'assistant/booking/create-booking',
       list: 'assistant/booking/get-booking-list',
+      scheduleRemainingSession: 'assistant/booking/schedule-remaining-slot',
     },
   },
 };

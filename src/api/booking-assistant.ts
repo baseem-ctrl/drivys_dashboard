@@ -82,3 +82,9 @@ export function createBooking(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+
+export function scheduleRemainingBooking(body: any) {
+  const URL = endpoints.assistant.booking.scheduleRemainingSession;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
