@@ -87,6 +87,7 @@ import CreateBooking from 'src/sections/assistant/booking/create-booking';
 import { TrainerDetailsPageWrapper } from 'src/sections/assistant/trainer/view/trainer-details';
 import BookingListAssistantView from 'src/sections/assistant/booking/booking-list/view/booking-list-view';
 import PayoutListView from 'src/sections/assistant/payout/view/payout-list-view';
+import CommissionListView from 'src/sections/assistant/commission/view/commission-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -511,6 +512,7 @@ const assistantRoutes = [
       { path: 'booking', element: <CreateBooking /> },
       { path: 'booking-list', element: <BookingListAssistantView /> },
       { path: 'payout-list', element: <PayoutListView /> },
+      { path: 'commission-list', element: <CommissionListView /> },
 
       { path: 'trainer/details/:id', element: <TrainerDetailsPageWrapper /> },
     ],

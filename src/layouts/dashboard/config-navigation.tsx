@@ -572,6 +572,11 @@ export function useNavData() {
       icon: ICONS.banking,
     },
     {
+      title: t('commission'),
+      path: paths.dashboard.assistant.commission.list,
+      icon: ICONS.commission,
+    },
+    {
       title: t('booking'),
       path: paths.dashboard.assistant.booking.create,
       icon: ICONS.booking,

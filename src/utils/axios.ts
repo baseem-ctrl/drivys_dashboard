@@ -458,5 +458,8 @@ export const endpoints = {
     payout: {
       list: 'assistant/transaction/transaction-list',
     },
+    commission: {
+      list: 'assistant/transaction/earning-list',
+    },
   },
 };

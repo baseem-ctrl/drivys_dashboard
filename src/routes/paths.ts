@@ -267,6 +267,9 @@ export const paths = {
       payout: {
         list: `${ROOTS.DASHBOARD}/assistant/payout-list`,
       },
+      commission: {
+        list: `${ROOTS.DASHBOARD}/assistant/commission-list`,
+      },
     },
     package: {
       root: `${ROOTS.DASHBOARD}/package`,
