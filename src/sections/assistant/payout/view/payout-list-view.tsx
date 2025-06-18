@@ -42,11 +42,18 @@ import { useGetPayoutList } from 'src/api/booking-assistant';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 200 },
-  { id: 'school-revenue', label: 'Preferred Language', width: 200 },
-  { id: 'email', label: 'Email', width: 200 },
-  { id: 'phone', label: 'Phone', width: 200 },
-  { id: 'active', label: 'Active', width: 200 },
+  { id: 'assistant', label: 'Assistant', width: 200 },
+  { id: 'user', label: 'Student', width: 200 },
+
+  { id: 'trainer', label: 'Trainer', width: 200 },
+
+  // { id: 'email', label: 'Email', width: 200 },
+
+  { id: 'status', label: 'Booking Status', width: 200 },
+  { id: 'status', label: 'Payment Status', width: 200 },
+
+  { id: 'amount', label: 'Amount', width: 200 },
+  { id: 'remarks', label: 'Remarks', width: 200 },
 ];
 
 // ----------------------------------------------------------------------

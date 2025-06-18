@@ -6,7 +6,9 @@ import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import {
+  Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -22,6 +24,7 @@ import { paths } from 'src/routes/paths';
 import { useTranslation } from 'react-i18next';
 import Iconify from 'src/components/iconify';
 import RescheduleSession from './re-schedule-session';
+import i18n from 'src/locales/i18n';
 
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
@@ -39,7 +42,6 @@ export default function PayoutRow({ row, selected }: Props) {
   const popover = usePopover();
   const zerothIndex = 0;
   const router = useRouter();
-  console.log('row', row);
   const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
     row;
 
@@ -74,14 +76,14 @@ export default function PayoutRow({ row, selected }: Props) {
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {row?.booking?.assistant?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
         sx={{
           cursor: 'pointer',
           textDecoration: 'none',
-          '&:hover': { textDecoration: 'underline' },
+          // '&:hover': { textDecoration: 'underline' },
         }}
         onClick={(event) => {
           event.stopPropagation();
@@ -90,8 +92,39 @@ export default function PayoutRow({ row, selected }: Props) {
           }
         }}
       >
-        {driver?.name || t('n/a')}
+        {row?.booking?.user?.name || t('n/a')}
       </TableCell>
+      <TableCell
+        sx={{
+          cursor: 'pointer',
+          textDecoration: 'none',
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (row.driver) {
+            handleClickDetails(driver_id);
+          }
+        }}
+      >
+        <Box>
+          <Typography variant="body1">{row?.booking?.driver?.name || t('n/a')}</Typography>
+
+          {row?.booking?.city?.city_translations && (
+            <Chip
+              label={
+                row.booking.city.city_translations.find(
+                  (t) => t.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                )?.name || t('n/a')
+              }
+              size="small"
+              color="warning"
+              variant="soft"
+              sx={{ mt: 0.5 }}
+            />
+          )}
+        </Box>
+      </TableCell>
+
       <TableCell>
         <Label
           variant="soft"
@@ -107,7 +140,7 @@ export default function PayoutRow({ row, selected }: Props) {
               : 'success'
           }
         >
-          {row?.booking_status || t('n/a')}
+          {row?.booking?.booking_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -130,21 +163,10 @@ export default function PayoutRow({ row, selected }: Props) {
       </TableCell>
       <TableCell>
         <span className="dirham-symbol">&#x00EA;</span>
-        {row?.sub_total}
+        {row?.amount}
       </TableCell>
-      <TableCell>{row?.payment_method}</TableCell>
-      <TableCell>{row.coupon_code ? row.coupon_code : t('No Coupon')}</TableCell>
-      <TableCell onClick={() => handleRowClick(row.id)}>
-        {moment(row?.created_at)
-          .local()
-          .format('DD/MM/YY h:mm a')}
-        <Typography color="text.secondary" sx={{ fontSize: '0.925rem' }}>
-          Updated{' '}
-          {moment(row?.updated_at)
-            .local()
-            .format('DD/MM/YY h:mm a')}
-        </Typography>
-      </TableCell>
+      {/* <TableCell>{row?.payment_method}</TableCell> */}
+      <TableCell>{row.remarks ? row.remarks : t('n/a')}</TableCell>
     </TableRow>
   );
 }
