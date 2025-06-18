@@ -62,11 +62,14 @@ const ICONS = {
 export function useNavData() {
   const { t } = useLocales();
   const { user } = useAuthContext();
-  const userPermissions = new Set(
+  const adminPermissions = new Set(
     user?.user?.roles?.flatMap((role) => role.role?.permissions?.map((p) => p.name)) || []
   );
-
-  const routePermissionMap = {
+  const schoolAdminPermissions = new Set(
+    user?.user?.school_admin_roles?.flatMap((role) => role.role?.permissions?.map((p) => p.name)) ||
+      []
+  );
+  const adminRoutePermissionMap = {
     booking: 'booking',
     user: 'user',
     list: 'user',
@@ -112,11 +115,41 @@ export function useNavData() {
     pickup: 'pickup',
     slider: 'slider',
   };
-
-  function filterRoutesByPermission(routes, permissions) {
+  const schoolAdminRoutePermissionMap = {
+    notification: 'notification_school_admin',
+    my_school: 'my_school_school_admin',
+    trainers: 'trainer_list_school_admin',
+    to_do: 'request_for_verification_by_school_admin',
+    pending_verification: 'request_for_verification_by_school_admin',
+    pending_certificates: 'certificate_school_admin',
+    trainer_list: 'trainer_list_school_admin',
+    rewards: 'reward_school_admin',
+    trainer_notifications: 'notification_school_admin',
+    commission: 'commission_list_school_admin',
+    trainer_commission: 'commission_list_school_admin',
+    certificates: 'certificate_school_admin',
+    awaiting_certificates: 'certificate_school_admin',
+    approved_certificates: 'certificate_school_admin',
+    certificate_commission: 'certificate_school_admin',
+    payout: 'payout_school_admin',
+    booking: 'booking_school_admin',
+    reviews: 'review_school_admin',
+    trainer_review: 'review_school_admin',
+    student_review: 'review_school_admin',
+    report: 'report_school_admin',
+    bookings: 'report_school_admin',
+    revenue: 'report_school_admin',
+    trainer: 'report_school_admin',
+    student: 'report_school_admin',
+    school: 'report_school_admin',
+    package: 'package_list_school_admin',
+  };
+  function filterRoutesByPermission(routes, permissions, routePermissionMap) {
     return routes
       .map((route) => {
         const matchedKey = Object.keys(routePermissionMap).find((key) => t(key) === route.title);
+        if (!matchedKey) return null;
+
         const permissionEntry = routePermissionMap[matchedKey];
         const requiredPermissions = Array.isArray(permissionEntry)
           ? permissionEntry
@@ -125,7 +158,11 @@ export function useNavData() {
         const hasPermission = requiredPermissions.some((p) => permissions.has(p));
 
         if (route.children && route.children.length > 0) {
-          const filteredChildren = filterRoutesByPermission(route.children, permissions);
+          const filteredChildren = filterRoutesByPermission(
+            route.children,
+            permissions,
+            routePermissionMap
+          );
 
           if (hasPermission || filteredChildren.length > 0) {
             return { ...route, children: filteredChildren };
@@ -133,7 +170,6 @@ export function useNavData() {
           return null;
         }
 
-        // Leaf route
         return hasPermission ? route : null;
       })
       .filter(Boolean);
@@ -413,8 +449,11 @@ export function useNavData() {
       ],
     },
   ];
-  const filteredRoutes = filterRoutesByPermission(allroutes, userPermissions);
-
+  const filteredRoutesAdmin = filterRoutesByPermission(
+    allroutes,
+    adminPermissions,
+    adminRoutePermissionMap
+  );
   const schooladminRoutes = [
     {
       title: t('to_do'),
@@ -431,6 +470,7 @@ export function useNavData() {
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
     },
+
     {
       title: t('certificates'),
       path: paths.dashboard.school.awatingCertificate,
@@ -482,6 +522,7 @@ export function useNavData() {
       path: paths.dashboard.school.listSchoolPayout,
       icon: ICONS.invoice,
     },
+
     {
       title: t('roles-and-permission'),
       path: paths.dashboard.rolesAndPermission.roles,
@@ -495,11 +536,13 @@ export function useNavData() {
         },
       ],
     },
+
     {
       title: t('booking'),
       path: paths.dashboard.booking.root,
       icon: ICONS.booking,
     },
+
     {
       title: t('reviews'),
       path: paths.dashboard.review.root,
@@ -509,6 +552,7 @@ export function useNavData() {
         { title: t('student_review'), path: paths.dashboard.review.studentReview },
       ],
     },
+
     {
       title: t('report'),
       path: paths.dashboard.schoolReport.booking,
@@ -522,6 +566,12 @@ export function useNavData() {
       ],
     },
   ];
+  const filteredRoutesSchoolAdmin = filterRoutesByPermission(
+    schooladminRoutes,
+    schoolAdminPermissions,
+    schoolAdminRoutePermissionMap
+  );
+
   const collectorRoutes = [
     // {
     //   title: t('dashboard'),
@@ -591,13 +641,13 @@ export function useNavData() {
   const routes = (() => {
     switch (userType) {
       case 'SCHOOL_ADMIN':
-        return schooladminRoutes;
+        return filteredRoutesSchoolAdmin;
       case 'COLLECTOR':
         return collectorRoutes;
       case 'ASSISTANT':
         return assistantRoutes;
       default:
-        return filteredRoutes;
+        return filteredRoutesAdmin;
     }
   })();
 
