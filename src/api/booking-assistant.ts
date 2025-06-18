@@ -141,3 +141,39 @@ export function useGetPayoutList(params: PayoutListParams) {
 
   return { ...memoizedValue, revalidatePayoutList };
 }
+interface CommissionListParams {
+  page?: number;
+  limit?: number;
+}
+
+export function useGetCommissionList(params: CommissionListParams) {
+  const getCommissionUrl = () => {
+    const { limit = 10, page = 0 } = params;
+
+    const queryParams: Record<string, any> = {
+      limit,
+      page: page + 1,
+    };
+
+    return `${endpoints.assistant.commission.list}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getCommissionUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      commissions: data?.data || [],
+      commissionListLoading: isLoading,
+      commissionListError: error,
+      commissionListValidating: isValidating,
+      totalCommissionPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateCommissionList = () => {
+    mutate(getCommissionUrl);
+  };
+
+  return { ...memoizedValue, revalidateCommissionList };
+}
