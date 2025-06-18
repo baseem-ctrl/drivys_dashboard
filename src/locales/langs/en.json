@@ -1046,5 +1046,8 @@
   "Close": "Close",
   "Add Session": "Add Session",
   "Booking Created successfully.": "Booking created successfully.",
-  "Server error": "Server error"
+  "Server error": "Server error",
+  "payout": "Payout",
+  "student_list": "Student List",
+  "payout_list": "Payout List"
 }

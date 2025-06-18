@@ -88,3 +88,56 @@ export function scheduleRemainingBooking(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+interface PayoutListParams {
+  student_id?: any;
+  booking_id?: any;
+  is_approved?: any;
+  payment_status?: any;
+  limit?: number;
+  page?: number;
+}
+
+export function useGetPayoutList(params: PayoutListParams) {
+  const getPayoutUrl = () => {
+    const { student_id, booking_id, is_approved, payment_status, limit = 10, page = 0 } = params;
+
+    const queryParams: Record<string, any> = {
+      limit,
+      page: page + 1,
+    };
+
+    const optionalParams = {
+      student_id,
+      booking_id,
+      is_approved,
+      payment_status,
+    };
+
+    Object.entries(optionalParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryParams[key] = value;
+      }
+    });
+
+    return `${endpoints.assistant.payout.list}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getPayoutUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      payouts: data?.data || [],
+      payoutListLoading: isLoading,
+      payoutListError: error,
+      payoutListValidating: isValidating,
+      totalPayoutPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidatePayoutList = () => {
+    mutate(getPayoutUrl);
+  };
+
+  return { ...memoizedValue, revalidatePayoutList };
+}

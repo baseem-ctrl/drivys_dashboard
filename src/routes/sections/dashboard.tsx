@@ -86,6 +86,7 @@ import TrainerListPage from 'src/sections/assistant/trainer/view/trainer-list-vi
 import CreateBooking from 'src/sections/assistant/booking/create-booking';
 import { TrainerDetailsPageWrapper } from 'src/sections/assistant/trainer/view/trainer-details';
 import BookingListAssistantView from 'src/sections/assistant/booking/booking-list/view/booking-list-view';
+import PayoutListView from 'src/sections/assistant/payout/view/payout-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -509,6 +510,7 @@ const assistantRoutes = [
       { path: 'new-student', element: <AddNewStudent /> },
       { path: 'booking', element: <CreateBooking /> },
       { path: 'booking-list', element: <BookingListAssistantView /> },
+      { path: 'payout-list', element: <PayoutListView /> },
 
       { path: 'trainer/details/:id', element: <TrainerDetailsPageWrapper /> },
     ],

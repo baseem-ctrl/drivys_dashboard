@@ -567,6 +567,11 @@ export function useNavData() {
       icon: ICONS.trainers,
     },
     {
+      title: t('payout'),
+      path: paths.dashboard.assistant.payout.list,
+      icon: ICONS.banking,
+    },
+    {
       title: t('booking'),
       path: paths.dashboard.assistant.booking.create,
       icon: ICONS.booking,

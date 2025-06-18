@@ -455,5 +455,8 @@ export const endpoints = {
       list: 'assistant/booking/get-booking-list',
       scheduleRemainingSession: 'assistant/booking/schedule-remaining-slot',
     },
+    payout: {
+      list: 'assistant/transaction/transaction-list',
+    },
   },
 };
