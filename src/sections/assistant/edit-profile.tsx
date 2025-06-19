@@ -36,11 +36,36 @@ const EditProfilePopover = () => {
     email: user?.user?.email || '',
     phone: user?.user?.phone || '',
     dob: user?.user?.dob || '',
-    status: user?.user?.is_active || '',
     gender: '',
     profileUrl: user?.user?.photo_url || '',
     userDocs: user?.user?.user_docs || [],
   });
+  const [originalData, setOriginalData] = useState(null);
+
+  useEffect(() => {
+    if (user?.user) {
+      setOriginalData({
+        name: user.user.name || '',
+        email: user.user.email || '',
+        phone: user.user.phone || '',
+        dob: user.user.dob || '',
+        gender: user.user.gender || '',
+        profileUrl: user.user.photo_url || '',
+        userDocs: user.user.user_docs || [],
+      });
+    }
+  }, [user]);
+  const getChangedFields = (current, original) => {
+    const changed = {};
+    Object.keys(current).forEach((key) => {
+      if (key === 'userDocs' || key === 'profileFile' || key === 'profileUrl') return;
+      if (current[key] !== original[key]) {
+        changed[key] = current[key];
+      }
+    });
+    return changed;
+  };
+
   const handleCloseEdit = () => {
     router.push(paths.dashboard.assistant.overview);
   };
@@ -84,51 +109,58 @@ const EditProfilePopover = () => {
   };
 
   const handleSubmit = async () => {
+    if (!originalData) return;
+
     setLoading(true);
     try {
       const formDataToSend = new FormData();
 
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
+      const changedFields = getChangedFields(formData, originalData);
+      Object.entries(changedFields).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+
       formDataToSend.append('country_code', '+971');
-      formDataToSend.append('dob', formData.dob);
-      formDataToSend.append('gender', formData.gender);
-      formDataToSend.append('password', formData.password || '');
 
       if (formData.profileFile) {
         formDataToSend.append('photo_url', formData.profileFile);
       }
+
       formData.userDocs.forEach((doc, i) => {
-        formDataToSend.append(`assistant_id_side[${i}]`, doc.doc_side);
+        const originalDoc = originalData.userDocs[i];
+
+        if (doc.doc_side !== originalDoc?.doc_side) {
+          formDataToSend.append(`assistant_id_side[${i}]`, doc.doc_side);
+        }
+
         if (doc.new_file) {
           formDataToSend.append(`assistant_id_proof[${i}]`, doc.new_file);
         }
       });
 
-      formDataToSend.append('assistant_id_exipry', formData.userDocs[0].expiry || '');
+      if (
+        formData.userDocs?.[0]?.expiry &&
+        formData.userDocs[0]?.expiry !== originalData.userDocs?.[0]?.expiry
+      ) {
+        formDataToSend.append('assistant_id_exipry', formData.userDocs[0].expiry);
+      }
 
       const response = await updateProfile(formDataToSend);
 
       if (response.status === 'success') {
-        enqueueSnackbar(`Profile Updated successfully.`, { variant: 'success' });
+        enqueueSnackbar('Profile Updated successfully.', { variant: 'success' });
         handleCloseEdit();
       }
     } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
+      if (error?.errors && typeof error.errors === 'object') {
+        Object.values(error.errors).forEach((err) => {
+          enqueueSnackbar(Array.isArray(err) ? err[0] : err, { variant: 'error' });
         });
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
       setLoading(false);
-
       initialize();
     }
   };
