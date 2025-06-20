@@ -1049,5 +1049,11 @@
   "Server error": "Server error",
   "payout": "Payout",
   "student_list": "Student List",
-  "payout_list": "Payout List"
+  "payment_summary": "Payment Summary",
+  "package_price_after_discount": "Package Price (After Discount)",
+  "transport_fee_after_discount": "Transport Fee (After Discount)",
+  "tax_amount": "Tax Amount",
+  "coupon_code": "Coupon Code",
+  "booking_method": "Booking Method",
+  "total_payable": "Total Payable"
 }

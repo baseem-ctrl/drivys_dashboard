@@ -177,3 +177,38 @@ export function useGetCommissionList(params: CommissionListParams) {
 
   return { ...memoizedValue, revalidateCommissionList };
 }
+interface PaymentSummaryParams {
+  trainer_id?: string;
+  student_id?: string;
+  package_id?: string;
+}
+
+export function useGetPaymentSummary(params: PaymentSummaryParams) {
+  const getPaymentSummaryUrl = () => {
+    const queryParams: Record<string, any> = {};
+
+    if (params.trainer_id) queryParams.trainer_id = params.trainer_id;
+    if (params.student_id) queryParams.student_id = params.student_id;
+    if (params.package_id) queryParams.package_id = params.package_id;
+
+    return `${endpoints.assistant.paymentSummary.list}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getPaymentSummaryUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      paymentSummary: data?.data || null,
+      paymentSummaryLoading: isLoading,
+      paymentSummaryError: error,
+      paymentSummaryValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidatePaymentSummary = () => {
+    mutate(getPaymentSummaryUrl);
+  };
+
+  return { ...memoizedValue, revalidatePaymentSummary };
+}
