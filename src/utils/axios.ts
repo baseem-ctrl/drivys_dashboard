@@ -461,5 +461,8 @@ export const endpoints = {
     commission: {
       list: 'assistant/transaction/earning-list',
     },
+    paymentSummary: {
+      list: 'assistant/booking/get-booking-payment-summary',
+    },
   },
 };
