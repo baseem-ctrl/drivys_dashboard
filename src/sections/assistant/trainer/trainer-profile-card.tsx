@@ -27,7 +27,7 @@ type TrainerProfileCardProps = {
 };
 
 const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const locale = i18n.language;
   return (
     <Card
@@ -85,14 +85,14 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
 
       <CardContent sx={{ mt: 4 }}>
         <Typography fontWeight={200} sx={{ fontSize: '16px' }}>
-          {row?.user?.name}
+          {i18n.language === 'ar' ? row?.user?.name_ar || t('n/a') : row?.user?.name || t('n/a')}{' '}
         </Typography>
         <Typography sx={{ fontSize: '13px' }} color="text.secondary" fontWeight={200}>
           {row?.user?.user_preference?.city?.city_translations?.find(
             (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
           )?.name ||
             row?.city?.city_translations?.[0]?.name ||
-            'N/A'}
+            t('n/a')}
         </Typography>
 
         <Divider
@@ -107,32 +107,33 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
 
         <Stack spacing={1} mt={2} px={2}>
           <Typography sx={{ fontSize: '13px' }}>
-            <strong>School:</strong>{' '}
+            <strong>{t('school')}:</strong>
             {row?.vendor?.vendor_translations?.find(
               (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
             )?.name ||
               row?.vendor?.vendor_translations?.[0]?.name ||
-              'N/A'}
+              t('n/a')}
           </Typography>
           <Typography sx={{ fontSize: '13px' }}>
-            <strong>Category:</strong>{' '}
+            <strong>{t('category')}:</strong>{' '}
             {row?.user?.user_preference?.vehicle_type?.category_translations?.find(
               (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
             )?.name ||
               row?.user?.user_preference?.vehicle_type?.category_translations?.[0]?.name ||
-              'N/A'}{' '}
+              t('n/a')}{' '}
           </Typography>
           <Typography sx={{ fontSize: '13px' }}>
-            <strong>Type:</strong> {row?.gear || 'N/A'}
+            <strong>{t('type')}:</strong>
+            {row?.gear || t('n/a')}
           </Typography>
           <Typography sx={{ fontSize: '13px' }}>
-            <strong>Languages:</strong>{' '}
+            <strong>{t('languages')}:</strong>{' '}
             {row?.user?.languages?.length > 0
               ? row.user.languages
                   .map((lang: any) => lang.dialect?.language_name)
                   .filter(Boolean)
                   .join(', ')
-              : 'N/A'}
+              : t('n/a')}
           </Typography>
 
           <Typography
@@ -143,7 +144,7 @@ const TrainerProfileCard: React.FC<TrainerProfileCardProps> = ({ row }) => {
               justifyContent: 'center',
             }}
           >
-            <strong>Rating:</strong>&nbsp;
+            <strong>{t('rating')}:</strong>&nbsp;
             <Rating value={row?.rating || 0} precision={0.5} readOnly size="small" />
           </Typography>
         </Stack>

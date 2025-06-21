@@ -48,14 +48,6 @@ import { useGetGearEnum } from 'src/api/users';
 import PaymentDetails from './payment-details';
 import TrainerPaymentDetails from './payment-details';
 
-const steps = [
-  'Select Trainer',
-  'Select Package',
-  'Select Student',
-  'Schedule Sessions',
-  'Select Location',
-  'Payment',
-];
 const defaultFilters: any = {
   city_id: '',
   vehicle_type_id: { label: '', value: '' },
@@ -93,8 +85,15 @@ export default function CreateBooking() {
     Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
   );
 
-  const { i18n } = useTranslation();
-
+  const { i18n, t } = useTranslation();
+  const steps = [
+    t('select_trainer'),
+    t('select_package'),
+    t('select_student'),
+    t('schedule_sessions'),
+    t('select_location'),
+    t('payment'),
+  ];
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -175,19 +174,19 @@ export default function CreateBooking() {
     switch (activeStep) {
       case 0:
         if (!selectedStudentId) {
-          enqueueSnackbar('Please select a student.', { variant: 'error' });
+          enqueueSnackbar(t('select_student_error'), { variant: 'error' });
           return;
         }
         break;
       case 1:
         if (!selectedTrainerId) {
-          enqueueSnackbar('Please select a trainer.', { variant: 'error' });
+          enqueueSnackbar(t('select_trainer_error'), { variant: 'error' });
           return;
         }
         break;
       case 2:
         if (!selectedPackageId) {
-          enqueueSnackbar('Please select a package.', { variant: 'error' });
+          enqueueSnackbar(t('select_package_error'), { variant: 'error' });
           return;
         }
         break;
@@ -196,7 +195,7 @@ export default function CreateBooking() {
           (session) => session.start_time && session.end_time
         );
         if (!allSessionsValid) {
-          enqueueSnackbar('Please select time slots for all sessions.', { variant: 'error' });
+          enqueueSnackbar(t('select_sessions_error'), { variant: 'error' });
           return;
         }
         break;
@@ -286,7 +285,7 @@ export default function CreateBooking() {
       const response = await createBooking(formData);
 
       if (response.status === 'success') {
-        enqueueSnackbar(`Booking Created successfully.`, { variant: 'success' });
+        enqueueSnackbar(t('booking_created_success'), { variant: 'success' });
         router.push(paths.dashboard.assistant.overview);
       }
     } catch (error: any) {
@@ -301,7 +300,7 @@ export default function CreateBooking() {
           }
         });
       } else {
-        enqueueSnackbar(error.message || 'Server error', { variant: 'error' });
+        enqueueSnackbar(error.message || t('server_error'), { variant: 'error' });
       }
     } finally {
       setLoadingBooking(false);
@@ -361,7 +360,7 @@ export default function CreateBooking() {
             {trainerPackageLoading ? (
               <Box textAlign="center" py={5}>
                 <CircularProgress />
-                <Typography mt={2}>Loading packages...</Typography>
+                <Typography mt={2}>{t('loading_packages')}</Typography>
               </Box>
             ) : trainerPackages.length > 0 ? (
               <Box
@@ -381,15 +380,15 @@ export default function CreateBooking() {
                   return (
                     <PackageCard
                       key={pkg.id}
-                      title={translation?.name || 'N/A'}
+                      title={translation?.name || t('n/a')}
                       sessions={pkg.package?.number_of_sessions}
                       price={pkg.price}
                       features={[
                         pkg.package?.number_of_sessions === -1
-                          ? 'Unlimited Driving Sessions'
-                          : `${pkg.package?.number_of_sessions} Driving Sessions`,
-                        'Booking Management',
-                        'Rescheduling Flexibility',
+                          ? t('unlimited_driving_sessions')
+                          : `${pkg.package?.number_of_sessions} ${t('driving_sessions')}`,
+                        t('booking_management'),
+                        t('rescheduling_flexibility'),
                       ]}
                       flagUrl={pkg.flag?.virtual_path}
                       onSelect={() => handlePackageSelect(pkg)}
@@ -401,7 +400,7 @@ export default function CreateBooking() {
               </Box>
             ) : (
               <Box textAlign="center" py={5} border="1px dashed #999" borderRadius={2} color="gray">
-                <Typography variant="h6">No packages available for this trainer.</Typography>
+                <Typography variant="h6">{t('no_packages_available_for_trainer')}</Typography>
               </Box>
             )}
           </Box>
@@ -487,16 +486,16 @@ export default function CreateBooking() {
 
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
         <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
-          Back
+          {t('back')}
         </Button>
 
         {activeStep === steps.length - 1 ? (
           <Button variant="contained" color="primary" onClick={(e) => createBookingStudent(e)}>
-            Submit
+            {t('submit')}
           </Button>
         ) : (
           <Button variant="contained" onClick={handleNext} disabled={trainerPackages.length === 0}>
-            Next
+            {t('next')}
           </Button>
         )}
       </Box>
@@ -504,7 +503,7 @@ export default function CreateBooking() {
         <DialogContent>
           <Box display="flex" flexDirection="column" alignItems="center">
             <CircularProgress sx={{ mb: 2 }} />
-            <Typography variant="body1">Booking in Progess...</Typography>
+            <Typography variant="body1">{t('booking_in_progress')}</Typography>
           </Box>
         </DialogContent>
       </Dialog>

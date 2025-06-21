@@ -22,7 +22,7 @@ interface StudentFormData {
   name: string;
   password: string;
   email: string;
-  phone: string;
+  Phone: string;
   dob: string;
   gear: string | number;
   vehicle_type_id: string;
@@ -47,7 +47,7 @@ const initialFormState: StudentFormData = {
   name: '',
   password: '',
   email: '',
-  phone: '',
+  Phone: '',
 
   dob: '',
   gear: '',
@@ -78,7 +78,7 @@ const AddNewStudent: React.FC = () => {
   const { categories } = useGetCategories(0, 1000);
   const { cities } = useGetCities(0, 1000);
   const { areas } = useGetAreas(0, 1000, formData.city_id);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { isLoaded } = useJsApiLoader({
@@ -162,8 +162,8 @@ const AddNewStudent: React.FC = () => {
   };
   return (
     <Card sx={{ maxWidth: 800, p: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ mb: '20px' }} color="primary">
-        Add New Student
+      <Typography variant="h6" gutterBottom color="primary">
+        {t('add_new_student')}
       </Typography>
 
       <form onSubmit={handleSubmit}>
@@ -185,7 +185,7 @@ const AddNewStudent: React.FC = () => {
                 ].includes(key)
             )
             .map(([key, value]) => {
-              const label = key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+              const label = t(key);
 
               let options: any[] = [];
 
@@ -201,7 +201,7 @@ const AddNewStudent: React.FC = () => {
                     const localizedName =
                       category.category_translations.find(
                         (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || 'Unknown Category';
+                      )?.name || t('unknown_category');
                     return {
                       value: category.id.toString(),
                       name: localizedName,
@@ -212,7 +212,8 @@ const AddNewStudent: React.FC = () => {
                     const englishName =
                       city.city_translations.find(
                         (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || 'Unknown City';
+                      )?.name || t('unknown_city');
+
                     return {
                       value: city.id.toString(),
                       name: englishName,
@@ -229,7 +230,8 @@ const AddNewStudent: React.FC = () => {
                     const englishName =
                       area.translations.find(
                         (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || 'Unknown Area';
+                      )?.name || t('unknown_area');
+
                     return {
                       value: area.id.toString(),
                       name: englishName,
@@ -326,11 +328,11 @@ const AddNewStudent: React.FC = () => {
         {/* ---------- Address Section ---------- */}
         <Box mt={4}>
           <Typography variant="h6" gutterBottom color="primary">
-            Address Details
+            {t('address_details')}
           </Typography>
           <Box mt={4}>
             <Typography variant="h6" gutterBottom>
-              Select Location on Map
+              {t('select_location_on_map')}
             </Typography>
 
             {isLoaded && (
@@ -364,7 +366,7 @@ const AddNewStudent: React.FC = () => {
               'longitude',
               'label',
             ].map((key) => {
-              const labelText = key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+              const labelText = t(key);
 
               if (key === 'label') {
                 return (
@@ -372,15 +374,15 @@ const AddNewStudent: React.FC = () => {
                     <TextField
                       fullWidth
                       select
-                      label={labelText}
+                      label={t(key)}
                       name={key}
                       value={formData[key]}
                       onChange={handleChange}
                       variant="outlined"
                     >
-                      {['Home', 'Office', 'Other'].map((option) => (
+                      {['home', 'office', 'other'].map((option) => (
                         <MenuItem key={option} value={option}>
-                          {option}
+                          {t(option)}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -407,7 +409,7 @@ const AddNewStudent: React.FC = () => {
 
         <Box mt={4}>
           <Button type="submit" variant="contained" color="primary" fullWidth sx={{ py: 1.5 }}>
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? t('submitting') : t('submit')}
           </Button>
         </Box>
       </form>

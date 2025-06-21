@@ -42,6 +42,7 @@ export default function PayoutRow({ row, selected }: Props) {
   const popover = usePopover();
   const zerothIndex = 0;
   const router = useRouter();
+  console.log('row?.booking?.assistant', row?.booking?.assistant);
   const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
     row;
 
@@ -76,7 +77,9 @@ export default function PayoutRow({ row, selected }: Props) {
             }
           }}
         >
-          {row?.booking?.assistant?.name || t('n/a')}
+          {i18n.language.toLowerCase() === 'ar'
+            ? row?.booking?.assistant?.name_ar || t('n/a')
+            : row?.booking?.assistant?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
@@ -92,7 +95,9 @@ export default function PayoutRow({ row, selected }: Props) {
           }
         }}
       >
-        {row?.booking?.user?.name || t('n/a')}
+        {i18n.language.toLowerCase() === 'ar'
+          ? row?.booking?.user?.name_ar || t('n/a')
+          : row?.booking?.user?.name || t('n/a')}
       </TableCell>
       <TableCell
         sx={{
@@ -107,7 +112,12 @@ export default function PayoutRow({ row, selected }: Props) {
         }}
       >
         <Box>
-          <Typography variant="body1">{row?.booking?.driver?.name || t('n/a')}</Typography>
+          <Typography variant="body1">
+            {' '}
+            {i18n.language.toLowerCase() === 'ar'
+              ? row?.booking?.driver?.name_ar || t('n/a')
+              : row?.booking?.driver?.name || t('n/a')}
+          </Typography>
 
           {row?.booking?.city?.city_translations && (
             <Chip
