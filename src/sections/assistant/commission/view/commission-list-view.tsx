@@ -41,23 +41,6 @@ import CommissionFilter from '../commission-filters';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'assistant', label: 'Assistant', width: 200 },
-  { id: 'user', label: 'Student', width: 200 },
-
-  { id: 'trainer', label: 'Trainer', width: 200 },
-
-  // { id: 'email', label: 'Email', width: 200 },
-
-  { id: 'status', label: 'Booking Status', width: 200 },
-  { id: 'status', label: 'Driver Status', width: 200 },
-
-  { id: 'amount', label: 'Amount', width: 200 },
-  { id: 'remarks', label: 'Remarks', width: 200 },
-];
-
-// ----------------------------------------------------------------------
-
 export default function CommissionListView() {
   const { user } = useAuthContext();
   const router = useRouter();
@@ -79,7 +62,15 @@ export default function CommissionListView() {
     endDate?: string;
     category_id?: any;
   }>({});
-
+  const TABLE_HEAD = [
+    { id: 'assistant', label: t('assistant'), width: 200 },
+    { id: 'user', label: t('student'), width: 200 },
+    { id: 'trainer', label: t('trainer'), width: 200 },
+    { id: 'status', label: t('booking_status'), width: 200 },
+    { id: 'status', label: t('driver_status'), width: 200 },
+    { id: 'amount', label: t('amount'), width: 200 },
+    { id: 'remarks', label: t('remarks'), width: 200 },
+  ];
   const { commissions, commissionListLoading, totalCommissionPages } = useGetCommissionList({
     page: table.page,
     limit: table.rowsPerPage,

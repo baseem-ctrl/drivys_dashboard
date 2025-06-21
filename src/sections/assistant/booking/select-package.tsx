@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, CardContent, Typography, Button, Box, Stack, Avatar } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Stack } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useTranslation } from 'react-i18next';
 
 interface PackageCardProps {
   title: string;
@@ -25,6 +26,8 @@ const PackageCard: React.FC<PackageCardProps> = ({
   background,
   selected = false,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Card
       sx={{
@@ -45,7 +48,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
             {title}
             <Typography component="span" fontWeight={400}>
               {' '}
-              ({sessions === -1 ? 'Unlimited Sessions' : `${sessions} Sessions`})
+              ({sessions === -1 ? t('unlimited_sessions') : `${sessions} ${t('sessions')}`})
             </Typography>
           </Typography>
         </Box>
@@ -58,7 +61,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
         </Box>
 
         <Typography mt={2} fontWeight={500}>
-          What’s included?
+          {t('whats_included')}
         </Typography>
 
         <Stack spacing={1} mt={1}>
@@ -83,7 +86,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
                 fontWeight: 600,
               }}
             >
-              Selected
+              {t('selected')}
             </Button>
           ) : (
             <Button
@@ -98,7 +101,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
                 fontWeight: 600,
               }}
             >
-              Select Package
+              {t('select_package')}
             </Button>
           )}
         </Box>

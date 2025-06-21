@@ -41,21 +41,6 @@ import { useGetPayoutList } from 'src/api/booking-assistant';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'assistant', label: 'Assistant', width: 200 },
-  { id: 'user', label: 'Student', width: 200 },
-
-  { id: 'trainer', label: 'Trainer', width: 200 },
-
-  // { id: 'email', label: 'Email', width: 200 },
-
-  { id: 'status', label: 'Booking Status', width: 200 },
-  { id: 'status', label: 'Payment Status', width: 200 },
-
-  { id: 'amount', label: 'Amount', width: 200 },
-  { id: 'remarks', label: 'Remarks', width: 200 },
-];
-
 // ----------------------------------------------------------------------
 
 export default function PayoutListView() {
@@ -74,6 +59,15 @@ export default function PayoutListView() {
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const TABLE_HEAD = [
+    { id: 'assistant', label: t('assistant'), width: 200 },
+    { id: 'user', label: t('student'), width: 200 },
+    { id: 'trainer', label: t('trainer'), width: 200 },
+    { id: 'booking_status', label: t('booking_status'), width: 200 },
+    { id: 'payment_status', label: t('payment_status'), width: 200 },
+    { id: 'amount', label: t('amount'), width: 200 },
+    { id: 'remarks', label: t('remarks'), width: 200 },
+  ];
   const [filters, setFilters] = useState<{
     startDate?: string;
     endDate?: string;

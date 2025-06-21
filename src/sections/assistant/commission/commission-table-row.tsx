@@ -76,7 +76,9 @@ export default function CommissionRow({ row, selected }: Props) {
             }
           }}
         >
-          {row?.booking?.assistant?.name || t('n/a')}
+          {i18n.language === 'ar'
+            ? row?.booking?.assistant?.name_ar || t('n/a')
+            : row?.booking?.assistant?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
@@ -92,7 +94,9 @@ export default function CommissionRow({ row, selected }: Props) {
           }
         }}
       >
-        {row?.booking?.user?.name || t('n/a')}
+        {i18n.language === 'ar'
+          ? row?.booking?.user?.name_ar || t('n/a')
+          : row?.booking?.user?.name || t('n/a')}
       </TableCell>
       <TableCell
         sx={{
@@ -107,7 +111,11 @@ export default function CommissionRow({ row, selected }: Props) {
         }}
       >
         <Box>
-          <Typography variant="body1">{row?.booking?.driver?.name || t('n/a')}</Typography>
+          <Typography variant="body1">
+            {i18n.language === 'ar'
+              ? row?.booking?.driver?.name_ar || t('n/a')
+              : row?.booking?.driver?.name || t('n/a')}
+          </Typography>
 
           {row?.booking?.city?.city_translations && (
             <Chip

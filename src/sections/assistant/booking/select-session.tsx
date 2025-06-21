@@ -19,6 +19,7 @@ import { useGetAvailableSlots } from 'src/api/assistant';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 interface Session {
   start_time: string;
@@ -46,6 +47,8 @@ const SessionStep: React.FC<SessionStepProps> = ({
   const [requestedDate, setRequestedDate] = React.useState(() => {
     return new Date().toISOString().split('T')[0]; // initially today
   });
+  const { t } = useTranslation();
+
   const [openDialogIndex, setOpenDialogIndex] = React.useState<number | null>(null);
   const handleOpenDialog = (index: number) => setOpenDialogIndex(index);
   const handleCloseDialog = () => setOpenDialogIndex(null);
@@ -68,11 +71,11 @@ const SessionStep: React.FC<SessionStepProps> = ({
   return (
     <Box>
       <Typography variant="h5" fontWeight={600} gutterBottom>
-        Session Details
+        {t('session_details')}
       </Typography>
 
       <Typography variant="body2" color="text.secondary" mb={3}>
-        Add session times for your driving package.
+        {t('add_session_times')}
       </Typography>
 
       <Grid container spacing={3}>
@@ -89,14 +92,14 @@ const SessionStep: React.FC<SessionStepProps> = ({
             >
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="subtitle1" fontWeight={600}>
-                  Session {index + 1}
+                  {t('session_number', { number: index + 1 })}
                 </Typography>
 
                 {index > 0 && (
                   <IconButton
                     color="error"
                     onClick={() => removeSession(index)}
-                    aria-label={`Remove Session ${index + 1}`}
+                    aria-label={t('remove_session', { number: index + 1 })}
                     sx={{ ml: 2 }}
                   >
                     <DeleteIcon />
@@ -110,7 +113,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                 <Grid item xs={12} md={12}>
                   <TextField
                     fullWidth
-                    label="Select Date"
+                    label={t('select_date')}
                     type="date"
                     value={
                       session.start_time
@@ -131,7 +134,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                 sx={{ mt: 2 }}
                 onClick={() => handleOpenDialog(index)}
               >
-                Select Slot
+                {t('select_slot')}
               </Button>
 
               {session.start_time && session.end_time && (
@@ -154,7 +157,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
             >
               <Box p={3}>
                 <Typography variant="h6" gutterBottom>
-                  Available Slots for {requestedDate}
+                  {t('available_slots_for', { date: requestedDate })}
                 </Typography>
 
                 <Box display="flex" justifyContent="flex-end">
@@ -167,7 +170,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                         color="warning"
                       />
                     }
-                    label="Show Pickup Only"
+                    label={t('show_pickup_only')}
                     sx={{ mb: 2 }}
                   />
                 </Box>
@@ -175,7 +178,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                 {availableSlotLoading ? (
                   <Box display="flex" alignItems="center" gap={2}>
                     <CircularProgress size={20} />
-                    <Typography>Loading slots...</Typography>
+                    <Typography>{t('loading_slots')}</Typography>
                   </Box>
                 ) : (
                   <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
@@ -238,7 +241,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                         showPickupOnly ? slot.is_pickup_enabled : true
                       ).length === 0 && (
                         <Typography variant="body2" sx={{ mt: 2, ml: 2 }}>
-                          No available slots for this filter.
+                          {t('no_available_slots')}
                         </Typography>
                       )}
                     </Grid>
@@ -246,7 +249,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                 )}
                 <Chip
                   icon={<DirectionsCarIcon color="primary" sx={{ fontSize: 16 }} />}
-                  label="indicates Pickup option available"
+                  label={t('pickup_option_indicator')}
                   variant="soft"
                   color="primary"
                   sx={{
@@ -261,8 +264,9 @@ const SessionStep: React.FC<SessionStepProps> = ({
                     },
                   }}
                 />
+
                 <Box display="flex" justifyContent="flex-end" mt={3}>
-                  <Button onClick={handleCloseDialog}>Close</Button>
+                  <Button onClick={handleCloseDialog}>{t('close')}</Button>{' '}
                 </Box>
               </Box>
             </Dialog>
@@ -288,7 +292,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
             },
           }}
         >
-          Add Session
+          {t('add_session')}
         </Button>
       </Box>
     </Box>

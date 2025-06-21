@@ -18,11 +18,12 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetGenderEnum } from 'src/api/users';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 const OverviewAssistant = () => {
   const { user } = useAuthContext();
   const router = useRouter();
-
+  const { t, i18n } = useTranslation();
   const { genderData, genderLoading } = useGetGenderEnum();
   const [formData, setFormData] = useState({
     name: user?.user?.name || '',
@@ -128,7 +129,9 @@ const OverviewAssistant = () => {
                 color="primary.main"
                 sx={{ letterSpacing: 0.5, fontSize: '12px' }}
               >
-                {user?.user?.name?.toUpperCase() || 'N/A'}
+                {i18n.language === 'en'
+                  ? user?.user?.name?.toUpperCase()
+                  : user?.user?.name_ar?.toUpperCase() || t('n/a')}
               </Typography>
             </Box>
 
@@ -147,7 +150,7 @@ const OverviewAssistant = () => {
                 color="primary.main"
                 sx={{ letterSpacing: 0.5, fontSize: '12px' }}
               >
-                {user?.user?.user_type || 'N/A'}
+                {user?.user?.user_type || t('n/a')}
               </Typography>
             </Box>
           </Box>
@@ -165,31 +168,31 @@ const OverviewAssistant = () => {
             }}
           >
             <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
-              Gender
+              {t('gender')}
             </Typography>
             <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
             <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
-              {user?.user?.gender || 'N/A'}
+              {user?.user?.gender || t('n/a')}
             </Typography>
 
             <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
-              DOB
+              {t('dob')}
             </Typography>
             <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
             <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
-              {user?.user?.dob || 'N/A'}
+              {user?.user?.dob || t('n/a')}
             </Typography>
 
             <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
-              Phone
+              {t('Phone')}
             </Typography>
             <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
             <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
-              +971 {user?.user?.phone || 'N/A'}
+              +971 {user?.user?.phone || t('n/a')}
             </Typography>
 
             <Typography sx={{ textAlign: 'left', fontWeight: 600, fontSize: '16px' }}>
-              Status
+              {t('status')}
             </Typography>
             <Typography sx={{ textAlign: 'center', fontSize: '16px' }}>:</Typography>
             <Typography sx={{ textAlign: 'right', fontSize: '16px' }}>
@@ -217,7 +220,7 @@ const OverviewAssistant = () => {
                 },
               }}
             >
-              Edit Profile
+              {t('edit_profile')}
             </Button>
             {/* <EditProfilePopover
               formData={formData}

@@ -45,7 +45,7 @@ const StudentStep: React.FC<StudentStepProps> = ({
   searchTerm,
   setSelectedStudent,
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -64,7 +64,7 @@ const StudentStep: React.FC<StudentStepProps> = ({
     <>
       <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
         <TextField
-          label="Search Students"
+          label={t('search_students')}
           variant="outlined"
           fullWidth
           value={searchTerm}
@@ -110,7 +110,7 @@ const StudentStep: React.FC<StudentStepProps> = ({
                   }}
                 >
                   <Chip
-                    label={student?.is_active ? 'Active' : 'Inactive'}
+                    label={student?.is_active ? t('active') : t('inactive')}
                     size="small"
                     variant="outlined"
                     sx={{
@@ -145,10 +145,12 @@ const StudentStep: React.FC<StudentStepProps> = ({
 
                 <CardContent sx={{ mt: 5, textAlign: 'center' }}>
                   <Typography fontWeight={600} sx={{ fontSize: '16px' }}>
-                    {student.name || 'N/A'}
+                    {i18n.language === 'ar'
+                      ? student?.name_ar || t('n/a')
+                      : student?.name || t('n/a')}
                   </Typography>
                   <Typography sx={{ fontSize: '13px' }} color="text.secondary">
-                    {student.email || 'N/A'}
+                    {student.email || t('n/a')}
                   </Typography>
 
                   <Divider
@@ -163,24 +165,24 @@ const StudentStep: React.FC<StudentStepProps> = ({
 
                   <Stack spacing={1} sx={{ fontSize: '13px', textAlign: 'left', px: 2 }}>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Type:</strong> {student?.user_preference?.gear || 'N/A'}
+                      <strong>{t('type')}:</strong> {student?.user_preference?.gear || t('n/a')}
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Languages:</strong>{' '}
+                      <strong>{t('languages')}:</strong>{' '}
                       {student?.languages?.length > 0
                         ? student?.languages
                             .map((lang: any) => lang.dialect?.language_name)
                             .filter(Boolean)
                             .join(', ')
-                        : 'N/A'}
+                        : t('n/a')}
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Category:</strong>{' '}
+                      <strong>{t('category')}:</strong>{' '}
                       {student?.user_preference?.vehicle_type?.category_translations?.find(
                         (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
                       )?.name ||
                         student?.user_preference?.vehicle_type?.category_translations?.[0]?.name ||
-                        'N/A'}{' '}
+                        t('n/a')}
                     </Typography>
                   </Stack>
                 </CardContent>

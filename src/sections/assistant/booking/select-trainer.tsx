@@ -47,9 +47,9 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   renderFilters,
   setSelectedTrainer,
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const getInitials = (name?: string) => {
-    if (!name) return 'N/A';
+    if (!name) return t('n/a');
     return name
       .split(' ')
       .map((n) => n[0])
@@ -71,7 +71,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
         alignItems="center"
       >
         <TextField
-          label="Search Trainer"
+          label={t('search')}
           variant="outlined"
           fullWidth
           value={searchTerm}
@@ -119,7 +119,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
                   }}
                 >
                   <Chip
-                    label={trainer?.user?.is_active ? 'Active' : 'Inactive'}
+                    label={trainer?.user?.is_active ? t('active') : t('inactive')}
                     size="small"
                     variant="outlined"
                     sx={{
@@ -154,10 +154,11 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
 
                 <CardContent sx={{ mt: 5, textAlign: 'center' }}>
                   <Typography fontWeight={600} sx={{ fontSize: '16px' }}>
-                    {trainer?.user?.name || 'N/A'}
+                    {(i18n.language === 'ar' ? trainer?.user?.name_ar : trainer?.user?.name) ||
+                      t('n/a')}{' '}
                   </Typography>
                   <Typography sx={{ fontSize: '13px' }} color="text.secondary">
-                    {trainer?.user?.email || 'N/A'}
+                    {trainer?.user?.email || t('n/a')}
                   </Typography>
 
                   <Divider
@@ -172,25 +173,26 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
 
                   <Stack spacing={1} sx={{ fontSize: '13px', textAlign: 'left', px: 2 }}>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Type:</strong> {trainer?.user?.user_preference?.gear || 'N/A'}
+                      <strong>{t('type')}:</strong>
+                      {trainer?.user?.user_preference?.gear || t('n/a')}
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Languages:</strong>{' '}
+                      <strong>{t('languages')}:</strong>
                       {trainer?.user?.languages?.length > 0
                         ? trainer?.user?.languages
                             .map((lang: any) => lang.dialect?.language_name)
                             .filter(Boolean)
                             .join(', ')
-                        : 'N/A'}
+                        : t('n/a')}
                     </Typography>
                     <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>Category:</strong>{' '}
+                      <strong>{t('category')}:</strong>{' '}
                       {trainer?.user?.user_preference?.vehicle_type?.category_translations?.find(
                         (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
                       )?.name ||
                         trainer?.user?.user_preference?.vehicle_type?.category_translations?.[0]
                           ?.name ||
-                        'N/A'}{' '}
+                        t('n/a')}{' '}
                     </Typography>
                   </Stack>
                 </CardContent>

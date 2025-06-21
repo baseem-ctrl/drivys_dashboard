@@ -40,16 +40,6 @@ import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', width: 200 },
-  { id: 'school-revenue', label: 'Preferred Language', width: 200 },
-  { id: 'email', label: 'Email', width: 200 },
-  { id: 'phone', label: 'Phone', width: 200 },
-  { id: 'active', label: 'Active', width: 200 },
-];
-
-// ----------------------------------------------------------------------
-
 export default function StudentListView() {
   const { user } = useAuthContext();
   const router = useRouter();
@@ -62,7 +52,7 @@ export default function StudentListView() {
   const [localeFilter, setLocaleFilter] = useState('');
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -71,7 +61,13 @@ export default function StudentListView() {
     endDate?: string;
     category_id?: any;
   }>({});
-
+  const TABLE_HEAD = [
+    { id: 'name', label: t('name'), width: 200 },
+    { id: 'school-revenue', label: t('preferred_language'), width: 200 },
+    { id: 'email', label: t('email'), width: 200 },
+    { id: 'phone', label: t('Phone'), width: 200 },
+    { id: 'active', label: t('active'), width: 200 },
+  ];
   const { students, studentListLoading, totalStudentPages, revalidateStudentList } =
     useGetStudentList({
       page: table.page,
@@ -162,14 +158,14 @@ export default function StudentListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Student List"
+        heading={t('student_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Student',
+            name: t('student'),
             href: paths.dashboard.assistant.student.list,
           },
-          { name: 'List' },
+          { name: t('list') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -183,7 +179,7 @@ export default function StudentListView() {
           endIcon={<AddIcon />}
           onClick={handleClickNewStudent}
         >
-          Add New
+          {t('add_new')}
         </Button>
       </Box>
       <Card>
@@ -233,6 +229,7 @@ export default function StudentListView() {
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => handleRowClick(row)}
                           reload={revalidateStudentList}
+                          t={t}
                         />
                       ))}
                 </TableBody>

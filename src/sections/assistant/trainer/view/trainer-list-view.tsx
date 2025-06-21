@@ -13,6 +13,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/city';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import { useGetGearEnum } from 'src/api/users';
+import { useTranslation } from 'react-i18next';
 
 const defaultFilters: any = {
   city_id: '',
@@ -27,6 +28,7 @@ const TrainerListPage: React.FC = () => {
   const openFilters = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
   const { gearData, gearLoading } = useGetGearEnum();
+  const { t } = useTranslation();
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
     page: table.page,
@@ -86,11 +88,11 @@ const TrainerListPage: React.FC = () => {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer List"
+        heading={t('trainer_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Trainer', href: paths.dashboard.assistant.trainer.list },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainer'), href: paths.dashboard.assistant.trainer.list },
+          { name: t('list') },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -103,7 +105,7 @@ const TrainerListPage: React.FC = () => {
         </Grid>
       ) : trainerListError ? (
         <Typography color="error" textAlign="center" mt={5}>
-          Failed to load trainers.
+          {t('failed_to_load_trainers')}
         </Typography>
       ) : !trainers || trainers.length === 0 ? (
         <Box
@@ -116,7 +118,7 @@ const TrainerListPage: React.FC = () => {
         >
           <HourglassEmptyIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
           <Typography variant="h6" color="text.primary">
-            No Trainers Available
+            {t('no_trainers_available')}
           </Typography>
         </Box>
       ) : (

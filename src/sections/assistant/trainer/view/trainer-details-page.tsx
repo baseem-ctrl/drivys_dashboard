@@ -51,7 +51,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
   if (trainerListError || !trainer) {
     return (
       <Box textAlign="center" mt={5}>
-        <Typography color="error">Failed to load trainer profile.</Typography>
+        <Typography color="error">{t('failed_to_load_trainer_profile')}</Typography>
       </Box>
     );
   }
@@ -99,13 +99,17 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         </Box>
 
         <Typography variant="h6" mt={1} color="black">
-          {trainer?.user?.name}
+          {i18n.language === 'ar'
+            ? trainer?.user?.name_ar || t('n/a')
+            : trainer?.user?.name || t('n/a')}
         </Typography>
         <Typography variant="body2" color="black" sx={{ fontSize: '12px' }}>
-          {trainer?.user?.vendor?.vendor_translations?.[0]?.name}
+          {trainer?.user?.vendor?.vendor_translations?.find(
+            (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name || t('n/a')}
         </Typography>
         <Chip
-          label={trainer?.user?.is_active ? 'Available' : 'Unavailable'}
+          label={trainer?.user?.is_active ? t('available') : t('unavailable')}
           size="medium"
           color="primary"
           sx={{ mt: 1 }}
@@ -120,8 +124,8 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
 
         <Typography variant="body2" color="gray">
           {i18n.language === 'ar'
-            ? trainer.user?.user_preference?.bio_ar ?? 'N/A'
-            : trainer.user?.user_preference?.bio ?? 'N/A'}
+            ? trainer.user?.user_preference?.bio_ar ?? t('n/a')
+            : trainer.user?.user_preference?.bio ?? t('n/a')}
         </Typography>
       </Box>
 
@@ -166,7 +170,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
             label={
               trainer.user?.user_preference?.vehicle_type?.category_translations?.find(
                 (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || 'N/A'
+              )?.name || t('n/a')
             }
             sx={{
               px: 3,
@@ -187,11 +191,11 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
             label={`${
               trainer.user?.user_preference?.city?.city_translations?.find(
                 (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || 'N/A'
+              )?.name || t('n/a')
             } - ${
               trainer.user?.user_preference?.state_province?.translations?.find(
                 (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || 'N/A'
+              )?.name || t('n/a')
             }`}
             sx={{
               px: 3,
@@ -226,24 +230,29 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
           <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-between">
             {trainer.packages.map((pkg: any) => {
               const translation =
-                pkg.package_translations?.find((pt: any) => pt.locale === 'En') ||
-                pkg.package_translations?.[0];
+                pkg.package_translations?.find(
+                  (pt: any) => pt.locale?.toLowerCase() === i18n.language.toLowerCase()
+                ) || pkg.package_translations?.[0];
+
               const categoryTranslation =
-                pkg.category?.category_translations?.find((ct: any) => ct.locale === 'En') ||
-                pkg.category?.category_translations?.[0];
+                pkg.category?.category_translations?.find(
+                  (ct: any) => ct.locale?.toLowerCase() === i18n.language.toLowerCase()
+                ) || pkg.category?.category_translations?.[0];
               // const flagUrl = categoryTranslation?.pictures?.[0]?.virtual_path;
               const features = [
                 `${
-                  pkg.number_of_sessions === -1 ? 'Unlimited' : pkg.number_of_sessions
-                } Driving Sessions`,
-                'Booking Management',
-                'Rescheduling Flexibility',
+                  pkg.number_of_sessions === -1
+                    ? t('unlimited_sessions')
+                    : `${pkg.number_of_sessions} ${t('driving_sessions')}`
+                }`,
+                t('booking_management'),
+                t('rescheduling_flexibility'),
               ];
 
               return (
                 <PackageCard
                   key={pkg.id}
-                  title={translation?.name || 'N/A'}
+                  title={translation?.name || t('n/a')}
                   sessions={pkg.is_unlimited ? -1 : pkg.number_of_sessions}
                   price={parseFloat(trainer.starting_package_price)}
                   currency="AED"
@@ -433,7 +442,7 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
               <Typography fontWeight={600}>{review.student || 'Anonymous'}</Typography>
               {review.rating !== null && <Rating value={review.rating} readOnly size="small" />}
               <Typography variant="body2" color="gray">
-                {review.date || 'N/A'}
+                {review.date || t('n/a')}
               </Typography>
               {review.comment && <Typography variant="body2">{review.comment}</Typography>}
             </Box>
