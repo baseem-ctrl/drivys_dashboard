@@ -212,3 +212,51 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
 
   return { ...memoizedValue, revalidatePaymentSummary };
 }
+interface PaymentListParams {
+  page?: number;
+  limit?: number;
+  booking_id?: number | string;
+  assistant_id?: number | string;
+  is_approved?: number;
+}
+
+export function useGetPaymentList(params: PaymentListParams) {
+  const getPaymentListUrl = () => {
+    const { limit = 10, page = 0, booking_id, assistant_id, is_approved } = params;
+
+    const queryParams: Record<string, any> = {
+      limit,
+      page: page + 1,
+    };
+
+    if (booking_id) queryParams.booking_id = booking_id;
+    if (assistant_id) queryParams.assistant_id = assistant_id;
+    if (typeof is_approved === 'number') queryParams.is_approved = is_approved;
+
+    return `${endpoints.paymentListByAssistnant.list}?${new URLSearchParams(queryParams)}`;
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(getPaymentListUrl, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      payments: data?.data || [],
+      paymentListLoading: isLoading,
+      paymentListError: error,
+      paymentListValidating: isValidating,
+      totalPaymentPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidatePaymentList = () => {
+    mutate(getPaymentListUrl);
+  };
+
+  return { ...memoizedValue, revalidatePaymentList };
+}
+export function approveOrDeclineAssistantPayment(body: any) {
+  const URL = endpoints.paymentListByAssistnant.approveOrDecline;
+  const response = drivysCreator([URL, body]);
+  return response;
+}

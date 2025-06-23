@@ -440,6 +440,10 @@ export const endpoints = {
       'admin/access-control-for-school-admin/permission-mapping/role-permission-mapping-by-admin',
     listMappedRoles: 'admin/access-control-for-school-admin/permission-mapping/get-list-by-admin',
   },
+  paymentListByAssistnant: {
+    list: 'admin/booking/assistant/get-payment-list',
+    approveOrDecline: 'admin/booking/assistant/approved-or-decline',
+  },
   assistant: {
     updateProfile: 'consumer/auth/update-profile',
     student: {
