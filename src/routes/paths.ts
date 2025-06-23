@@ -283,6 +283,9 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/coupon/list`,
       // details: (id: string) => `${ROOTS.DASHBOARD}/delivery/${id}`,
     },
+    assistantPayment: {
+      list: `${ROOTS.DASHBOARD}/assistant/payment`,
+    },
     system: {
       root: `${ROOTS.DASHBOARD}/system/language`,
       language: `${ROOTS.DASHBOARD}/system/language`,

@@ -1010,7 +1010,8 @@
   "Add New Trainer": "Add New Trainer",
   "report": "Report",
   "student": "Student",
-  "roles-and-permission": "Roles & Permission",
+  "roles_and_permission": "Roles & Permission",
+  "roles_and_permission_mapping": "Mapping",
   "certificate_expiry_date": "Certificate Expiry Date",
   "roles": "Roles",
   "name_as_per_profile_card": "Name as Per Profile Card",
@@ -1138,5 +1139,8 @@
   "driver_location": "Driver's Location",
   "building": "Building",
   "state": "State",
-  "no_address_available": "No address available."
+  "no_address_available": "No address available.",
+  "click_to_view_booking_details": "Click to view booking details",
+  "approve": "Approve",
+  "decline": "Decline"
 }

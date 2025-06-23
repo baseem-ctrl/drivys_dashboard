@@ -89,7 +89,10 @@ export function useNavData() {
     package: 'package',
     notifications: 'notification',
     app_settings: 'app_setting',
-    roles_and_permission: 'user_school_admin',
+    roles_and_permission: 'access_control',
+    roles: 'access_control',
+    permission: 'access_control',
+    roles_and_permission_mapping: 'access_control',
     loyality: 'trainer_reward',
     terms_conditions: 'app_setting_tc',
     to_do: 'trainer_profile_changed',
@@ -114,6 +117,8 @@ export function useNavData() {
     cash_in_hand: 'collector',
     pickup: 'pickup',
     slider: 'slider',
+    assistant: 'assistant_booking_payment',
+    payment: 'assistant_booking_payment',
   };
   const schoolAdminRoutePermissionMap = {
     notification: 'notification_school_admin',
@@ -332,7 +337,12 @@ export function useNavData() {
     // COUPON
 
     // to do
-
+    {
+      title: t('assistant'),
+      path: paths.dashboard.assistantPayment.list,
+      icon: ICONS.chat,
+      children: [{ title: t('payment'), path: paths.dashboard.assistantPayment.list }],
+    },
     {
       title: t('coupon'),
       path: paths.dashboard.coupon.root,
@@ -382,15 +392,16 @@ export function useNavData() {
         { title: t('school'), path: paths.dashboard.report.school },
       ],
     },
+
     {
-      title: t('roles-and-permission'),
+      title: t('roles_and_permission'),
       path: paths.dashboard.rolesAndPermission.roles,
       icon: ICONS.trainers,
       children: [
         { title: t('roles'), path: paths.dashboard.rolesAndPermission.roles },
         { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
         {
-          title: t('role-permission-mapping'),
+          title: t('roles_and_permission_mapping'),
           path: paths.dashboard.rolesAndPermission.rolePermissionMapping,
         },
       ],

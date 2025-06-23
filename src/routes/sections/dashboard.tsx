@@ -88,6 +88,7 @@ import { TrainerDetailsPageWrapper } from 'src/sections/assistant/trainer/view/t
 import BookingListAssistantView from 'src/sections/assistant/booking/booking-list/view/booking-list-view';
 import PayoutListView from 'src/sections/assistant/payout/view/payout-list-view';
 import CommissionListView from 'src/sections/assistant/commission/view/commission-list-view';
+import PaymentAssistantView from 'src/sections/payment-list-assistant/view/payment-list-assistant-view';
 
 // ----------------------------------------------------------------------
 
@@ -207,6 +208,10 @@ const allroutes = [
       { path: 'new', element: <JobCreatePage /> },
       { path: ':id/edit', element: <JobEditPage /> },
     ],
+  },
+  {
+    path: 'assistant',
+    children: [{ path: 'payment', element: <PaymentAssistantView /> }],
   },
   {
     path: 'category',
