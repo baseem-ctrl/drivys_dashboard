@@ -140,9 +140,12 @@ const SessionStep: React.FC<SessionStepProps> = ({
               {session.start_time && session.end_time && (
                 <Box mt={1}>
                   <Chip
-                    label={`Selected: ${moment.utc(session.start_time).format('hh:mm A')} - ${moment
-                      .utc(`${session.start_time.split(' ')[0]} ${session.end_time}`)
-                      .format('hh:mm A')}`}
+                    label={t('selected_time_range', {
+                      start: moment.utc(session.start_time).format('hh:mm A'),
+                      end: moment
+                        .utc(`${session.start_time.split(' ')[0]} ${session.end_time}`)
+                        .format('hh:mm A'),
+                    })}
                     color="primary"
                     variant="outlined"
                   />

@@ -23,6 +23,7 @@ import {
 import HomeIcon from '@mui/icons-material/Home';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ApartmentIcon from '@mui/icons-material/Apartment';
+import { useTranslation } from 'react-i18next';
 
 const getIcon = (label: string) => {
   switch (label?.toUpperCase()) {
@@ -49,7 +50,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   selectedTrainer,
 }) => {
   const theme = useTheme();
-
+  const { t } = useTranslation();
   const [pickupMode, setPickupMode] = useState<'pickup' | 'driver'>('driver');
   const defaultAddress = selectedTrainer?.user?.user_addresses?.find(
     (addr: any) => addr.is_default
@@ -68,7 +69,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
           }}
         >
           <Typography fontWeight={600} mb={2} sx={{ fontSize: '18px' }}>
-            Pickup Option
+            {t('pickup_option')}
           </Typography>
 
           <FormControl component="fieldset" fullWidth>
@@ -84,7 +85,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 label={
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <DirectionsCarIcon color="primary" />
-                    <Typography variant="body2">Go to driver's location</Typography>
+                    <Typography variant="body2">{t('go_to_driver_location')}</Typography>
                   </Stack>
                 }
               />
@@ -95,7 +96,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 label={
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <RoomIcon color="primary" />
-                    <Typography variant="body2">Pick me up from my location</Typography>
+                    <Typography variant="body2">{t('pick_me_up')}</Typography>
                   </Stack>
                 }
               />
@@ -107,8 +108,9 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
       {pickupMode === 'pickup' ? (
         <>
           <Typography fontWeight={600} mb={2} sx={{ fontSize: '17px' }}>
-            Select a Pickup Address
+            {t('select_pickup_address')}
           </Typography>
+
           <Grid container spacing={2}>
             {locations.map((address) => {
               const city = address.city_id_city?.city_translations?.find(
@@ -176,9 +178,8 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
       ) : (
         <Box mt={4}>
           <Typography fontWeight={600} fontSize={18} mb={2}>
-            Driver's Location
+            {t('driver_location')}
           </Typography>
-
           {defaultAddress ? (
             <Box
               sx={{
@@ -192,7 +193,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
               <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                 <HomeWorkIcon color="primary" fontSize="small" />
                 <Typography fontWeight={600} color="text.primary">
-                  {defaultAddress?.building_name || 'Building'}
+                  {defaultAddress?.building_name || t('n/a')}
                 </Typography>
               </Stack>
 
@@ -209,7 +210,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                   <PlaceIcon color="action" fontSize="small" />
                   <Typography variant="body2" color="text.secondary">
-                    Landmark: {defaultAddress.landmark}
+                    {t('landmark')}: {defaultAddress.landmark}
                   </Typography>
                 </Stack>
               )}
@@ -220,7 +221,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 <Stack direction="row" alignItems="center" spacing={1} mb={1}>
                   <ApartmentIcon color="action" fontSize="small" />
                   <Typography variant="body2" color="text.secondary">
-                    City:{' '}
+                    {t('city')}:
                     {defaultAddress.city ||
                       defaultAddress.city_id_city?.city_translations?.find(
                         (c: any) => c.locale === 'En'
@@ -234,7 +235,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <PublicIcon color="action" fontSize="small" />
                   <Typography variant="body2" color="text.secondary">
-                    State:{' '}
+                    {t('state')}:
                     {
                       defaultAddress.state_province.translations.find((s: any) => s.locale === 'En')
                         ?.name
@@ -245,7 +246,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
             </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              No address available.
+              {t('no_address_available')}
             </Typography>
           )}
         </Box>
