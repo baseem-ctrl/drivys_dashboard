@@ -67,6 +67,7 @@ export default function PayoutListView() {
     { id: 'payment_status', label: t('payment_status'), width: 200 },
     { id: 'amount', label: t('amount'), width: 200 },
     { id: 'remarks', label: t('remarks'), width: 200 },
+    { id: 'payment_proof', label: t('payment_proof'), width: 200 },
   ];
   const [filters, setFilters] = useState<{
     startDate?: string;

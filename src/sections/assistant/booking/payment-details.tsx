@@ -5,15 +5,13 @@ import {
   TextField,
   Stack,
   Button,
-  InputLabel,
   FormControlLabel,
-  Checkbox,
   FormControl,
   FormLabel,
   RadioGroup,
   Radio,
-  Divider,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useGetPaymentSummary } from 'src/api/booking-assistant';
 import { PaymentSummaryBox } from './payment-summary';
 
@@ -40,7 +38,9 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   studentId,
   packageId,
 }) => {
+  const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
+
   const {
     paymentSummary,
     paymentSummaryLoading,
@@ -52,6 +52,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
     student_id: studentId,
     package_id: packageId,
   });
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPaymentProof(e.target.files[0]);
@@ -61,13 +62,14 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   return (
     <>
       <PaymentSummaryBox summary={paymentSummary} />
+
       <Box mt={5} p={3} border="1px solid #e0e0e0" borderRadius={2} bgcolor="#fafafa">
         <Typography variant="h6" fontWeight={700} mb={3}>
-          Trainer Payment Details
+          {t('trainer_payment_details')}
         </Typography>
 
         <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
-          <FormLabel sx={{ fontWeight: 600, mb: 1 }}>Payment Status</FormLabel>
+          <FormLabel sx={{ fontWeight: 600, mb: 1 }}>{t('payment_status')}</FormLabel>
           <RadioGroup
             row
             value={paymentDone ? 'done' : 'not_done'}
@@ -76,12 +78,12 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
             <FormControlLabel
               value="not_done"
               control={<Radio color="primary" />}
-              label="Payment Not Done"
+              label={t('payment_not_done')}
             />
             <FormControlLabel
               value="done"
               control={<Radio color="primary" />}
-              label="Payment Done"
+              label={t('payment_done')}
             />
           </RadioGroup>
         </FormControl>
@@ -90,7 +92,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
           <Stack spacing={3}>
             {/* Transaction ID */}
             <TextField
-              label="Transaction ID"
+              label={t('transaction_id')}
               value={txnId}
               onChange={(e) => setTxnId(e.target.value)}
               fullWidth
@@ -100,7 +102,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
 
             {/* Remarks */}
             <TextField
-              label="Remarks"
+              label={t('remarks')}
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               fullWidth
@@ -112,7 +114,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
             {/* Upload Payment Proof */}
             <Box>
               <Typography fontWeight={600} mb={1}>
-                Upload Payment Proof
+                {t('upload_payment_proof')}
               </Typography>
               <Button
                 variant="contained"
@@ -120,7 +122,9 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
                 fullWidth
                 sx={{ textTransform: 'none', fontWeight: 500 }}
               >
-                {paymentProof ? paymentProof.name : 'Select File (PDF, JPG, PNG)'}
+                {paymentProof
+                  ? paymentProof.name
+                  : t('select_file', { defaultValue: t('select_file') })}
                 <input
                   type="file"
                   hidden
@@ -130,7 +134,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
               </Button>
               {paymentProof && (
                 <Typography variant="caption" color="text.secondary" mt={1}>
-                  Selected file: {paymentProof.name}
+                  {t('selected_file')}: {paymentProof.name}
                 </Typography>
               )}
             </Box>
