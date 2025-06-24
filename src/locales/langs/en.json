@@ -19,7 +19,7 @@
   "kanban": "kanban",
   "general": "general",
   "banking": "banking",
-  "booking": "booking",
+  "booking": "Booking",
   "profile": "profile",
   "account": "account",
   "product": "product",
@@ -1143,5 +1143,6 @@
   "click_to_view_booking_details": "Click to view booking details",
   "approve": "Approve",
   "decline": "Decline",
-  "view_all": "View all"
+  "view_all": "View all",
+  "pending_booking_requests": "Pending Booking Requests"
 }
