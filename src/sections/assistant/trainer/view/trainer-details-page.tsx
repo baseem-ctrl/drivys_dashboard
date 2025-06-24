@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Card,
   CardContent,
+  Button,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -27,6 +28,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import PackageCard from '../package-card';
 import TrainerAddressMap from '../trainer-address-map';
+import moment from 'moment';
 
 interface TrainerProfileProps {
   trainer_id: number;
@@ -36,6 +38,8 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
   const { trainers, trainerListLoading, trainerListError } = useGetTrainerList({
     trainer_id: String(trainer_id),
   });
+  const [showAll, setShowAll] = useState(false);
+
   const { i18n, t } = useTranslation();
   const router = useRouter();
 
@@ -65,9 +69,11 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
     rawBreakdown['1_star'] ?? 0,
   ];
   const totalRatings = ratingBreakdown.reduce((a: number, b: number) => a + b, 0);
-  const validReviews = Array.isArray(trainer?.user?.review)
-    ? trainer.user.review.filter((r: any) => r.rating !== null || r.comment)
+  const validReviews = Array.isArray(trainer?.user?.reviews)
+    ? trainer.user.reviews.filter((r: any) => r.rating !== null || r.comment)
     : [];
+
+  const reviewsToShow = showAll ? validReviews : validReviews.slice(0, 3);
 
   function getEmojiFlag(countryCode) {
     return countryCode
@@ -437,18 +443,43 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
             {t('no_reviews_available')}
           </Typography>
         ) : (
-          validReviews.map((review: any, index: number) => (
-            <Box key={index} mb={2}>
-              <Typography fontWeight={600}>{review.student || 'Anonymous'}</Typography>
-              {review.rating !== null && <Rating value={review.rating} readOnly size="small" />}
-              <Typography variant="body2" color="gray">
-                {review.date || t('n/a')}
-              </Typography>
-              {review.comment && <Typography variant="body2">{review.comment}</Typography>}
-            </Box>
+          reviewsToShow.map((review: any, index: number) => (
+            <>
+              {' '}
+              <Card key={index} variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Avatar sx={{ bgcolor: '#E0F7FA' }}>{(review.student || 'A').charAt(0)}</Avatar>
+                    <Box>
+                      <Typography fontWeight={600}>{review.student || 'Anonymous'}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {moment(review.date).format('Do MMMM YYYY') || t('n/a')}
+                      </Typography>
+                    </Box>
+                    <Box ml="auto">
+                      {review.rating !== null && (
+                        <Rating value={review.rating} precision={0.5} readOnly />
+                      )}
+                    </Box>
+                  </Box>
+                  {review.comment && (
+                    <Typography variant="body2" mt={2} color="text.secondary">
+                      {review.comment}
+                    </Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </>
           ))
         )}
       </Box>
+      {!showAll && validReviews.length > 3 && (
+        <Box textAlign="center" mt={2}>
+          <Button variant="outlined" color="primary" onClick={() => setShowAll(true)}>
+            {t('view_all')}
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };
