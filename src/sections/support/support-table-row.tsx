@@ -7,8 +7,8 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 
-export default function SupportTableRow({ row }) {
-  const { user, status, priority, message, subject } = row;
+export default function SupportTableRow({ row, t }) {
+  const { user, message } = row;
   const router = useRouter();
 
   const popover = usePopover();
@@ -27,41 +27,12 @@ export default function SupportTableRow({ row }) {
             textDecoration: 'underline',
           },
         }}
-        onClick={() => handleUserDetails(row.user_id)}
+        onClick={row.user_id ? () => handleUserDetails(row.user_id) : undefined}
       >
-        {user?.name || '—'}
+        {user?.name || t('n/a')}
       </TableCell>
-
-      <TableCell>
-        <Label
-          variant="soft"
-          color={
-            (status === 'Open' && 'warning') ||
-            (status === 'In_Progress' && 'info') ||
-            (status === 'Resolved' && 'primary') ||
-            (status === 'Closed' && 'success') ||
-            'default'
-          }
-        >
-          {status.replace('_', ' ')}
-        </Label>
-      </TableCell>
-
-      <TableCell>
-        <Label
-          variant="soft"
-          color={
-            (priority === 'High' && 'error') ||
-            (priority === 'Medium' && 'warning') ||
-            (priority === 'Low' && 'info') ||
-            'default'
-          }
-        >
-          {priority}
-        </Label>
-      </TableCell>
-      <TableCell>{message}</TableCell>
-      <TableCell>{subject || 'N/A'}</TableCell>
+      <TableCell>{user?.email || t('n/a')}</TableCell>
+      <TableCell>{message || t('n/a')}</TableCell>
     </TableRow>
   );
 }
