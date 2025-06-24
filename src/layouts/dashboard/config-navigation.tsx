@@ -119,6 +119,7 @@ export function useNavData() {
     slider: 'slider',
     assistant: 'assistant_booking_payment',
     payment: 'assistant_booking_payment',
+    pending_booking_requests: 'assistant_booking_payment',
   };
   const schoolAdminRoutePermissionMap = {
     notification: 'notification_school_admin',
@@ -197,6 +198,10 @@ export function useNavData() {
         {
           title: t('pending_trainer_rewards'),
           path: paths.dashboard.todo.trainerPendingRewards,
+        },
+        {
+          title: t('pending_booking_requests'),
+          path: paths.dashboard.todo.todoPendingBooking,
         },
       ],
     },
@@ -341,7 +346,9 @@ export function useNavData() {
       title: t('assistant'),
       path: paths.dashboard.assistantPayment.list,
       icon: ICONS.chat,
-      children: [{ title: t('payment'), path: paths.dashboard.assistantPayment.list }],
+      children: [
+        { title: t('pending_booking_requests'), path: paths.dashboard.assistantPayment.list },
+      ],
     },
     {
       title: t('coupon'),

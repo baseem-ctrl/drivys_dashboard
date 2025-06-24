@@ -29,6 +29,7 @@ import {
 
 import { useGetAllLanguage } from 'src/api/language';
 import { useAuthContext } from 'src/auth/hooks';
+import { useActiveLink } from 'src/routes/hooks/use-active-link';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'src/routes/hooks';
 import PayoutFilter from '../payout-filters';
@@ -51,6 +52,7 @@ export default function PaymentAssistantView() {
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
   const locale = i18n.language;
+  const isAwaitingBookingRoute = useActiveLink('dashboard/todo/awaiting-booking-request');
 
   const [currentTab, setCurrentTab] = useState('unapproved');
 
@@ -75,8 +77,9 @@ export default function PaymentAssistantView() {
     useGetPaymentList({
       page: table.page,
       limit: table.rowsPerPage,
-      is_approved: currentTab === 'approved' ? 1 : 2,
+      is_approved: isAwaitingBookingRoute ? 2 : currentTab === 'approved' ? 1 : 2,
     });
+
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -160,11 +163,11 @@ export default function PaymentAssistantView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t('payout_list')}
+        heading={t('pending_booking_requests')}
         links={[
           { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: t('payout'),
+            name: t('booking'),
             href: paths.dashboard.assistant.student.list,
           },
           { name: t('list') },
@@ -174,12 +177,14 @@ export default function PaymentAssistantView() {
         }}
       />
       {/* {renderFilters} */}
-      <Box sx={{ mb: 3 }}>
-        <Tabs value={currentTab} onChange={handleTabChange}>
-          <Tab label={t('pending')} value="unapproved" />
-          <Tab label={t('approved')} value="approved" />
-        </Tabs>
-      </Box>
+      {!isAwaitingBookingRoute && (
+        <Box sx={{ mb: 3 }}>
+          <Tabs value={currentTab} onChange={handleTabChange}>
+            <Tab label={t('pending')} value="unapproved" />
+            <Tab label={t('approved')} value="approved" />
+          </Tabs>
+        </Box>
+      )}
 
       <Card>
         {viewMode === 'table' && (

@@ -211,7 +211,7 @@ const allroutes = [
   },
   {
     path: 'assistant',
-    children: [{ path: 'payment', element: <PaymentAssistantView /> }],
+    children: [{ path: 'pending_booking_requests', element: <PaymentAssistantView /> }],
   },
   {
     path: 'category',
@@ -285,6 +285,7 @@ const allroutes = [
       { path: 'pending-refund', element: <ToDoListViewRefund />, index: true },
       { path: 'trainer-pending-rewards', element: <ToDoListPendingReward /> },
       { path: 'trainer-profile-updates', element: <TrainerProfileUpdatesListView /> },
+      { path: 'awaiting-booking-request', element: <PaymentAssistantView /> },
     ],
   },
   { path: 'awaiting-certificate', element: <CertificateListView />, index: true },

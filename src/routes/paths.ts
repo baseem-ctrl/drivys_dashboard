@@ -213,6 +213,7 @@ export const paths = {
       trainerProfileUpdates: `${ROOTS.DASHBOARD}/todo/trainer-profile-updates`,
       trainerPendingRewards: `${ROOTS.DASHBOARD}/todo/trainer-pending-rewards`,
       todoPendingCertificates: `${ROOTS.DASHBOARD}/todo/awaiting-certificate`,
+      todoPendingBooking: `${ROOTS.DASHBOARD}/todo/awaiting-booking-request`,
     },
 
     school: {
@@ -284,7 +285,7 @@ export const paths = {
       // details: (id: string) => `${ROOTS.DASHBOARD}/delivery/${id}`,
     },
     assistantPayment: {
-      list: `${ROOTS.DASHBOARD}/assistant/payment`,
+      list: `${ROOTS.DASHBOARD}/assistant/pending_booking_requests`,
     },
     system: {
       root: `${ROOTS.DASHBOARD}/system/language`,
