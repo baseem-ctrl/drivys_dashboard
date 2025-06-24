@@ -34,6 +34,7 @@ interface SessionStepProps {
   removeSession: (index: number) => void;
   driverId: number;
   handleNext: () => void;
+  setIsPickupEnabled: any;
 }
 
 const SessionStep: React.FC<SessionStepProps> = ({
@@ -43,6 +44,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
   removeSession,
   driverId,
   handleNext,
+  setIsPickupEnabled,
 }) => {
   const [requestedDate, setRequestedDate] = React.useState(() => {
     return new Date().toISOString().split('T')[0]; // initially today
@@ -67,7 +69,6 @@ const SessionStep: React.FC<SessionStepProps> = ({
     driver_id: driverId,
     requested_date: requestedDate,
   });
-
   return (
     <Box>
       <Typography variant="h5" fontWeight={600} gutterBottom>
@@ -218,6 +219,12 @@ const SessionStep: React.FC<SessionStepProps> = ({
                                     'is_pickup_enabled',
                                     slot.is_pickup_enabled
                                   );
+                                  if (slot.is_pickup_enabled) {
+                                    setIsPickupEnabled(true);
+                                  } else {
+                                    setIsPickupEnabled(false);
+                                  }
+
                                   handleCloseDialog();
                                 }
                               }}

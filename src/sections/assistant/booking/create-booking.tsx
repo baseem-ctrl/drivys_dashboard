@@ -63,6 +63,8 @@ export default function CreateBooking() {
   const [remarks, setRemarks] = useState('');
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [searchTermStudent, setSearchTermStudent] = useState('');
+  const [isPickUpEnabled, setIsPickupEnabled] = useState('');
+
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
   const [pickupLocation, setPickupLocation] = useState<number | null>(null);
@@ -169,7 +171,6 @@ export default function CreateBooking() {
       }));
     setSessions(updated);
   };
-
   const handleNext = () => {
     switch (activeStep) {
       case 0:
@@ -427,6 +428,7 @@ export default function CreateBooking() {
             removeSession={removeSession}
             driverId={selectedTrainerId}
             handleNext={handleNext}
+            setIsPickupEnabled={setIsPickupEnabled}
           />
         );
       case 4:
@@ -437,6 +439,7 @@ export default function CreateBooking() {
             setPickupLocationSelected={setPickupLocationSelected}
             pickupLocationSelected={pickupLocationSelected}
             selectedTrainer={selectedTrainer}
+            isPickUpEnabled={isPickUpEnabled}
           />
         );
       case 5:

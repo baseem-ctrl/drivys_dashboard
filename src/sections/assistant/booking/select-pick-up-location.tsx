@@ -41,6 +41,7 @@ interface AddressSelectorProps {
   setPickupLocationSelected: (id: number) => void;
   pickupLocationSelected: number;
   selectedTrainer: any;
+  isPickUpEnabled: any;
 }
 
 const AddressSelector: React.FC<AddressSelectorProps> = ({
@@ -48,6 +49,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   setPickupLocationSelected,
   pickupLocationSelected,
   selectedTrainer,
+  isPickUpEnabled,
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -55,7 +57,6 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   const defaultAddress = selectedTrainer?.user?.user_addresses?.find(
     (addr: any) => addr.is_default
   );
-
   return (
     <>
       <Box mt={4} mb={4}>
@@ -90,16 +91,18 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
                 }
               />
 
-              <FormControlLabel
-                value="pickup"
-                control={<Radio />}
-                label={
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    <RoomIcon color="primary" />
-                    <Typography variant="body2">{t('pick_me_up')}</Typography>
-                  </Stack>
-                }
-              />
+              {isPickUpEnabled && (
+                <FormControlLabel
+                  value="pickup"
+                  control={<Radio />}
+                  label={
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <RoomIcon color="primary" />
+                      <Typography variant="body2">{t('pick_me_up')}</Typography>
+                    </Stack>
+                  }
+                />
+              )}
             </RadioGroup>
           </FormControl>
         </Paper>
