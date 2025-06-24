@@ -57,10 +57,8 @@ export default function SupportlistingListView() {
 
   const TABLE_HEAD = [
     { id: 'user', label: t('User') },
-    { id: 'status', label: t('status') },
-    { id: 'priority', label: t('priority') },
+    { id: 'email', label: t('email') },
     { id: 'message', label: t('message') },
-    { id: 'subject', label: t('subject') },
   ];
 
   const [tableData, setTableData] = useState<IDeliveryItem[]>();
@@ -196,6 +194,7 @@ export default function SupportlistingListView() {
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => handleRowClick(row)}
+                        t={t}
                         // onDeleteRow={() => handleDeleteRow(row.id)}
                         // onEditRow={(e: any) => handleEditRow(e, row.id)}
                         // revalidateHomeListing={revalidateNotifications}
