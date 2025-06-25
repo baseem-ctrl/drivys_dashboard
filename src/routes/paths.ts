@@ -287,6 +287,9 @@ export const paths = {
     assistantPayment: {
       list: `${ROOTS.DASHBOARD}/assistant/pending_booking_requests`,
     },
+    assistantCollectCash: {
+      list: `${ROOTS.DASHBOARD}/assistant/collect_cash_assistant`,
+    },
     system: {
       root: `${ROOTS.DASHBOARD}/system/language`,
       language: `${ROOTS.DASHBOARD}/system/language`,

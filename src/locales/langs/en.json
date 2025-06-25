@@ -1144,5 +1144,9 @@
   "approve": "Approve",
   "decline": "Decline",
   "view_all": "View all",
-  "pending_booking_requests": "Pending Booking Requests"
+  "pending_booking_requests": "Pending Booking Requests",
+  "collector": "Collector",
+  "collected_cash": "Collected Cash",
+  "max_cash_in_hand": "Max Cash In Hand",
+  "amount_collected_successfully": "Amount of {{amount}} collected successfully."
 }

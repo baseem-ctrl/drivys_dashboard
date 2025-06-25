@@ -348,6 +348,7 @@ export function useNavData() {
       icon: ICONS.chat,
       children: [
         { title: t('pending_booking_requests'), path: paths.dashboard.assistantPayment.list },
+        { title: t('cash_in_hand'), path: paths.dashboard.assistantCollectCash.list },
       ],
     },
     {
