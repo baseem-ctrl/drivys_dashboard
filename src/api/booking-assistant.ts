@@ -181,6 +181,7 @@ interface PaymentSummaryParams {
   trainer_id?: string;
   student_id?: string;
   package_id?: string;
+  coupon_code?: string;
 }
 
 export function useGetPaymentSummary(params: PaymentSummaryParams) {
@@ -190,6 +191,7 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
     if (params.trainer_id) queryParams.trainer_id = params.trainer_id;
     if (params.student_id) queryParams.student_id = params.student_id;
     if (params.package_id) queryParams.package_id = params.package_id;
+    if (params.coupon_code) queryParams.coupon_code = params.coupon_code; // ✅ Added here
 
     return `${endpoints.assistant.paymentSummary.list}?${new URLSearchParams(queryParams)}`;
   };

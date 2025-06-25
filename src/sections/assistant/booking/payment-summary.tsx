@@ -1,11 +1,58 @@
-import { Box, Typography, Stack, Divider } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Stack,
+  Divider,
+  TextField,
+  IconButton,
+  Button,
+  Grid,
+} from '@mui/material';
+
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
 
-export const PaymentSummaryBox = ({ summary }: { summary: any }) => {
+export const PaymentSummaryBox = ({
+  summary,
+  couponCode,
+  setCouponCode,
+  errorMessage,
+}: {
+  summary: any;
+  couponCode: any;
+  setCouponCode: any;
+  errorMessage: any;
+}) => {
   const { t } = useTranslation();
+  const [couponInput, setCouponInput] = useState(summary?.coupon_code || '');
+  const [localError, setLocalError] = useState('');
 
-  if (!summary) return null;
+  const isCouponApplied = couponCode?.toLowerCase?.() === couponInput?.trim()?.toLowerCase?.();
 
+  useEffect(() => {
+    setLocalError(errorMessage || '');
+  }, [errorMessage]);
+
+  if (!summary) {
+    return (
+      <Box
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: '16px',
+          p: 3,
+          backgroundColor: '#fff',
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="subtitle1" fontWeight={700} mb={2}>
+          {t('payment_summary')}
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Typography color="text.secondary">{t('summary_not_available')}</Typography>
+      </Box>
+    );
+  }
   return (
     <Box
       sx={{
@@ -22,30 +69,90 @@ export const PaymentSummaryBox = ({ summary }: { summary: any }) => {
       <Divider sx={{ mb: 2 }} />
 
       <Stack spacing={1.5}>
-        <SummaryRow label={t('package_price_after_discount')} value={`₹${summary.package_price}`} />
-        <SummaryRow label={t('transport_fee_after_discount')} value={`₹${summary.transport_fee}`} />
-        <SummaryRow label={t('tax_amount')} value={`₹${summary.tax_amount}`} />
-
         <SummaryRow
-          label={t('coupon_code')}
-          value={
-            summary.coupon_code ? (
-              <Typography fontSize={13} fontWeight={600} color="success.main">
-                #{summary.coupon_code}
-              </Typography>
-            ) : (
-              <Typography fontSize={13} color="text.secondary">
-                —
-              </Typography>
-            )
+          label={t('package_price_after_discount')}
+          value={`₹${summary.package_price}`}
+          originalValue={
+            summary.package_price_before_discount &&
+            summary.package_price_before_discount !== summary.package_price
+              ? `₹${summary.package_price_before_discount}`
+              : undefined
           }
         />
-        <Divider />
+        <SummaryRow
+          label={t('transport_fee_after_discount')}
+          value={`₹${summary.transport_fee}`}
+          originalValue={
+            summary.transport_fee_before_discount &&
+            summary.transport_fee_before_discount !== summary.transport_fee
+              ? `₹${summary.transport_fee_before_discount}`
+              : undefined
+          }
+        />
 
+        <SummaryRow label={t('tax_amount')} value={`₹${summary.tax_amount}`} />
+        <Divider />
         <SummaryRow label={t('booking_method')} value={summary.booking_method} />
         <SummaryRow label={t('payment_method')} value={summary.payment_method} />
-
         <Divider sx={{ my: 1 }} />
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs>
+            <TextField
+              fullWidth
+              size="small"
+              value={couponInput}
+              onChange={(e) => {
+                setCouponInput(e.target.value);
+                setLocalError('');
+              }}
+              placeholder={t('enter_coupon_code')}
+              error={Boolean(localError)}
+              helperText={localError}
+              disabled={isCouponApplied}
+            />
+          </Grid>
+
+          <Grid item>
+            {!isCouponApplied ? (
+              <Button
+                onClick={() => {
+                  if (couponInput.trim()) {
+                    setCouponCode(couponInput.trim());
+                  }
+                }}
+                size="small"
+                variant="contained"
+                color="primary"
+                sx={{ minWidth: 80, textTransform: 'none' }}
+              >
+                {t('apply')}
+              </Button>
+            ) : (
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setCouponCode('');
+                }}
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  padding: '4px',
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            )}
+          </Grid>
+        </Grid>
+
+        {isCouponApplied && (
+          <Stack spacing={0.5} mt={0.5}>
+            <Typography variant="caption" color="success.main">
+              {t('coupon_applied_successfully')} {t('you_saved')} AED {summary.discount_amount}!
+            </Typography>
+          </Stack>
+        )}
 
         <Stack direction="row" justifyContent="space-between" alignItems="center" mt={1}>
           <Typography fontSize={14} fontWeight={700}>
@@ -60,13 +167,40 @@ export const PaymentSummaryBox = ({ summary }: { summary: any }) => {
   );
 };
 
-const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <Stack direction="row" justifyContent="space-between">
+const SummaryRow = ({
+  label,
+  value,
+  originalValue,
+}: {
+  label: string;
+  value: React.ReactNode;
+  originalValue?: React.ReactNode;
+}) => (
+  <Stack direction="row" justifyContent="space-between" alignItems="center">
     <Typography fontSize={13} color="text.secondary">
       {label}
     </Typography>
-    <Typography fontSize={13} fontWeight={500}>
-      {value}
-    </Typography>
+    <Box textAlign="right">
+      {originalValue && (
+        <Typography
+          fontSize={13}
+          fontWeight={600}
+          sx={{
+            textDecoration: 'line-through',
+            color: 'error.main',
+            mb: '2px',
+            display: 'inline-block',
+            px: 0.5,
+            borderRadius: 1,
+            backgroundColor: 'rgba(255, 0, 0, 0.05)',
+          }}
+        >
+          {originalValue}
+        </Typography>
+      )}
+      <Typography fontSize={13} fontWeight={600} color="text.primary">
+        {value}
+      </Typography>
+    </Box>
   </Stack>
 );

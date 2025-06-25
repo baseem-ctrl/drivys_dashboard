@@ -1148,5 +1148,9 @@
   "collector": "Collector",
   "collected_cash": "Collected Cash",
   "max_cash_in_hand": "Max Cash In Hand",
-  "amount_collected_successfully": "Amount of {{amount}} collected successfully."
+  "amount_collected_successfully": "Amount of {{amount}} collected successfully.",
+  "summary_not_available": "Summary is not available at the moment.",
+  "enter_coupon_code": "Enter coupon code",
+  "coupon_applied_successfully": "Coupon applied successfully",
+  "you_saved": " and you saved"
 }
