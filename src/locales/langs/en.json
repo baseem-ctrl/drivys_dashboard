@@ -1152,5 +1152,6 @@
   "summary_not_available": "Summary is not available at the moment.",
   "enter_coupon_code": "Enter coupon code",
   "coupon_applied_successfully": "Coupon applied successfully",
-  "you_saved": " and you saved"
+  "you_saved": " and you saved",
+  "role_permission_mapping": "Role Permission Mapping"
 }
