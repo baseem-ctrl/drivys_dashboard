@@ -468,5 +468,7 @@ export const endpoints = {
     paymentSummary: {
       list: 'assistant/booking/get-booking-payment-summary',
     },
+    cashCollectedList: 'admin/assistant-collection/get-assistant-cash-in-hand-list',
+    collectCash: 'admin/assistant-collection/cash-collection',
   },
 };

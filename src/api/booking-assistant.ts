@@ -260,3 +260,74 @@ export function approveOrDeclineAssistantPayment(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+interface CashCollectedListParams {
+  assistant_id?: number | string;
+  page?: number;
+  limit?: number;
+  check_cash_in_hand?: any;
+  min_cash?: number;
+  max_cash?: number;
+  cash_clearance_date_from?: string;
+  cash_clearance_date_to?: string;
+  search?: string;
+}
+
+function getCashCollectedUrl(params: CashCollectedListParams): string {
+  const {
+    assistant_id,
+    page = 0,
+    limit = 10,
+    check_cash_in_hand,
+    min_cash,
+    max_cash,
+    cash_clearance_date_from,
+    cash_clearance_date_to,
+    search,
+  } = params;
+
+  const queryParams: Record<string, any> = {
+    page: page + 1,
+    limit,
+  };
+
+  if (assistant_id) queryParams.assistant_id = assistant_id;
+  if (check_cash_in_hand) queryParams.check_cash_in_hand = check_cash_in_hand;
+  if (min_cash !== undefined) queryParams.min_cash = min_cash;
+  if (max_cash !== undefined) queryParams.max_cash = max_cash;
+  if (cash_clearance_date_from) queryParams.cash_clearance_date_from = cash_clearance_date_from;
+  if (cash_clearance_date_to) queryParams.cash_clearance_date_to = cash_clearance_date_to;
+  if (search) queryParams.search = search;
+
+  const queryString = new URLSearchParams(queryParams).toString();
+
+  return `${endpoints.assistant.cashCollectedList}?${queryString}`;
+}
+
+export function useGetCashCollectedList(params: CashCollectedListParams) {
+  const swrKey = getCashCollectedUrl(params);
+
+  const { data, isLoading, error, isValidating } = useSWR(swrKey, drivysFetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      cashCollected: data?.data || [],
+      cashCollectedLoading: isLoading,
+      cashCollectedError: error,
+      cashCollectedValidating: isValidating,
+      totalCashPages: data?.total || 0,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateCashCollected = () => {
+    mutate(swrKey);
+  };
+
+  return { ...memoizedValue, revalidateCashCollected };
+}
+
+export function collectCashFromAssistant(body: any) {
+  const URL = endpoints.assistant.collectCash;
+  const response = drivysCreator([URL, body]);
+  return response;
+}
