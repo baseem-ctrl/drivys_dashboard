@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -40,6 +40,8 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
 }) => {
   const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
+  const [couponCode, setCouponCode] = useState(false);
+  const [cachedSummary, setCachedSummary] = useState<any>(null);
 
   const {
     paymentSummary,
@@ -51,17 +53,29 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
     trainer_id: trainerId,
     student_id: studentId,
     package_id: packageId,
+    coupon_code: couponCode,
   });
+  const errorMessage = paymentSummaryError?.message?.errors?.coupon_code[0] || '';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPaymentProof(e.target.files[0]);
     }
   };
+  useEffect(() => {
+    if (paymentSummary && !paymentSummaryError) {
+      setCachedSummary(paymentSummary);
+    }
+  }, [paymentSummary, paymentSummaryError]);
 
   return (
     <>
-      <PaymentSummaryBox summary={paymentSummary} />
+      <PaymentSummaryBox
+        summary={cachedSummary}
+        setCouponCode={setCouponCode}
+        couponCode={couponCode}
+        errorMessage={errorMessage}
+      />
 
       <Box mt={5} p={3} border="1px solid #e0e0e0" borderRadius={2} bgcolor="#fafafa">
         <Typography variant="h6" fontWeight={700} mb={3}>

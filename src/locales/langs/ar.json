@@ -1196,5 +1196,9 @@
   "roles_and_permission_mapping": "التعيين بين الأدوار والصلاحيات",
   "click_to_view_booking_details": "انقر لعرض تفاصيل الحجز",
   "view_all": "عرض الكل",
-  "pending_booking_requests": "طلبات الحجز المعلقة"
+  "pending_booking_requests": "طلبات الحجز المعلقة",
+  "collector": "المحصل",
+  "collected_cash": "النقد المحصل",
+  "max_cash_in_hand": "الحد الأقصى للنقد المسموح به",
+  "amount_collected_successfully": "تم تحصيل مبلغ قدره {{amount}} بنجاح."
 }
