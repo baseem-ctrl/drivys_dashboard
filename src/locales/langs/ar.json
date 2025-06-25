@@ -1200,5 +1200,10 @@
   "collector": "المحصل",
   "collected_cash": "النقد المحصل",
   "max_cash_in_hand": "الحد الأقصى للنقد المسموح به",
-  "amount_collected_successfully": "تم تحصيل مبلغ قدره {{amount}} بنجاح."
+  "amount_collected_successfully": "تم تحصيل مبلغ قدره {{amount}} بنجاح.",
+  "summary_not_available": "الملخص غير متاح في الوقت الحالي.",
+  "enter_coupon_code": "أدخل رمز القسيمة",
+  "coupon_applied_successfully": "تم تطبيق القسيمة بنجاح",
+  "you_saved": "وقد وفّرت",
+  "role_permission_mapping": "تعيين صلاحيات الدور"
 }

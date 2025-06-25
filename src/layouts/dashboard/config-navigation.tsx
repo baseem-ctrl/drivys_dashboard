@@ -89,6 +89,7 @@ export function useNavData() {
     package: 'package',
     notifications: 'notification',
     app_settings: 'app_setting',
+    system_settings: 'app_setting',
     roles_and_permission: 'access_control',
     roles: 'access_control',
     permission: 'access_control',
@@ -149,6 +150,10 @@ export function useNavData() {
     student: 'report_school_admin',
     school: 'report_school_admin',
     package: 'package_list_school_admin',
+    roles_and_permission: 'access_control_school_admin',
+    roles: 'access_control_school_admin',
+    permission: 'access_control_school_admin',
+    role_permission_mapping: 'access_control_school_admin',
   };
   function filterRoutesByPermission(routes, permissions, routePermissionMap) {
     return routes
@@ -541,16 +546,15 @@ export function useNavData() {
       path: paths.dashboard.school.listSchoolPayout,
       icon: ICONS.invoice,
     },
-
     {
-      title: t('roles-and-permission'),
+      title: t('roles_and_permission'),
       path: paths.dashboard.rolesAndPermission.roles,
       icon: ICONS.trainers,
       children: [
         { title: t('roles'), path: paths.dashboard.rolesAndPermission.roles },
         { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
         {
-          title: t('role-permission-mapping'),
+          title: t('role_permission_mapping'),
           path: paths.dashboard.rolesAndPermission.rolePermissionMapping,
         },
       ],
@@ -590,7 +594,6 @@ export function useNavData() {
     schoolAdminPermissions,
     schoolAdminRoutePermissionMap
   );
-
   const collectorRoutes = [
     // {
     //   title: t('dashboard'),
@@ -656,17 +659,18 @@ export function useNavData() {
     },
   ];
   const userType = localStorage.getItem('user_type');
-
+  const hasAdminRoles = user?.user?.roles?.length > 0;
+  const hasSchoolAdminRoles = user?.user?.school_admin_roles?.length > 0;
   const routes = (() => {
     switch (userType) {
       case 'SCHOOL_ADMIN':
-        return filteredRoutesSchoolAdmin;
+        return hasSchoolAdminRoles ? filteredRoutesSchoolAdmin : schooladminRoutes;
       case 'COLLECTOR':
         return collectorRoutes;
       case 'ASSISTANT':
         return assistantRoutes;
       default:
-        return filteredRoutesAdmin;
+        return hasAdminRoles ? filteredRoutesAdmin : allroutes;
     }
   })();
 
