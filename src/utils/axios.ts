@@ -424,6 +424,10 @@ export const endpoints = {
   support: {
     list: 'admin/support/get-list',
   },
+  getUnattendedStudents: {
+    list: 'admin/booking/noStudentShownUp/get-no-student-shown-up-session-list',
+    approveOrReject: 'admin/booking/noStudentShownUp/approve-reject',
+  },
   schoolReportSessionPreview: {
     booking: 'admin/reportBySchool/bookings',
     revenue: 'admin/reportBySchool/revenues',

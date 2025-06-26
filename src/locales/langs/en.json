@@ -1153,5 +1153,8 @@
   "enter_coupon_code": "Enter coupon code",
   "coupon_applied_successfully": "Coupon applied successfully",
   "you_saved": " and you saved",
-  "role_permission_mapping": "Role Permission Mapping"
+  "role_permission_mapping": "Role Permission Mapping",
+  "unattended_student": "Unattended Student",
+  "end_time": "End Time",
+  "start_time": "Start Time"
 }
