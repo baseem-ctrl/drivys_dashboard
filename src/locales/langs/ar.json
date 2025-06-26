@@ -1205,5 +1205,8 @@
   "enter_coupon_code": "أدخل رمز القسيمة",
   "coupon_applied_successfully": "تم تطبيق القسيمة بنجاح",
   "you_saved": "وقد وفّرت",
-  "role_permission_mapping": "تعيين صلاحيات الدور"
+  "role_permission_mapping": "تعيين صلاحيات الدور",
+  "unattended_student": "طالب غير حاضر",
+  "end_time": "وقت الانتهاء",
+  "start_time": "وقت البدء"
 }
