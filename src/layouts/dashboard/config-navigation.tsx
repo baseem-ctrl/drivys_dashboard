@@ -121,6 +121,7 @@ export function useNavData() {
     assistant: 'assistant_booking_payment',
     payment: 'assistant_booking_payment',
     pending_booking_requests: 'assistant_booking_payment',
+    unattended_student: 'no_student_shown_up',
   };
   const schoolAdminRoutePermissionMap = {
     notification: 'notification_school_admin',
@@ -312,6 +313,11 @@ export function useNavData() {
         { title: t('cash_in_hand'), path: paths.dashboard.collectorAdminView.cashInHand },
         // { title: t('permission'), path: paths.dashboard.rolesAndPermission.permission },
       ],
+    },
+    {
+      title: t('unattended_student'),
+      path: paths.dashboard.unattendedStudents.list,
+      icon: ICONS.student,
     },
     {
       title: t('support'),

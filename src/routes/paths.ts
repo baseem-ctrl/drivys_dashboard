@@ -290,6 +290,9 @@ export const paths = {
     assistantCollectCash: {
       list: `${ROOTS.DASHBOARD}/assistant/collect_cash_assistant`,
     },
+    unattendedStudents: {
+      list: `${ROOTS.DASHBOARD}/unattended_student_list`,
+    },
     system: {
       root: `${ROOTS.DASHBOARD}/system/language`,
       language: `${ROOTS.DASHBOARD}/system/language`,
