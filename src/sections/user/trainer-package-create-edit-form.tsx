@@ -76,7 +76,7 @@ const TrainerPackageCreateEditForm = ({
     }));
   };
 
-  useEffect(() => { });
+  useEffect(() => {});
   const { packageList, packageLoading } = useGetPublicPackage({
     vendor_id: trainer_details?.vendor?.id,
     city_id: trainer_details?.user_preference?.city_id,
@@ -175,10 +175,10 @@ const TrainerPackageCreateEditForm = ({
           </Box>
         ) : (
           <>
-            <Box display="flex" justifyContent="space-between" mb={5} mt={2}>
+            <Box display="flex" justifyContent="space-between" mb={5} mt={2} gap="10px">
               {!selectedPackage && (
                 <FormControl fullWidth sx={{ mb: 2 }} error={Boolean(errors.package_id)}>
-                  <InputLabel id="package-id-label">{t("Package ID")}</InputLabel>
+                  <InputLabel id="package-id-label">{t('Package ID')}</InputLabel>
                   <Select
                     labelId="package-id-label"
                     name="package_id"
@@ -186,10 +186,10 @@ const TrainerPackageCreateEditForm = ({
                     onChange={(e) => {
                       handleChange(e);
                     }}
-                    label={t("Package ID")}
+                    label={t('Package ID')}
                   >
                     {packageLoading ? (
-                      <MenuItem disabled>{t("Loading...")}</MenuItem>
+                      <MenuItem disabled>{t('Loading...')}</MenuItem>
                     ) : (
                       packageList.map((pkg) => (
                         <MenuItem key={pkg.id} value={pkg.id}>
@@ -204,7 +204,7 @@ const TrainerPackageCreateEditForm = ({
               )}
               <TextField
                 name="trainer_price"
-                label={t("Trainer Price")}
+                label={t('Trainer Price')}
                 type="number"
                 value={formValues.trainer_price}
                 onInput={handleChange}
@@ -223,7 +223,7 @@ const TrainerPackageCreateEditForm = ({
                   color="primary"
                 />
               }
-              label={t("Status")}
+              label={t('Status')}
               labelPlacement="start"
             />
             <FormControlLabel
@@ -235,16 +235,16 @@ const TrainerPackageCreateEditForm = ({
                   color="primary"
                 />
               }
-              label={t("Published")}
+              label={t('Published')}
               labelPlacement="start"
             />
           </>
         )}
       </DialogContent>
       <DialogActions>
-        <LoadingButton onClick={onClose}>{t("Cancel")}</LoadingButton>
+        <LoadingButton onClick={onClose}>{t('Cancel')}</LoadingButton>
         <LoadingButton onClick={handleSubmit} color="primary" loading={isSubmitting}>
-          {t("Submit")}
+          {t('Submit')}
         </LoadingButton>
       </DialogActions>
     </Dialog>
