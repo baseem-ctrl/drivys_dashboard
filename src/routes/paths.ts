@@ -289,6 +289,7 @@ export const paths = {
     },
     assistantCollectCash: {
       list: `${ROOTS.DASHBOARD}/assistant/collect_cash_assistant`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/assistant/${id}`,
     },
     unattendedStudents: {
       list: `${ROOTS.DASHBOARD}/unattended_student_list`,

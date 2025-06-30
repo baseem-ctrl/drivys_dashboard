@@ -333,3 +333,68 @@ export function collectCashFromAssistant(body: any) {
   const response = drivysCreator([URL, body]);
   return response;
 }
+type UseAssistantPayoutParams = {
+  assistant_id?: string;
+  page?: number;
+  limit?: number;
+  admin_id?: string;
+  from_date?: string;
+  to_date?: string;
+  min_amount?: number;
+  max_amount?: number;
+};
+
+export function useGetAssistantPayoutDetails(params: UseAssistantPayoutParams = {}) {
+  const queryParams = useMemo(() => {
+    const query: Record<string, any> = {};
+    if (params.assistant_id) query.assistant_id = params.assistant_id;
+    if (params.page) query.page = params.page;
+    if (params.limit) query.limit = params.limit;
+    if (params.admin_id) query.admin_id = params.admin_id;
+    if (params.from_date) query.from_date = params.from_date;
+    if (params.to_date) query.to_date = params.to_date;
+    if (params.min_amount) query.min_amount = params.min_amount;
+    if (params.max_amount) query.max_amount = params.max_amount;
+
+    return query;
+  }, [
+    params.assistant_id,
+    params.page,
+    params.limit,
+    params.admin_id,
+    params.from_date,
+    params.to_date,
+    params.min_amount,
+    params.max_amount,
+  ]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.assistant.payoutDetailsAssistant}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidateAssistantPayouts = () => {
+    mutate(fullUrl);
+  };
+
+  const memoizedValue = useMemo(() => {
+    return {
+      assistantPayoutList: data?.data || [],
+      assistantPayoutsLoading: isLoading,
+      assistantPayoutsError: error,
+      assistantPayoutsValidating: isValidating,
+      assistantPayoutsEmpty: data?.data?.length === 0,
+      totalPages: data?.total || 0,
+      totalCollectedAmount: data?.total_collected_amount || 0,
+    };
+  }, [data?.data, data?.total, data?.total_collected_amount, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidateAssistantPayouts,
+  };
+}

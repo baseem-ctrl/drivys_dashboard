@@ -475,5 +475,6 @@ export const endpoints = {
     },
     cashCollectedList: 'admin/assistant-collection/get-assistant-cash-in-hand-list',
     collectCash: 'admin/assistant-collection/cash-collection',
+    payoutDetailsAssistant: 'admin/assistant-collection/cash-collected-list-per-transaction',
   },
 };
