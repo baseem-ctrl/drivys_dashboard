@@ -92,6 +92,7 @@ import PaymentAssistantView from 'src/sections/payment-list-assistant/view/payme
 import CashInHandAssistantList from 'src/sections/cash-in-hand-list-assistant/view/cash-in-hand-list-admin-list-view';
 import UnattendedStudentListView from 'src/sections/unattended-students/view/unattended-students-list-view';
 import CertificateListViewSchoolAdmin from 'src/sections/awaiting-certificate-school-admin/view/certificate-list-view';
+import { BookingDetailsCashInHandTable } from 'src/sections/cash-in-hand-list-assistant/view/trainer-booking-details';
 
 // ----------------------------------------------------------------------
 
@@ -217,6 +218,7 @@ const allroutes = [
     children: [
       { path: 'pending_booking_requests', element: <PaymentAssistantView />, index: true },
       { path: 'collect_cash_assistant', element: <CashInHandAssistantList /> },
+      { path: ':id', element: <BookingDetailsCashInHandTable /> },
     ],
   },
   {

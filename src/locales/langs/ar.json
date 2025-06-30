@@ -1208,5 +1208,8 @@
   "role_permission_mapping": "تعيين صلاحيات الدور",
   "unattended_student": "طالب غير حاضر",
   "end_time": "وقت الانتهاء",
-  "start_time": "وقت البدء"
+  "start_time": "وقت البدء",
+  "history": "السجل",
+  "admin": "المسؤول",
+  "collected_on": "تم التحصيل في"
 }

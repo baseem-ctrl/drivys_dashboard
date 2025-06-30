@@ -87,8 +87,20 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
+  const handleClickRow = (id, isPayoutDisabled, amount) => {
+    setAmount(amount);
+    router.push(paths.dashboard.assistantCollectCash.details(id), {
+      disablePayout: isPayoutDisabled ? '1' : '0',
+      amount: amount,
+    });
+  };
   return (
-    <TableRow hover>
+    <TableRow
+      hover
+      onClick={() =>
+        handleClickRow(row?.id, row?.collected_cash_in_hand > 0, row?.collected_cash_in_hand)
+      }
+    >
       <TableCell
         onClick={() => handleClickDetails(row?.id)}
         sx={{

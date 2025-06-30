@@ -1156,5 +1156,8 @@
   "role_permission_mapping": "Role Permission Mapping",
   "unattended_student": "Unattended Student",
   "end_time": "End Time",
-  "start_time": "Start Time"
+  "start_time": "Start Time",
+  "history": "History",
+  "admin": "Admin",
+  "collected_on": "Collected On"
 }

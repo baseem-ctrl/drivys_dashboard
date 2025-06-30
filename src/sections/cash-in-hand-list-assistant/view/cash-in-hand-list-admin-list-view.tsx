@@ -111,7 +111,7 @@ export default function CashInHandAssistantList() {
           { name: 'Collector', href: paths.dashboard.root },
           {
             name: 'Cash In Hand',
-            href: paths.dashboard.collectorAdminView,
+            href: paths.dashboard.assistantCollectCash,
           },
           { name: 'List' },
         ]}
