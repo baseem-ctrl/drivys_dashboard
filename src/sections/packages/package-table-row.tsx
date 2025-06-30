@@ -17,7 +17,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import SchoolQuickEditForm from './package-quick-edit-form';
 import { useEffect, useMemo, useState } from 'react';
-import { Autocomplete, InputAdornment, ListItemText, Select, TextField } from '@mui/material';
+import { Autocomplete, Box, InputAdornment, ListItemText, Select, TextField } from '@mui/material';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import * as Yup from 'yup';
@@ -369,40 +369,30 @@ export default function PackageTableRow({
           )}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          <span className="dirham-symbol">&#x00EA;</span>
-          {editingRowId === row.id ? (
-            <Controller
-              name="drivys_commision"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  error={!!errors.email}
-                  type={values?.is_percentage ? 'number' : 'text'}
-                  inputProps={{ min: 0 }}
-                  value={field.value || field.value === 0 ? field.value : ''}
-                  helperText={errors.email ? errors.email.message : ''}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <div onClick={handleToggle} style={{ cursor: 'pointer' }}>
-                          {values?.is_percentage ? (
-                            '%'
-                          ) : (
-                            <span className="dirham-symbol">&#x00EA;</span>
-                          )}
-                        </div>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-            />
-          ) : drivys_commision || drivys_commision === 0 ? (
-            drivys_commision
-          ) : (
-            'N/A'
-          )}{' '}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {editingRowId === row.id ? (
+              <Controller
+                name="drivys_commision"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    error={!!errors.email}
+                    type={values?.is_percentage ? 'number' : 'text'}
+                    inputProps={{ min: 0 }}
+                    value={field.value || field.value === 0 ? field.value : ''}
+                    helperText={errors.email ? errors.email.message : ''}
+                    size="small" // optional: to better fit in a table row
+                  />
+                )}
+              />
+            ) : drivys_commision || drivys_commision === 0 ? (
+              drivys_commision
+            ) : (
+              'N/A'
+            )}
+          </Box>
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
