@@ -91,6 +91,7 @@ import CommissionListView from 'src/sections/assistant/commission/view/commissio
 import PaymentAssistantView from 'src/sections/payment-list-assistant/view/payment-list-assistant-view';
 import CashInHandAssistantList from 'src/sections/cash-in-hand-list-assistant/view/cash-in-hand-list-admin-list-view';
 import UnattendedStudentListView from 'src/sections/unattended-students/view/unattended-students-list-view';
+import CertificateListViewSchoolAdmin from 'src/sections/awaiting-certificate-school-admin/view/certificate-list-view';
 
 // ----------------------------------------------------------------------
 
@@ -401,8 +402,8 @@ const schooladminRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
       { path: 'account', element: <UserAccountPage /> },
       { path: 'rewards', element: <RewardDetailsPage /> },
-      { path: 'awaiting-certificate', element: <CertificateListView />, index: true },
-      { path: 'approved-certificate', element: <CertificateListView /> },
+      { path: 'awaiting-certificate', element: <CertificateListViewSchoolAdmin />, index: true },
+      { path: 'approved-certificate', element: <CertificateListViewSchoolAdmin /> },
       { path: 'notifications', element: <TrainerNotificationForm /> },
       {
         path: 'trainers-list',

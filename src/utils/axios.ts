@@ -346,6 +346,7 @@ export const endpoints = {
     getTrainerInsights: 'admin/analytics/get-trainers-analytics',
   },
   certificate: {
+    listAdmin: 'admin/certificate-request/get-requests-list-admin',
     list: 'admin/certificate-request/get-requests-list',
     addRequestByAdmin: 'admin/certificate-request/add-request',
     updateRequestPaymentStatus: 'admin/certificate-request/update-request-payment-status',
