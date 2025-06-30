@@ -759,7 +759,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     name="drivys_commision"
                     label={t('Drivys Commission')}
                     InputProps={{
-                      endAdornment: <Typography className="dirham-symbol">&#x00EA;</Typography>,
+                      endAdornment: <span className="dirham-symbol">&#x00EA;</span>,
                     }}
                   />
 

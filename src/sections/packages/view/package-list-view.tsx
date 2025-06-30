@@ -66,7 +66,6 @@ const defaultFilters: any = {
 // ----------------------------------------------------------------------
 
 export default function PackageListView() {
-
   const { t } = useTranslation();
 
   const TABLE_HEAD = [
@@ -242,7 +241,7 @@ export default function PackageListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
-          heading={t("Package List")}
+          heading={t('Package List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             { name: t('Package'), href: paths.dashboard.package.root },
@@ -254,7 +253,7 @@ export default function PackageListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              {t("New Package")}
+              {t('New Package')}
             </Button>
           }
           sx={{
@@ -279,7 +278,7 @@ export default function PackageListView() {
                 table.onSelectAllRows(checked, tableData?.map((row) => row?.id))
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -296,33 +295,33 @@ export default function PackageListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
 
                 <TableBody>
                   {packageLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData?.map((row) => (
-                      <PackageTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={(e: any) => handleEditRow(e, row.id)}
-                        revalidatePackage={revalidatePackage}
-                        onViewRow={() => handleViewRow(row?.id)}
-                        schoolList={schoolList}
-                      />
-                    ))}
+                        <PackageTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onEditRow={(e: any) => handleEditRow(e, row.id)}
+                          revalidatePackage={revalidatePackage}
+                          onViewRow={() => handleViewRow(row?.id)}
+                          schoolList={schoolList}
+                        />
+                      ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}
