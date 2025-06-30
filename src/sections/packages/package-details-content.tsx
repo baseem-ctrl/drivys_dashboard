@@ -286,12 +286,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           },
         ],
         number_of_sessions: data?.number_of_sessions,
-        is_published: data?.is_published ? '1' : '0',
+        is_published: data?.is_published ? 1 : 0,
         background_color: data?.background_color || details?.background_color,
         drivys_commision: data?.drivys_commision || details?.drivys_commision,
-        is_certificate_included: data?.is_certificate_included ? '1' : '0',
-        is_cash_pay_available: data?.is_cash_pay_available ? '1' : '0',
-        is_pickup_fee_included: data?.is_pickup_fee_included ? '1' : '0',
+        is_certificate_included: data?.is_certificate_included ? 1 : 0,
+        is_cash_pay_available: data?.is_cash_pay_available ? 1 : 0,
+        is_pickup_fee_included: data?.is_pickup_fee_included ? 1 : 0,
         vendor_id: data?.vendor_id?.value || details?.vendor_id,
         category_id: data?.category_id?.value || details?.category_id,
       };
@@ -587,7 +587,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               {
                 label: t('Is Pay By Cash Available'),
                 value:
-                  details?.background_color === true ? (
+                  details?.is_cash_pay_available === true ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
                   ) : (
                     <Iconify color="red" icon="bi:x-square-fill" />
