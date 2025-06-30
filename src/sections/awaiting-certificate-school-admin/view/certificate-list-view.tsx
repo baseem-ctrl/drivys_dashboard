@@ -24,10 +24,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import {
-  useGetAllCertificateRequests,
-  useGetAllCertificateRequestsAdmin,
-} from 'src/api/certificate';
+import { useGetAllCertificateRequests } from 'src/api/certificate';
 import { useLocation } from 'react-router-dom';
 
 // types
@@ -38,27 +35,12 @@ import CertificateRow from '../certificate-table-row';
 import CertificateSearch from '../certificate-search';
 import { ICityTableFilters } from 'src/types/city';
 import { useTranslation } from 'react-i18next';
-import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'city', label: t('City'), width: 180 },
-  { id: 'gear', label: t('Gear'), width: 180 },
-  { id: 'request_date', label: t('Request Date'), width: 180 },
-  { id: 'certificate_url', label: t('Certificate URL'), width: 180 },
-  { id: 'status', label: t('Status'), width: 180 },
-  { id: 'trainer', label: t('Trainer'), width: 180 },
-  { id: 'txn', label: t('Transaction ID'), width: 180 },
-  { id: 'user', label: t('User'), width: 180 },
-  { id: 'vehicle_type', label: t('Vehicle Type'), width: 180 },
-  { id: 'comments', label: t('Comments'), width: 180 },
-  { id: 'actions', label: '', width: 180 },
-];
-
 // ----------------------------------------------------------------------
 
-export default function CertificateListView() {
+export default function CertificateListViewSchoolAdmin() {
   const table = useTable({ defaultRowsPerPage: 15 });
   const { t } = useTranslation();
   const settings = useSettingsContext();
@@ -72,9 +54,20 @@ export default function CertificateListView() {
   const [filters, setFilters] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const TABLE_HEAD = [
+    { id: 'city', label: t('City'), width: 180 },
+    { id: 'gear', label: t('Gear'), width: 180 },
+    { id: 'request_date', label: t('Request Date'), width: 180 },
+    { id: 'certificate_url', label: t('Certificate URL'), width: 180 },
+    { id: 'status', label: t('Status'), width: 180 },
+    { id: 'trainer', label: t('Trainer'), width: 180 },
+    { id: 'txn', label: t('Transaction ID'), width: 180 },
+    { id: 'user', label: t('User'), width: 180 },
+    { id: 'vehicle_type', label: t('Vehicle Type'), width: 180 },
+    { id: 'comments', label: t('Comments'), width: 180 },
+  ];
   const { certificateRequests, certificateLoading, totalpages, revalidateCertificateRequests } =
-    useGetAllCertificateRequestsAdmin(
+    useGetAllCertificateRequests(
       table.page,
       table.rowsPerPage,
       searchQuery,
