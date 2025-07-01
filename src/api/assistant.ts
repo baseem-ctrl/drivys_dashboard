@@ -188,10 +188,11 @@ export function useGetTrainerPackageList(params: TrainerPackageListParams) {
 interface AvailableSlotParams {
   driver_id?: number;
   requested_date?: string;
+  last_booked_endtime?: string;
 }
 
 export function useGetAvailableSlots(params: AvailableSlotParams) {
-  const { driver_id, requested_date } = params;
+  const { driver_id, requested_date, last_booked_endtime } = params;
 
   const queryParams: Record<string, any> = {};
 
@@ -201,6 +202,10 @@ export function useGetAvailableSlots(params: AvailableSlotParams) {
 
   if (requested_date) {
     queryParams.requested_date = requested_date;
+  }
+
+  if (last_booked_endtime) {
+    queryParams.last_booked_endtime = last_booked_endtime;
   }
 
   const queryString = new URLSearchParams(queryParams).toString();

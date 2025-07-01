@@ -65,10 +65,32 @@ const SessionStep: React.FC<SessionStepProps> = ({
     }
   }, [sessions]);
 
+  const getLastBookedEndTime = (index: number): string | undefined => {
+    if (index === 0) return undefined;
+
+    const prevSession = sessions[index - 1];
+    if (prevSession?.start_time && prevSession?.end_time) {
+      return `${prevSession.start_time.split(' ')[0]} ${prevSession.end_time}`;
+    }
+
+    return undefined;
+  };
+
+  const currentDialogIndex = openDialogIndex;
+  const currentRequestedDate =
+    currentDialogIndex !== null && sessions[currentDialogIndex]?.start_time
+      ? sessions[currentDialogIndex].start_time.split(' ')[0]
+      : requestedDate;
+
+  const lastBookedEndTime =
+    currentDialogIndex !== null ? getLastBookedEndTime(currentDialogIndex) : undefined;
+
   const { availableSlots, availableSlotLoading } = useGetAvailableSlots({
     driver_id: driverId,
-    requested_date: requestedDate,
+    requested_date: currentRequestedDate,
+    last_booked_endtime: lastBookedEndTime,
   });
+
   return (
     <Box>
       <Typography variant="h5" fontWeight={600} gutterBottom>
@@ -229,6 +251,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                                   .utc(slot.start_time)
                                   .format('YYYY-MM-DD HH:mm:ss');
                                 const endUtc = moment.utc(slot.end_time).format('HH:mm:ss');
+
                                 if (openDialogIndex !== null) {
                                   handleSessionChange(openDialogIndex, 'start_time', startUtc);
                                   handleSessionChange(openDialogIndex, 'end_time', endUtc);
@@ -237,12 +260,7 @@ const SessionStep: React.FC<SessionStepProps> = ({
                                     'is_pickup_enabled',
                                     slot.is_pickup_enabled
                                   );
-                                  if (slot.is_pickup_enabled) {
-                                    setIsPickupEnabled(true);
-                                  } else {
-                                    setIsPickupEnabled(false);
-                                  }
-
+                                  setIsPickupEnabled(slot.is_pickup_enabled);
                                   handleCloseDialog();
                                 }
                               }}
@@ -265,8 +283,9 @@ const SessionStep: React.FC<SessionStepProps> = ({
                             </Paper>
                           </Grid>
                         ))}
-                      {availableSlots?.filter((slot: any) =>
-                        showPickupOnly ? slot.is_pickup_enabled : true
+
+                      {availableSlots?.filter(
+                        (slot: any) => !showPickupOnly || slot.is_pickup_enabled
                       ).length === 0 && (
                         <Typography variant="body2" sx={{ mt: 2, ml: 2 }}>
                           {t('no_available_slots')}
