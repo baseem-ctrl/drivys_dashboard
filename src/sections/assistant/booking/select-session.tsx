@@ -188,7 +188,25 @@ const SessionStep: React.FC<SessionStepProps> = ({
                   <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
                     <Grid container spacing={2}>
                       {availableSlots
-                        ?.filter((slot: any) => (showPickupOnly ? slot.is_pickup_enabled : true))
+                        ?.filter((slot: any) => {
+                          const slotStartTime = moment
+                            .utc(slot.start_time)
+                            .format('YYYY-MM-DD HH:mm:ss');
+
+                          const isAlreadySelectedInOtherSession = sessions.some((s, i) => {
+                            if (i === openDialogIndex) return false;
+                            if (!s.start_time) return false;
+                            return (
+                              moment.utc(s.start_time).format('YYYY-MM-DD HH:mm:ss') ===
+                              slotStartTime
+                            );
+                          });
+
+                          return (
+                            (!showPickupOnly || slot.is_pickup_enabled) &&
+                            !isAlreadySelectedInOtherSession
+                          );
+                        })
                         .map((slot: any, idx: number) => (
                           <Grid item xs={12} sm={6} md={4} key={idx}>
                             <Paper
