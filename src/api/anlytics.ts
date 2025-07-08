@@ -8,113 +8,125 @@ import {
 } from 'src/utils/axios';
 import moment from 'moment';
 import useSWR, { mutate } from 'swr';
-
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 
-interface UseGetPendingVerificationRequestProps {
-  year?: any;
-}
-export function useGetAnalytics({ startDate, endDate, city_id, locale }) {
+// ----------------------------------------------------------------------
+export function useGetAnalytics({ startDate, endDate, city_id }: any) {
   const { user } = useAuthContext();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
-  const getTheFullUrl = useMemo(() => {
-    let url = '';
+  const buildParams = (includeLocale: boolean) => {
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', moment(startDate).format('YYYY-MM-DD'));
+    if (endDate) params.append('end_date', moment(endDate).format('YYYY-MM-DD'));
+    if (city_id) params.append('city_id', city_id);
+    if (includeLocale) params.append('locale', locale);
+    return params;
+  };
 
-    if (user?.user?.user_type) {
-      url =
-        user.user.user_type === 'SCHOOL_ADMIN'
-          ? `${endpoints.analytics.schoolAdmin}`
-          : `${endpoints.analytics.admin}`;
-
-      const params = new URLSearchParams();
-      if (startDate) params.append('start_date', moment(startDate).format('YYYY-MM-DD'));
-      if (endDate) params.append('end_date', moment(endDate).format('YYYY-MM-DD'));
-      if (city_id) params.append('city_id', city_id);
-      if (locale) params.append('locale', locale);
-
-      if (params.toString()) url += `?${params.toString()}`;
-    }
-
-    return url;
+  const primaryUrl = useMemo(() => {
+    const base =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.analytics.schoolAdmin
+        : endpoints.analytics.admin;
+    return `${base}?${buildParams(true).toString()}`;
   }, [user?.user?.user_type, startDate, endDate, city_id, locale]);
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const fallbackUrl = useMemo(() => {
+    const base =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.analytics.schoolAdmin
+        : endpoints.analytics.admin;
+    return `${base}?${buildParams(false).toString()}`;
+  }, [user?.user?.user_type, startDate, endDate, city_id]);
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      analytics: data?.data || [],
+      analytics: dataToUse?.data || [],
       analyticsError: error,
       analyticsLoading: isLoading,
       analyticsValidating: isValidating,
-      totalPages: data?.total || 0,
+      totalPages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateAnalytics = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateAnalytics };
 }
 
 // ----------------------------------------------------------------------
-export function useGetRevenue({ city_id, start_date, end_date, locale }) {
+export function useGetRevenue({ city_id, start_date, end_date }: any) {
   const [year, setYear] = useState(new Date().getFullYear().toString());
+  const { i18n } = useTranslation();
   const { user } = useAuthContext();
+  const locale = i18n.language;
 
-  const getTheFullUrl = useMemo(() => {
-    if (user?.user?.user_type && year) {
-      let url = '';
+  const buildParams = (includeLocale: boolean) => {
+    const params = new URLSearchParams();
+    params.append('year', year);
+    if (city_id) params.append('city_id', city_id);
+    if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
+    if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
+    if (includeLocale) params.append('locale', locale);
+    return params;
+  };
 
-      if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-        url = `${endpoints.analytics.schoolAdminRevenue}?year=${year}`;
-      } else {
-        url = `${endpoints.analytics.adminRevenue}?year=${year}`;
-      }
-
-      if (city_id) {
-        url += `&city_id=${city_id}`;
-      }
-
-      if (start_date) {
-        url += `&start_date=${moment(start_date).format('YYYY-MM-DD')}`;
-      }
-
-      if (end_date) {
-        url += `&end_date=${moment(end_date).format('YYYY-MM-DD')}`;
-      }
-
-      if (locale) {
-        url += `&locale=${locale}`;
-      }
-
-      return url;
-    } else {
-      window.location.reload();
-    }
+  const primaryUrl = useMemo(() => {
+    const base =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.analytics.schoolAdminRevenue
+        : endpoints.analytics.adminRevenue;
+    return `${base}?${buildParams(true).toString()}`;
   }, [year, city_id, start_date, end_date, locale, user?.user?.user_type]);
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const fallbackUrl = useMemo(() => {
+    const base =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.analytics.schoolAdminRevenue
+        : endpoints.analytics.adminRevenue;
+    return `${base}?${buildParams(false).toString()}`;
+  }, [year, city_id, start_date, end_date, user?.user?.user_type]);
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.revenue?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.revenue?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      revenueByPackage: data?.data?.revenueByPackage || [],
-      revenue: data?.data?.revenue || [],
-      paymentMethods: data?.data?.paymentMethods || [],
+      revenueByPackage: dataToUse?.data?.revenueByPackage || [],
+      revenue: dataToUse?.data?.revenue || [],
+      paymentMethods: dataToUse?.data?.paymentMethods || [],
       revenueError: error,
       revenueLoading: isLoading,
       revenueValidating: isValidating,
-      totalPages: data?.total || 0,
+      totalPages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
-  const revalidateAnalytics = (newValue) => {
+  const revalidateAnalytics = (newValue: string) => {
     if (newValue) {
       setYear(newValue);
-      mutate(getTheFullUrl);
+      mutate(primaryUrl);
     }
   };
 
@@ -122,91 +134,108 @@ export function useGetRevenue({ city_id, start_date, end_date, locale }) {
 }
 
 // ----------------------------------------------------------------------
-interface UseGetStudentInsightsProps {
-  start_date?: string;
-  end_date?: string;
-  city_id?: string;
-  locale?: string;
-}
-
 export function useGetStudentInsights({
   start_date,
   end_date,
   city_id,
-  locale,
 }: UseGetStudentInsightsProps = {}) {
-  const getTheFullUrl = useMemo(() => {
-    const baseUrl = endpoints.analytics.getStudentInsights;
-    const params = new URLSearchParams();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
+  const buildParams = (includeLocale: boolean) => {
+    const params = new URLSearchParams();
     if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
     if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
     if (city_id) params.append('city_id', city_id);
-    if (locale) params.append('locale', locale);
+    if (includeLocale) params.append('locale', locale);
+    return params;
+  };
 
-    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
-  }, [start_date, end_date, city_id, locale]);
+  const primaryUrl = useMemo(
+    () => `${endpoints.analytics.getStudentInsights}?${buildParams(true).toString()}`,
+    [start_date, end_date, city_id, locale]
+  );
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const fallbackUrl = useMemo(
+    () => `${endpoints.analytics.getStudentInsights}?${buildParams(false).toString()}`,
+    [start_date, end_date, city_id]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      studentInsights: data?.data || [],
+      studentInsights: dataToUse?.data || [],
       studentInsightsError: error,
       studentInsightsLoading: isLoading,
       studentInsightsValidating: isValidating,
-      totalPages: data?.total || 0,
+      totalPages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateStudentInsights = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateStudentInsights };
 }
 
-interface UseGetTrainerInsightsProps {
-  start_date?: string;
-  end_date?: string;
-  city_id?: string;
-  locale?: string;
-}
-
+// ----------------------------------------------------------------------
 export function useGetTrainerInsights({
   start_date,
   end_date,
   city_id,
-  locale,
 }: UseGetTrainerInsightsProps = {}) {
-  const getTheFullUrl = useMemo(() => {
-    const baseUrl = endpoints.analytics.getTrainerInsights;
-    const params = new URLSearchParams();
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
 
+  const buildParams = (includeLocale: boolean) => {
+    const params = new URLSearchParams();
     if (start_date) params.append('start_date', moment(start_date).format('YYYY-MM-DD'));
     if (end_date) params.append('end_date', moment(end_date).format('YYYY-MM-DD'));
     if (city_id) params.append('city_id', city_id);
-    if (locale) params.append('locale', locale);
+    if (includeLocale) params.append('locale', locale);
+    return params;
+  };
 
-    return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
-  }, [start_date, end_date, city_id, locale]);
+  const primaryUrl = useMemo(
+    () => `${endpoints.analytics.getTrainerInsights}?${buildParams(true).toString()}`,
+    [start_date, end_date, city_id, locale]
+  );
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const fallbackUrl = useMemo(
+    () => `${endpoints.analytics.getTrainerInsights}?${buildParams(false).toString()}`,
+    [start_date, end_date, city_id]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      trainerInsights: data?.data || [],
+      trainerInsights: dataToUse?.data || [],
       trainerInsightsError: error,
       trainerInsightsLoading: isLoading,
       trainerInsightsValidating: isValidating,
-      totalPages: data?.total || 0,
+      totalPages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateTrainerInsights = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateTrainerInsights };

@@ -7,22 +7,34 @@ export function useGetTermsAndConditions() {
   const { i18n } = useTranslation();
   const currentLocale = i18n.language;
 
-  const URL = `${endpoints.termsAndConditions.getList}?locale=${currentLocale}`;
+  const getUrl = (withLocale: boolean) => {
+    const baseUrl = endpoints.termsAndConditions.getList;
+    return withLocale ? `${baseUrl}?locale=${currentLocale}` : baseUrl;
+  };
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher);
+  // Primary fetch with locale
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(getUrl(true), drivysFetcher);
+
+  // Fallback fetch without locale if primary data is empty
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? getUrl(false) : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      termsAndConditions: data?.data || [],
+      termsAndConditions: dataToUse?.data || [],
       termsLoading: isLoading,
       termsError: error,
       termsValidating: isValidating,
     }),
-    [data?.data, isLoading, error, isValidating]
+    [dataToUse?.data, isLoading, error, isValidating]
   );
 
   const revalidateTermsAndConditions = () => {
-    mutate(URL);
+    mutate(getUrl(true));
   };
 
   return { ...memoizedValue, revalidateTermsAndConditions };

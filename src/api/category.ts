@@ -2,6 +2,7 @@ import { fetcher, endpoints, drivysCreator, drivysFetcher, drivysSmasher } from 
 import useSWR, { mutate } from 'swr';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 export function createCategory(body: any) {
@@ -28,7 +29,10 @@ export function useGetAllCategory({
   has_child,
   locale,
 }: useGetCategoryParams & { locale?: string } = {}) {
-  const queryParams = useMemo(() => {
+  const { i18n } = useTranslation();
+  const currentLocale = locale || i18n.language;
+
+  const buildParams = (includeLocale: boolean) => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
@@ -36,32 +40,44 @@ export function useGetAllCategory({
     if (parent_id) params.parent_id = parent_id;
     if (published || published === '0') params.published = published;
     if (has_child || has_child === '0') params.has_child = has_child;
-    if (locale) params.locale = locale;
+    if (includeLocale) params.locale = currentLocale;
 
     return params;
-  }, [limit, page, search, parent_id, published, has_child, locale]);
+  };
 
-  const getTheFullUrl = useMemo(
-    () => `${endpoints.category.list}?${new URLSearchParams(queryParams)}`,
-    [queryParams]
+  const primaryUrl = useMemo(
+    () => `${endpoints.category.list}?${new URLSearchParams(buildParams(true))}`,
+    [limit, page, search, parent_id, published, has_child, currentLocale]
   );
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const fallbackUrl = useMemo(
+    () => `${endpoints.category.list}?${new URLSearchParams(buildParams(false))}`,
+    [limit, page, search, parent_id, published, has_child]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      category: data?.data as any,
+      category: dataToUse?.data || [],
       categoryLoading: isLoading,
       categoryError: error,
       categoryValidating: isValidating,
-      categoryEmpty: !isLoading && data?.data?.length === 0,
-      totalpages: data?.total || 0,
+      categoryEmpty: !isLoading && dataToUse?.data?.length === 0,
+      totalpages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateCategory = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateCategory };

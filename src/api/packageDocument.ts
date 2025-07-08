@@ -41,9 +41,8 @@ export function useGetPackageDocuments({
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const getTheFullUrl = () => {
+  const buildParams = (includeLocale: boolean) => {
     const queryParams: Record<string, any> = {};
-
     if (packageId !== undefined) queryParams.package_id = packageId;
     if (sessionNo !== undefined) queryParams.session_no = sessionNo;
     if (status !== undefined) queryParams.status = status;
@@ -53,27 +52,44 @@ export function useGetPackageDocuments({
     if (sort !== undefined) queryParams.sort = sort;
     if (sort_dir !== undefined) queryParams.sort_dir = sort_dir;
     if (limit !== undefined) queryParams.limit = limit;
-    if (page !== undefined) queryParams.page = page ? page + 1 : 1;
-    if (locale) queryParams.locale = locale;
+    if (page !== undefined) queryParams.page = page + 1;
+    if (includeLocale) queryParams.locale = locale;
 
-    return `${endpoints.packageDocument.getList}?${new URLSearchParams(queryParams)}`;
+    return queryParams;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const primaryUrl = useMemo(
+    () => `${endpoints.packageDocument.getList}?${new URLSearchParams(buildParams(true))}`,
+    [packageId, sessionNo, status, type, title, search, sort, sort_dir, limit, page, locale]
+  );
+
+  const fallbackUrl = useMemo(
+    () => `${endpoints.packageDocument.getList}?${new URLSearchParams(buildParams(false))}`,
+    [packageId, sessionNo, status, type, title, search, sort, sort_dir, limit, page]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      documents: data?.data as any,
+      documents: dataToUse?.data || [],
       docLoading: isLoading,
       docError: error,
       docValidating: isValidating,
-      totalpages: data?.total || 0,
+      totalpages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateDocuments = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateDocuments };

@@ -17,6 +17,7 @@ import {
   FormControl,
 } from '@mui/material';
 import { mapRoleToPermission, useGetRoles, useMappedRoles } from 'src/api/roles-and-permission';
+import { useTranslation } from 'react-i18next';
 
 type PermissionTableRowProps = {
   row: {
@@ -31,6 +32,7 @@ type PermissionTableRowProps = {
 export default function PermissionTableRow({ row, reload }: PermissionTableRowProps) {
   const [open, setOpen] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   const { mappedRoles, mappedRolesLoading, mappedRolesTotal } = useMappedRoles(0, 10000);
   const [selectedRoleId, setSelectedRoleId] = useState<number | ''>('');
   const [rights, setRights] = useState({
@@ -87,7 +89,7 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
 
       const response = await mapRoleToPermission(mapRole);
       if (response.status === 'success') {
-        enqueueSnackbar('Role And Permission Mapped successfully!', {
+        enqueueSnackbar(t('role_permission_mapping_success'), {
           variant: 'success',
         });
       }
@@ -119,36 +121,36 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
             textTransform="capitalize"
             color="text.primary"
           >
-            {row?.name || 'N/A'}
+            {row?.name || t('n/a')}
           </Typography>
         </TableCell>
 
         <TableCell>
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line' }}>
-            {row?.description || 'No description'}
+            {row?.description || t('no_description')}
           </Typography>
         </TableCell>
 
         <TableCell align="right">
           <Button variant="outlined" size="small" color="primary" onClick={() => setOpen(true)}>
-            Map Role
+            {t('map_role')}{' '}
           </Button>
         </TableCell>
       </TableRow>
 
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>
-          Role Mapping for{' '}
+          {t('role_mapping_for')}
           <Typography component="span" color="primary" fontWeight={600}>
             "{row.name}"
           </Typography>
         </DialogTitle>{' '}
         <DialogContent sx={{ pt: 2 }}>
           <FormControl fullWidth margin="normal">
-            <InputLabel>Select Role</InputLabel>
+            <InputLabel>{t('select_role')}</InputLabel>
             <Select
               value={selectedRoleId}
-              label="Select Role"
+              label={t('select_role')}
               name="role"
               onChange={(e) => setSelectedRoleId(Number(e.target.value))}
             >
@@ -165,23 +167,23 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
             control={
               <Checkbox checked={rights.create} onChange={handleCheckboxChange} name="create" />
             }
-            label="Create"
+            label={t('create')}
           />
           <FormControlLabel
             control={<Checkbox checked={rights.read} onChange={handleCheckboxChange} name="read" />}
-            label="Read"
+            label={t('read')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={rights.update} onChange={handleCheckboxChange} name="update" />
             }
-            label="Update"
+            label={t('update')}
           />
           <FormControlLabel
             control={
               <Checkbox checked={rights.delete} onChange={handleCheckboxChange} name="delete" />
             }
-            label="Delete"
+            label={t('delete')}
           />
         </DialogContent>
         <DialogActions>
@@ -192,7 +194,7 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
             onClick={handleSubmitRoleMapping}
             disabled={!selectedRoleId}
           >
-            Save
+            {t('save')}{' '}
           </Button>
         </DialogActions>
       </Dialog>
