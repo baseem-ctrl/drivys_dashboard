@@ -37,12 +37,12 @@ export function useGetPackage({
 }: useGetDelivereyParams = {}) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
-  // Construct query parameters dynamically
-  const queryParams = useMemo(() => {
+
+  const buildQueryParams = (includeLocale: boolean) => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
+    if (includeLocale) params.locale = locale;
     if (search) params.search = search;
     if (status) params.status = status;
     if (is_published) params.is_published = is_published;
@@ -54,46 +54,72 @@ export function useGetPackage({
     if (is_public) params.is_public = is_public;
 
     return params;
-  }, [
-    limit,
-    page,
-    locale,
-    search,
-    status,
-    is_published,
-    min_price,
-    max_price,
-    number_of_sessions,
-    vendor_id,
-    city_id,
-    is_public,
-  ]);
-
-  const fullUrl = useMemo(
-    () => `${endpoints.package.list}?${new URLSearchParams(queryParams)}`,
-    [queryParams]
-  );
-
-  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
-    revalidateOnFocus: false,
-  });
-
-  const revalidatePackage = () => {
-    mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
+  const primaryUrl = useMemo(
+    () => `${endpoints.package.list}?${new URLSearchParams(buildQueryParams(true))}`,
+    [
+      limit,
+      page,
+      locale,
+      search,
+      status,
+      is_published,
+      min_price,
+      max_price,
+      number_of_sessions,
+      vendor_id,
+      city_id,
+      is_public,
+    ]
+  );
+
+  const fallbackUrl = useMemo(
+    () => `${endpoints.package.list}?${new URLSearchParams(buildQueryParams(false))}`,
+    [
+      limit,
+      page,
+      search,
+      status,
+      is_published,
+      min_price,
+      max_price,
+      number_of_sessions,
+      vendor_id,
+      city_id,
+      is_public,
+    ]
+  );
+
+  const {
+    data: primaryData,
+    error,
+    isLoading,
+    isValidating,
+  } = useSWR(primaryUrl, drivysFetcher, { revalidateOnFocus: false });
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+
+  const revalidatePackage = () => {
+    mutate(primaryUrl);
+  };
+
   const memoizedValue = useMemo(() => {
-    const DelivereyData = data?.data || [];
+    const DelivereyData = dataToUse?.data || [];
     return {
       packageList: DelivereyData,
       packageLoading: isLoading,
       packageError: error,
       packageValidating: isValidating,
-      packageEmpty: DelivereyData.length === 0,
-      totalPages: data?.total || 0,
+      packageEmpty: !isLoading && DelivereyData.length === 0,
+      totalPages: dataToUse?.total || 0,
     };
-  }, [data?.data, data?.total, error, isLoading, isValidating]);
+  }, [dataToUse?.data, dataToUse?.total, error, isLoading, isValidating]);
 
   return {
     ...memoizedValue,

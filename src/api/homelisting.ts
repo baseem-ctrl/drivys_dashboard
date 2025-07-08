@@ -31,46 +31,59 @@ export function useGetHomeListing({
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  // Construct query parameters dynamically
-  const queryParams = useMemo(() => {
+  const buildQueryParams = (includeLocale: boolean) => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
+    if (includeLocale) params.locale = locale;
     if (search) params.search = search;
     if (status) params.status = status;
     if (is_active) params.is_active = is_active;
     if (display_order) params.display_order = display_order;
     if (catalogue_type) params.catalogue_type = catalogue_type;
     if (trainer_id) params.trainer_id = trainer_id;
-
     return params;
-  }, [limit, page, locale, search, status, is_active, display_order, catalogue_type, trainer_id]);
-
-  const fullUrl = useMemo(
-    () => `${endpoints.homeListing.list}?${new URLSearchParams(queryParams)}`,
-    [queryParams]
-  );
-
-  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
-    revalidateOnFocus: false,
-  });
-
-  const revalidateHomeListing = () => {
-    mutate(fullUrl);
   };
 
+  const primaryUrl = useMemo(
+    () => `${endpoints.homeListing.list}?${new URLSearchParams(buildQueryParams(true))}`,
+    [limit, page, locale, search, status, is_active, display_order, catalogue_type, trainer_id]
+  );
+
+  const fallbackUrl = useMemo(
+    () => `${endpoints.homeListing.list}?${new URLSearchParams(buildQueryParams(false))}`,
+    [limit, page, search, status, is_active, display_order, catalogue_type, trainer_id]
+  );
+
+  const {
+    data: primaryData,
+    error,
+    isLoading,
+    isValidating,
+  } = useSWR(primaryUrl, drivysFetcher, { revalidateOnFocus: false });
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+
   const memoizedValue = useMemo(() => {
-    const DelivereyData = data?.data || [];
+    const homeData = dataToUse?.data || [];
     return {
-      homelistingList: DelivereyData,
+      homelistingList: homeData,
       homelistingLoading: isLoading,
       homelistingError: error,
       homelistingValidating: isValidating,
-      homelistingEmpty: DelivereyData.length === 0,
-      totalPages: data?.total || 0,
+      homelistingEmpty: !isLoading && homeData.length === 0,
+      totalPages: dataToUse?.total || 0,
     };
-  }, [data?.data, data?.total, error, isLoading, isValidating]);
+  }, [dataToUse?.data, dataToUse?.total, error, isLoading, isValidating]);
+
+  const revalidateHomeListing = () => {
+    mutate(primaryUrl);
+  };
 
   return {
     ...memoizedValue,

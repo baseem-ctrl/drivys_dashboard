@@ -45,38 +45,57 @@ export function useGetStateList({
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const getTheFullUrl = () => {
-    const queryParams: Record<string, any> = {
-      limit: limit || 100,
-      page: page ? page + 1 : 1,
+  const baseEndpoint = endpoints.state.getByList;
+
+  const buildParams = (includeLocale: boolean) => {
+    const params: Record<string, any> = {
+      limit,
+      page: page + 1,
     };
 
     if (is_published !== undefined) {
-      queryParams.is_published = is_published === 'published' ? 1 : 0;
+      params.is_published = is_published === 'published' ? 1 : 0;
     }
-    if (order !== undefined) queryParams.order = order;
-    if (city_id !== undefined) queryParams.city_id = city_id;
-    if (searchTerm) queryParams.search = searchTerm;
-    if (locale) queryParams.locale = locale;
+    if (order !== undefined) params.order = order;
+    if (city_id !== undefined) params.city_id = city_id;
+    if (searchTerm) params.search = searchTerm;
+    if (includeLocale) params.locale = locale;
 
-    return `${endpoints.state.getByList}?${new URLSearchParams(queryParams)}`;
+    return params;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const primaryUrl = useMemo(
+    () => `${baseEndpoint}?${new URLSearchParams(buildParams(true))}`,
+    [limit, page, is_published, order, city_id, searchTerm, locale]
+  );
+
+  const fallbackUrl = useMemo(
+    () => `${baseEndpoint}?${new URLSearchParams(buildParams(false))}`,
+    [limit, page, is_published, order, city_id, searchTerm]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      states: data?.data as any,
+      states: dataToUse?.data || [],
       stateLoading: isLoading,
       stateError: error,
       stateValidating: isValidating,
-      totalpages: data?.total || 0,
+      totalpages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateStates = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateStates };

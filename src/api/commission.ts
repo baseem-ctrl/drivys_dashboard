@@ -42,31 +42,55 @@ export function useGetAllVendorCommissionList(page: number, limit: number) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {
+  const buildQueryParams = (includeLocale: boolean) => {
+    const params: Record<string, any> = {
       page: page ? page + 1 : 1,
       limit: limit || 10,
-      locale,
     };
-
-    return `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(queryParams)}`;
+    if (includeLocale) {
+      params.locale = locale;
+    }
+    return params;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const primaryUrl = useMemo(
+    () =>
+      `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(
+        buildQueryParams(true)
+      )}`,
+    [page, limit, locale]
+  );
+
+  const fallbackUrl = useMemo(
+    () =>
+      `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(
+        buildQueryParams(false)
+      )}`,
+    [page, limit]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      vendorCommissions: data?.data as any,
+      vendorCommissions: dataToUse?.data || [],
       commissionsLoading: isLoading,
       commissionsError: error,
       commissionsValidating: isValidating,
-      totalPages: data?.total || 0,
+      totalPages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateVendorCommissions = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateVendorCommissions };

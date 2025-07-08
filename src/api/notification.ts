@@ -18,31 +18,49 @@ export function useGetNotificationList({ page, limit }: UseGetNotificationListPr
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const getTheFullUrl = () => {
-    const queryParams: Record<string, any> = {
+  const buildQueryParams = (includeLocale: boolean) => {
+    const params: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
-      locale,
     };
-
-    return `${endpoints.notification.getList}?${new URLSearchParams(queryParams)}`;
+    if (includeLocale) {
+      params.locale = locale;
+    }
+    return params;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const primaryUrl = useMemo(
+    () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(true))}`,
+    [limit, page, locale]
+  );
+
+  const fallbackUrl = useMemo(
+    () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(false))}`,
+    [limit, page]
+  );
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? fallbackUrl : null),
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      notifications: (data?.data as INotification[]) || [],
+      notifications: (dataToUse?.data as INotification[]) || [],
       notificationsError: error,
       notificationsLoading: isLoading,
       notificationsValidating: isValidating,
-      totalpages: data?.total || 0,
+      totalpages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateNotifications = () => {
-    mutate(getTheFullUrl);
+    mutate(primaryUrl);
   };
 
   return { ...memoizedValue, revalidateNotifications };

@@ -944,7 +944,7 @@
   "TITLE": "TITLE",
   "SUPPORT EMAIL US FIELDS MESSAGE": "SUPPORT EMAIL US FIELDS MESSAGE",
   "SUPPORT DESCRIPTION": "SUPPORT DESCRIPTION",
-  "terms_conditions": "terms & conditions",
+  "terms_conditions": "Terms & Conditions",
   "Terms & Policies": "Terms & Policies",
   "Failed to load terms and conditions.": "Failed to load terms and conditions.",
   "Add T&C": "Add T&C",
@@ -1159,5 +1159,17 @@
   "start_time": "Start Time",
   "history": "History",
   "admin": "Admin",
-  "collected_on": "Collected On"
+  "collected_on": "Collected On",
+  "role": "Role",
+  "permission": "Permission",
+  "permissions_list": "Permissions List",
+  "view_mapped_list": "View Mapped List",
+  "map_role": "Map Role",
+  "role_mapping_for": "Role Mapping for",
+  "select_role": "Select Role",
+  "read": "Read",
+  "update": "Update",
+  "no_description": "No description",
+  "na": "N/A",
+  "role_permission_mapping_success": "Role And Permission Mapped successfully!"
 }

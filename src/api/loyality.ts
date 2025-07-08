@@ -20,35 +20,45 @@ export function useGetLoyaltyProgramList({
   const { i18n } = useTranslation();
   const currentLocale = i18n.language;
 
-  const getTheFullUrl = () => {
-    const queryParams: Record<string, any> = {
+  const getQueryParams = (withLocale: boolean) => {
+    const params: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
-      locale: currentLocale,
     };
-
     if (searchQuery) {
-      queryParams.search = searchQuery;
+      params.search = searchQuery;
     }
-
-    return `${endpoints.loyalityProgram.list}?${new URLSearchParams(queryParams)}`;
+    if (withLocale) {
+      params.locale = currentLocale;
+    }
+    return params;
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
+  const getUrl = (withLocale: boolean) =>
+    `${endpoints.loyalityProgram.list}?${new URLSearchParams(getQueryParams(withLocale))}`;
+
+  const { data: primaryData, isLoading, error, isValidating } = useSWR(getUrl(true), drivysFetcher); // with locale
+
+  const { data: fallbackData } = useSWR(
+    () => (!primaryData?.data?.length ? getUrl(false) : null), // fallback without locale
+    drivysFetcher
+  );
+
+  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
 
   const memoizedValue = useMemo(
     () => ({
-      loyaltyPrograms: data?.data || [],
+      loyaltyPrograms: dataToUse?.data || [],
       loyaltyProgramsError: error,
       loyaltyProgramsLoading: isLoading,
       loyaltyProgramsValidating: isValidating,
-      totalpages: data?.total || 0,
+      totalpages: dataToUse?.total || 0,
     }),
-    [data?.data, error, isLoading, isValidating, data?.total]
+    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
   );
 
   const revalidateLoyaltyPrograms = () => {
-    mutate(getTheFullUrl);
+    mutate(getUrl(true));
   };
 
   return { ...memoizedValue, revalidateLoyaltyPrograms };

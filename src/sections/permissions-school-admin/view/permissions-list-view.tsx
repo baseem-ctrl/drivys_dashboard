@@ -45,21 +45,16 @@ import PermissionFilter from '../permissions-filters';
 import PermissionTableRow from '../permissions-table-row';
 import CreatePermission from '../create-permission';
 import { useGetPermissionsBySchoolAdmin } from 'src/api/role-permission-school-admin';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Role', width: 100 },
-  { id: 'description', label: 'Description', width: 100 },
-  { id: 'action', label: '', width: 200 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function PermissionListView() {
   const { user } = useAuthContext();
   const router = useRouter();
-
+  const { t } = useTranslation();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();
@@ -68,6 +63,11 @@ export default function PermissionListView() {
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
+  const TABLE_HEAD = [
+    { id: 'name', label: t('role'), width: 100 },
+    { id: 'description', label: t('description'), width: 100 },
+    { id: 'action', label: '', width: 200 },
+  ];
   const [filters, setFilters] = useState<{
     startDate?: string;
     endDate?: string;
@@ -233,7 +233,7 @@ export default function PermissionListView() {
             color="primary"
             onClick={() => router.push(paths.dashboard.rolesAndPermission.rolePermissionMapping)}
           >
-            View Mapped List
+            {t('view_mapped_list')}
           </Button>
 
           {/* <Button color="primary" variant="contained" endIcon={<AddIcon />} onClick={handleOpen}>

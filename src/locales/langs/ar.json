@@ -1211,5 +1211,18 @@
   "start_time": "وقت البدء",
   "history": "السجل",
   "admin": "المسؤول",
-  "collected_on": "تم التحصيل في"
+  "collected_on": "تم التحصيل في",
+  "terms_conditions": "الشروط والأحكام",
+  "role": "الدور",
+  "permission": "الصلاحية",
+  "permissions_list": "قائمة الصلاحيات",
+  "view_mapped_list": "عرض القائمة المرتبطة",
+  "map_role": "ربط الدور",
+  "role_mapping_for": "ربط الدور لـ",
+  "select_role": "اختر الدور",
+  "read": "قراءة",
+  "update": "تحديث",
+  "no_description": "لا يوجد وصف",
+  "na": "غير متوفر",
+  "role_permission_mapping_success": "تم ربط الدور والصلاحيات بنجاح!"
 }

@@ -15,37 +15,46 @@ export function useGetAllAppSettings(page: number, limit: number) {
   const { i18n } = useTranslation();
   const currentLocale = i18n.language;
 
-  const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+  const baseParams = new URLSearchParams({
+    page: String(page + 1 || 1),
+    limit: String(limit || 10),
+    sort_order: 'asc',
+    sort_by: 'display_order',
+  });
 
-    queryParams.page = page ? page + 1 : 1;
-    queryParams.limit = limit || 10;
+  const urlWithLocale = `${
+    endpoints.appSettings.list
+  }?${baseParams.toString()}&locale=${currentLocale}`;
+  const urlWithoutLocale = `${endpoints.appSettings.list}?${baseParams.toString()}`;
 
-    queryParams.sort_order = 'asc';
-    queryParams.sort_by = 'display_order';
-    queryParams.locale = currentLocale;
+  // Primary fetch with locale
+  const {
+    data: primaryData,
+    isLoading: loadingPrimary,
+    error: errorPrimary,
+  } = useSWR(urlWithLocale, drivysFetcher);
 
-    return `${endpoints.appSettings.list}?${new URLSearchParams(queryParams)}`;
+  // Fallback fetch without locale
+  const {
+    data: fallbackData,
+    isLoading: loadingFallback,
+    error: errorFallback,
+  } = useSWR(() => (!primaryData?.data?.length ? urlWithoutLocale : null), drivysFetcher);
+
+  const hasPrimary = primaryData?.data?.length > 0;
+  const hasFallback = fallbackData?.data?.length > 0;
+
+  const finalData = hasPrimary ? primaryData : hasFallback ? fallbackData : null;
+  const usedFallback = !hasPrimary && hasFallback;
+
+  return {
+    appSettings: finalData?.data || [],
+    appSettingsLoading: loadingPrimary || loadingFallback,
+    appSettingsError: errorPrimary || errorFallback,
+    appSettingsValidating: !finalData,
+    totalpages: finalData?.total || 0,
+    usedFallback,
   };
-
-  const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
-
-  const memoizedValue = useMemo(
-    () => ({
-      appSettings: data?.data as any,
-      appSettingsLoading: isLoading,
-      appSettingsError: error,
-      appSettingsValidating: isValidating,
-      totalpages: data?.total || 0,
-    }),
-    [data?.data, error, isLoading, isValidating]
-  );
-
-  const revalidateAppSettings = () => {
-    mutate(getTheFullUrl);
-  };
-
-  return { ...memoizedValue, revalidateAppSettings };
 }
 
 // ----------------------------------------------------------------------

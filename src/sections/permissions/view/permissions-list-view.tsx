@@ -44,20 +44,16 @@ import { useRouter } from 'src/routes/hooks';
 import PermissionFilter from '../permissions-filters';
 import PermissionTableRow from '../permissions-table-row';
 import CreatePermission from '../create-permission';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Role', width: 100 },
-  { id: 'description', label: 'Description', width: 100 },
-  { id: 'action', label: '', width: 200 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function PermissionListView() {
   const { user } = useAuthContext();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -74,7 +70,11 @@ export default function PermissionListView() {
     payment_method?: number;
     category_id?: any;
   }>({});
-
+  const TABLE_HEAD = [
+    { id: 'name', label: t('role'), width: 100 },
+    { id: 'description', label: t('Description'), width: 100 },
+    { id: 'action', label: '', width: 200 },
+  ];
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -187,17 +187,17 @@ export default function PermissionListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Permissions List"
+        heading={t('permissions_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Permission',
+            name: t('permission'),
             href: paths.dashboard.rolesAndPermission.permission,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Permissions List' },
+          { name: t('permissions_list') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -232,9 +232,8 @@ export default function PermissionListView() {
             color="primary"
             onClick={() => router.push(paths.dashboard.rolesAndPermission.rolePermissionMapping)}
           >
-            View Mapped List
+            {t('view_mapped_list')}
           </Button>
-
           {/* <Button color="primary" variant="contained" endIcon={<AddIcon />} onClick={handleOpen}>
             Create New
           </Button> */}
