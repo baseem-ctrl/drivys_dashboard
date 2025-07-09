@@ -46,7 +46,7 @@ import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
+import { TRAINER_DETAILS_SCHOOL_ADMIN_TABS, TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
 import TrainerDetailsContent from './school-admin-trainer-details-content';
 import SchoolAdminTrainerDetailsContent from './school-admin-trainer-details-content';
 import StudentDetailsContent from 'src/sections/user/student-details-content';
@@ -473,7 +473,7 @@ export default function UserDetailsContentAdmin({
       </Stack>
     </Stack>
   );
-
+  console.log('currentTab', currentTab);
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -482,7 +482,7 @@ export default function UserDetailsContentAdmin({
         mb: { xs: 3, md: 5 },
       }}
     >
-      {TRAINER_DETAILS_TABS.map((tab) => (
+      {TRAINER_DETAILS_SCHOOL_ADMIN_TABS.map((tab) => (
         <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
       ))}
     </Tabs>
