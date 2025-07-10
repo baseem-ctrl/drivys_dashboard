@@ -32,13 +32,15 @@ export function useGetAllAppSettings(page: number, limit: number) {
     data: primaryData,
     isLoading: loadingPrimary,
     error: errorPrimary,
+    mutate: revalidatePrimary,
   } = useSWR(urlWithLocale, drivysFetcher);
 
-  // Fallback fetch without locale
+  // Fallback fetch without locale (only if no primaryData)
   const {
     data: fallbackData,
     isLoading: loadingFallback,
     error: errorFallback,
+    mutate: revalidateFallback,
   } = useSWR(() => (!primaryData?.data?.length ? urlWithoutLocale : null), drivysFetcher);
 
   const hasPrimary = primaryData?.data?.length > 0;
@@ -47,6 +49,14 @@ export function useGetAllAppSettings(page: number, limit: number) {
   const finalData = hasPrimary ? primaryData : hasFallback ? fallbackData : null;
   const usedFallback = !hasPrimary && hasFallback;
 
+  // Unified revalidate function
+  const revalidateAppSettings = async () => {
+    await revalidatePrimary();
+    if (!primaryData?.data?.length) {
+      await revalidateFallback();
+    }
+  };
+
   return {
     appSettings: finalData?.data || [],
     appSettingsLoading: loadingPrimary || loadingFallback,
@@ -54,6 +64,7 @@ export function useGetAllAppSettings(page: number, limit: number) {
     appSettingsValidating: !finalData,
     totalpages: finalData?.total || 0,
     usedFallback,
+    revalidateAppSettings,
   };
 }
 
