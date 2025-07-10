@@ -14,6 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 import Container from '@mui/material/Container';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
+import { useTranslation } from 'react-i18next';
 
 interface RewardFormData {
   trainer_id: string;
@@ -26,6 +27,7 @@ export default function CreateRewardForm() {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const settings = useSettingsContext();
+  const { t } = useTranslation();
 
   const [searchValue, setSearchValue] = useState('');
   const { schoolTrainersList: trainers, schoolTrainersLoading: trainersLoading } =
@@ -88,16 +90,14 @@ export default function CreateRewardForm() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create Reward"
+        heading={t('create')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Trainers', href: paths.dashboard.school.trainer },
-          { name: 'Create Reward' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainers'), href: paths.dashboard.school.trainer },
+          { name: t('create') },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
       />
+
       <FormProvider {...methods}>
         <Box
           sx={{
@@ -117,23 +117,22 @@ export default function CreateRewardForm() {
           <form onSubmit={onSubmit}>
             <Stack spacing={4}>
               <Typography variant="h5" align="center" color="primary">
-                Create Reward for Trainer
+                {t('create_reward_for_trainer')}
               </Typography>
-
               <Controller
                 name="trainer_id"
                 control={methods.control}
                 render={({ field }) => (
                   <RHFAutocompleteSearch
                     {...field}
-                    label="Select Trainer"
+                    label={t('select_trainer')}
                     options={verifiedTrainers || []}
                     value={field.value || null}
                     onChange={(event, newValue) => field.onChange(newValue)}
                     getOptionLabel={(option) => option?.user?.name || 'No Name'}
                     renderOption={(props, option) => (
                       <li {...props} key={option.id}>
-                        {option?.user?.name || 'No Name'}
+                        {option?.user?.name || t('n/a')}
                       </li>
                     )}
                     onInputChange={(event, newInputValue) => setSearchValue(newInputValue)}
@@ -143,7 +142,7 @@ export default function CreateRewardForm() {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Select Trainer"
+                        label={t('select_trainer')}
                         variant="outlined"
                         fullWidth
                         error={Boolean(errors.trainer_id)}
@@ -160,7 +159,7 @@ export default function CreateRewardForm() {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Reward Amount"
+                    label={t('reward_amount')}
                     type="number"
                     fullWidth
                     error={Boolean(errors.reward_amount)}
@@ -177,7 +176,7 @@ export default function CreateRewardForm() {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Transaction ID"
+                    label={t('transaction_id')}
                     fullWidth
                     type="number"
                     error={Boolean(errors.reward_txn_id)}
@@ -187,12 +186,12 @@ export default function CreateRewardForm() {
                 )}
               />
               <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>
-                Upload a document proof for reward
+                {t('upload_document_proof')}
               </Typography>
               <RHFFileUpload
-                label="Document Proof"
+                label={t('document_proof')}
                 name="document"
-                helperText="Please upload a file (PDF, DOCX, etc.)"
+                helperText={t('upload_file_helper_text')}
               />
 
               <Controller
@@ -201,7 +200,7 @@ export default function CreateRewardForm() {
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="Tip Message"
+                    label={t('tip_message')}
                     multiline
                     rows={4}
                     fullWidth
@@ -226,7 +225,7 @@ export default function CreateRewardForm() {
                     },
                   }}
                 >
-                  Create Reward
+                  {t('create_reward')}
                 </LoadingButton>
               </Stack>
             </Stack>

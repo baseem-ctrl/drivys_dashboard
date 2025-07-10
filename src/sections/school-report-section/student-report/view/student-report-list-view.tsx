@@ -37,17 +37,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'student-name', label: 'Student', width: 200 },
-  { id: 'total-sessions', label: 'Total Sessions', width: 200 },
-  { id: 'completed-sessions', label: 'Completed Sessions', width: 200 },
-  { id: 'category', label: 'Category', width: 200 },
-  { id: 'amount-paid', label: 'Amount Paid For Session', width: 260 },
-  { id: 'is-certificate-issues', label: 'Certificate issued', width: 200 },
-];
-
-// ----------------------------------------------------------------------
-
 export default function StudentReportListSchoolAdminView() {
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
@@ -64,7 +53,15 @@ export default function StudentReportListSchoolAdminView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'student-name', label: t('student'), width: 200 },
+    { id: 'total-sessions', label: t('total_sessions'), width: 200 },
+    { id: 'completed-sessions', label: t('completed_sessions'), width: 200 },
+    { id: 'category', label: t('category'), width: 200 },
+    { id: 'amount-paid', label: t('amount_paid_for_session'), width: 260 },
+    { id: 'is-certificate-issues', label: t('certificate_issued'), width: 200 },
+  ];
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -218,22 +215,23 @@ export default function StudentReportListSchoolAdminView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Student Report List"
+        heading={t('student_report_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Report',
+            name: t('report'),
             href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Student Report' },
+          { name: t('student_report') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
+
       {/* {renderFilters} */}
       {/* {Object.values(filters).some((value) => value) && (
         <Button
@@ -263,7 +261,7 @@ export default function StudentReportListSchoolAdminView() {
                   }}
                   startIcon={<DownloadIcon />}
                 >
-                  Download
+                  {t('download')}
                 </Button>
               )}
             </Box>
@@ -278,7 +276,7 @@ export default function StudentReportListSchoolAdminView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t('delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>

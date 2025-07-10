@@ -57,22 +57,11 @@ import { updateUserVerification } from 'src/api/school-admin';
 import TrainerCreateEditForm from './trainer-create-update';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import SchoolSearch from 'src/sections/packages/package-search';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
-
-const TABLE_HEAD = [
-  { id: 'locale', label: 'Language' },
-  { id: 'name', label: 'Name' },
-  // { id: 'session_inclusions', label: 'Session inclusions' },
-  { id: 'number_of_sessions', label: 'Number of sessions' },
-  { id: 'is_published', label: 'Is published' },
-  { id: 'drivys_commision', label: 'Drivys Commision' },
-  { id: 'category', label: 'Category' },
-
-  // { id: '' },
-];
 
 const defaultFilters: any = {
   name: '',
@@ -87,7 +76,15 @@ const defaultFilters: any = {
 
 export default function SchoolPackageListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
-
+  const { t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'locale', label: t('language') },
+    { id: 'name', label: t('name') },
+    { id: 'number_of_sessions', label: t('number_of_sessions') },
+    { id: 'is_published', label: t('is_published') },
+    { id: 'drivys_commision', label: t('drivys_commission') },
+    { id: 'category', label: t('category') },
+  ];
   const settings = useSettingsContext();
 
   const router = useRouter();
@@ -155,15 +152,12 @@ export default function SchoolPackageListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('packages')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Packages', href: paths.dashboard.school.package },
-            { name: 'List' },
+            { name: t('dashboard'), href: paths.dashboard.root },
+            { name: t('packages'), href: paths.dashboard.school.package },
+            { name: t('list') },
           ]}
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
         />
 
         <Card>

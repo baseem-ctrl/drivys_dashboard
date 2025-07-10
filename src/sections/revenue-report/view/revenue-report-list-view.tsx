@@ -38,16 +38,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'school-name', label: 'School', width: 200 },
-  { id: 'school-revenue', label: 'School Revenue', width: 200 },
-
-  { id: 'total-booking', label: 'Total Bookings', width: 200 },
-  { id: 'total-completed-booking', label: 'Completed Bookings', width: 200 },
-
-  { id: 'more-details', label: 'Revenue By Trainer', width: 200 },
-];
-
 // ----------------------------------------------------------------------
 
 export default function RevenueReportListView() {
@@ -61,7 +51,15 @@ export default function RevenueReportListView() {
   const [localeFilter, setLocaleFilter] = useState('');
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'school-name', label: t('school'), width: 200 },
+    { id: 'school-revenue', label: t('school_revenue'), width: 200 },
+    { id: 'total-booking', label: t('total_bookings'), width: 200 },
+    { id: 'total-completed-booking', label: t('completed_bookings'), width: 200 },
+    { id: 'more-details', label: t('revenue_by_trainer'), width: 200 },
+  ];
+
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -214,22 +212,20 @@ export default function RevenueReportListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Revenue Report List"
+        heading={t('revenue_report_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Report',
+            name: t('report'),
             href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Revenue Report' },
+          { name: t('revenue_report') },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
       />
+
       {renderFilters}
       <Card>
         {viewMode === 'table' && (
@@ -248,7 +244,7 @@ export default function RevenueReportListView() {
                   }}
                   startIcon={<DownloadIcon />}
                 >
-                  Download
+                  {t('download')}
                 </Button>
               )}
             </Box>
@@ -263,7 +259,7 @@ export default function RevenueReportListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t('delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
