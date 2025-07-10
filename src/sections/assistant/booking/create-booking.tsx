@@ -219,13 +219,36 @@ export default function CreateBooking() {
     setSelectedTrainerId(id);
     setActiveStep((prev) => prev + 1);
   };
+  const packages = [
+    {
+      value: 'trial',
+      label: 'Trial',
+      gradient: 'linear-gradient(to right, #1E1E1E, #292929)',
+    },
+    {
+      value: 'bronze',
+      label: 'Bronze',
+      gradient: 'linear-gradient(to right, #CD7F32, #000000)',
+    },
+    {
+      value: 'silver',
+      label: 'Silver',
+      gradient: 'linear-gradient(to right, #8E8E8E, #000000)',
+    },
+    {
+      value: 'gold',
+      label: 'Gold',
+      gradient: 'linear-gradient(to right, #FFB000, #000000)',
+    },
+    {
+      value: 'unlimited',
+      label: 'Unlimited',
+      gradient: 'linear-gradient(to right, #7B156D, #3B0033)',
+    },
+  ];
+
   const getCardBackground = (index: number) => {
-    const gradients = [
-      'linear-gradient(to bottom right, #f98423, #505050)',
-      'linear-gradient(to bottom right, #2f2f2f, #aaaaaa)',
-      'linear-gradient(to bottom right, #002b36, #c3f8ff)',
-    ];
-    return gradients[index] || '#111';
+    return packages[index]?.gradient || '#111';
   };
 
   const handlePackageSelect = (pkg: any) => {
