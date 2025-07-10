@@ -189,7 +189,33 @@ export default function PackageCreateForm({
     resolver: yupResolver(DeliverySchema) as any,
     defaultValues,
   });
-
+  const packages = [
+    {
+      value: 'trial',
+      label: 'Trial',
+      gradient: 'linear-gradient(to right, #1E1E1E, #292929)',
+    },
+    {
+      value: 'bronze',
+      label: 'Bronze',
+      gradient: 'linear-gradient(to right, #CD7F32, #000000)',
+    },
+    {
+      value: 'silver',
+      label: 'Silver',
+      gradient: 'linear-gradient(to right, #8E8E8E, #000000)',
+    },
+    {
+      value: 'gold',
+      label: 'Gold',
+      gradient: 'linear-gradient(to right, #FFB000, #000000)',
+    },
+    {
+      value: 'unlimited',
+      label: 'Unlimited',
+      gradient: 'linear-gradient(to right, #7B156D, #3B0033)',
+    },
+  ];
   const {
     reset,
     handleSubmit,
@@ -471,6 +497,7 @@ export default function PackageCreateForm({
                 loading={categoryLoading}
               />
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={2} mt={2}>
                 <Typography variant="subtitle2" fontWeight={500} color="primary">
@@ -479,41 +506,30 @@ export default function PackageCreateForm({
                 <Controller
                   name="background_color"
                   control={control}
-                  defaultValue="normal" // Default selection
+                  defaultValue="trial"
                   render={({ field }) => (
                     <ToggleButtonGroup
                       color="primary"
-                      value={field.value || 'normal'}
+                      value={field.value}
                       exclusive
                       onChange={(_, newValue) => field.onChange(newValue)}
                       fullWidth
                     >
-                      {['normal', 'gold', 'orange', 'silver'].map((color) => (
+                      {packages.map(({ value, label, gradient }) => (
                         <ToggleButton
-                          key={color}
-                          value={color}
+                          key={value}
+                          value={value}
                           sx={{
                             textTransform: 'capitalize',
                             px: 3,
                             borderRadius: 2,
-                            fontWeight: 'bold',
-                            borderColor: (theme) =>
-                              field.value === color
-                                ? theme.palette.primary.main
-                                : 'rgba(0, 0, 0, 0.2)',
-                            backgroundColor: (theme) =>
-                              field.value === color ? theme.palette.primary.main : 'transparent',
-                            color: (theme) =>
-                              field.value === color
-                                ? theme.palette.primary.contrastText
-                                : theme.palette.text.primary,
-                            '&:hover': {
-                              backgroundColor: (theme) => theme.palette.grey,
-                            },
+                            fontWeight: 'thin',
+                            background: field.value === value ? gradient : '#f4f4f4',
+                            color: field.value === value ? '#fff' : 'inherit',
                           }}
                         >
-                          <FormatColorFill sx={{ mr: 1 }} />{' '}
-                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                          <FormatColorFill sx={{ mr: 1 }} />
+                          {label}
                         </ToggleButton>
                       ))}
                     </ToggleButtonGroup>
