@@ -157,8 +157,9 @@ const CouponListPage = lazy(() => import('src/pages/dashboard/coupon/list'));
 // ----------------------------------------------------------------------
 
 const allroutes = [
-  { element: <OverviewEcommercePage />, index: true },
+  // { element: <OverviewEcommercePage />, index: true },
   { path: 'ecommerce', element: <OverviewEcommercePage /> },
+  // { path: 'dashboard/ecommerce', element: <OverviewEcommercePage /> },
 
   {
     path: 'user',
