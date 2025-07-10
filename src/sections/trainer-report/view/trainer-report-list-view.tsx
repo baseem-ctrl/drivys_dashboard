@@ -34,19 +34,9 @@ import { useGetTrainerReportsDownload } from 'src/api/reportDownload';
 
 import TrainerReportRow from '../trainer-report-table-row';
 import TrainerReportFilter from '../trainer-report-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'trainer-name', label: 'Trainer', width: 200 },
-  { id: 'school-name', label: 'School', width: 200 },
-  { id: 'total-bookings', label: 'Total Bookings', width: 200 },
-  { id: 'total-sessions', label: 'Total Sessions', width: 200 },
-  { id: 'completed-bookings', label: 'Completed Bookings', width: 200 },
-
-  { id: 'cancellation-rate', label: 'Cancellation Rate', width: 200 },
-  { id: 'avg-rating', label: 'Average Rating', width: 200 },
-];
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +56,17 @@ export default function TrainerReportListView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'trainer-name', label: t('trainer'), width: 200 },
+    { id: 'school-name', label: t('school'), width: 200 },
+    { id: 'total-bookings', label: t('total_bookings'), width: 200 },
+    { id: 'total-sessions', label: t('total_sessions'), width: 200 },
+    { id: 'completed-bookings', label: t('completed_bookings'), width: 200 },
+    { id: 'cancellation-rate', label: t('cancellation_rate'), width: 200 },
+    { id: 'avg-rating', label: t('average_rating'), width: 200 },
+  ];
+
   const locale = i18n.language;
   const {
     trainerReports,
@@ -215,22 +215,20 @@ export default function TrainerReportListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Trainer Report List"
+        heading={t('trainer_report_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Report',
+            name: t('report'),
             href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Trainer Report' },
+          { name: t('trainer_report') },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
       />
+
       {renderFilters}
 
       {Object.values(filters).some((value) => value) && (
@@ -261,7 +259,7 @@ export default function TrainerReportListView() {
                   }}
                   startIcon={<DownloadIcon />}
                 >
-                  Download
+                  {t('download')}
                 </Button>
               )}
             </Box>
@@ -276,7 +274,7 @@ export default function TrainerReportListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t('delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>

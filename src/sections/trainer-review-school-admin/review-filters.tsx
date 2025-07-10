@@ -105,14 +105,14 @@ export default function ReviewFilter({ filters, onFilters }: any) {
         }}
       >
         <Typography variant="body2" color="textSecondary" sx={{ whiteSpace: 'nowrap' }}>
-          {t('Sort by Review')}
+          {t('sort_by_review')}
         </Typography>
 
         <Tooltip
           title={
             currentSort === 'highest'
-              ? t('Sort by Highest Review First')
-              : t('Sort by Lowest Review First')
+              ? t('sort_by_highest_review_first')
+              : t('sort_by_lowest_review_first')
           }
         >
           <IconButton

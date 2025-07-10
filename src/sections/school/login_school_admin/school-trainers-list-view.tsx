@@ -61,21 +61,11 @@ import { updateUserVerification } from 'src/api/school-admin';
 import TrainerCreateEditForm from './trainer-create-update';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import TrainerSearch from 'src/sections/user/trainer-search';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
-
-const TABLE_HEAD = [
-  { id: 'name', label: '' },
-  { id: 'name', label: 'Name' },
-  { id: 'vehicle_number', label: 'Vehicle Number' },
-  { id: 'dob', label: 'DOB' },
-  { id: 'status', label: 'Status' },
-  { id: 'verification_status', label: 'Verification' },
-
-  { id: '', label: '' },
-];
 
 const defaultFilters: IUserTableFilters = {
   name: '',
@@ -87,6 +77,16 @@ const defaultFilters: IUserTableFilters = {
 
 export default function SchoolTrainersListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
+  const { t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'name', label: '' },
+    { id: 'name', label: t('name') },
+    { id: 'vehicle_number', label: t('category') },
+    { id: 'dob', label: t('DOB') },
+    { id: 'status', label: t('Status') },
+    { id: 'verification_status', label: t('Date') },
+    { id: '', label: '' },
+  ];
 
   const settings = useSettingsContext();
 
@@ -208,11 +208,11 @@ export default function SchoolTrainersListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Trainers', href: paths.dashboard.school.trainer },
-            { name: 'List' },
+            { name: t('dashboard'), href: paths.dashboard.root },
+            { name: t('trainers'), href: paths.dashboard.school.trainer },
+            { name: t('list') },
           ]}
           action={
             <Button
@@ -222,7 +222,7 @@ export default function SchoolTrainersListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Create Trainer
+              {t('create')}
             </Button>
           }
           sx={{

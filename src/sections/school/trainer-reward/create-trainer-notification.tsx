@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { sendNotification } from 'src/api/send-trainer-notification';
 import { paths } from 'src/routes/paths';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationFormData {
   trainer_id: string;
@@ -23,7 +24,7 @@ export default function TrainerNotificationForm() {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const settings = useSettingsContext();
-
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState('');
   const { schoolTrainersList: trainers, schoolTrainersLoading: trainersLoading } =
     useGetSchoolTrainerList({
@@ -81,11 +82,11 @@ export default function TrainerNotificationForm() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Send Notification"
+        heading={t('send_notification')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Trainers', href: paths.dashboard.school.trainer },
-          { name: 'Send Notification' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainers'), href: paths.dashboard.school.trainer },
+          { name: t('send_notification') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -107,21 +108,21 @@ export default function TrainerNotificationForm() {
           <form onSubmit={onSubmit}>
             <Stack spacing={4}>
               <Typography variant="h5" align="center" color="primary.main" fontWeight={600}>
-                Send Trainer Notification
+                {t('send_trainer_notification')}
               </Typography>
 
               <RHFAutocompleteSearch
                 name="trainer_id"
-                label="Select Trainer"
+                label={t('select_trainer')}
                 options={verifiedTrainers || []}
                 value={methods.watch('trainer_id') || null}
                 onChange={(event, newValue) => {
                   methods.setValue('trainer_id', newValue);
                 }}
-                getOptionLabel={(option) => option?.user?.name || 'No Name'}
+                getOptionLabel={(option) => option?.user?.name || t('n/a')}
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option?.user?.name || 'No Name'}
+                    {option?.user?.name || t('n/a')}
                   </li>
                 )}
                 onInputChange={(event, newInputValue) => setSearchValue(newInputValue)}
@@ -131,7 +132,7 @@ export default function TrainerNotificationForm() {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Select Trainer"
+                    label={t('select_trainer')}
                     variant="outlined"
                     fullWidth
                     error={Boolean(errors.trainer_id)}
@@ -141,8 +142,7 @@ export default function TrainerNotificationForm() {
               />
 
               <TextField
-                label="Title"
-                fullWidth
+                label={t('title')}
                 error={Boolean(errors.title)}
                 helperText={errors.title?.message}
                 variant="outlined"
@@ -153,7 +153,7 @@ export default function TrainerNotificationForm() {
               />
 
               <TextField
-                label="Body"
+                label={t('body')}
                 multiline
                 rows={4}
                 fullWidth
@@ -180,7 +180,7 @@ export default function TrainerNotificationForm() {
                     },
                   }}
                 >
-                  Send Notification
+                  {t('send_notification')}
                 </LoadingButton>
               </Stack>
             </Stack>

@@ -13,6 +13,7 @@ import {
   Tooltip,
   RadioGroup,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useGetPaymentMethodEnum, useGetPaymentStatusEnum } from 'src/api/enum';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -42,6 +43,8 @@ export default function BookingFilters({
   canReset,
   onResetFilters,
 }: Props) {
+  const { t } = useTranslation();
+
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
   const handleFilterPaymentStatus = (newValue: string) => {
@@ -62,7 +65,7 @@ export default function BookingFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -82,7 +85,7 @@ export default function BookingFilters({
   const renderPaymentStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Payment Status
+        {t('payment_status')}
       </Typography>
       {paymentStatusEnum?.map((status) => (
         <FormControlLabel
@@ -101,7 +104,7 @@ export default function BookingFilters({
   const renderPaymentMethod = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Payment Method
+        {t('payment_method')}
       </Typography>
       {paymentMethodEnum?.map((method) => (
         <FormControlLabel
@@ -130,7 +133,7 @@ export default function BookingFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}
       </Button>
 
       <Drawer

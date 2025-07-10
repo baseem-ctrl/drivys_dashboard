@@ -37,15 +37,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'school-name', label: 'School', width: 200 },
-  { id: 'total-booked-session', label: 'Total Bookings', width: 200 },
-  { id: 'total-students', label: 'Total Students', width: 200 },
-  { id: 'total-trainers', label: 'Total Trainers', width: 200 },
-  { id: 'total-paid-booking', label: 'Total Paid Bookings Sessions', width: 200 },
-  { id: 'total-completed-session', label: 'Completed Sessions', width: 200 },
-];
-
 // ----------------------------------------------------------------------
 
 export default function BookingReportListSchoolAdminView() {
@@ -66,7 +57,15 @@ export default function BookingReportListSchoolAdminView() {
   }>({});
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'school-name', label: t('school'), width: 200 },
+    { id: 'total-booked-session', label: t('total_bookings'), width: 200 },
+    { id: 'total-students', label: t('total_students'), width: 200 },
+    { id: 'total-trainers', label: t('total_trainers'), width: 200 },
+    { id: 'total-paid-booking', label: t('total_paid_booking_sessions'), width: 200 },
+    { id: 'total-completed-session', label: t('completed_sessions'), width: 200 },
+  ];
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -230,17 +229,17 @@ export default function BookingReportListSchoolAdminView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Booking Report List"
+        heading={t('booking_report_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Report',
+            name: t('report'),
             href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'Booking Report' },
+          { name: t('bookings') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -279,7 +278,7 @@ export default function BookingReportListSchoolAdminView() {
                   }}
                   startIcon={<DownloadIcon />}
                 >
-                  Download
+                  {t('download')}
                 </Button>
               )}
             </Box>

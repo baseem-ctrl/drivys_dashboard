@@ -234,14 +234,15 @@ export default function BookingSchoolAdminListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="Bookings"
+        heading={t('bookings')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.booking.root },
-          { name: 'Booking', href: paths.dashboard.booking.root },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.booking.root },
+          { name: t('booking'), href: paths.dashboard.booking.root },
+          { name: t('list') },
         ]}
         sx={{ mb: 3 }}
       />
+
       <Box display="flex" justifyContent="flex-end" padding={2}>
         <BookingFilters
           open={openFilters.value}
@@ -268,7 +269,7 @@ export default function BookingSchoolAdminListView() {
             value="all"
             label={
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span>All</span>
+                <span>{t('all')}</span>
                 <Typography
                   sx={{
                     backgroundColor: '#f0f0f0',
@@ -403,7 +404,7 @@ export default function BookingSchoolAdminListView() {
                   <TableRow>
                     <TableCell colSpan={currentTableHeaders.length} align="center">
                       <Typography variant="h6" color="textSecondary">
-                        No data available
+                        {t('no_data_available')}
                       </Typography>
                     </TableCell>
                   </TableRow>

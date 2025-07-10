@@ -8,6 +8,7 @@ import TodoListSearch from '../todo/todo-pending-request-filter';
 import { useCallback, useState } from 'react';
 import { useTable } from 'src/components/table';
 import { IUserTableFilterValue } from 'src/types/city';
+import { useTranslation } from 'react-i18next';
 
 const defaultFilters = {
   customerName: '',
@@ -21,6 +22,7 @@ export default function ToDoListViewRefundSchoolAdmin() {
   const [filters, setFilters] = useState(defaultFilters);
   const [searchValue, setSearchValue] = useState('');
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
+  const { t } = useTranslation();
 
   const handleFilters = useCallback(
     (name: string, value: IUserTableFilterValue) => {
@@ -35,14 +37,15 @@ export default function ToDoListViewRefundSchoolAdmin() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading="To Do List"
+        heading={t('to_do_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'To Do', href: paths.dashboard.todo.pendingRefund },
-          { name: 'List' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('to_do'), href: paths.dashboard.todo.pendingRefund },
+          { name: t('list') },
         ]}
         sx={{ mb: 3 }}
       />
+
       <Grid item sx={{ mb: 3 }}>
         <TodoListSearch
           placeholder="Search with student's name, driver's name, city's name, category's name..."

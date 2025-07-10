@@ -149,7 +149,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       is_published: !!details?.is_published,
       is_certificate_included: !!details?.is_certificate_included,
       is_cash_pay_available: !!details?.is_cash_pay_available,
-      background_color: details?.background_color || 'normal',
+      background_color: details?.background_color || '',
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
       drivys_commision: details?.drivys_commision || '',
       vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
@@ -430,10 +430,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   });
   const getColor = (color) => {
     const colorMap = {
-      normal: '#d3d3d3',
-      gold: '#FFD700',
-      orange: '#FFA500',
-      silver: '#C0C0C0',
+      trial: '#292929',
+      bronze: '#CD7F32',
+      silver: '#8E8E8E',
+      gold: '#FFB000',
+      unlimited: '#7B156D',
     };
     return colorMap[color] || 'transparent';
   };
@@ -497,6 +498,33 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     schoolReset(); // Reset to the original values
     setEditMode(false);
   };
+  const packages = [
+    {
+      value: 'trial',
+      label: 'Trial',
+      gradient: 'linear-gradient(to right, #1E1E1E, #292929)',
+    },
+    {
+      value: 'bronze',
+      label: 'Bronze',
+      gradient: 'linear-gradient(to right, #CD7F32, #000000)',
+    },
+    {
+      value: 'silver',
+      label: 'Silver',
+      gradient: 'linear-gradient(to right, #8E8E8E, #000000)',
+    },
+    {
+      value: 'gold',
+      label: 'Gold',
+      gradient: 'linear-gradient(to right, #FFB000, #000000)',
+    },
+    {
+      value: 'unlimited',
+      label: 'Unlimited',
+      gradient: 'linear-gradient(to right, #7B156D, #3B0033)',
+    },
+  ];
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -768,40 +796,41 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                       <Typography variant="subtitle2" fontWeight={600}>
                         Choose Background Color
                       </Typography>
+
                       <ToggleButtonGroup
                         color="primary"
-                        value={values.background_color || 'normal'} // Default to "normal"
+                        value={values.background_color || ''}
                         exclusive
                         onChange={(_, newValue) =>
                           newValue && schoolSetValue('background_color', newValue)
                         }
                         fullWidth
                       >
-                        {['normal', 'gold', 'orange', 'silver'].map((color) => (
+                        {packages.map((pkg) => (
                           <ToggleButton
-                            key={color}
-                            value={color}
+                            key={pkg.value}
+                            value={pkg.value}
                             sx={{
                               textTransform: 'capitalize',
                               fontWeight: 'bold',
                               borderColor: (theme) =>
-                                values.background_color === color
+                                values.background_color === pkg.value
                                   ? theme.palette.primary.main
                                   : 'rgba(0, 0, 0, 0.2)',
-                              backgroundColor: (theme) =>
-                                values.background_color === color
-                                  ? theme.palette.primary.light
+                              background: (theme) =>
+                                values.background_color === pkg.value
+                                  ? pkg.gradient
                                   : 'transparent',
                               color: (theme) =>
-                                values.background_color === color
-                                  ? theme.palette.primary.contrastText
+                                values.background_color === pkg.value
+                                  ? '#fff'
                                   : theme.palette.text.primary,
                               '&:hover': {
-                                backgroundColor: (theme) => theme.palette.grey,
+                                opacity: 0.8,
                               },
                             }}
                           >
-                            {color.charAt(0).toUpperCase() + color.slice(1)}
+                            {pkg.label}
                           </ToggleButton>
                         ))}
                       </ToggleButtonGroup>

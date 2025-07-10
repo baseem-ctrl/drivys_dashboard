@@ -38,15 +38,6 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'school-name', label: 'School Name', width: 200 },
-  { id: 'total-trainer-count', label: 'Total Trainer Count', width: 200 },
-  { id: 'school-admin-email-id', label: 'School Admin Email', width: 200 },
-  { id: 'school-admin-phone-number', label: 'School Admin Phn', width: 200 },
-];
-
-// ----------------------------------------------------------------------
-
 export default function SchoolReportListView() {
   const { user } = useAuthContext();
   const table = useTable({ defaultRowsPerPage: 15 });
@@ -62,7 +53,13 @@ export default function SchoolReportListView() {
     endDate: null,
   });
   const [selectedOrder, setSelectedOrder] = useState(undefined);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const TABLE_HEAD = [
+    { id: 'school-name', label: t('school_name'), width: 200 },
+    { id: 'total-trainer-count', label: t('total_trainer_count'), width: 200 },
+    { id: 'school-admin-email-id', label: t('school_admin_email'), width: 200 },
+    { id: 'school-admin-phone-number', label: t('school_admin_phone'), width: 200 },
+  ];
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -214,22 +211,23 @@ export default function SchoolReportListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="School Report List"
+        heading={t('school_report_list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: t('dashboard'), href: paths.dashboard.root },
           {
-            name: 'Report',
+            name: t('report'),
             href: paths.dashboard.report.booking,
             onClick: (event) => {
               setViewMode('table');
             },
           },
-          { name: 'School Report' },
+          { name: t('school_report') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
+
       {renderFilters}
       {Object.values(filters).some((value) => value) && (
         <Button
@@ -238,7 +236,7 @@ export default function SchoolReportListView() {
           onClick={handleResetFilters}
           sx={{ mb: 2, ml: 2 }}
         >
-          Clear Filters
+          {t('clear_filters')}
         </Button>
       )}
       <Card>
@@ -258,7 +256,7 @@ export default function SchoolReportListView() {
                   }}
                   startIcon={<DownloadIcon />}
                 >
-                  Download
+                  {t('download')}
                 </Button>
               )}
             </Box>
@@ -273,7 +271,7 @@ export default function SchoolReportListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t('delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
