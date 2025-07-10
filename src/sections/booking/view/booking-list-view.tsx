@@ -51,6 +51,7 @@ import { t } from 'i18next';
 
 const TABLE_HEAD = {
   all: [
+    { id: 'id', label: t('ID'), width: 180 },
     { id: 'customerName', label: t('Student Name'), width: 180 },
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },
@@ -105,7 +106,7 @@ const defaultFilters = {
 };
 
 export default function BookingListView() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
   const openFilters = useBoolean();
@@ -175,9 +176,9 @@ export default function BookingListView() {
   const vendorOptions = usersLoading
     ? [{ label: 'Loading...', value: '' }]
     : users.map((user) => ({
-      label: user.name,
-      value: user.id,
-    }));
+        label: user.name,
+        value: user.id,
+      }));
   useEffect(() => {
     if (bookings?.bookings?.length > 0) {
       setTableData(bookings.bookings);
@@ -245,7 +246,7 @@ export default function BookingListView() {
   return (
     <Container maxWidth="xl">
       <CustomBreadcrumbs
-        heading={t("Bookings")}
+        heading={t('Bookings')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.booking.root },
           { name: t('Booking'), href: paths.dashboard.booking.root },
@@ -280,7 +281,7 @@ export default function BookingListView() {
             value="all"
             label={
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span>{t("All")}</span>
+                <span>{t('All')}</span>
                 <Typography
                   sx={{
                     backgroundColor: '#f0f0f0',
@@ -414,8 +415,8 @@ export default function BookingListView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => handleRowClick(row)}
-                    // onDeleteRow={() => handleDeleteRow(row.id)}
-                    // onEditRow={() => handleEditRow(row.id)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
                     />
                   ))}
 
@@ -423,7 +424,7 @@ export default function BookingListView() {
                   <TableRow>
                     <TableCell colSpan={currentTableHeaders.length} align="center">
                       <Typography variant="h6" color="textSecondary">
-                        {t("No data available")}
+                        {t('No data available')}
                       </Typography>
                     </TableCell>
                   </TableRow>

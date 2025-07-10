@@ -52,6 +52,7 @@ import { useGetBookingList } from 'src/api/booking-assistant';
 
 const TABLE_HEAD = {
   all: [
+    { id: 'id', label: t('ID'), width: 180 },
     { id: 'customerName', label: t('Student Name'), width: 180 },
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },

@@ -61,6 +61,7 @@ export default function BookingSchoolAdminTableRow({
           cursor: 'pointer',
         }}
       >
+        <TableCell>{row?.id}</TableCell>
         <TableCell>{user?.name ?? 'NA'}</TableCell>
         <TableCell
           sx={{
