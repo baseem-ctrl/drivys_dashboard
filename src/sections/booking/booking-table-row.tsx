@@ -51,6 +51,7 @@ export default function BookingTableRow({
 
   return (
     <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
+      <TableCell>{row?.id}</TableCell>
       <TableCell
         sx={{
           cursor: 'pointer',

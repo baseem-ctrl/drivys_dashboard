@@ -1224,5 +1224,6 @@
   "update": "تحديث",
   "no_description": "لا يوجد وصف",
   "na": "غير متوفر",
-  "role_permission_mapping_success": "تم ربط الدور والصلاحيات بنجاح!"
+  "role_permission_mapping_success": "تم ربط الدور والصلاحيات بنجاح!",
+  "ID": "هوية"
 }

@@ -37,7 +37,7 @@ export default function SchoolPerformanceDetails({ title, subheader, tableData, 
 
   // Set default school if available
   useEffect(() => {
-    if (tableData.length > 0) {
+    if (Array.isArray(tableData) && tableData.length > 0) {
       setSelectedSchool(tableData[0]);
     }
   }, [tableData]);
@@ -93,7 +93,7 @@ export default function SchoolPerformanceDetails({ title, subheader, tableData, 
             options={tableData}
             getOptionLabel={(option) => option.school_name}
             isOptionEqualToValue={(option, value) => option.school_id === value?.school_id}
-            renderInput={(params) => <TextField {...params} label={t("Select School")} />}
+            renderInput={(params) => <TextField {...params} label={t('Select School')} />}
             disableClearable
             sx={{ width: 250 }}
           />

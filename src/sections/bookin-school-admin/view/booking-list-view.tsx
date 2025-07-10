@@ -40,6 +40,7 @@ import {
 // import BookingTableToolbar from '../booking-table-toolbar';
 import { useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
+import { t } from 'i18next';
 import { useRouter } from 'src/routes/hooks';
 import BookingSchoolAdminTableRow from '../bookin-school-admin-table-row';
 import BookingSchoolAdminTableToolbar from '../bookin-school-admin-table-tool-bar';
@@ -49,44 +50,45 @@ import { useGetBookingsSchoolAdmin } from 'src/api/booking-school-admin';
 
 const TABLE_HEAD = {
   all: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'id', label: t('ID'), width: 180 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   confirmed: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   cancelled: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
   pending: [
-    { id: 'customerName', label: 'Student Name', width: 180 },
-    { id: 'vendorName', label: 'Trainer Name', width: 180 },
-    { id: 'orderStatus', label: 'Booking Status', width: 150 },
-    { id: 'paymentStatus', label: 'Payment Status', width: 150 },
-    { id: 'price', label: 'Price', width: 120 },
-    { id: 'paymentMethod', label: 'Payment Method', width: 150 },
-    { id: 'coupon', label: 'Coupon', width: 200 },
-    { id: 'created', label: 'Created', width: 200 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
   ],
 };
 
