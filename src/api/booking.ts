@@ -159,16 +159,11 @@ export function useGetBookingByTrainerId(filters: {
   payment_method?: string;
 }) {
   const { user } = useAuthContext();
-  let URL;
-
-  if (user?.user?.user_type === 'SCHOOL_ADMIN') {
-    URL = `${endpoints.booking.schoolAdmin.getList}`;
-  } else {
-    URL = `${endpoints.booking.getList}`;
-  }
 
   const queryParams = new URLSearchParams();
+
   queryParams.append('driver_id', filters.trainer_id);
+
   if (filters.page !== undefined) queryParams.append('page', filters.page.toString());
   if (filters.limit !== undefined) queryParams.append('limit', filters.limit.toString());
 
@@ -188,9 +183,14 @@ export function useGetBookingByTrainerId(filters: {
     queryParams.append('payment_method', filters.payment_method.toString());
   }
 
-  URL += `?${queryParams.toString()}`;
+  const baseUrl =
+    user?.user?.user_type === 'SCHOOL_ADMIN'
+      ? endpoints.booking.schoolAdmin.getList
+      : endpoints.booking.getList;
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+  const finalUrl = `${baseUrl}?${queryParams.toString()}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(finalUrl, drivysFetcher, {
     revalidateOnFocus: false,
   });
 
@@ -202,11 +202,11 @@ export function useGetBookingByTrainerId(filters: {
       bookingLoading: isLoading,
       bookingValidating: isValidating,
     }),
-    [data?.data, error, isLoading, isValidating]
+    [data?.data, data?.total, error, isLoading, isValidating]
   );
 
   const revalidateBookingDetails = () => {
-    mutate(URL);
+    mutate(finalUrl);
   };
 
   return { ...memoizedValue, revalidateBookingDetails };

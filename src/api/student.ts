@@ -5,7 +5,17 @@ import { endpoints, drivysFetcher, drivysCreator, drivysSmasher } from 'src/util
 import { IOrderItem } from 'src/types/order';
 
 // ----------------------------------------------------------------------
-export function useGetStudents({ page, limit, trainer_id }: any) {
+export function useGetStudents({
+  page,
+  limit,
+  trainer_id,
+  userType,
+}: {
+  page: number;
+  limit: number;
+  trainer_id?: number | string;
+  userType: 'ADMIN' | 'SCHOOL_ADMIN';
+}) {
   const getTheFullUrl = () => {
     const queryParams: { [key: string]: any } = {
       page: page + 1,
@@ -13,7 +23,12 @@ export function useGetStudents({ page, limit, trainer_id }: any) {
     };
 
     if (trainer_id) queryParams.trainer_id = trainer_id;
-    return `${endpoints.trainer.getStudents}?${new URLSearchParams(queryParams)}`;
+
+    const baseUrl =
+      userType === 'ADMIN'
+        ? endpoints.trainer.getStudents
+        : endpoints.trainer.getStudentSchoolAdmin;
+    return `${baseUrl}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher, {

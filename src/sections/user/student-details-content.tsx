@@ -8,6 +8,7 @@ import { UserCardsView } from './view';
 import { useEffect, useState } from 'react';
 import { cond } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -17,11 +18,14 @@ type Props = {
 export default function StudentDetailsContent({ id }: Props) {
   const { t } = useTranslation();
   const [tableData, setTableData] = useState([]);
+  const { user } = useAuthContext();
+
   const table = useTable({ defaultRowsPerPage: 5, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { students, studentsLoading, studentsLength, revalidateStudents } = useGetStudents({
     page: table.page,
     limit: table.rowsPerPage,
     trainer_id: id,
+    userType: user?.user?.user_type,
   });
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export default function StudentDetailsContent({ id }: Props) {
         </>
       ) : (
         <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-          {t("No students under this trainer")}
+          {t('No students under this trainer')}
         </Typography>
       )}
     </>

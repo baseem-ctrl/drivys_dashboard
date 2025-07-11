@@ -83,18 +83,28 @@ export function useGetAllWorkingHours({
 
   return { ...memoizedValue, revalidateWorkingHours };
 }
-export function useGetLeaveDatesByTrainerId(userId: number | string, page: number, limit: number) {
-  const getLeaveDatesUrl = () =>
-    `${endpoints.trainer.leaveDates}?trainer_id=${userId}&page=${page}&limit=${limit}`;
+export function useGetLeaveDatesByTrainerId(
+  userId: number | string,
+  page: number,
+  limit: number,
+  userType: 'ADMIN' | 'SCHOOL_ADMIN'
+) {
+  const getLeaveDatesUrl = () => {
+    if (userType === 'ADMIN') {
+      return `${endpoints.trainer.leaveDates}?trainer_id=${userId}&page=${page}&limit=${limit}`;
+    } else if (userType === 'SCHOOL_ADMIN') {
+      return `${endpoints.trainer.leaveDatesSchoolAdmin}?trainer_id=${userId}&page=${page}&limit=${limit}`;
+    }
+    return null;
+  };
 
-  const { data, isLoading, error, isValidating } = useSWR(
-    userId ? getLeaveDatesUrl() : null,
-    drivysFetcher
-  );
+  const finalUrl = userId ? getLeaveDatesUrl() : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(finalUrl, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      leaveDates: data?.data as any,
+      leaveDates: data?.data || [],
       totalLeaveDates: data?.total || 0,
       leaveDatesLoading: isLoading,
       leaveDatesError: error,
@@ -104,7 +114,7 @@ export function useGetLeaveDatesByTrainerId(userId: number | string, page: numbe
   );
 
   const revalidateLeaveDates = () => {
-    mutate(getLeaveDatesUrl);
+    if (finalUrl) mutate(finalUrl);
   };
 
   return { ...memoizedValue, revalidateLeaveDates };
@@ -123,13 +133,22 @@ export function deleteShiftById(trainer_id: number | string) {
   const response = drivysSmasher(URL);
   return response;
 }
-export function useGetShiftsByTrainerId(trainer_id: number | string) {
-  const getShiftsUrl = () => `${endpoints.trainer.shift.get}?trainer_id=${trainer_id}`;
 
-  const { data, isLoading, error, isValidating } = useSWR(
-    trainer_id ? getShiftsUrl() : null,
-    drivysFetcher
-  );
+export function useGetShiftsByTrainerId(
+  trainer_id: number | string,
+  userType: 'ADMIN' | 'SCHOOL_ADMIN'
+) {
+  const getShiftsUrl = () => {
+    if (userType === 'ADMIN') {
+      return `${endpoints.trainer.shift.get}?trainer_id=${trainer_id}`;
+    } else {
+      return `${endpoints.trainer.workingHoursSchoolAdmin.getList}?trainer_id=${trainer_id}`;
+    }
+  };
+
+  const finalUrl = trainer_id ? getShiftsUrl() : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(finalUrl, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
@@ -142,7 +161,7 @@ export function useGetShiftsByTrainerId(trainer_id: number | string) {
   );
 
   const revalidateShifts = () => {
-    mutate(getShiftsUrl);
+    if (finalUrl) mutate(finalUrl);
   };
 
   return { ...memoizedValue, revalidateShifts };
