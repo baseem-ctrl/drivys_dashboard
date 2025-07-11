@@ -95,6 +95,10 @@ export default function RefundListView() {
     defaultRowsPerPage: 5,
     defaultCurrentPage: 0,
   });
+  const tableRejected = useTable({
+    defaultRowsPerPage: 5,
+    defaultCurrentPage: 0,
+  });
   const { refundRequests, refundRequestLoading, revalidateRefundRequests, totalCount } =
     useGetRefundRequestList({
       page: tablePending.page,
@@ -113,6 +117,20 @@ export default function RefundListView() {
     page: tableApproved.page,
     limit: tableApproved.rowsPerPage,
     status: ['pending', 'approved'],
+    ...(filters?.category_id && { category_id: filters.category_id }),
+    ...(filters?.city_id && { city_id: filters.city_id }),
+    ...(filters?.driver_id && { driver_id: filters.driver_id }),
+  });
+
+  const {
+    refundRequests: rejectedRefundRequests,
+    refundRequestLoading: rejectedRefundRequestLoading,
+    totalCount: rejectedTotalCount,
+    revalidateRefundRequests: revalidateRejectedRefundRequests,
+  } = useGetRefundRequestList({
+    page: tableRejected.page,
+    limit: tableRejected.rowsPerPage,
+    status: ['rejected'],
     ...(filters?.category_id && { category_id: filters.category_id }),
     ...(filters?.city_id && { city_id: filters.city_id }),
     ...(filters?.driver_id && { driver_id: filters.driver_id }),
@@ -246,7 +264,7 @@ export default function RefundListView() {
             backgroundColor: 'background.paper',
           }}
         >
-          {['Refund Requests', 'Refunded Requests'].map((label) => (
+          {['Refund Requests', 'Refunded Requests', 'Rejected Requests'].map((label) => (
             <Tab key={label} sx={tabStyles} label={t(label)} />
           ))}
         </Tabs>
@@ -438,6 +456,85 @@ export default function RefundListView() {
               onRowsPerPageChange={tableRefunded.onChangeRowsPerPage}
               dense={tableRefunded.dense}
               onChangeDense={tableRefunded.onChangeDense}
+            />
+          </TableContainer>
+        </Card>
+      )}
+      {selectedTab === 2 && (
+        <Card>
+          <TableContainer sx={{ position: 'relative', overflow: 'unset', mt: 4 }}>
+            <TableSelectedAction
+              dense={table.dense}
+              numSelected={table.selected.length}
+              rowCount={rejectedRefundRequests.length}
+              onSelectAllRows={(checked) =>
+                table.onSelectAllRows(
+                  checked,
+                  rejectedRefundRequests.map((row) => row.id)
+                )
+              }
+              action={
+                <Tooltip title="Delete">
+                  <IconButton onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
+
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={currentTableHeaders}
+                  rowCount={rejectedRefundRequests.length}
+                  numSelected={table.selected.length}
+                  onSort={table.onSort}
+                />
+                <TableBody>
+                  {rejectedRefundRequestLoading &&
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={currentTableHeaders.length}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                  {!rejectedRefundRequestLoading &&
+                    rejectedRefundRequests.length > 0 &&
+                    rejectedRefundRequests.map((row) => (
+                      <RefundTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateRejectedRefundRequests}
+                      />
+                    ))}
+
+                  {!rejectedRefundRequestLoading && rejectedRefundRequests.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={currentTableHeaders.length} align="center">
+                        <Typography variant="h6" color="textSecondary">
+                          {t('No data available')}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Scrollbar>
+
+            <TablePaginationCustom
+              count={rejectedTotalCount}
+              page={tableRejected.page}
+              rowsPerPage={tableRejected.rowsPerPage}
+              onPageChange={tableRejected.onChangePage}
+              onRowsPerPageChange={tableRejected.onChangeRowsPerPage}
+              dense={tableRejected.dense}
+              onChangeDense={tableRejected.onChangeDense}
             />
           </TableContainer>
         </Card>
