@@ -9,9 +9,12 @@ export const TRAINER_DETAILS_TABS = [
 ];
 export const TRAINER_DETAILS_SCHOOL_ADMIN_TABS = [
   { value: 'details', label: 'Trainer Details' },
-  // { value: 'working-hours', label: 'Working Hours' },
-  // { value: 'students', label: 'Students' },
-  // { value: 'booking', label: 'Booking' },
+  { value: 'working-hours', label: 'Working Hours' },
+  { value: 'review', label: 'Review' },
+  { value: 'packages', label: 'Packages' },
+  { value: 'user-document', label: 'User Document' },
+  { value: 'students', label: 'Students' },
+  { value: 'booking', label: 'Booking' },
 ];
 export const STATUS_OPTIONS = [
   { value: '1', label: 'Active' },

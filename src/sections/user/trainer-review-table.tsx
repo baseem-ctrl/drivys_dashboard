@@ -39,11 +39,11 @@ type Student = {
 
 type Props = {
   students: Student[];
+  user: any;
 };
 
-const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
+const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
   const { enqueueSnackbar } = useSnackbar();
-
   const { t } = useTranslation();
 
   const router = useRouter();
@@ -85,11 +85,11 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t("Session ID")}</TableCell>
-                  <TableCell>{t("Student Name")}</TableCell>
-                  <TableCell>{t("Booking ID")}</TableCell>
-                  <TableCell>{t("Rating")}</TableCell>
-                  <TableCell>{t("Comments")}</TableCell>
+                  <TableCell sx={{ borderTopLeftRadius: '12px' }}>{t('Session ID')}</TableCell>
+                  <TableCell>{t('Student Name')}</TableCell>
+                  <TableCell>{t('Booking ID')}</TableCell>
+                  <TableCell>{t('Rating')}</TableCell>
+                  <TableCell>{t('Comments')}</TableCell>
                   <TableCell sx={{ borderTopRightRadius: '12px' }}></TableCell>
                 </TableRow>
               </TableHead>
@@ -153,23 +153,28 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                         )}
                       </TableCell>
                       <TableCell>{review?.user_comments || t('No Comments')}</TableCell>
-                      <TableCell>
-                        <Tooltip title={review?.user_comments ? '' : t('No comments to delete')} arrow>
-                          <span>
-                            <Button
-                              variant="contained"
-                              color="error"
-                              sx={{
-                                backgroundColor: '#CF5A0D',
-                              }}
-                              onClick={() => handleDeleteComment(review?.session_id)}
-                              disabled={!review.user_comments}
-                            >
-                              {t("Delete")}
-                            </Button>
-                          </span>
-                        </Tooltip>
-                      </TableCell>
+                      {user?.user?.user_type !== 'SCHOOL_ADMIN' && (
+                        <TableCell>
+                          <Tooltip
+                            title={review?.user_comments ? '' : t('No comments to delete')}
+                            arrow
+                          >
+                            <span>
+                              <Button
+                                variant="contained"
+                                color="error"
+                                sx={{
+                                  backgroundColor: '#CF5A0D',
+                                }}
+                                onClick={() => handleDeleteComment(review?.session_id)}
+                                disabled={!review.user_comments}
+                              >
+                                {t('Delete')}
+                              </Button>
+                            </span>
+                          </Tooltip>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (
@@ -177,7 +182,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
                     <TableCell colSpan={6} align="center">
                       <Box sx={{ py: 2 }}>
                         <Typography variant="h6" color="textSecondary">
-                          {t("No reviews available under this trainer")}
+                          {t('No reviews available under this trainer')}
                         </Typography>
                       </Box>
                     </TableCell>
@@ -190,7 +195,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers }) => {
       ) : (
         <Box sx={{ py: 2 }}>
           <Typography variant="h6" color="textSecondary">
-            {t("No reviews available under this trainer")}
+            {t('No reviews available under this trainer')}
           </Typography>
         </Box>
       )}

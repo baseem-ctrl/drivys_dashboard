@@ -232,6 +232,7 @@ export const endpoints = {
   trainer: {
     getPackages: 'admin/package-trainer/get-trainer-packages/',
     getStudents: 'admin/student/get-student-list',
+    getStudentSchoolAdmin: 'admin/student-by-school/get-student-list',
     delete: 'admin/home-page-listing/delete-listing-trainer-mapping?trainer_mapping_ids[]=',
     createTrainer: 'admin/trainers/school/create-trainer',
     workingHours: {
@@ -240,12 +241,17 @@ export const endpoints = {
       getList: 'admin/trainer-working-hours/get-by-user-id',
       getByUserId: 'admin/trainer-working-hours/get-by-user-id',
     },
+    workingHoursSchoolAdmin: {
+      getList: 'admin/trainer-working-hours/shifts/get-shifts-by-school-admin',
+    },
+
     shift: {
       create: 'admin/trainer-working-hours/shifts/set-shift-by-admin',
       get: 'admin/trainer-working-hours/shifts/get-shifts-by-admin',
       delete: 'admin/trainer-working-hours/shifts/delete-shift-by-admin',
     },
     leaveDates: 'admin/leave/get-leave-list',
+    leaveDatesSchoolAdmin: 'admin/trainer-working-hours/leave/get-leave-list-by-school-admin',
     noschool: 'admin/user/get-trainer-list-non-vendor',
   },
   slider: {

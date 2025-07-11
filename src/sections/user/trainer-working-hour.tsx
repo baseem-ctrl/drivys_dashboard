@@ -35,6 +35,7 @@ import WorkingHoursCreateEditForm from './trainer-working-hours-create-edit-form
 import CreateTrainerShiftForm from './trainer-create-shift';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -46,13 +47,19 @@ type Props = {
 export default function TrainerWorkingHour({ userId, details }: Props) {
   const table = useTable({ defaultRowsPerPage: 15 });
   const { t } = useTranslation();
+  const { user } = useAuthContext();
+
   const { workingHours, workingHoursLoading, workingHoursError, revalidateWorkingHours } =
     useGetWorkingHoursByUserId(userId);
-  const { shifts, shiftsLoading, shiftsError, revalidateShifts } = useGetShiftsByTrainerId(userId);
+  const { shifts, shiftsLoading, shiftsError, revalidateShifts } = useGetShiftsByTrainerId(
+    userId,
+    user?.user?.user_type
+  );
   const { leaveDates, totalLeaveDates, leaveDatesLoading } = useGetLeaveDatesByTrainerId(
     userId,
     table.page + 1,
-    table.rowsPerPage
+    table.rowsPerPage,
+    user?.user?.user_type
   );
   const [workingHourID, setWorkingHourID] = useState('');
   const [selectedWorkingHour, setSelectedWorkingHour] = useState('');

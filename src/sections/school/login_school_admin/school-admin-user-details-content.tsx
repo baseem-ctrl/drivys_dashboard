@@ -59,9 +59,10 @@ import TrainerWorkingHour from 'src/sections/user/trainer-working-hour';
 import UserDocumentDetails from 'src/sections/user/user-document/user-document-details';
 import BookingTrainerTable from 'src/sections/user/booking-details/trainer-booking-details';
 import TrainerReviewsTable from 'src/sections/user/trainer-review-table';
-import { useGetTrainerReview } from 'src/api/review';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { useGetTrainerReview } from 'src/api/review-school-admin';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -84,6 +85,7 @@ export default function UserDetailsContentAdmin({
   const { reset, control } = useForm();
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [showAll, setShowAll] = useState(false);
+  const { user } = useAuthContext();
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -735,7 +737,7 @@ export default function UserDetailsContentAdmin({
               )}
               <Grid xs={12} md={12}>
                 {details?.user_type === 'TRAINER' && currentTab === 'review' && (
-                  <TrainerReviewsTable trainers={trainerReviews} />
+                  <TrainerReviewsTable trainers={trainerReviews} user={user} />
                 )}
               </Grid>
               {currentTab === 'students' && details?.user_type === 'TRAINER' && (
