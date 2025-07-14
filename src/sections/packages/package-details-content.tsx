@@ -445,7 +445,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const citySubmit = packageSubmit(async (data) => {
     try {
       let formData = new FormData();
-      console.log('data', data);
       formData.append('package_id', details.id || '');
 
       if (details?.package_city && details.package_city.length > 0) {
@@ -933,12 +932,18 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 <Box
                   sx={{
                     display: 'flex',
-                    cursor: 'pointer',
                     mb: 1,
                     mt: 5,
-                    '&:hover': { textDecoration: 'underline' },
+                    ...(cityItem?.city?.city_translations[0]?.city_id && {
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' },
+                    }),
                   }}
-                  onClick={() => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)}
+                  onClick={
+                    cityItem?.city?.city_translations[0]?.city_id
+                      ? () => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)
+                      : undefined
+                  }
                 >
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                     {t('City')}
@@ -1003,7 +1008,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Box key={index}>
                     {editCityIndex === index && ( // Only render editable fields for the clicked city
                       <>
-                        <Controller
+                        {/* <Controller
                           name={`cities_ids[${index}][id]`}
                           control={schoolControl}
                           defaultValue={cityItem?.city_id ?? null}
@@ -1042,7 +1047,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                               />
                             );
                           }}
-                        />
+                        /> */}
                         <RHFTextField
                           name={`cities_ids[${index}][min_price]`}
                           label={t('Min Price')}
