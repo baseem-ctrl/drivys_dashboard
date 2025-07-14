@@ -51,6 +51,7 @@ import { RHFEditor, RHFSelect, RHFSwitch, RHFTextField } from 'src/components/ho
 import LoadingButton from '@mui/lab/LoadingButton';
 import AddCityPackage from './add-city-package';
 import { useTranslation } from 'react-i18next';
+import { useGetCities } from 'src/api/enum';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -98,6 +99,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     search: searchCategory,
     locale: i18n.language,
   });
+  const { cities } = useGetCities(0, 1000);
+
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.package_translations?.length > 0) {
@@ -442,7 +445,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const citySubmit = packageSubmit(async (data) => {
     try {
       let formData = new FormData();
-
       formData.append('package_id', details.id || '');
 
       if (details?.package_city && details.package_city.length > 0) {
@@ -450,7 +452,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           if (editCityIndex === index) {
             const updatedCity = data.cities_ids?.[index];
 
-            formData.append(`cities_ids[${index}][id]`, cityItem?.city_id ?? '');
+            formData.append(`cities_ids[${index}][id]`, updatedCity?.id ?? cityItem?.city_id ?? '');
             formData.append(
               `cities_ids[${index}][min_price]`,
               updatedCity?.min_price ?? cityItem?.min_price ?? ''
@@ -884,7 +886,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const handleCardClick = (cityId) => {
     router.push(paths.dashboard.system.viewDetails(cityId));
   };
-
+  console.log('details', details);
   const renderCityContent = (
     <Stack spacing={3}>
       <Scrollbar>
@@ -930,12 +932,18 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 <Box
                   sx={{
                     display: 'flex',
-                    cursor: 'pointer',
                     mb: 1,
                     mt: 5,
-                    '&:hover': { textDecoration: 'underline' },
+                    ...(cityItem?.city?.city_translations[0]?.city_id && {
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' },
+                    }),
                   }}
-                  onClick={() => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)}
+                  onClick={
+                    cityItem?.city?.city_translations[0]?.city_id
+                      ? () => handleCardClick(cityItem?.city?.city_translations[0]?.city_id)
+                      : undefined
+                  }
                 >
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
                     {t('City')}
@@ -1000,6 +1008,46 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Box key={index}>
                     {editCityIndex === index && ( // Only render editable fields for the clicked city
                       <>
+                        {/* <Controller
+                          name={`cities_ids[${index}][id]`}
+                          control={schoolControl}
+                          defaultValue={cityItem?.city_id ?? null}
+                          render={({ field }) => {
+                            const options =
+                              cities?.map((item: any) => ({
+                                label: item.city_translations
+                                  .map((translation: any) => translation.name)
+                                  .join(' - '),
+                                value: item.id,
+                              })) ?? [];
+
+                            const selectedOption =
+                              options.find((opt) => opt.value === field.value) || null;
+
+                            return (
+                              <Autocomplete
+                                options={options}
+                                value={selectedOption}
+                                getOptionLabel={(option) => option.label}
+                                onChange={(event, newValue) =>
+                                  field.onChange(newValue ? newValue.value : null)
+                                }
+                                renderInput={(params) => (
+                                  <TextField {...params} label={t('city')} variant="outlined" />
+                                )}
+                                renderOption={(props, option) => (
+                                  <li {...props} key={option.value}>
+                                    {option.label}
+                                  </li>
+                                )}
+                                sx={{ mt: 1, mb: 3 }}
+                                isOptionEqualToValue={(option, value) =>
+                                  option.value === value.value
+                                }
+                              />
+                            );
+                          }}
+                        /> */}
                         <RHFTextField
                           name={`cities_ids[${index}][min_price]`}
                           label={t('Min Price')}
