@@ -40,6 +40,7 @@ import CashInHandFilter from '../cash-in-hand-list-admin-filters';
 
 const TABLE_HEAD = [
   { id: 'collector-id', label: 'Collector', width: 180 },
+  { id: 'status_text', label: 'Status Text', width: 180 },
   { id: 'collected-cash-in-hand', label: 'Collected Cash', width: 180 },
   { id: 'max-collected-cash-in-hand', label: 'Max Cash In Hand', width: 180 },
   { id: 'action', label: '', width: 180 },
@@ -49,6 +50,7 @@ const COLECTED_TABLE_HEAD = [
   { id: 'collector-id', label: 'Collector', width: 180 },
   { id: 'payment_method', label: 'Payment Method', width: 180 },
   { id: 'txn_amount', label: 'Amount', width: 120 },
+
   { id: 'payment_status', label: 'Payment Status', width: 150 },
   { id: 'remarks', label: 'Remarks', width: 250 },
   { id: 'collected_on', label: 'Collected On', width: 180 },

@@ -18,6 +18,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { collectCashAdmin } from 'src/api/admin-collector';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { t } from 'i18next';
 
 interface RowProps {
   name: any;
@@ -98,13 +99,15 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
       </TableCell>
 
       <TableCell>
+        <Typography variant="body2"> {row?.status_text ?? t('n/a')} </Typography>
+      </TableCell>
+      <TableCell>
         <Typography variant="body2">
           {' '}
           <span className="dirham-symbol">&#x00EA;</span>
           {row?.collected_cash_in_hand ?? '0'}{' '}
         </Typography>
       </TableCell>
-
       <TableCell>
         <Typography variant="body2">
           {row?.collected_max_cash_in_hand_allowed !== null ? (
@@ -117,7 +120,6 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           )}
         </Typography>
       </TableCell>
-
       <TableCell>
         <Button
           variant="contained"
