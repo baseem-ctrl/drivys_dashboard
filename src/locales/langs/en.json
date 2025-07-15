@@ -235,7 +235,7 @@
   "max_cash_allowed": "Max Cash In Hand Allowed",
   "cash_in_hand": "Cash in Hand",
   "suspended": "Suspended",
-  "delete_confirmation": "Are you sure you want to delete <strong>{{count}}</strong> items?",
+  "delete_confirmation": "Are you sure you want to delete items?",
   "trainer_verified_successfully": "Trainer Verified Successfully",
   "search_placeholder": "Search...",
   "verification_status": "Verification Status",
