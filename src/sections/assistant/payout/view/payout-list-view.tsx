@@ -167,7 +167,7 @@ export default function PayoutListView() {
           { name: t('dashboard'), href: paths.dashboard.root },
           {
             name: t('payout'),
-            href: paths.dashboard.assistant.student.list,
+            href: paths.dashboard.assistant.payout.list,
           },
           { name: t('list') },
         ]}

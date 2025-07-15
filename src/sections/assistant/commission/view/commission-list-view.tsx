@@ -163,7 +163,7 @@ export default function CommissionListView() {
           { name: t('dashboard'), href: paths.dashboard.root },
           {
             name: t('commission'),
-            href: paths.dashboard.assistant.student.list,
+            href: paths.dashboard.assistant.commission.list,
           },
           { name: t('list') },
         ]}
