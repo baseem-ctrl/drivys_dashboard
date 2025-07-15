@@ -1261,5 +1261,9 @@
   "school_report": "تقرير المدرسة",
   "total_trainer_count": "إجمالي عدد المدربين",
   "school_admin_email": "بريد مشرف المدرسة",
-  "school_admin_phone": "رقم هاتف مشرف المدرسة"
+  "school_admin_phone": "رقم هاتف مشرف المدرسة",
+  "school_revenue": "إيرادات المدرسة",
+  "revenue_report_list": "قائمة تقارير الإيرادات",
+  "revenue_report": "تقرير الإيرادات",
+  "revenue_by_trainer": "الإيرادات حسب المدرب"
 }
