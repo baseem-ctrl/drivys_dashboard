@@ -57,12 +57,12 @@ export default function CommissionRow({ row, selected }: Props) {
     <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
       <TableCell
         sx={{
-          cursor: 'pointer',
+          // cursor: 'pointer',
           textDecoration: 'none',
           // '&:hover': { textDecoration: 'underline' },
         }}
       >
-        <Link
+        {/* <Link
           color="inherit"
           sx={{
             cursor: 'pointer',
@@ -75,15 +75,15 @@ export default function CommissionRow({ row, selected }: Props) {
               handleClickDetails(user?.id);
             }
           }}
-        >
-          {i18n.language === 'ar'
-            ? row?.booking?.assistant?.name_ar || t('n/a')
-            : row?.booking?.assistant?.name || t('n/a')}
-        </Link>
+        > */}
+        {i18n.language === 'ar'
+          ? row?.booking?.assistant?.name_ar || t('n/a')
+          : row?.booking?.assistant?.name || t('n/a')}
+        {/* </Link> */}
       </TableCell>
       <TableCell
         sx={{
-          cursor: 'pointer',
+          // cursor: 'pointer',
           textDecoration: 'none',
           // '&:hover': { textDecoration: 'underline' },
         }}
@@ -100,7 +100,7 @@ export default function CommissionRow({ row, selected }: Props) {
       </TableCell>
       <TableCell
         sx={{
-          cursor: 'pointer',
+          // cursor: 'pointer',
           textDecoration: 'none',
         }}
         onClick={(event) => {
