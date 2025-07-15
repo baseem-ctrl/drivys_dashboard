@@ -35,6 +35,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
 import BookingDetailsToolbar from '../booking-details-toolbar';
@@ -56,7 +57,7 @@ const TABLE_HEAD = {
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },
     { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'sub_total', label: t('Price'), width: 120 },
     { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
     { id: 'coupon', label: t('Coupon'), width: 200 },
     { id: 'created', label: t('Created'), width: 200 },
@@ -66,7 +67,7 @@ const TABLE_HEAD = {
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },
     { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'sub_total', label: t('Price'), width: 120 },
     { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
     { id: 'coupon', label: t('Coupon'), width: 200 },
     { id: 'created', label: t('Created'), width: 200 },
@@ -76,7 +77,7 @@ const TABLE_HEAD = {
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },
     { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'sub_total', label: t('Price'), width: 120 },
     { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
     { id: 'coupon', label: t('Coupon'), width: 200 },
     { id: 'created', label: t('Created'), width: 200 },
@@ -86,7 +87,7 @@ const TABLE_HEAD = {
     { id: 'vendorName', label: t('Trainer Name'), width: 180 },
     { id: 'orderStatus', label: t('Booking Status'), width: 150 },
     { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'sub_total', label: t('Price'), width: 120 },
     { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
     { id: 'coupon', label: t('Coupon'), width: 200 },
     { id: 'created', label: t('Created'), width: 200 },
@@ -409,16 +410,18 @@ export default function BookingListView() {
 
                 {!bookingsLoading &&
                   tableData.length > 0 &&
-                  tableData.map((row) => (
-                    <BookingTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => handleRowClick(row)}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
-                    />
-                  ))}
+                  [...(tableData || [])]
+                    .sort(getComparator(table.order, table.orderBy))
+                    .map((row) => (
+                      <BookingTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))}
 
                 {!bookingsLoading && tableData.length === 0 && (
                   <TableRow>

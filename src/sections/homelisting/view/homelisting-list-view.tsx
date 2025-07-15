@@ -277,6 +277,7 @@ export default function HomelistingListView() {
                   rowCount={tableData?.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
+                  orderBy={table.orderBy}
                   // onSelectAllRows={(checked) =>
                   //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
                   // }
@@ -291,18 +292,20 @@ export default function HomelistingListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <HomeListingTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          revalidateHomeListing={revalidateHomeListing}
-                          onViewRow={() => handleViewRow(row?.id)}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <HomeListingTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            revalidateHomeListing={revalidateHomeListing}
+                            onViewRow={() => handleViewRow(row?.id)}
+                          />
+                        ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}

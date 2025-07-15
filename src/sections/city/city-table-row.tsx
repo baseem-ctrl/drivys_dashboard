@@ -80,9 +80,6 @@ export default function CityTableRow({
           </Label>
         </TableCell>
 
-        <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {display_order}
-        </TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

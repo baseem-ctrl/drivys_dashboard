@@ -37,7 +37,6 @@ export default function StateTableRow({
   const quickEdit = useBoolean();
   const popover = usePopover();
   const zerothIndex = 0;
-
   const handleRowClick = (stateId: string) => {
     setProvinceID(stateId);
     onSelectRow();
@@ -84,7 +83,7 @@ export default function StateTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -94,22 +93,22 @@ export default function StateTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure you want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();
         }}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            {t("Delete")}
+            {t('Delete')}
           </Button>
         }
       />

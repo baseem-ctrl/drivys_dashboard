@@ -27,6 +27,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -48,9 +49,9 @@ export default function CashInHandAssistantList() {
   const { t } = useTranslation();
 
   const TABLE_HEAD = [
-    { id: 'assistant-id', label: t('assistant'), width: 180 },
-    { id: 'collected-cash-in-hand', label: t('collected_cash'), width: 180 },
-    { id: 'max-collected-cash-in-hand', label: t('cash_clearance_date'), width: 180 },
+    { id: 'name', label: t('assistant'), width: 180 },
+    { id: 'collected_cash_in_hand', label: t('collected_cash'), width: 180 },
+    { id: 'collected_cash_clearance_date', label: t('cash_clearance_date'), width: 180 },
     { id: 'action', label: '', width: 180 },
   ];
 
@@ -153,8 +154,12 @@ export default function CashInHandAssistantList() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={tableData?.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
                 <TableBody>
                   {cashCollectedLoading
@@ -165,15 +170,17 @@ export default function CashInHandAssistantList() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <CashInHandListRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateCashCollected}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <CashInHandListRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateCashCollected}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

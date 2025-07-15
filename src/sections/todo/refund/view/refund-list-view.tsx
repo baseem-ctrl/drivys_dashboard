@@ -27,6 +27,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
 import { useGetBookingStatusEnum } from 'src/api/booking';
@@ -64,18 +65,19 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
 
   const confirm = useBoolean();
   const TABLE_HEAD = [
-    { id: 'customerName', label: t('customer_name'), width: 180 },
-    { id: 'BookingId', label: t('booking_id'), width: 180 },
-    { id: 'packages', label: t('package'), width: 180 },
-    { id: 'orderStatus', label: t('booking_status'), width: 150 },
-    { id: 'paymentStatus', label: t('payment_status'), width: 150 },
-    { id: 'paid', label: t('amount_sanctioned'), width: 220 },
-    { id: 'refunded', label: t('amount_to_refund'), width: 220 },
-    { id: 'paymentMethod', label: t('payment_method'), width: 150 },
-    { id: 'reason', label: t('reason'), width: 200 },
-    { id: 'refundStatus', label: t('refund_status'), width: 250 },
-    { id: 'created', label: t('created'), width: 200 },
+    { id: 'user.name', label: t('customer_name'), width: 180 },
+    { id: 'booking.id', label: t('booking_id'), width: 180 },
+    { id: 'booking.package.package_translations[0].name', label: t('package'), width: 180 },
+    { id: 'booking.booking_status', label: t('booking_status'), width: 150 },
+    { id: 'booking.payment_status', label: t('payment_status'), width: 150 },
+    { id: 'refund_amount_sanctioned', label: t('amount_sanctioned'), width: 220 },
+    { id: 'remaining_amount_to_refund', label: t('amount_to_refund'), width: 220 },
+    { id: 'booking.payment_method', label: t('payment_method'), width: 150 },
+    { id: 'booking.refund_reason', label: t('reason'), width: 200 },
+    { id: 'refund_status', label: t('refund_status'), width: 250 },
+    { id: 'created_at', label: t('created'), width: 200 },
   ];
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -192,17 +194,19 @@ export default function PendingRefundListView({ table, filters, setFilters, sear
 
                 {!refundRequestLoading &&
                   tableData.length > 0 &&
-                  tableData.map((row) => (
-                    <RefundTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => handleRowClick(row)}
-                      reload={revalidateRefundRequests}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
-                    />
-                  ))}
+                  [...(tableData || [])]
+                    .sort(getComparator(table.order, table.orderBy))
+                    .map((row) => (
+                      <RefundTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateRefundRequests}
+                        // onDeleteRow={() => handleDeleteRow(row.id)}
+                        // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))}
 
                 {!refundRequestLoading && tableData.length === 0 && (
                   <TableRow>

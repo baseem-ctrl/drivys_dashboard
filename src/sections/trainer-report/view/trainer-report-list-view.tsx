@@ -24,6 +24,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -58,13 +59,13 @@ export default function TrainerReportListView() {
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
   const TABLE_HEAD = [
-    { id: 'trainer-name', label: t('trainer'), width: 200 },
-    { id: 'school-name', label: t('school'), width: 200 },
-    { id: 'total-bookings', label: t('total_bookings'), width: 200 },
-    { id: 'total-sessions', label: t('total_sessions'), width: 200 },
-    { id: 'completed-bookings', label: t('completed_bookings'), width: 200 },
-    { id: 'cancellation-rate', label: t('cancellation_rate'), width: 200 },
-    { id: 'avg-rating', label: t('average_rating'), width: 200 },
+    { id: 'Trainer Name', label: t('trainer'), width: 200 },
+    { id: 'School Name', label: t('school'), width: 200 },
+    { id: 'Total Bookings', label: t('total_bookings'), width: 200 },
+    { id: 'Total Sessions', label: t('total_sessions'), width: 200 },
+    { id: 'Total Completed Bookings', label: t('completed_bookings'), width: 200 },
+    { id: 'Cancellation Rate', label: t('cancellation_rate'), width: 200 },
+    { id: 'Average Rating', label: t('average_rating'), width: 200 },
   ];
 
   const locale = i18n.language;
@@ -192,7 +193,7 @@ export default function TrainerReportListView() {
       justifyContent="space-between"
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
+      sx={{ marginBottom: 3, marginTop: 3 }}
     >
       <Stack direction="row" spacing={1} flexShrink={0}>
         <TrainerReportFilter
@@ -290,6 +291,7 @@ export default function TrainerReportListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {trainerReportsLoading
@@ -300,15 +302,17 @@ export default function TrainerReportListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <TrainerReportRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateTrainerReports}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <TrainerReportRow
+                            userType={user?.user?.user_type}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateTrainerReports}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

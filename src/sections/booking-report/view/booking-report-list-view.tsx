@@ -27,6 +27,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -61,12 +62,12 @@ export default function BookingReportListView() {
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
   const TABLE_HEAD = [
-    { id: 'school-name', label: t('school'), width: 200 },
-    { id: 'total-booked-session', label: t('total_bookings'), width: 200 },
-    { id: 'total-students', label: t('total_students'), width: 200 },
-    { id: 'total-trainers', label: t('total_trainers'), width: 200 },
-    { id: 'total-paid-booking', label: t('total_paid_booking_sessions'), width: 200 },
-    { id: 'total-completed-session', label: t('completed_sessions'), width: 200 },
+    { id: 'School Name', label: t('school'), width: 200 },
+    { id: 'Total Number of Paid Bookings', label: t('total_bookings'), width: 200 },
+    { id: 'Total Number of Students', label: t('total_students'), width: 200 },
+    { id: 'Total Number of Active Trainers', label: t('total_trainers'), width: 200 },
+    { id: 'Total Number of Paid Bookings', label: t('total_paid_booking_sessions'), width: 200 },
+    { id: 'Total Number of Completed Bookings', label: t('completed_sessions'), width: 200 },
   ];
 
   const locale = i18n.language;
@@ -313,6 +314,7 @@ export default function BookingReportListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {bookingReportsLoading
@@ -323,15 +325,17 @@ export default function BookingReportListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <ReportBookingRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateBookingReports}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <ReportBookingRow
+                            userType={user?.user?.user_type}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateBookingReports}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

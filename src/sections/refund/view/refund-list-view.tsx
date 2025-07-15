@@ -28,6 +28,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
 import { useGetBookingStatusEnum } from 'src/api/booking';
@@ -51,25 +52,25 @@ export default function RefundListView() {
 
   const TABLE_HEAD = {
     all: [
-      { id: 'customerName', label: t('Customer Name'), width: 180 },
-      { id: 'BookingId', label: t('Booking ID'), width: 180 },
+      { id: 'name', label: t('Customer Name'), width: 180 },
+      { id: 'booking_id', label: t('Booking ID') },
       { id: 'packages', label: t('Package'), width: 180 },
       { id: 'orderStatus', label: t('Booking Status'), width: 150 },
       { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-      { id: 'paid', label: t('Amount Sanctioned'), width: 220 },
-      { id: 'refunded', label: t('Amount to refund'), width: 220 },
+      { id: 'refund_amount_sanctioned', label: t('Amount Sanctioned'), width: 220 },
+      { id: 'remaining_amount_to_refund', label: t('Amount to refund'), width: 220 },
       { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
       { id: 'reason', label: t('Reason'), width: 200 },
       { id: 'refundStatus', label: t('Refund Status'), width: 250 },
       { id: 'created', label: t('Created'), width: 200 },
     ],
     refunded: [
-      { id: 'customerName', label: t('Customer Name'), width: 180 },
+      { id: 'name', label: t('Customer Name'), width: 180 },
       { id: 'vendorName', label: t('Driver Name'), width: 180 },
       { id: 'packages', label: t('Package'), width: 180 },
       { id: 'orderStatus', label: t('Booking Status'), width: 150 },
       { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-      { id: 'price', label: t('Price'), width: 120 },
+      { id: 'sub_total', label: t('Price'), width: 120 },
       { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
 
       { id: 'reason', label: t('Reason'), width: 200 },
@@ -338,17 +339,19 @@ export default function RefundListView() {
 
                   {!refundRequestLoading &&
                     tableData.length > 0 &&
-                    tableData.map((row) => (
-                      <RefundTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        reload={revalidateRefundRequests}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
+                    [...(tableData || [])]
+                      .sort(getComparator(table.order, table.orderBy))
+                      .map((row) => (
+                        <RefundTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          reload={revalidateRefundRequests}
+                          // onDeleteRow={() => handleDeleteRow(row.id)}
+                          // onEditRow={() => handleEditRow(row.id)}
+                        />
+                      ))}
 
                   {!refundRequestLoading && tableData.length === 0 && (
                     <TableRow>
@@ -424,17 +427,19 @@ export default function RefundListView() {
                     ))}
 
                   {refundedTableData.length > 0 &&
-                    refundedTableData.map((row) => (
-                      <RefundedTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        reload={revalidateRefundedRequestsList}
-                        // onDeleteRow={() => handleDeleteRow(row.id)}
-                        // onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
+                    [...(refundedTableData || [])]
+                      .sort(getComparator(table.order, table.orderBy))
+                      .map((row) => (
+                        <RefundedTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                          reload={revalidateRefundedRequestsList}
+                          // onDeleteRow={() => handleDeleteRow(row.id)}
+                          // onEditRow={() => handleEditRow(row.id)}
+                        />
+                      ))}
 
                   {refundedRequestsList.length === 0 && (
                     <TableRow>

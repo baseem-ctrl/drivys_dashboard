@@ -18,7 +18,12 @@ import {
 import Iconify from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Scrollbar from 'src/components/scrollbar';
-import { TableHeadCustom, TableSelectedAction, TablePaginationCustom } from 'src/components/table';
+import {
+  TableHeadCustom,
+  TableSelectedAction,
+  TablePaginationCustom,
+  getComparator,
+} from 'src/components/table';
 // import BookingTableToolbar from '../booking-table-toolbar';
 import RefundFilters from '../refund-filter';
 import { useGetEligibleRewardTrainerList } from 'src/api/loyality';
@@ -47,14 +52,14 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
     ...(filters?.trainer_id && { trainer_id: filters.trainer_id }),
   });
   const TABLE_HEAD = [
-    { id: 'trainer-name', label: t('trainer'), width: 180 },
-    { id: 'reward-amount', label: t('reward_amount'), width: 180 },
-    { id: 'is-periodic', label: t('periodic'), width: 220 },
-    { id: 'start-date', label: t('start_date'), width: 220 },
-    { id: 'end-date', label: t('end_date'), width: 220 },
-    { id: 'notes', label: t('notes'), width: 180 },
-    { id: 'achieved-date', label: t('achieved_date'), width: 200 },
-    { id: 'notes', label: '', width: 250 },
+    { id: 'user.name', label: t('trainer'), width: 180 },
+    { id: 'reward_details.reward_amount', label: t('reward_amount'), width: 180 }, // reward amount
+    { id: 'trainer_reward.is_periodic', label: t('periodic'), width: 220 }, // periodic flag
+    { id: 'trainer_reward.start_date', label: t('start_date'), width: 220 }, // start date
+    { id: 'trainer_reward.end_date', label: t('end_date'), width: 220 }, // end date
+    { id: 'notes', label: t('notes'), width: 180 }, // notes
+    { id: 'achieved_date', label: t('achieved_date'), width: 200 }, // achieved date
+    { id: '', label: '', width: 250 }, // for the "Send" button / actions
   ];
 
   const openFilters = useBoolean();
@@ -162,17 +167,27 @@ export default function PendingRewardListView({ table, filters, setFilters, sear
 
               {!eligibleRewardTrainersLoading &&
                 tableData.length > 0 &&
-                tableData.map((row) => (
-                  <PendingRewardTableRow
-                    key={row.id}
-                    row={row}
-                    selected={table.selected.includes(row.id)}
-                    onSelectRow={() => handleRowClick(row)}
-                    reload={revalidateEligibleRewardTrainers}
-                    // onDeleteRow={() => handleDeleteRow(row.id)}
-                    // onEditRow={() => handleEditRow(row.id)}
-                  />
-                ))}
+                [...(tableData || [])]
+                  .map((row) => ({
+                    ...row,
+                    'user.name': row.user?.name ?? '',
+                    'reward_details.reward_amount': row.reward_details?.reward_amount ?? 0,
+                    'trainer_reward.is_periodic': row.trainer_reward?.is_periodic ?? false,
+                    'trainer_reward.start_date': row.trainer_reward?.start_date ?? '',
+                    'trainer_reward.end_date': row.trainer_reward?.end_date ?? '',
+                  }))
+                  .sort(getComparator(table.order, table.orderBy))
+                  .map((row) => (
+                    <PendingRewardTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => handleRowClick(row)}
+                      reload={revalidateEligibleRewardTrainers}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
 
               {!eligibleRewardTrainersLoading && tableData.length === 0 && (
                 <TableRow>

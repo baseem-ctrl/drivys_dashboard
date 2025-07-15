@@ -175,7 +175,7 @@
   "reject": "Reject",
   "accept": "Accept",
   "sessions": "sessions",
-  "total_bookings": "Total Bookings:",
+  "total_bookings": "Total Bookings",
   "search_placeholder_to_list": "Search with trainer name, email, school name...",
   "search_placeholder_to_list_refund": "Search with student's name, driver's name, city's name, category's name...",
   "to_do_list": "To Do List",
@@ -1209,5 +1209,9 @@
   "school_report": "School Report",
   "total_trainer_count": "Total Trainer Count",
   "school_admin_email": "School Admin Email",
-  "school_admin_phone": "School Admin Phone"
+  "school_admin_phone": "School Admin Phone",
+  "school_revenue": "School Revenue",
+  "revenue_report_list": "Revenue Report List",
+  "revenue_report": "Revenue Report",
+  "revenue_by_trainer": "Revenue by Trainer"
 }

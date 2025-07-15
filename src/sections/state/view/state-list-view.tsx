@@ -60,10 +60,10 @@ export default function StateListView() {
   const TABLE_HEAD = [
     { id: 'name', label: t('Name') },
     { id: 'locale', label: t('Locale'), width: 180 },
-    { id: 'city', label: t('City'), width: 180 },
+    { id: 'city_name', label: t('City'), width: 180 },
     { id: 'is_published', label: t('Published'), width: 180 },
-    { id: 'action1', label: t('Display Order ID'), width: 180 },
-    { id: 'action2', label: '', width: 88 },
+    { id: 'order', label: t('Display Order ID'), width: 180 },
+    { id: 'action', label: '', width: 88 },
   ];
 
   const table = useTable({ defaultRowsPerPage: 15 });
@@ -213,7 +213,7 @@ export default function StateListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading={t("List")}
+          heading={t('List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             {
@@ -234,7 +234,7 @@ export default function StateListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t("New Area")}
+                {t('New Area')}
               </Button>
             )
           }
@@ -257,7 +257,7 @@ export default function StateListView() {
                   )
                 }
                 action={
-                  <Tooltip title={t("Delete")}>
+                  <Tooltip title={t('Delete')}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -273,27 +273,30 @@ export default function StateListView() {
                     headLabel={TABLE_HEAD}
                     rowCount={tableData.length}
                     numSelected={table.selected.length}
+                    onSort={table.onSort}
                   />
                   <TableBody>
                     {stateLoading
                       ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                      : tableData?.map((row) => (
-                        <StateTableRow
-                          row={row}
-                          setProvinceID={setProvinceID}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.id)}
-                          reload={revalidateStates}
-                        />
-                      ))}
+                          <TableRow key={index}>
+                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                              <Skeleton animation="wave" height={40} />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : [...(tableData || [])]
+                          .sort(getComparator(table.order, table.orderBy))
+                          .map((row) => (
+                            <StateTableRow
+                              row={row}
+                              setProvinceID={setProvinceID}
+                              selected={table.selected.includes(row.id)}
+                              onSelectRow={() => handleRowClick(row)}
+                              onDeleteRow={() => handleDeleteRow(row.id)}
+                              onEditRow={() => handleEditRow(row.id)}
+                              reload={revalidateStates}
+                            />
+                          ))}
                   </TableBody>
                 </Table>
               </Scrollbar>

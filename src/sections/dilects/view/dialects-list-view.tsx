@@ -22,6 +22,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 import { IDialectTableFilters } from 'src/types/dialect';
@@ -37,6 +38,7 @@ import DialectSearch from '../dialects-search';
 import { useGetAllLanguage } from 'src/api/language';
 import { deleteDialect, useGetAllDialect } from 'src/api/dialect';
 import { useTranslation } from 'react-i18next';
+import { gridDateComparator } from '@mui/x-data-grid';
 
 const defaultFilters: IDialectTableFilters = {
   name: '',
@@ -51,9 +53,9 @@ export default function DialectListView() {
     { id: 'language_name', label: t('Language Name') },
     { id: 'description', label: t('Description') },
     { id: 'keywords', label: t('Keywords') },
-    { id: 'order_id', label: t('Order') },
+    { id: 'order', label: t('Order') },
     { id: 'is_published', label: t('Published') },
-    { id: 'action2', label: '' },
+    { id: 'action', label: '' },
   ];
 
   const table = useTable({ defaultRowsPerPage: 15 });
@@ -173,7 +175,7 @@ export default function DialectListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("List")}
+        heading={t('List')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
@@ -194,7 +196,7 @@ export default function DialectListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              {t("New Dialect")}
+              {t('New Dialect')}
             </Button>
           )
         }
@@ -217,7 +219,7 @@ export default function DialectListView() {
                 )
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -233,27 +235,30 @@ export default function DialectListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {dialectLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={5}>
-                          <Skeleton variant="text" />
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        <TableRow key={index}>
+                          <TableCell colSpan={5}>
+                            <Skeleton variant="text" />
+                          </TableCell>
+                        </TableRow>
+                      ))
                     : tableData.length > 0 &&
-                    tableData.map((row, index) => (
-                      <DialectTableRow
-                        key={index}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => handleRowClick(row)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        reload={revalidateCategory}
-                      />
-                    ))}
+                      [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row, index) => (
+                          <DialectTableRow
+                            key={index}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            reload={revalidateCategory}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

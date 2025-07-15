@@ -26,6 +26,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -52,12 +53,13 @@ export default function RevenueReportListView() {
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
+
   const TABLE_HEAD = [
-    { id: 'school-name', label: t('school'), width: 200 },
-    { id: 'school-revenue', label: t('school_revenue'), width: 200 },
-    { id: 'total-booking', label: t('total_bookings'), width: 200 },
-    { id: 'total-completed-booking', label: t('completed_bookings'), width: 200 },
-    { id: 'more-details', label: t('revenue_by_trainer'), width: 200 },
+    { id: 'School Name', label: t('school'), width: 200 },
+    { id: 'Bookings Revenue By School', label: t('school_revenue'), width: 200 },
+    { id: 'Total Number Of Bookings', label: t('total_bookings'), width: 200 },
+    { id: 'Total Number Of Completed Bookings', label: t('completed_bookings'), width: 200 },
+    { id: '', label: t('revenue_by_trainer'), width: 200 },
   ];
 
   const locale = i18n.language;
@@ -191,7 +193,7 @@ export default function RevenueReportListView() {
       spacing={3}
       justifyContent="space-between"
       direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
+      sx={{ marginBottom: 3, marginTop: 3 }}
     >
       <RevenueReportFilter
         open={openFilters.value}
@@ -275,7 +277,9 @@ export default function RevenueReportListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
+
                 <TableBody>
                   {revenueReportsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
@@ -285,15 +289,17 @@ export default function RevenueReportListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <RevenueReportRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateRevenueReports}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <RevenueReportRow
+                            userType={user?.user?.user_type}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateRevenueReports}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

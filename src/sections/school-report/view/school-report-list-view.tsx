@@ -24,6 +24,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -55,11 +56,12 @@ export default function SchoolReportListView() {
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
   const TABLE_HEAD = [
-    { id: 'school-name', label: t('school_name'), width: 200 },
-    { id: 'total-trainer-count', label: t('total_trainer_count'), width: 200 },
-    { id: 'school-admin-email-id', label: t('school_admin_email'), width: 200 },
-    { id: 'school-admin-phone-number', label: t('school_admin_phone'), width: 200 },
+    { id: 'School Name', label: t('school_name'), width: 200 },
+    { id: 'Trainers Count', label: t('total_trainer_count'), width: 200 },
+    { id: 'School Admin Email', label: t('school_admin_email'), width: 200 },
+    { id: 'School Admin Phone Number', label: t('school_admin_phone'), width: 200 },
   ];
+
   const locale = i18n.language;
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -287,6 +289,7 @@ export default function SchoolReportListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {schoolReportsLoading
@@ -297,15 +300,17 @@ export default function SchoolReportListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <SchoolReportsRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateSchoolReports}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <SchoolReportsRow
+                            userType={user?.user?.user_type}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            reload={revalidateSchoolReports}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>
