@@ -60,9 +60,16 @@ export default function ReviewFilter({ filters, onFilters }: any) {
               value: item.id,
             })) ?? []
           }
-          value={users?.find((item) => item.id === filters.student_id) || null}
+          value={
+            users
+              ?.map((item: any) => ({
+                label: `${item?.name ?? 'NA'}`,
+                value: item.id,
+              }))
+              .find((item) => item.value === filters.student_id) || null
+          }
           getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value}
+          isOptionEqualToValue={(option, value) => option.value === value?.value}
           renderInput={(params) => (
             <TextField placeholder={t('Select Student')} {...params} fullWidth />
           )}
@@ -80,7 +87,14 @@ export default function ReviewFilter({ filters, onFilters }: any) {
               value: item.id,
             })) ?? []
           }
-          value={trainerUsers?.find((item) => item.id === filters.trainer_id) || null}
+          value={
+            trainerUsers
+              ?.map((item: any) => ({
+                label: `${item?.name ?? 'NA'}`,
+                value: item.id,
+              }))
+              .find((item) => item.value === filters.trainer_id) || null
+          }
           getOptionLabel={(option) => option.label || 'NA'}
           isOptionEqualToValue={(option, value) => option.value === value}
           renderInput={(params) => (

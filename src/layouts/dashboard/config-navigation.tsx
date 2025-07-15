@@ -122,6 +122,10 @@ export function useNavData() {
     payment: 'assistant_booking_payment',
     pending_booking_requests: 'assistant_booking_payment',
     unattended_student: 'no_student_shown_up',
+    // commission: 'vendor_commission_list',
+    // trainer_commission: 'vendor_commission_list',
+    // trainer_certificate_commission: 'vendor_commission_list',
+    // drivys_certificate_commission: 'vendor_commission_list',
   };
   const schoolAdminRoutePermissionMap = {
     notification: 'notification_school_admin',

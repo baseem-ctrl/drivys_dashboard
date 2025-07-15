@@ -1,7 +1,10 @@
-import { Box, TextField, Autocomplete } from '@mui/material';
+import { Box, TextField, Autocomplete, IconButton, Tooltip, Typography } from '@mui/material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useGetUsers } from 'src/api/users';
 
 export default function ReviewFilter({ filters, onFilters }: any) {
+  const { t } = useTranslation();
   const { users } = useGetUsers({
     page: 0,
     limit: 1000,
@@ -35,7 +38,6 @@ export default function ReviewFilter({ filters, onFilters }: any) {
       sx={{
         '& > *': {
           flex: '1 1 100%',
-          minWidth: '300px',
         },
       }}
     >
@@ -49,10 +51,19 @@ export default function ReviewFilter({ filters, onFilters }: any) {
               value: item.id,
             })) ?? []
           }
-          value={users.find((item) => item.id === filters.student_id) || null}
+          value={
+            users
+              ?.map((item: any) => ({
+                label: `${item?.name ?? 'NA'}`,
+                value: item.id,
+              }))
+              .find((item) => item.value === filters.student_id) || null
+          }
           getOptionLabel={(option) => option.label || 'NA'}
-          isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Student" {...params} fullWidth />}
+          isOptionEqualToValue={(option, value) => option.value === value?.value}
+          renderInput={(params) => (
+            <TextField placeholder={t('Select Student')} {...params} fullWidth />
+          )}
           onChange={handleStudentChange}
         />
       </Box>
@@ -67,10 +78,19 @@ export default function ReviewFilter({ filters, onFilters }: any) {
               value: item.id,
             })) ?? []
           }
-          value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
+          value={
+            trainerUsers
+              ?.map((item: any) => ({
+                label: `${item?.name ?? 'NA'}`,
+                value: item.id,
+              }))
+              .find((item) => item.value === filters.trainer_id) || null
+          }
           getOptionLabel={(option) => option.label || 'NA'}
           isOptionEqualToValue={(option, value) => option.value === value}
-          renderInput={(params) => <TextField placeholder="Select Trainer" {...params} fullWidth />}
+          renderInput={(params) => (
+            <TextField placeholder={t('Select Trainer')} {...params} fullWidth />
+          )}
           onChange={handleTrainerChange}
         />
       </Box>
