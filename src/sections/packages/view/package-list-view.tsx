@@ -128,7 +128,6 @@ export default function PackageListView() {
       setTableData([]);
     }
   }, [packageList]);
-
   useEffect(() => {
     const enNamesArray = schoolList.flatMap((vendor) =>
       vendor.vendor_translations
@@ -309,19 +308,21 @@ export default function PackageListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <PackageTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          revalidatePackage={revalidatePackage}
-                          onViewRow={() => handleViewRow(row?.id)}
-                          schoolList={schoolList}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <PackageTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            revalidatePackage={revalidatePackage}
+                            onViewRow={() => handleViewRow(row?.id)}
+                            schoolList={schoolList}
+                          />
+                        ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}

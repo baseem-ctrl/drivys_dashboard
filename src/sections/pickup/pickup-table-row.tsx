@@ -14,6 +14,7 @@ import PickupCreateEditForm from './pickup-new-edit-form';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useTranslation } from 'react-i18next';
+import { useGetCities } from 'src/api/enum';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ export default function PickupTableRow({
 }: Props) {
   const { city_id, end_date, end_time, start_date, start_time, status } = row;
   const { t } = useTranslation();
+  const { cities } = useGetCities(0, 1000);
   const confirm = useBoolean();
   const quickEdit = useBoolean();
   const popover = usePopover();
@@ -52,6 +54,16 @@ export default function PickupTableRow({
   const handleClick = () => {
     router.push(paths.dashboard.system.viewDetails(city_id));
   };
+  const { i18n } = useTranslation();
+  const currentLocale = i18n.language.toLowerCase();
+
+  const getCityNameByLocale = (id: number) => {
+    const city = cities?.find((c) => c.id === id);
+    return (
+      city?.city_translations?.find((trans) => trans.locale?.toLowerCase() === currentLocale)
+        ?.name ?? 'N/A'
+    );
+  };
   return (
     <>
       <TableRow hover selected={selected}>
@@ -64,7 +76,7 @@ export default function PickupTableRow({
             },
           }}
         >
-          {city_id}
+          {getCityNameByLocale(city_id) || 'N/A'}
         </TableCell>
         <TableCell>{formattedStartDate}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>

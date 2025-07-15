@@ -90,7 +90,7 @@ export default function SchoolListView() {
     { id: 'name', label: t('name') },
     { id: 'email', label: t('email') },
     { id: 'phone_number', label: t('phone_number') },
-    { id: 'commission_in_percentage', label: t('commission_percentage') },
+    { id: 'certificate_commission_in_percentage', label: t('commission_percentage') },
     { id: 'status', label: t('status') },
     { id: 'is_active', label: t('active_status') },
     { id: 'vendor_user', label: t('school_owner') },
@@ -223,6 +223,7 @@ export default function SchoolListView() {
     },
     [router]
   );
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -298,22 +299,24 @@ export default function SchoolListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <SchoolTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={(e: any) => handleEditRow(e, row.id)}
-                          revalidateSchool={revalidateSchool}
-                          onViewRow={() => handleViewRow(row?.id)}
-                          setBulkEditIds={setBulkEditIds}
-                          selectedRows={selectedRows}
-                          setIsBulkEdit={setIsBulkEdit}
-                          isBulkEdit={isBulkEdit}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <SchoolTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={(e: any) => handleEditRow(e, row.id)}
+                            revalidateSchool={revalidateSchool}
+                            onViewRow={() => handleViewRow(row?.id)}
+                            setBulkEditIds={setBulkEditIds}
+                            selectedRows={selectedRows}
+                            setIsBulkEdit={setIsBulkEdit}
+                            isBulkEdit={isBulkEdit}
+                          />
+                        ))}
 
                   {/* <TableEmptyRows
                     height={denseHeight}

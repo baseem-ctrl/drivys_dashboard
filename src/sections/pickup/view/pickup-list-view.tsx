@@ -56,17 +56,14 @@ export default function PickupListView() {
   const { t } = useTranslation();
 
   const TABLE_HEAD = [
-    { id: 'city_id', label: t('City ID') },
-
+    { id: 'city_id', label: t('City') },
     { id: 'start_date', label: t('Start Date'), width: 180 },
     { id: 'end_date', label: t('End Date'), width: 180 },
     { id: 'start_time', label: t('Start Time'), width: 180 },
     { id: 'end_time', label: t('End Time'), width: 180 },
-
     { id: 'status', label: t('Status'), width: 180 },
-    { id: 'action2', label: '', width: 88 },
+    { id: 'action', label: '', width: 88 },
   ];
-
 
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
@@ -173,7 +170,7 @@ export default function PickupListView() {
         }}
       >
         <CustomBreadcrumbs
-          heading={t("List")}
+          heading={t('List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             {
@@ -194,7 +191,7 @@ export default function PickupListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t("New Pickup")}
+                {t('New Pickup')}
               </Button>
             )
           }
@@ -216,7 +213,7 @@ export default function PickupListView() {
                 )
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -232,25 +229,29 @@ export default function PickupListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {exclusionsLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                    : dataFiltered?.map((row) => (
-                      <PickupTableRow
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        reload={revalidateExclusions}
-                      />
-                    ))}
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData.length > 0 &&
+                      [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <PickupTableRow
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={() => handleEditRow(row.id)}
+                            reload={revalidateExclusions}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

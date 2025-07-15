@@ -67,15 +67,13 @@ export default function CityListView() {
   const { t } = useTranslation();
 
   const TABLE_HEAD = [
-    { id: 'action', label: '', width: 88 },
-
+    { id: '', label: '', width: 88 },
     { id: 'name', label: t('Name') },
     { id: 'locale', label: t('Locale'), width: 180 },
     { id: 'max_slot', label: t('max_slot'), width: 180 },
-
     { id: 'is_published', label: t('Published'), width: 180 },
-    { id: 'action1', label: '', width: 180 },
-    { id: 'action2', label: '', width: 88 },
+
+    { id: 'action', label: '', width: 88 },
   ];
 
   const table = useTable({ defaultRowsPerPage: 15 });
@@ -303,6 +301,7 @@ export default function CityListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
                 />
                 <TableBody>
                   {cityLoading
@@ -313,18 +312,20 @@ export default function CityListView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : dataFiltered?.map((row) => (
-                        <CityTableRow
-                          key={row.id}
-                          row={row}
-                          selected={selectedCityIds.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          handleCheckboxClick={handleCheckboxClick}
-                          selectedCityIds={selectedCityIds}
-                          reload={revalidateCities}
-                        />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <CityTableRow
+                            key={row.id}
+                            row={row}
+                            selected={selectedCityIds.includes(row.id)}
+                            onSelectRow={() => handleRowClick(row)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            handleCheckboxClick={handleCheckboxClick}
+                            selectedCityIds={selectedCityIds}
+                            reload={revalidateCities}
+                          />
+                        ))}
                 </TableBody>
               </Table>
             </Scrollbar>

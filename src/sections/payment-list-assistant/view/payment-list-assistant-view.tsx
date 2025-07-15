@@ -24,6 +24,7 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
+  getComparator,
 } from 'src/components/table';
 // types
 
@@ -214,8 +215,12 @@ export default function PaymentAssistantView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={tableData?.length}
                   numSelected={table.selected.length}
+                  onSort={table.onSort}
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
+                  // }
                 />
                 <TableBody>
                   {paymentListLoading
@@ -226,9 +231,9 @@ export default function PaymentAssistantView() {
                           </TableCell>
                         </TableRow>
                       ))
-                    : tableData?.map((row) => (
-                        <PaymentRow row={row} reload={revalidatePaymentList} />
-                      ))}
+                    : [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => <PaymentRow row={row} reload={revalidatePaymentList} />)}
                 </TableBody>
               </Table>
             </Scrollbar>

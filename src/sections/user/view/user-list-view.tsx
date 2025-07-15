@@ -100,7 +100,7 @@ export default function UserListView() {
   const TABLE_HEAD = {
     all: [
       { id: 'name', label: t('name'), width: 200 },
-      { id: 'phoneNumber', label: t('phone_number'), width: 180 },
+      { id: 'phone', label: t('phone_number'), width: 180 },
       { id: 'dob', label: t('dob'), width: 220 },
       { id: 'status', label: t('status'), width: 100 },
       { id: '', width: 88 },
@@ -365,30 +365,33 @@ export default function UserListView() {
                 <TableBody>
                   {usersLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell
-                          colSpan={
-                            filters.userTypes === 'TRAINER'
-                              ? TABLE_HEAD.trainer?.length
-                              : TABLE_HEAD.all?.length || 6
-                          }
-                        >
-                          <Skeleton animation="wave" height={40} />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                    : tableData?.map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        currentUserType={filters?.userTypes}
-                        reload={() => revalidateUsers()}
-                      />
-                    ))}
+                        <TableRow key={index}>
+                          <TableCell
+                            colSpan={
+                              filters.userTypes === 'TRAINER'
+                                ? TABLE_HEAD.trainer?.length
+                                : TABLE_HEAD.all?.length || 6
+                            }
+                          >
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : tableData.length > 0 &&
+                      [...(tableData || [])]
+                        .sort(getComparator(table.order, table.orderBy))
+                        .map((row) => (
+                          <UserTableRow
+                            key={row.id}
+                            row={row}
+                            selected={table.selected.includes(row.id)}
+                            onSelectRow={() => table.onSelectRow(row.id)}
+                            onDeleteRow={() => handleDeleteRow(row.id)}
+                            onEditRow={() => handleEditRow(row.id)}
+                            currentUserType={filters?.userTypes}
+                            reload={() => revalidateUsers()}
+                          />
+                        ))}
 
                   {tableData?.length === 0 && !usersLoading && <TableNoData notFound={notFound} />}
                 </TableBody>
