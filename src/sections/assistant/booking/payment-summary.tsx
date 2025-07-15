@@ -71,26 +71,50 @@ export const PaymentSummaryBox = ({
       <Stack spacing={1.5}>
         <SummaryRow
           label={t('package_price_after_discount')}
-          value={`₹${summary.package_price}`}
+          value={
+            <>
+              <span className="dirham-symbol">&#x00EA;</span>
+              {summary.package_price}
+            </>
+          }
           originalValue={
             summary.package_price_before_discount &&
-            summary.package_price_before_discount !== summary.package_price
-              ? `₹${summary.package_price_before_discount}`
-              : undefined
+            summary.package_price_before_discount !== summary.package_price ? (
+              <>
+                <span className="dirham-symbol">&#x00EA;</span>
+                {summary.package_price_before_discount}
+              </>
+            ) : undefined
           }
         />
         <SummaryRow
           label={t('transport_fee_after_discount')}
-          value={`₹${summary.transport_fee}`}
+          value={
+            <>
+              <span className="dirham-symbol">&#x00EA;</span>
+              {summary.transport_fee}
+            </>
+          }
           originalValue={
             summary.transport_fee_before_discount &&
-            summary.transport_fee_before_discount !== summary.transport_fee
-              ? `₹${summary.transport_fee_before_discount}`
-              : undefined
+            summary.transport_fee_before_discount !== summary.transport_fee ? (
+              <>
+                <span className="dirham-symbol">&#x00EA;</span>
+                {summary.transport_fee_before_discount}
+              </>
+            ) : undefined
           }
         />
 
-        <SummaryRow label={t('tax_amount')} value={`₹${summary.tax_amount}`} />
+        <SummaryRow
+          label={t('tax_amount')}
+          value={
+            <>
+              <span className="dirham-symbol">&#x00EA;</span>
+              {summary.tax_amount}
+            </>
+          }
+        />
         <Divider />
         <SummaryRow label={t('booking_method')} value={summary.booking_method} />
         <SummaryRow label={t('payment_method')} value={summary.payment_method} />
@@ -159,7 +183,8 @@ export const PaymentSummaryBox = ({
             {t('total_payable')}
           </Typography>
           <Typography fontSize={14} fontWeight={700} color="primary">
-            ₹{summary.total}
+            <span className="dirham-symbol">&#x00EA;</span>
+            {summary.total}
           </Typography>
         </Stack>
       </Stack>
