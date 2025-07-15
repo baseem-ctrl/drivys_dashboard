@@ -70,7 +70,8 @@ const OverviewCollectorPage = () => {
                     Collected Cash In Hand
                   </Typography>
                   <Typography variant="h6" color="#4caf50" fontWeight="bold">
-                    ₹ {user?.user?.collected_cash_in_hand || '0'}
+                    <span className="dirham-symbol">&#x00EA;</span>
+                    {user?.user?.collected_cash_in_hand || '0'}
                   </Typography>
                 </Box>
               </Grid>
@@ -82,7 +83,8 @@ const OverviewCollectorPage = () => {
                     Max Cash In Hand Allowed
                   </Typography>
                   <Typography variant="h6" color="#f44336" fontWeight="bold">
-                    ₹ {user?.user?.collected_max_cash_in_hand_allowed || '0'}
+                    <span className="dirham-symbol">&#x00EA;</span>
+                    {user?.user?.collected_max_cash_in_hand_allowed || '0'}
                   </Typography>
                 </Box>
               </Grid>
