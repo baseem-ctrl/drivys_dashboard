@@ -22,7 +22,7 @@ interface StudentFormData {
   name: string;
   password: string;
   email: string;
-  Phone: string;
+  phone: string;
   dob: string;
   gear: string | number;
   vehicle_type_id: string;
@@ -41,14 +41,15 @@ interface StudentFormData {
   label: string;
   postal_code: string;
   neighbourhood: string;
+  // country_code: string;
 }
 
 const initialFormState: StudentFormData = {
   name: '',
   password: '',
   email: '',
-  Phone: '',
-
+  phone: '',
+  // country_code: '+971',
   dob: '',
   gear: '',
   vehicle_type_id: '',
@@ -303,6 +304,34 @@ const AddNewStudent: React.FC = () => {
                       value={value}
                       onChange={handleChange}
                       InputLabelProps={{ shrink: true }}
+                      variant="outlined"
+                    />
+                  </Grid>
+                );
+              }
+              if (key === 'phone') {
+                return (
+                  <Grid item xs={12} sm={6} key={key}>
+                    <TextField
+                      fullWidth
+                      type="tel"
+                      label={label}
+                      name={key}
+                      value={formData[key]}
+                      onChange={(e) => {
+                        const onlyDigits = e.target.value.replace(/\D/g, '');
+                        setFormData((prev) => ({
+                          ...prev,
+                          [key]: onlyDigits,
+                        }));
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <Typography sx={{ mr: 1, color: 'text.secondary', fontWeight: 500 }}>
+                            +971
+                          </Typography>
+                        ),
+                      }}
                       variant="outlined"
                     />
                   </Grid>
