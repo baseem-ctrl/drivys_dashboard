@@ -1,6 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { drivysFetcher, endpoints } from 'src/utils/axios';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from 'src/auth/hooks';
 
 export function useGetBookingReports(
   start_date?: string,
@@ -138,6 +139,7 @@ export function useGetStudentReports(
 ) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
+  const { user } = useAuthContext();
 
   const getTheFullUrl = () => {
     let queryParams: Record<string, any> = {};
@@ -150,7 +152,11 @@ export function useGetStudentReports(
     if (category_id) queryParams.category_id = category_id;
     if (city_id) queryParams.city_id = city_id;
 
-    return `${endpoints.schoolReportSessionPreview.student}?${new URLSearchParams(queryParams)}`;
+    const endpoint =
+      user?.user?.user_type === 'SCHOOL_ADMIN'
+        ? endpoints.schoolReportSessionPreview.student
+        : endpoints.reportSessionPreview.student;
+    return `${endpoint}?${new URLSearchParams(queryParams)}`;
   };
 
   const { data, isLoading, error, isValidating } = useSWR(getTheFullUrl, drivysFetcher);
