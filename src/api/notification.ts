@@ -12,9 +12,10 @@ interface UseGetNotificationListProps {
   limit: number;
   searchQuery?: string;
   locale?: string;
+  user_id?: string;
 }
 
-export function useGetNotificationList({ page, limit }: UseGetNotificationListProps) {
+export function useGetNotificationList({ page, limit, user_id }: UseGetNotificationListProps) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
@@ -26,17 +27,20 @@ export function useGetNotificationList({ page, limit }: UseGetNotificationListPr
     if (includeLocale) {
       params.locale = locale;
     }
+    if (user_id) {
+      params.user_id = user_id;
+    }
     return params;
   };
 
   const primaryUrl = useMemo(
     () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(true))}`,
-    [limit, page, locale]
+    [limit, page, locale, user_id]
   );
 
   const fallbackUrl = useMemo(
     () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(false))}`,
-    [limit, page]
+    [limit, page, user_id]
   );
 
   const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
