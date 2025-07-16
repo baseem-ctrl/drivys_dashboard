@@ -1,19 +1,30 @@
 import React, { useCallback, useState } from 'react';
 import isEqual from 'lodash/isEqual';
-import { Grid, CircularProgress, Typography, Container, Box, Stack } from '@mui/material';
+import {
+  Grid,
+  CircularProgress,
+  Typography,
+  Container,
+  Box,
+  Stack,
+  InputAdornment,
+  IconButton,
+  TextField,
+} from '@mui/material';
 import { useGetTrainerList } from 'src/api/assistant';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
-import TrainerProfileCard from '../trainer-profile-card';
 import { useRouter } from 'src/routes/hooks';
-import TrainerFilters from '../trainer-filter';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/city';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import CloseIcon from '@mui/icons-material/Close';
 import { useGetGearEnum } from 'src/api/users';
 import { useTranslation } from 'react-i18next';
+import TrainerProfileCard from '../trainer-profile-card';
+import TrainerFilters from '../trainer-filter';
 
 const defaultFilters: any = {
   city_id: '',
@@ -29,6 +40,7 @@ const TrainerListPage: React.FC = () => {
   const [filters, setFilters] = useState(defaultFilters);
   const { gearData, gearLoading } = useGetGearEnum();
   const { t } = useTranslation();
+  const [searchTermTrainer, setSearchTermTrainer] = useState('');
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
     page: table.page,
@@ -39,6 +51,7 @@ const TrainerListPage: React.FC = () => {
       ? { gear: gearData.find((g: any) => g.name === filters.gear)?.value }
       : {}),
     ...(filters.city_id ? { city_id: filters.city_id } : {}),
+    search: searchTermTrainer,
   });
 
   const canReset = !isEqual(defaultFilters, filters);
@@ -85,6 +98,10 @@ const TrainerListPage: React.FC = () => {
       </Stack>
     </Stack>
   );
+  const handleClearSearch = () => {
+    setSearchTermTrainer('');
+  };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -96,7 +113,24 @@ const TrainerListPage: React.FC = () => {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
+      <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
+        <TextField
+          label={t('search_students')}
+          variant="outlined"
+          fullWidth
+          value={searchTermTrainer}
+          onChange={(e) => setSearchTermTrainer(e.target.value)}
+          InputProps={{
+            endAdornment: searchTermTrainer && (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClearSearch}>
+                  <CloseIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
       {renderFilters}
 
       {trainerListLoading ? (

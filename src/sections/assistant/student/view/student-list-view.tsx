@@ -7,8 +7,18 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow, Button } from '@mui/material';
+import {
+  Box,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  Button,
+  TextField,
+  InputAdornment,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -50,6 +60,7 @@ export default function StudentListView() {
   const [tableData, setTableData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
+  const [searchTermStudent, setSearchTermStudent] = useState('');
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
@@ -72,6 +83,7 @@ export default function StudentListView() {
     useGetStudentList({
       page: table.page,
       limit: table.rowsPerPage,
+      search: searchTermStudent,
     });
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -132,6 +144,10 @@ export default function StudentListView() {
     // setFilters(defaultFilters);
   }, []);
 
+  const handleClearSearch = () => {
+    setSearchTermStudent('');
+  };
+
   const renderFilters = (
     <Stack
       spacing={3}
@@ -139,20 +155,24 @@ export default function StudentListView() {
       direction={{ xs: 'column', sm: 'row' }}
       sx={{ marginBottom: 3 }}
     >
-      <StudentFilter
-        open={openFilters.value}
-        onOpen={openFilters.onTrue}
-        onClose={openFilters.onFalse}
-        handleOrderChange={handleOrderChange}
-        selectedOrder={selectedOrder}
-        filters={filters}
-        setFilters={setFilters}
-        onFilters={handleFiltersChange}
-        // canReset={canReset}
-        onResetFilters={handleResetFilters}
-        localeOptions={localeOptions}
-        onLocaleChange={handleLocaleFilterChange}
-      />
+      <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
+        <TextField
+          label={t('search_students')}
+          variant="outlined"
+          fullWidth
+          value={searchTermStudent}
+          onChange={(e) => setSearchTermStudent(e.target.value)}
+          InputProps={{
+            endAdornment: searchTermStudent && (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClearSearch}>
+                  <CloseIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
     </Stack>
   );
   return (
@@ -171,7 +191,7 @@ export default function StudentListView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-      {/* {renderFilters} */}
+      {renderFilters}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
         <Button
           variant="contained"
