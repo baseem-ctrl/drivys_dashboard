@@ -39,6 +39,7 @@ import {
   DialogContent,
   DialogTitle,
   Skeleton,
+  Stack,
   TableCell,
   TableRow,
 } from '@mui/material';
@@ -47,6 +48,7 @@ import { sendNotification, useGetNotificationList } from 'src/api/notification';
 import NotificationDetails from './notifications-details';
 import SendNotificationForm from '../send-notification-form';
 import { useTranslation } from 'react-i18next';
+import NotificationFilter from '../notification-filter';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +56,7 @@ const defaultFilters: any = {
   name: '',
   is_active: '',
   display_order: 0,
-  catalogue_type: '',
+  user_id: '',
   locale: '',
 };
 
@@ -92,7 +94,11 @@ export default function NotificationlistingListView() {
     notificationsError,
     notificationsLoading,
     revalidateNotifications,
-  } = useGetNotificationList({ page: table?.page, limit: table?.rowsPerPage });
+  } = useGetNotificationList({
+    page: table?.page,
+    limit: table?.rowsPerPage,
+    user_id: filters?.user_id,
+  });
 
   const { language } = useGetAllLanguage(0, 1000);
   useEffect(() => {
@@ -106,8 +112,15 @@ export default function NotificationlistingListView() {
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
-
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
   const notFound = (!tableData?.length && canReset) || !tableData?.length;
+  const renderFilters = (
+    <Stack direction="row" spacing={1} flexShrink={0} sx={{ marginBottom: 3 }}>
+      <NotificationFilter filters={filters} onFilters={handleFiltersChange} />
+    </Stack>
+  );
 
   // const handleDeleteRow = async (id: string) => {
   //   try {
@@ -171,6 +184,7 @@ export default function NotificationlistingListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
+        {renderFilters}
         {viewMode === 'table' && (
           <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
             <Button
