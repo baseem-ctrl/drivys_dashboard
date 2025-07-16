@@ -270,15 +270,15 @@ export default function CreateBooking() {
 
     try {
       const formData = new FormData();
-
+      console.log('pickupLocationSelected', pickupLocationSelected);
       formData.append('student_id', selectedStudentId.toString());
       formData.append('trainer_id', selectedTrainerId.toString());
       formData.append(
         'package_id',
         (initialStep >= 2 ? selectedPackageId : selectedPackageId?.package_id).toString()
       );
-      if (pickupLocationSelected && Object.keys(pickupLocationSelected).length > 0) {
-        formData.append('pickup_location', JSON.stringify(pickupLocationSelected));
+      if (pickupLocationSelected) {
+        formData.append('pickup_location', pickupLocationSelected);
       }
 
       formData.append('is_paid', paymentProof ? '1' : '0');
