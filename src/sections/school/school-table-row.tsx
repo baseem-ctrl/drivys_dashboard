@@ -323,7 +323,9 @@ export default function SchoolTableRow({
             />
           ) : (
             <Link color="inherit" sx={{ cursor: 'pointer' }} onClick={onViewRow}>
-              {selectedLocaleObject?.name ?? 'N/A'}
+              {row.vendor_translations?.find(
+                (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name || t('n/a')}
             </Link>
           )}
         </TableCell>
