@@ -67,12 +67,12 @@ export default function HomeListingDialog({
   onReload,
   updateValue,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
 
-  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
   const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
@@ -464,13 +464,13 @@ export default function HomeListingDialog({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>{t("Trainers")}:</h5>
+            <h5>{t('Trainers')}:</h5>
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
                   <RHFAutocomplete
                     name={`trainers[${index}].user_id`} // Dynamic name for react-hook-form
-                    label={`${t("Trainer")} ${index + 1}`}
+                    label={`${t('Trainer')} ${index + 1}`}
                     getOptionLabel={(option) => {
                       return option ? `${option?.label}` : '';
                     }}
@@ -493,7 +493,7 @@ export default function HomeListingDialog({
             ))}
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
-                {t("Add Trainer")}
+                {t('Add Trainer')}
               </Button>
             </Grid>
 
@@ -508,7 +508,7 @@ export default function HomeListingDialog({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => { }}
+            apiCall={() => {}}
             isSubmitting={isSubmitting}
           />
         </FormProvider>

@@ -26,7 +26,7 @@ import RewardTableRow from '../reward-table-row';
 import { useTranslation } from 'react-i18next';
 
 export default function LoyaltyProgramDetails() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation();
 
   const TABLE_HEAD = [
     { id: 'trainer-name', label: t('Trainer'), width: 180 },
@@ -59,20 +59,23 @@ export default function LoyaltyProgramDetails() {
   return (
     <Box sx={{ p: 3 }}>
       <CustomBreadcrumbs
-        heading={t("Loyalty Program Details")}
+        heading={t('Loyalty Program Details')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           { name: t('Loyalty'), href: paths.dashboard.loyality.root },
           {
-            name: `${eligibleRewardTrainers[0]?.trainer_reward?.trainer_reward_translation[0]?.name}`,
+            name:
+              eligibleRewardTrainers[0]?.trainer_reward?.trainer_reward_translation?.find(
+                (item) => item?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+              )?.name || t('reward'),
           },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
       <Tabs value={tabIndex} onChange={(e, newIndex) => setTabIndex(newIndex)}>
-        <Tab label={t("Pending Requests")} />
-        <Tab label={t("Claimed Requests")} />
+        <Tab label={t('Pending Requests')} />
+        <Tab label={t('Claimed Requests')} />
       </Tabs>
 
       {eligibleRewardTrainersLoading ? (

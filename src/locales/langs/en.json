@@ -1243,5 +1243,16 @@
   "user_information": "User Information",
   "country_code": "Country Code",
   "booking_details": "Booking Details",
-  "payment_and_summary": "Payment & Summary"
+  "payment_and_summary": "Payment & Summary",
+  "cash_in_hand_lists": "Cash In Hand Lists",
+  "pending_collections": "Pending Collections",
+  "completed_collections": "Completed Collections",
+  "enter_amount": "Enter Amount",
+  "collect": "Collect",
+  "select_clearance_date": "Select Clearance Date",
+  "display_order": "Display Order",
+  "Background Color": "Background Color",
+  "choose_background_color": "Choose Background Color",
+  "reward": "reward",
+  "Rejected Requests": "Rejected Requests"
 }

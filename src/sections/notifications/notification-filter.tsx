@@ -46,7 +46,7 @@ export default function NotificationFilter({ filters, onFilters }: any) {
           renderInput={(params) => (
             <TextField
               {...params}
-              placeholder={t('Select User')}
+              placeholder={t('user')}
               fullWidth
               InputProps={{
                 ...params.InputProps,

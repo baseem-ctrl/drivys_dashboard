@@ -1301,5 +1301,17 @@
   "user_information": "معلومات المستخدم",
   "country_code": "رمز الدولة",
   "booking_details": "تفاصيل الحجز",
-  "payment_and_summary": "الدفع والملخص"
+  "payment_and_summary": "الدفع والملخص",
+  "cash_in_hand_lists": "قوائم النقد في اليد",
+  "pending_collections": "التحصيلات المعلقة",
+  "completed_collections": "التحصيلات المكتملة",
+  "enter_amount": "أدخل المبلغ",
+  "collect": "تحصيل",
+  "select_clearance_date": "اختر تاريخ التسوية",
+  "approve": "موافقة",
+  "display_order": "ترتيب العرض",
+  "Background Color": "لون الخلفية",
+  "choose_background_color": "اختر لون الخلفية",
+  "reward": "مكافأة",
+  "Rejected Requests": "الطلبات المرفوضة"
 }

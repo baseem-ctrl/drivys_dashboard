@@ -137,24 +137,25 @@ export default function CashInHandList() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Cash In Hand Lists"
+        heading={t('cash_in_hand_lists')}
         links={[
-          { name: 'Collector', href: paths.dashboard.root },
+          { name: t('collector'), href: paths.dashboard.root },
           {
-            name: 'Cash In Hand',
-            href: paths.dashboard.collectorAdminView,
+            name: t('cash_in_hand'),
+            href: paths.dashboard.collectorAdminView.cashInHand,
           },
-          { name: 'List' },
+          { name: t('list') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
+
       <CashInHandFilter filters={filters} onFilters={handleFilters} />
       <Card>
         <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Pending Collections" />
-          <Tab label="Completed Collections" />
+          <Tab label={t('pending_collections')} />
+          <Tab label={t('completed_collections')} />
         </Tabs>
 
         {viewMode === 'table' && (

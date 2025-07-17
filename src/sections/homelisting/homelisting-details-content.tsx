@@ -52,9 +52,7 @@ const displayTypeOptions = [
 ];
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
   const { t, i18n } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.translations?.length > 0 ? i18n.language : ''
-  );
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
   const [editMode, setEditMode] = useState(false);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
 

@@ -265,8 +265,8 @@ export default function RefundListView() {
             backgroundColor: 'background.paper',
           }}
         >
-          {['Refund Requests', 'Refunded Requests', 'Rejected Requests'].map((label) => (
-            <Tab key={label} sx={tabStyles} label={t(label)} />
+          {[t('Refund Requests'), t('Refunded Requests'), t('Rejected Requests')].map((label) => (
+            <Tab key={label} sx={tabStyles} label={label} />
           ))}
         </Tabs>
 
@@ -277,12 +277,12 @@ export default function RefundListView() {
               <Select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                label="Status"
+                label={t('status')}
                 sx={{ pt: 1, pb: 1 }}
               >
-                <MenuItem value="all">All</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="approved">Approved</MenuItem>
+                <MenuItem value="all">{t('all')}</MenuItem>
+                <MenuItem value="pending">{t('pending')}</MenuItem>
+                <MenuItem value="approved">{t('approved')}</MenuItem>
               </Select>
             </FormControl>
           </Box>

@@ -603,7 +603,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 })(),
               },
               {
-                label: t('Is Published'),
+                label: t('is_published'),
                 value:
                   details?.is_published === 1 ? (
                     <Iconify color="green" icon="bi:check-square-fill" />
@@ -630,7 +630,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ),
               },
               {
-                label: 'Background Color',
+                label: t('Background Color'),
                 value: details?.background_color ? (
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Box
@@ -802,7 +802,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Grid item xs={12}>
                     <Stack spacing={2} mt={2}>
                       <Typography variant="subtitle2" fontWeight={600}>
-                        Choose Background Color
+                        {t('choose_background_color')}{' '}
                       </Typography>
 
                       <ToggleButtonGroup

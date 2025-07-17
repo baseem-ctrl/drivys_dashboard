@@ -78,7 +78,13 @@ export default function PackageTableRow({
     locale: i18n.language,
   });
   const [editingRowId, setEditingRowId] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState(package_translations?.[0]?.locale ?? '');
+  const matchedLocale = package_translations?.find(
+    (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
+  )?.locale;
+
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    matchedLocale ?? package_translations?.[0]?.locale ?? i18n.language
+  );
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();

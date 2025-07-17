@@ -296,20 +296,19 @@ export default function HomeListingTrainers({
                 </Stack>
                 <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                   {[
-                    { label: 'Name', value: trainerdisplayed?.name ?? t('n/a') },
-                    { label: 'Email', value: trainerdisplayed?.email ?? t('n/a') },
+                    { label: t('name'), value: trainerdisplayed?.name ?? t('n/a') },
+                    { label: t('email'), value: trainerdisplayed?.email ?? t('n/a') },
                     {
-                      label: 'Phone Number',
+                      label: t('phone_number'),
                       value: trainerdisplayed?.country_code
                         ? `${trainerdisplayed?.country_code}-${trainerdisplayed?.phone}`
-                        : trainerdisplayed?.phone ?? 'NA',
+                        : trainerdisplayed?.phone ?? t('n/a'),
                     },
-                    { label: 'Locale', value: trainerdisplayed?.locale ?? 'NA' },
-
-                    { label: 'Gender', value: trainerdisplayed?.gender ?? 'NA' },
+                    { label: t('locale'), value: trainerdisplayed?.locale ?? t('n/a') },
+                    { label: t('gender'), value: trainerdisplayed?.gender ?? t('n/a') },
                     {
-                      label: 'Display Order',
-                      value: trainerItem?.display_order ?? 'NA',
+                      label: t('display_order'),
+                      value: trainerItem?.display_order ?? t('n/a'),
                     },
                   ].map((item, index) => (
                     <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -319,7 +318,7 @@ export default function HomeListingTrainers({
                       <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                         :
                       </Box>
-                      <Box component="span">{detailsLoading ? 'Loading...' : item.value}</Box>
+                      <Box component="span">{detailsLoading ? t('loading') : item.value}</Box>
                     </Box>
                   ))}
                 </Stack>
