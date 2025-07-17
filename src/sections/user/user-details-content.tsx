@@ -117,9 +117,17 @@ export default function UserDetailsContent({
 }: Props) {
   const { reset, control } = useForm();
   const { t, currentLang } = useLocales();
+  const matchedLocale = details?.vendor_translations?.find(
+    (t) => t?.locale?.toLowerCase() === currentLang.toLowerCase()
+  )?.locale;
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
+    details?.vendor_translations
+      ?.find((t) => t?.locale?.toLowerCase() === currentLang.toLowerCase())
+      ?.locale?.toLowerCase() ??
+      details?.vendor_translations?.[0]?.locale?.toLowerCase() ??
+      ''
   );
+
   const [load, setLoad] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address

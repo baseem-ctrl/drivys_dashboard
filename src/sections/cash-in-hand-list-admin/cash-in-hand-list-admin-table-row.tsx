@@ -129,7 +129,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           style={{ fontWeight: '600', fontSize: '0.9rem' }}
           disabled={row?.collected_cash_in_hand <= 0}
         >
-          Collect
+          {t('collect')}
         </Button>
         <Popover
           open={Boolean(anchorEl)}
@@ -138,16 +138,16 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         >
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <Typography sx={{ fontSize: '13px' }}>Enter Amount</Typography>
+            <Typography sx={{ fontSize: '13px' }}>{t('enter_amount')}</Typography>
             <TextField
-              label="Amount"
+              label={t('amount')}
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               fullWidth
             />
             <Button variant="contained" color="primary" onClick={handleCollectClick}>
-              Submit
+              {t('submit')}
             </Button>
           </div>
         </Popover>

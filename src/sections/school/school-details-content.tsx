@@ -64,11 +64,19 @@ type Props = {
   reload: VoidFunction;
 };
 export default function SchoolDetailsContent({ details, loading, reload, t, user }: Props) {
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.vendor_translations ? details?.vendor_translations[0]?.locale : ''
-  );
-  const [editMode, setEditMode] = useState(false);
   const { i18n } = useTranslation();
+
+  const matchedTranslation = details?.vendor_translations?.find(
+    (t) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+  );
+
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    matchedTranslation?.locale?.toLowerCase() ??
+      details?.vendor_translations?.[0]?.locale?.toLowerCase() ??
+      ''
+  );
+
+  const [editMode, setEditMode] = useState(false);
 
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const maxVisibleAddresses = 2;

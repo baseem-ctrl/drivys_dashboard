@@ -107,14 +107,14 @@ export default function CashInHandAssistantList() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Cash In Hand Lists"
+        heading={t('cash_in_hand_lists')}
         links={[
-          { name: 'Collector', href: paths.dashboard.root },
+          { name: t('collector'), href: paths.dashboard.root },
           {
-            name: 'Cash In Hand',
-            href: paths.dashboard.assistantCollectCash,
+            name: t('cash_in_hand'),
+            href: paths.dashboard.collectorAdminView.cashInHand,
           },
-          { name: 'List' },
+          { name: t('list') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

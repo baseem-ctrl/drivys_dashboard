@@ -25,6 +25,7 @@ import { Box, Button, CircularProgress, Stack } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
 import SchoolPackageDetails from './school-package-details';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,8 @@ type Props = {
 export default function SchoolDetailsView({ id }: Props) {
   const settings = useSettingsContext();
   const { t } = useLocales();
+  const { i18n } = useTranslation();
+
   const { user } = useAuthContext();
   const { details, detailsLoading, revalidateDetails } = useGetSchoolById(id);
 
@@ -91,7 +94,6 @@ export default function SchoolDetailsView({ id }: Props) {
       quickCreate.onTrue();
     }
   };
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       {user?.user?.user_type !== 'COLLECTOR' && (
@@ -102,9 +104,12 @@ export default function SchoolDetailsView({ id }: Props) {
             {
               name: `${
                 currentJob?.vendor_translations?.length > 0
-                  ? currentJob?.vendor_translations[0]?.name
+                  ? currentJob?.vendor_translations?.find(
+                      (item) => item?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                    )?.name || t('school')
                   : t('school')
               }`,
+
               href: paths.dashboard.school.root,
             },
             { name: t('details') },

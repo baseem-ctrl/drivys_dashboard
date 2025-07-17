@@ -243,7 +243,7 @@ export default function BookingReportListView() {
               setViewMode('table');
             },
           },
-          { name: 'booking' },
+          { name: t('booking') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

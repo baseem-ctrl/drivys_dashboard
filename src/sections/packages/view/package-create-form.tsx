@@ -501,7 +501,7 @@ export default function PackageCreateForm({
             <Grid item xs={12}>
               <Stack spacing={2} mt={2}>
                 <Typography variant="subtitle2" fontWeight={500} color="primary">
-                  Choose Background Color
+                  {t('choose_background_color')}
                 </Typography>
                 <Controller
                   name="background_color"

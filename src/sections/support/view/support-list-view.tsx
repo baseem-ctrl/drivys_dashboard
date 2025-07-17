@@ -127,7 +127,7 @@ export default function SupportlistingListView() {
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: t('Support List'),
+            name: t('support'),
             href: paths.dashboard.notification.root,
             onClick: (event) => {
               setViewMode('table');

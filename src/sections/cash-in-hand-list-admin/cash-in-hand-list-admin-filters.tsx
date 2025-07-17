@@ -93,7 +93,7 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder={t('Search')}
+          placeholder={t('search')}
           value={filters.search}
           onChange={handleSearchChange}
           InputProps={{
@@ -163,7 +163,7 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
             },
           }}
         >
-          {t('Select Clearance Date')}
+          {t('select_clearance_date')}
         </Button>
         {filters?.cash_clearance_date_from && filters?.cash_clearance_date_to && (
           <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 2 }}>

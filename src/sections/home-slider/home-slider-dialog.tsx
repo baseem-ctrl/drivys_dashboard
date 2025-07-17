@@ -44,12 +44,12 @@ export default function HomeSliderDialog({
   onReload,
   updateValue,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
 
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
   const [selectedImageArray, setSelectedArrayIds] = useState<number[]>([]);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);

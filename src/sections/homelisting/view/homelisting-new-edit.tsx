@@ -66,10 +66,10 @@ export default function HomeListingNewEdit({
   onClose,
   onReload,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [selectedLanguage, setSelectedLanguage] = useState('En');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language);
   const [selectedImageIds, setSelectedImageIds] = useState<number[]>([]);
 
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
@@ -324,7 +324,7 @@ export default function HomeListingNewEdit({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>{t("Trainers")}:</h5>
+            <h5>{t('Trainers')}:</h5>
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
@@ -353,7 +353,7 @@ export default function HomeListingNewEdit({
             ))}
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Button variant="contained" onClick={handleAddMore}>
-                {t("Add Trainer")}
+                {t('Add Trainer')}
               </Button>
             </Grid>
 
@@ -368,7 +368,7 @@ export default function HomeListingNewEdit({
             onClose={() => setImageDialogOpen(false)}
             setSelectedImageIds={setSelectedImageIds}
             selectedImageIds={selectedImageIds}
-            apiCall={() => { }}
+            apiCall={() => {}}
             isSubmitting={isSubmitting}
           />
         </FormProvider>
