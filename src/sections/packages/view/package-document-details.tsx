@@ -88,8 +88,8 @@ export default function PackageDocumentDetails({
       .of(
         Yup.object().shape({
           locale: Yup.string().required('Locale is required'),
-          title: Yup.string().default('N/A').required('Title is required'),
-          description: Yup.string().default('N/A').required('Description is required'),
+          title: Yup.string().default(t('n/a')).required('Title is required'),
+          description: Yup.string().default(t('n/a')).required('Description is required'),
         })
       )
       .min(1),
@@ -457,7 +457,7 @@ export default function PackageDocumentDetails({
                                       fontSize: 17,
                                     }}
                                   >
-                                    {translation.title || 'N/A'}
+                                    {translation.title || t('n/a')}
                                   </Typography>
                                 </Box>
                                 <Box
@@ -490,7 +490,7 @@ export default function PackageDocumentDetails({
                                       fontSize: 17,
                                     }}
                                   >
-                                    {translation.description || 'N/A'}
+                                    {translation.description || t('n/a')}
                                   </Typography>
                                 </Box>
                               </React.Fragment>
@@ -522,7 +522,7 @@ export default function PackageDocumentDetails({
                                 <Typography
                                   sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                                 >
-                                  {doc.title || 'N/A'}
+                                  {doc.title || t('n/a')}
                                 </Typography>
                               </Box>
                               <Box
@@ -550,7 +550,7 @@ export default function PackageDocumentDetails({
                                 <Typography
                                   sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                                 >
-                                  {doc.description || 'N/A'}
+                                  {doc.description || t('n/a')}
                                 </Typography>
                               </Box>
                             </>
@@ -576,13 +576,13 @@ export default function PackageDocumentDetails({
                             >
                               :
                             </Typography>
-                            <Tooltip title={doc?.file ?? 'N/A'} arrow>
+                            <Tooltip title={doc?.file ?? t('n/a')} arrow>
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                               >
                                 {doc?.file
                                   ? `${doc.file.slice(0, 8)}...${doc.file.slice(-13)}`
-                                  : doc?.file ?? 'N/A'}
+                                  : doc?.file ?? t('n/a')}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -628,7 +628,7 @@ export default function PackageDocumentDetails({
                                       8
                                     )}...${doc?.icon?.virtual_path.slice(-14)}`
                                   : doc?.icon?.virtual_path
-                                : 'N/A'}
+                                : t('n/a')}
                             </Typography>
                           </Box>
 
@@ -653,11 +653,11 @@ export default function PackageDocumentDetails({
                             >
                               :
                             </Typography>
-                            <Tooltip title={doc?.file ?? 'N/A'} arrow>
+                            <Tooltip title={doc?.file ?? t('n/a')} arrow>
                               <Typography
                                 sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                               >
-                                {doc?.type ? doc.type : 'N/A'}
+                                {doc?.type ? doc.type : t('n/a')}
                               </Typography>
                             </Tooltip>
                           </Box>
@@ -685,7 +685,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
-                              {doc.status ?? 'N/A'}
+                              {doc.status ?? t('n/a')}
                             </Typography>
                           </Box>
                           <Box
@@ -712,7 +712,7 @@ export default function PackageDocumentDetails({
                             <Typography
                               sx={{ flex: '1', textAlign: 'left', marginLeft: 2, fontSize: 17 }}
                             >
-                              {doc.session_no ?? 'N/A'}
+                              {doc.session_no ?? t('n/a')}
                             </Typography>
                           </Box>
                         </Stack>

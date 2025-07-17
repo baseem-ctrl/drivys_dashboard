@@ -408,7 +408,7 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
                 },
               ]) ?? []),
 
-              // { label: 'Name', value: items?.name ?? 'N/A' },
+              // { label: 'Name', value: items?.name ??  t('n/a') },
               { label: t('email'), value: details?.email ?? t('n/a') },
               { label: t('phone_number'), value: details?.phone_number ?? t('n/a') },
 

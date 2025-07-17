@@ -585,53 +585,55 @@ export default function UserDetailsContent({
                       ? t('name_as_per_profile_card_ar')
                       : t('name_as_per_profile_card'),
                   value:
-                    currentLang.value === 'ar' ? details?.name_ar ?? 'N/A' : details?.name ?? 'N/A',
+                    currentLang.value === 'ar'
+                      ? details?.name_ar ?? t('n/a')
+                      : details?.name ?? t('n/a'),
                 },
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
                         label: t('certificate_expiry_date'),
-                        value: details?.certificate_expiry_date ?? 'N/A',
+                        value: details?.certificate_expiry_date ?? t('n/a'),
                       },
                     ]
                   : []),
 
-                { label: t('email'), value: details?.email ?? 'N/A' },
+                { label: t('email'), value: details?.email ?? t('n/a') },
 
                 {
                   label: t('phone_number'),
                   value:
                     details?.country_code && details?.phone
                       ? `${details.country_code}-${details.phone.trim().replace(/["\n]/g, '')}`
-                      : details?.phone?.trim().replace(/["\n]/g, '') || 'N/A',
+                      : details?.phone?.trim().replace(/["\n]/g, '') || t('n/a'),
                 },
 
-                { label: t('user_type'), value: details?.user_type ?? 'N/A' },
+                { label: t('user_type'), value: details?.user_type ?? t('n/a') },
                 ...(details?.user_type === 'ASSISTANT'
-                  ? [{ label: t('gender'), value: details?.gender ?? 'N/A' }]
+                  ? [{ label: t('gender'), value: details?.gender ?? t('n/a') }]
                   : []),
 
-                { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? 'N/A' },
+                { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? t('n/a') },
                 {
                   label: t('document_expiry'),
                   value:
                     Array.isArray(details?.user_docs) && details.user_docs[0]?.expiry
                       ? details.user_docs[0].expiry.split('T')[0]
-                      : 'N/A',
+                      : t('n/a'),
                 },
 
                 ...(details?.user_type !== 'ASSISTANT'
                   ? [
                       {
                         label: t('preferred_language'),
-                        value: details?.locale !== 'undefined' ? details.locale : 'N/A',
+                        value: details?.locale !== 'undefined' ? details.locale : t('n/a'),
                       },
                     ]
                   : []),
                 ...(details?.user_type !== 'ASSISTANT'
                   ? [
-                      { label: t('wallet_balance'), value: details?.wallet_balance ?? 'N/A' },
-                      { label: t('wallet_points'), value: details?.wallet_points ?? 'N/A' },
+                      { label: t('wallet_balance'), value: details?.wallet_balance ?? t('n/a') },
+                      { label: t('wallet_points'), value: details?.wallet_points ?? t('n/a') },
                       ...(details?.user_type === 'TRAINER' && details?.languages?.length
                         ? details?.languages.map((lang, index) => ({
                             label: `${t('language')} ${index + 1}`,
@@ -661,7 +663,7 @@ export default function UserDetailsContent({
                               ))}
                             </Box>
                           ) : (
-                            'N/A'
+                            t('n/a')
                           ),
                       },
                     ]
@@ -693,7 +695,7 @@ export default function UserDetailsContent({
                             {details?.vendor?.vendor_translations?.[0]?.name}
                           </Link>
                         ) : (
-                          details?.school_name ?? 'N/A'
+                          details?.school_name ?? t('n/a')
                         ),
                       },
                       {
@@ -701,7 +703,7 @@ export default function UserDetailsContent({
                         value:
                           details?.vendor_commission_in_percentage != null
                             ? `${details.vendor_commission_in_percentage} %`
-                            : 'N/A',
+                            : t('n/a'),
                       },
 
                       {
@@ -709,7 +711,7 @@ export default function UserDetailsContent({
                         value:
                           details?.user_preference?.certificate_commission_in_percentage != null
                             ? `${details.user_preference.certificate_commission_in_percentage} %`
-                            : 'N/A',
+                            : t('n/a'),
                       },
                       {
                         label: t('min_price'),
@@ -720,7 +722,7 @@ export default function UserDetailsContent({
                               {details.user_preference?.min_price}
                             </>
                           ) : (
-                            'N/A'
+                            t('n/a')
                           ),
                       },
                       {
@@ -732,7 +734,7 @@ export default function UserDetailsContent({
                               {details.user_preference?.price_per_km}
                             </>
                           ) : (
-                            'N/A'
+                            t('n/a')
                           ),
                       },
                     ]
@@ -746,7 +748,7 @@ export default function UserDetailsContent({
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {item.value ?? 'N/A'}
+                    {item.value ?? t('n/a')}
                   </Box>
                 </Box>
               ))}
@@ -760,7 +762,7 @@ export default function UserDetailsContent({
                           <>
                             <span className="dirham-symbol">&#x00EA;</span>
 
-                            {details.collected_max_cash_in_hand_allowed ?? 'N/A'}
+                            {details.collected_max_cash_in_hand_allowed ?? t('n/a')}
                           </>
                         ),
                       },
@@ -793,8 +795,8 @@ export default function UserDetailsContent({
                               sx={{ marginRight: 1, marginBottom: 1 }}
                             />
                           ))
-                        : t('N/A')
-                      : item.value ?? t('N/A')}
+                        : t(t('n/a'))
+                      : item.value ?? t(t('n/a'))}
                   </Box>
                 </Box>
               ))}
@@ -829,8 +831,8 @@ export default function UserDetailsContent({
                               sx={{ marginRight: 1, marginBottom: 1 }}
                             />
                           ))
-                        : t('N/A')
-                      : item.value ?? t('N/A')}
+                        : t(t('n/a'))
+                      : item.value ?? t(t('n/a'))}
                   </Box>
                 </Box>
               ))}
@@ -1737,26 +1739,28 @@ export default function UserDetailsContent({
 
               {/* Address Details */}
               {[
-                { label: t('address'), value: address?.address ?? 'N/A' },
-                { label: t('street'), value: address?.street ?? 'N/A' },
-                { label: t('building_name'), value: address?.building_name ?? 'N/A' },
+                { label: t('address'), value: address?.address ?? t('n/a') },
+                { label: t('street'), value: address?.street ?? t('n/a') },
+                { label: t('building_name'), value: address?.building_name ?? t('n/a') },
                 {
                   label: t('city'),
                   value:
-                    address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
+                    address?.city ??
+                    address?.city_id_city?.city_translations?.[0]?.name ??
+                    t('n/a'),
                 },
                 {
                   label: t('area'),
                   value: address?.state_province
                     ? address?.state_province?.translations?.[0]?.name
-                    : 'N/A',
+                    : t('n/a'),
                 },
                 // { label: t('country_code'), value: address?.country_code ?? 'UAE' },
-                { label: t('label'), value: address?.label ?? 'N/A' },
-                { label: t('phone_number'), value: address?.phone_number ?? 'N/A' },
-                { label: t('plot_number'), value: address?.plot_number ?? 'N/A' },
+                { label: t('label'), value: address?.label ?? t('n/a') },
+                { label: t('phone_number'), value: address?.phone_number ?? t('n/a') },
+                { label: t('plot_number'), value: address?.plot_number ?? t('n/a') },
                 { label: t('country'), value: address?.country ?? 'UAE' },
-                { label: t('landmark'), value: address?.landmark ?? 'N/A' },
+                { label: t('landmark'), value: address?.landmark ?? t('n/a') },
               ].map((item, idx) => (
                 <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>

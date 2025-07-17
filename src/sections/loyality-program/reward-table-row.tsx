@@ -10,6 +10,7 @@ import { paths } from 'src/routes/paths';
 import { useState } from 'react';
 import RHFFileUpload from 'src/components/hook-form/rhf-text-file';
 import { processTrainerReward } from 'src/api/loyality';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +18,7 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
   const router = useRouter();
   const methods = useForm();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const { user } = row;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -90,7 +92,7 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell>
@@ -117,7 +119,7 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
           ? moment(row?.trainer_reward?.start_date)
               .local()
               .format('DD/MM/YY h:mm a')
-          : 'N/A'}
+          : t('n/a')}
       </TableCell>
       <TableCell>
         {' '}
@@ -125,9 +127,9 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
           ? moment(row?.trainer_reward?.end_date)
               .local()
               .format('DD/MM/YY h:mm a')
-          : 'N/A'}
+          : t('n/a')}
       </TableCell>
-      <TableCell>{row?.notes ? `${row?.notes}` : 'N/A'}</TableCell>
+      <TableCell>{row?.notes ? `${row?.notes}` : t('n/a')}</TableCell>
 
       <TableCell>
         {row?.achieved_date ? (
@@ -141,11 +143,11 @@ export default function RewardTableRow({ row, selected, tabIndex, reload }: Prop
                 ? moment(row?.claimed_at)
                     .local()
                     .format('DD/MM/YY h:mm a')
-                : 'N/A'}
+                : t('n/a')}
             </Typography>
           </>
         ) : (
-          'N/A'
+          t('n/a')
         )}
       </TableCell>
 

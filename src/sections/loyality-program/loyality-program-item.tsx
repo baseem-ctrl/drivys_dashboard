@@ -54,7 +54,7 @@ export default function LoyalityProgramItem({
 }: Props) {
   const deletecustomer = useBoolean();
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -64,7 +64,12 @@ export default function LoyalityProgramItem({
   //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.trainer_reward_translation || [];
-    return translations[0]?.locale || '';
+
+    const matchedTranslation = translations.find(
+      (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+    );
+
+    return matchedTranslation?.locale || translations[0]?.locale || '';
   });
 
   const isCreateCategory = category?.newCategory;

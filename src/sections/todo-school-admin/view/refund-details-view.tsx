@@ -47,6 +47,7 @@ import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const RefundDetailsComponent = () => {
   const settings = useSettingsContext();
@@ -105,6 +106,8 @@ const RefundDetailsComponent = () => {
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
+  const { t } = useTranslation();
+
   const cardHeight = 370;
   const statusId = bookingStatusEnum.find(
     (item: any) => item?.name === bookingDetails?.booking_status
@@ -202,7 +205,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.name ? user?.name : 'N/A'}
+                        {user && user?.name ? user?.name : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -213,7 +216,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.email ? user?.email : 'N/A'}
+                        {user && user?.email ? user?.email : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -224,7 +227,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.phone ? user?.phone : 'N/A'}
+                        {user && user?.phone ? user?.phone : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -235,7 +238,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.country_code ? user?.country_code : 'N/A'}
+                        {user && user?.country_code ? user?.country_code : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -248,7 +251,7 @@ const RefundDetailsComponent = () => {
                       <Box component="span" sx={{ flex: 1 }}>
                         {bookingDetails && bookingDetails?.gear_type
                           ? bookingDetails?.gear_type
-                          : 'N/A'}
+                          : t('n/a')}
                       </Box>
                     </Box>
 
@@ -260,7 +263,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A'}
+                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -271,7 +274,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.locale ? user?.locale : 'N/A'}
+                        {user && user?.locale ? user?.locale : t('n/a')}
                       </Box>
                     </Box>
                     {/* <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -308,7 +311,7 @@ const RefundDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          'N/A'
+                          t('n/a')
                         )}
                       </Box>
                     </Box>
@@ -379,7 +382,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.name : 'N/A'}
+                        {driver && driver?.locale ? driver?.name : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -390,7 +393,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.email ? driver?.email : 'N/A'}
+                        {driver && driver?.email ? driver?.email : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -401,7 +404,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.phone ? driver?.phone : 'N/A'}
+                        {driver && driver?.phone ? driver?.phone : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -412,7 +415,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.country_code ? driver?.country_code : 'N/A'}
+                        {driver && driver?.country_code ? driver?.country_code : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -423,7 +426,7 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.locale : 'N/A'}
+                        {driver && driver?.locale ? driver?.locale : t('n/a')}
                       </Box>
                     </Box>
 
@@ -435,7 +438,9 @@ const RefundDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver.dob ? new Date(driver.dob).toLocaleDateString() : 'N/A'}
+                        {driver && driver.dob
+                          ? new Date(driver.dob).toLocaleDateString()
+                          : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
@@ -453,7 +458,7 @@ const RefundDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          'N/A'
+                          t('n/a')
                         )}
                       </Box>
                     </Box>
@@ -491,7 +496,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || 'N/A'}
+                    {pkg?.package_translations[0]?.name || t('n/a')}
                   </Box>
                 </Box>
 
@@ -503,7 +508,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.number_of_sessions || 'N/A'}
+                    {pkg?.number_of_sessions || t('n/a')}
                   </Box>
                 </Box>
 
@@ -515,7 +520,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
                   </Box>
                 </Box>
               </CardContent>
@@ -549,7 +554,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.label || 'N/A'}
+                    {pickup_location?.label || t('n/a')}
                   </Box>
                 </Box>
 
@@ -561,8 +566,9 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.address || 'N/A'}, {pickup_location?.building_name || 'N/A'},{' '}
-                    {pickup_location?.plot_number || 'N/A'}
+                    {pickup_location?.address || t('n/a')},{' '}
+                    {pickup_location?.building_name || t('n/a')},{' '}
+                    {pickup_location?.plot_number || t('n/a')}
                   </Box>
                 </Box>
 
@@ -574,7 +580,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.city || 'N/A'}
+                    {pickup_location?.city || t('n/a')}
                   </Box>
                 </Box>
 
@@ -586,7 +592,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    <Phone fontSize="small" /> {pickup_location?.phone_number || 'N/A'}
+                    <Phone fontSize="small" /> {pickup_location?.phone_number || t('n/a')}
                   </Box>
                 </Box>
               </CardContent>
@@ -637,7 +643,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {bookingDetails?.booking_method || 'N/A'}
+                    {bookingDetails?.booking_method || t('n/a')}
                   </Box>
                 </Box>
 
@@ -649,7 +655,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_due || 'N/A'}`} {/* Format to currency */}
+                    {`$${bookingDetails?.amount_due || t('n/a')}`} {/* Format to currency */}
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
@@ -660,7 +666,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.discount || 'N/A'}`} {/* Format to currency */}
+                    {`$${bookingDetails?.discount || t('n/a')}`} {/* Format to currency */}
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
@@ -671,7 +677,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_paid || 'N/A'}`}
+                    {`$${bookingDetails?.amount_paid || t('n/a')}`}
                   </Box>
                 </Box>
 
@@ -683,7 +689,7 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_refunded || 'N/A'}`}
+                    {`$${bookingDetails?.amount_refunded || t('n/a')}`}
                   </Box>
                 </Box>
               </CardContent>
@@ -711,7 +717,7 @@ const RefundDetailsComponent = () => {
                   Total Amount:
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : 'N/A'}
+                  {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : t('n/a')}
                 </Typography>
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
@@ -728,11 +734,11 @@ const RefundDetailsComponent = () => {
                     </TableHead>
                     <TableBody>
                       {sessions.map((session) => (
-                        <TableRow key={session?.id || 'N/A'}>
-                          <TableCell>{session?.booking_id || 'N/A'}</TableCell>
-                          <TableCell>{session?.session_no || 'N/A'}</TableCell>
+                        <TableRow key={session?.id || t('n/a')}>
+                          <TableCell>{session?.booking_id || t('n/a')}</TableCell>
+                          <TableCell>{session?.session_no || t('n/a')}</TableCell>
 
-                          <TableCell>{session?.session_status || 'N/A'}</TableCell>
+                          <TableCell>{session?.session_status || t('n/a')}</TableCell>
                           <TableCell>
                             {session.user_rating ? (
                               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -749,7 +755,7 @@ const RefundDetailsComponent = () => {
                                 ))}
                               </Box>
                             ) : (
-                              'N/A'
+                              t('n/a')
                             )}
                           </TableCell>
 
@@ -758,16 +764,16 @@ const RefundDetailsComponent = () => {
                               ? moment(session?.start_time)
                                   .local()
                                   .format('DD/MM/YY h:mm A')
-                              : 'N/A'}
+                              : t('n/a')}
                           </TableCell>
                           <TableCell>
                             {session?.end_time
                               ? moment(session?.end_time)
                                   .local()
                                   .format('DD/MM/YY h:mm A')
-                              : 'N/A'}
+                              : t('n/a')}
                           </TableCell>
-                          <TableCell>{session?.session_type || 'N/A'}</TableCell>
+                          <TableCell>{session?.session_type || t('n/a')}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

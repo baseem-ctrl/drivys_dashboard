@@ -11,6 +11,7 @@ import {
   Link,
   Box,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function RevenueReportRow({ row }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -18,6 +19,7 @@ export default function RevenueReportRow({ row }) {
   const [trainerRowsPerPage, setTrainerRowsPerPage] = useState(5);
   const [paymentPage, setPaymentPage] = useState(0);
   const [paymentRowsPerPage, setPaymentRowsPerPage] = useState(5);
+  const { t } = useTranslation();
 
   const handleTrainerPageChange = (event, newPage) => {
     setTrainerPage(newPage);
@@ -39,7 +41,7 @@ export default function RevenueReportRow({ row }) {
     <>
       <TableRow>
         <TableCell>
-          <Typography variant="body2">{row['School Name'] || 'N/A'}</Typography>
+          <Typography variant="body2">{row['School Name'] || t('n/a')}</Typography>
         </TableCell>
         <TableCell>
           <Typography variant="body2">

@@ -30,6 +30,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useGetAllLanguage } from 'src/api/language';
 import { RHFTextField } from 'src/components/hook-form';
 import { useGoogleMaps } from 'src/sections/overview/e-commerce/GoogleMapsProvider';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -43,6 +44,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
   //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   // );
   const [editMode, setEditMode] = useState(false);
+  const { t } = useTranslation();
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -50,9 +52,9 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
         <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
           {[
             ...(details?.vendor_translations?.flatMap((itm: any) => [
-              { label: `Name (${itm?.locale})`, value: itm?.name ?? 'N/A' },
+              { label: `Name (${itm?.locale})`, value: itm?.name ?? t('n/a') },
             ]) || []),
-            // { label: 'Name', value: items?.name ?? 'N/A' },
+            // { label: 'Name', value: items?.name ??  t('n/a') },
             { label: 'Email', value: details?.email ?? 'NA' },
             { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
             {
@@ -72,7 +74,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                   {details?.license_file}
                 </a>
               ) : (
-                'N/A'
+                t('n/a')
               ),
             },
             {
@@ -90,7 +92,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                   )}
                 </a>
               ) : (
-                'N/A'
+                t('n/a')
               ),
             },
             { label: 'Status', value: details?.status ?? 'NA' },
@@ -111,7 +113,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                 :
               </Box>
               <Box component="span" sx={{ flex: 1 }}>
-                {item.value ?? 'N/A'}
+                {item.value ?? t('n/a')}
               </Box>
               {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
             </Box>
@@ -286,20 +288,20 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                       {/* Address Details */}
                       <Box>
                         {[
-                          { label: 'Street Address', value: details?.street_address ?? 'N/A' },
+                          { label: 'Street Address', value: details?.street_address ?? t('n/a') },
                           {
                             label: 'City',
-                            value: details?.city?.city_translations[0]?.name ?? 'N/A',
+                            value: details?.city?.city_translations[0]?.name ?? t('n/a'),
                           },
                           {
                             label: 'State',
-                            value: details?.state?.translations[0]?.name ?? 'N/A',
+                            value: details?.state?.translations[0]?.name ?? t('n/a'),
                           },
-                          { label: 'Country', value: details?.country ?? 'N/A' },
+                          { label: 'Country', value: details?.country ?? t('n/a') },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
                             <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
-                            <Box>{item.value || 'N/A'}</Box>
+                            <Box>{item.value || t('n/a')}</Box>
                           </Box>
                         ))}
                       </Box>

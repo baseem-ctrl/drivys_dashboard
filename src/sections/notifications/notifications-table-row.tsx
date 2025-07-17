@@ -88,15 +88,15 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
           sx={{ cursor: 'pointer' }}
         >
           <TableCell sx={{ fontWeight: 500, padding: 2, color: 'text.primary' }}>
-            {user_id || 'N/A'}
+            {user_id || t('n/a')}
           </TableCell>
 
           <TableCell sx={{ color: 'warning.main', fontWeight: 500, padding: 2 }}>
-            {title || 'N/A'}
+            {title || t('n/a')}
           </TableCell>
 
           <TableCell sx={{ fontWeight: 500, padding: 2, color: 'text.secondary' }}>
-            {description || 'N/A'}
+            {description || t('n/a')}
           </TableCell>
 
           <TableCell sx={{ fontWeight: 500, padding: 2 }}>
@@ -104,7 +104,7 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
           </TableCell>
 
           <TableCell sx={{ fontWeight: 500, padding: 2 }}>
-            {trainer_details?.name || 'N/A'}
+            {trainer_details?.name || t('n/a')}
           </TableCell>
 
           <TableCell>
@@ -117,8 +117,8 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
       <ConfirmDialogSend
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
-        title={t("Send Notification")}
-        content={t("Are you sure you want to send this notification?")}
+        title={t('Send Notification')}
+        content={t('Are you sure you want to send this notification?')}
         onConfirm={handleSendNotification}
         loading={loading}
       />
@@ -134,7 +134,7 @@ export default function NotificationTableRow({ row, selected, onSelectRow }: Pro
             popover.onClose();
           }}
         >
-          {t("View")}
+          {t('View')}
         </MenuItem>
       </CustomPopover>
     </>

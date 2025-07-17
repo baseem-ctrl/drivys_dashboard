@@ -97,7 +97,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               : ''
           }
         >
-          {trainer_name || 'N/A'}
+          {trainer_name || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell
@@ -115,7 +115,7 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
             : ''
         }
       >
-        {vendor_name || 'N/A'}
+        {vendor_name || t('n/a')}
       </TableCell>
       <TableCell>
         {isEditing ? (
@@ -130,8 +130,8 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
                 {' '}
                 {error ||
                   `${t('Certificate Commission must be between')} ${
-                    minCommission !== null ? `${minCommission}%` : 'N/A'
-                  } ${t('and')} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+                    minCommission !== null ? `${minCommission}%` : t('n/a')
+                  } ${t('and')} ${maxCommission !== null ? `${maxCommission}%` : t('n/a')}.`}
               </Typography>
             }
           />

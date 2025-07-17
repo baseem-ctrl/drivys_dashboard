@@ -2,6 +2,7 @@ import moment from 'moment';
 import { TableCell, TableRow, Typography, Chip } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface RowProps {
   id: number;
@@ -34,6 +35,8 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
   };
+  const { t } = useTranslation();
+
   return (
     <TableRow hover>
       <TableCell
@@ -45,12 +48,12 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
           },
         }}
       >
-        <Typography variant="body2">{row?.collector?.name ?? 'N/A'}</Typography>
+        <Typography variant="body2">{row?.collector?.name ?? t('n/a')}</Typography>
       </TableCell>
 
       <TableCell>
         <Chip
-          label={row?.payment_method ?? 'N/A'}
+          label={row?.payment_method ?? t('n/a')}
           color="primary"
           variant="soft"
           size="small"
@@ -68,7 +71,7 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
 
       <TableCell>
         <Chip
-          label={row?.payment_status ?? 'N/A'}
+          label={row?.payment_status ?? t('n/a')}
           color={
             row?.payment_status === 'PAID'
               ? 'success'
@@ -89,14 +92,14 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
       </TableCell>
 
       <TableCell>
-        <Typography variant="body2">{row?.remarks ?? 'N/A'}</Typography>
+        <Typography variant="body2">{row?.remarks ?? t('n/a')}</Typography>
       </TableCell>
 
       <TableCell>
         <Typography variant="body2">
           {row?.collected_on
             ? moment(row.collected_on, 'HH:mm:ss dddd YYYY-MM-DD').format('DD MMM YYYY, hh:mm A')
-            : 'N/A'}
+            : t('n/a')}
         </Typography>
       </TableCell>
     </TableRow>

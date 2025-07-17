@@ -211,7 +211,7 @@ export default function PendingRequests({
                           request?.user?.id ? handleClickUserDetails(request?.user?.id) : ''
                         }
                       >
-                        {request?.user?.name || 'N/A'}
+                        {request?.user?.name || t('n/a')}
                       </Typography>
                       {/* <Tooltip title={t('school_name')} arrow> */}{' '}
                       <Typography
@@ -233,12 +233,13 @@ export default function PendingRequests({
                         }
                       >
                         {t('school_name')} :{' '}
-                        {request?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                        {request?.vendor?.vendor_translations[0]?.name || t('n/a')}
                       </Typography>
                       {/* </Tooltip> */}
                       <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
                         {t('requested_time')} :{' '}
-                        {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') || 'N/A'}
+                        {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') ||
+                          t('n/a')}
                       </Typography>
                       {request?.user?.user_preference?.city?.city_translations[0]?.name && (
                         <Typography

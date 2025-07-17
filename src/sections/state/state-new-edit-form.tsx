@@ -18,6 +18,7 @@ import FormControl from '@mui/material/FormControl';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 import { updateStateTranslation } from 'src/api/state';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ export default function StateNewEditForm({
   reload,
 }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const StateSchema = Yup.object().shape({
     name: Yup.string().required('State name is required'),
@@ -65,7 +67,7 @@ export default function StateNewEditForm({
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', t('n/a'));
     }
   }, [selectedLocale, setValue]);
 
@@ -116,7 +118,7 @@ export default function StateNewEditForm({
     if (translation) {
       setValue('name', translation.name);
     } else {
-      setValue('name', 'N/A');
+      setValue('name', t('n/a'));
     }
   }, [selectedLocale, state, setValue]);
   return (

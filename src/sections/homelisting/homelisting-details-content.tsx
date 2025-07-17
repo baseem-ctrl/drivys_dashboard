@@ -238,7 +238,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     }}
                   />
                 ) : (
-                  'N/A'
+                   t('n/a')
                 )}
               </Box> */}
 
@@ -248,9 +248,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                   ...(details?.translations?.length
                     ? details.translations.map((t) => ({
                         label: `Title (${t.locale})`,
-                        value: t.title ?? 'N/A',
+                        value: t.title ?? t('n/a'),
                       }))
-                    : [{ label: t('Title'), value: 'N/A' }]),
+                    : [{ label: t('Title'), value: t('n/a') }]),
                   { label: t('Display Order'), value: details?.display_order ?? 'NA' },
                   { label: t('Catalogue Type'), value: details?.catalogue_type ?? 'NA' },
                   { label: t('Display Type'), value: details?.display_type ?? 'NA' },
@@ -274,7 +274,7 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                     <Typography variant="body2" sx={{ fontWeight: 'bold', width: '130px' }}>
                       :
                     </Typography>
-                    <Box sx={{ flex: 1, overflowWrap: 'break-word' }}>{item.value ?? 'N/A'}</Box>
+                    <Box sx={{ flex: 1, overflowWrap: 'break-word' }}>{item.value ?? t('n/a')}</Box>
                   </Box>
                 ))}
               </Stack>

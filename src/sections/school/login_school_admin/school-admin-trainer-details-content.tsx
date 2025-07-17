@@ -55,6 +55,7 @@ import Divider from '@mui/material/Divider';
 import { LoadingButton } from '@mui/lab';
 import TrainerPackageCreateEditForm from 'src/sections/user/trainer-package-create-edit-form';
 import { createPackageTrainer, deletePackageTrainerById } from 'src/api/package-trainer';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -65,6 +66,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
     trainerDetails?.id
   );
+  const { t } = useTranslation();
 
   const [selectedPackageId, setSelectedPackageId] = useState(null);
   const [editMode, setEditMode] = useState('');
@@ -117,7 +119,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: 'Name', value: details?.name ?? 'N/A' },
+                { label: 'Name', value: details?.name ?? t('n/a') },
                 { label: 'Email', value: details?.email ?? 'NA' },
                 {
                   label: 'Phone Number',
@@ -144,20 +146,20 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                   ? [
                       {
                         label: 'Max Cash Allowded in Hand',
-                        value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                        value: details?.max_cash_in_hand_allowed ?? t('n/a'),
                       },
-                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                      { label: 'Cash in Hand', value: details?.cash_in_hand ?? t('n/a') },
                       {
                         label: 'Cash Clearance Date',
-                        value: details?.cash_clearance_date ?? 'N/A',
+                        value: details?.cash_clearance_date ?? t('n/a'),
                       },
                       {
                         label: 'Last Booking At',
-                        value: details?.last_booking_was ?? 'N/A',
+                        value: details?.last_booking_was ?? t('n/a'),
                       },
                       {
                         label: 'School Commission',
-                        value: details?.vendor_commission_in_percentage ?? 'N/A',
+                        value: details?.vendor_commission_in_percentage ?? t('n/a'),
                       },
                     ]
                   : []),
@@ -170,7 +172,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {item.value ?? 'N/A'}
+                    {item.value ?? t('n/a')}
                   </Box>
                   {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>

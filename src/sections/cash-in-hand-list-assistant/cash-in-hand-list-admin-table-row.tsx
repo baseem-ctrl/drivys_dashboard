@@ -110,7 +110,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           },
         }}
       >
-        <Typography variant="body2">{row?.name ?? 'N/A'}</Typography>
+        <Typography variant="body2">{row?.name ?? t('n/a')}</Typography>
       </TableCell>
 
       <TableCell>
@@ -125,7 +125,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
         <Typography variant="body2">
           {row?.collected_cash_clearance_date
             ? moment(row?.collected_cash_clearance_date).format('DD/MM/YYYY')
-            : 'N/A'}
+            : t('n/a')}
         </Typography>
       </TableCell>
 

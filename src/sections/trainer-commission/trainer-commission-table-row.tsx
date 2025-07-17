@@ -92,7 +92,7 @@ export default function TrainerCommissionRow({ reload, row }) {
               : ''
           }
         >
-          {trainer_name || 'N/A'}
+          {trainer_name || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell
@@ -111,7 +111,7 @@ export default function TrainerCommissionRow({ reload, row }) {
             : ''
         }
       >
-        {vendor_name || 'N/A'}
+        {vendor_name || t('n/a')}
       </TableCell>
       <TableCell style={{ fontWeight: 700 }}>
         {isEditing ? (
@@ -126,8 +126,8 @@ export default function TrainerCommissionRow({ reload, row }) {
                 {' '}
                 {error ||
                   `${t('School Commission must be between')} ${
-                    minCommission !== null ? `${minCommission}%` : 'N/A'
-                  } ${t('and')} ${maxCommission !== null ? `${maxCommission}%` : 'N/A'}.`}
+                    minCommission !== null ? `${minCommission}%` : t('n/a')
+                  } ${t('and')} ${maxCommission !== null ? `${maxCommission}%` : t('n/a')}.`}
               </Typography>
             }
           />

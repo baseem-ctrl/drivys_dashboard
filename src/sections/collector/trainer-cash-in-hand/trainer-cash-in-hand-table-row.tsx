@@ -7,6 +7,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { collectCash } from 'src/api/collector';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface RowProps {
   certificate_commission_in_percentage: any;
@@ -27,6 +28,8 @@ interface StudentReviewRowProps {
 
 export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [amount, setAmount] = useState<null | HTMLElement>(null);
@@ -94,7 +97,7 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
         }}
       >
         <Typography variant="body2">
-          {row?.vendor?.vendor_translations[0]?.name || 'N/A'}
+          {row?.vendor?.vendor_translations[0]?.name || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell
@@ -106,17 +109,17 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
         }}
         onClick={() => handleTrainerClick(row?.user_id)}
       >
-        {row?.user?.name || 'N/A'}
+        {row?.user?.name || t('n/a')}
       </TableCell>
       <TableCell>
         {row?.amount_to_be_collected !== undefined && row?.amount_to_be_collected !== null
           ? row.amount_to_be_collected.toFixed(2)
-          : 'N/A'}
+          : t('n/a')}
       </TableCell>
-      <TableCell>{row?.cash_in_hand.toFixed(2) ?? 'N/A'}</TableCell>
-      <TableCell>{row?.number_of_bookings ?? 'N/A'}</TableCell>
+      <TableCell>{row?.cash_in_hand.toFixed(2) ?? t('n/a')}</TableCell>
+      <TableCell>{row?.number_of_bookings ?? t('n/a')}</TableCell>
       <TableCell>
-        {row?.cash_clearance_date ? moment(row.cash_clearance_date).format('DD-MM-YYYY') : 'N/A'}
+        {row?.cash_clearance_date ? moment(row.cash_clearance_date).format('DD-MM-YYYY') : t('n/a')}
       </TableCell>
       <TableCell>
         <Button variant="contained" color="primary" onClick={(e) => handleOpen(e, row.user_id)}>

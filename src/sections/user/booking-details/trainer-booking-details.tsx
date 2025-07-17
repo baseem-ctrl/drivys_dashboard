@@ -167,22 +167,22 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 <TableCell>
                   <Grid container alignItems="center" spacing={1}>
                     <Grid item>
-                      <Typography>{booking?.user?.name || 'N/A'}</Typography>
+                      <Typography>{booking?.user?.name || t('n/a')}</Typography>
                     </Grid>
                   </Grid>
                 </TableCell>
-                <TableCell>{booking?.user?.email || 'N/A'}</TableCell>
+                <TableCell>{booking?.user?.email || t('n/a')}</TableCell>
                 <TableCell align="center">
                   {' '}
                   <span className="dirham-symbol">&#x00EA;</span>
-                  {booking?.total || 'N/A'}{' '}
+                  {booking?.total || t('n/a')}{' '}
                 </TableCell>
-                <TableCell>{booking?.package?.number_of_sessions || 'N/A'}</TableCell>
-                <TableCell>{booking?.no_of_sessions || 'N/A'}</TableCell>
-                <TableCell>{booking?.no_of_sessions_completed || 'N/A'}</TableCell>
+                <TableCell>{booking?.package?.number_of_sessions || t('n/a')}</TableCell>
+                <TableCell>{booking?.no_of_sessions || t('n/a')}</TableCell>
+                <TableCell>{booking?.no_of_sessions_completed || t('n/a')}</TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={booking?.booking_status || 'N/A'}
+                    label={booking?.booking_status || t('n/a')}
                     color={
                       booking?.booking_status === 'PENDING'
                         ? 'info'
@@ -199,7 +199,7 @@ const BookingTrainerTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 </TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={booking?.payment_status || 'N/A'}
+                    label={booking?.payment_status || t('n/a')}
                     color={
                       booking?.payment_status === 'PENDING'
                         ? 'info'

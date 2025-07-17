@@ -5,6 +5,7 @@ import TableCell from '@mui/material/TableCell';
 import { Button, Typography, Popover, TextField } from '@mui/material';
 import { useSnackbar } from 'src/components/snackbar';
 import { collectCash } from 'src/api/collector';
+import { useTranslation } from 'react-i18next';
 
 interface RowProps {
   certificate_commission_in_percentage: any;
@@ -28,6 +29,7 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [amount, setAmount] = useState<null | HTMLElement>(null);
   const [trainerId, setTrainerId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   // Open popover and set trainer ID
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
@@ -77,19 +79,19 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
     <TableRow hover>
       <TableCell>
         <Typography variant="body2">
-          {row?.vendor?.vendor_translations[0]?.name || 'N/A'}
+          {row?.vendor?.vendor_translations[0]?.name || t('n/a')}
         </Typography>
       </TableCell>
-      <TableCell>{row?.user?.name || 'N/A'}</TableCell>
+      <TableCell>{row?.user?.name || t('n/a')}</TableCell>
       <TableCell>
         {row?.amount_to_be_collected !== undefined && row?.amount_to_be_collected !== null
           ? row.amount_to_be_collected.toFixed(2)
-          : 'N/A'}
+          : t('n/a')}
       </TableCell>
-      <TableCell>{row?.cash_in_hand.toFixed(2) ?? 'N/A'}</TableCell>
-      <TableCell>{row?.number_of_bookings ?? 'N/A'}</TableCell>
+      <TableCell>{row?.cash_in_hand.toFixed(2) ?? t('n/a')}</TableCell>
+      <TableCell>{row?.number_of_bookings ?? t('n/a')}</TableCell>
       <TableCell>
-        {row?.cash_clearance_date ? moment(row.cash_clearance_date).format('DD-MM-YYYY') : 'N/A'}
+        {row?.cash_clearance_date ? moment(row.cash_clearance_date).format('DD-MM-YYYY') : t('n/a')}
       </TableCell>
       <TableCell>
         <Button variant="contained" color="primary" onClick={(e) => handleOpen(e, row.user_id)}>

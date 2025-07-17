@@ -74,9 +74,15 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const handleAddCity = (newCityData: any) => {
     handleCloseAddCityDialog();
   };
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.package_translations?.length > 0 ? details?.package_translations[0]?.locale : ''
-  );
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    const translations = details?.package_translations || [];
+
+    const matched = translations.find(
+      (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+    );
+
+    return matched?.locale || translations[0]?.locale || '';
+  });
   const { documents, revalidateDocuments } = useGetPackageDocuments({
     packageId: details?.id,
   });
@@ -550,12 +556,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
             {[
               ...(details?.package_translations?.flatMap((itm: any) => [
-                { label: `${t('Name')} (${t(itm?.locale)})`, value: itm?.name ?? 'N/A' },
+                { label: `${t('Name')} (${t(itm?.locale)})`, value: itm?.name ?? t('n/a') },
               ]) || []),
               ...(details?.package_translations?.flatMap((itm: any) => [
                 {
                   label: `${t('Session inclusions')} (${t(itm?.locale)})`,
-                  value: <PackageDescription description={itm?.session_inclusions} /> ?? 'N/A',
+                  value: <PackageDescription description={itm?.session_inclusions} /> ?? t('n/a'),
                 },
               ]) || []),
               {
@@ -568,12 +574,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     }}
                     sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }} // Add some styles to indicate it's clickable
                   >
-                    {details?.vendor_id ?? 'N/A'}
+                    {details?.vendor_id ?? t('n/a')}
                   </Box>
                 ),
               },
               ...(details?.vendor?.vendor_translations?.flatMap((itm: any) => [
-                { label: `${t('School Name')} (${t(itm?.locale)})`, value: itm?.name ?? 'N/A' },
+                { label: `${t('School Name')} (${t(itm?.locale)})`, value: itm?.name ?? t('n/a') },
               ]) || []),
 
               { label: t('Number of sessions'), value: details?.number_of_sessions ?? 'NA' },
@@ -592,8 +598,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 value: (() => {
                   const selectedCategory = category?.find((cat) => cat.id === details?.category_id);
                   return selectedCategory
-                    ? selectedCategory.category_translations[0]?.name || 'N/A' // Adjust if you need a specific locale
-                    : 'N/A';
+                    ? selectedCategory.category_translations[0]?.name || t('n/a') // Adjust if you need a specific locale
+                    : t('n/a');
                 })(),
               },
               {
@@ -641,7 +647,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     </Typography>
                   </Stack>
                 ) : (
-                  'N/A'
+                  t('n/a')
                 ),
               },
 
@@ -661,7 +667,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   ?.slice(0, Math.floor(numberOfSessions / 2))
                   ?.map((sessionItem: any) => ({
                     label: `${t('Slot')} ${sessionItem.slot_number} ${t('Title')}`,
-                    value: sessionItem.translations?.[0]?.title ?? 'N/A',
+                    value: sessionItem.translations?.[0]?.title ?? t('n/a'),
                   }))) ||
                 []),
             ]?.map((item, index) => (
@@ -673,7 +679,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   :
                 </Box>
                 <Box component="span" sx={{ flex: 1 }}>
-                  {item.value ?? 'N/A'}
+                  {item.value ?? t('n/a')}
                 </Box>
               </Box>
             ))}
@@ -952,7 +958,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {cityItem?.city?.city_translations[0]?.name ?? 'N/A'}
+                    {cityItem?.city?.city_translations[0]?.name ?? t('n/a')}
                   </Box>
                 </Box>
 
@@ -964,7 +970,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {cityItem?.min_price ?? 'N/A'}
+                    {cityItem?.min_price ?? t('n/a')}
                   </Box>
                 </Box>
 
@@ -976,7 +982,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {cityItem?.max_price ?? 'N/A'}
+                    {cityItem?.max_price ?? t('n/a')}
                   </Box>
                 </Box>
 
@@ -988,7 +994,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {cityItem?.commision ?? 'N/A'}
+                    {cityItem?.commision ??  t('n/a')}
                   </Box>
                 </Box> */}
               </Box>

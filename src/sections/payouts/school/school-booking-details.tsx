@@ -75,7 +75,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
     vendor_id: id,
   });
   const renderCell = (value: any) => {
-    return value === 0 ? value : value || 'N/A';
+    return value === 0 ? value : value || t('n/a');
   };
   const handleBookingClick = (id) => {
     router.push(paths.dashboard.booking.details(id));
@@ -120,7 +120,7 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
               <Typography variant="body1">
-                {details?.vendor_translations?.[0]?.name ?? 'N/A'}
+                {details?.vendor_translations?.[0]?.name ?? t('n/a')}
               </Typography>
             </Box>
           }

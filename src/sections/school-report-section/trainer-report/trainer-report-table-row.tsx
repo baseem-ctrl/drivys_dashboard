@@ -6,9 +6,11 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
 
 export default function TrainerReportsRow({ row }) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleTrainerDetails = (trainer_id) => {
     router.push(paths.dashboard.trainer.details(trainer_id));
@@ -44,16 +46,16 @@ export default function TrainerReportsRow({ row }) {
           }}
           onClick={() => handleTrainerDetails(row['Trainer ID'])}
         >
-          {row['Trainer Name'] || 'N/A'}
+          {row['Trainer Name'] || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell>
-        <Typography variant="body2">{row['School Name'] || 'N/A'}</Typography>
+        <Typography variant="body2">{row['School Name'] || t('n/a')}</Typography>
       </TableCell>
       <TableCell>{row['Total Bookings'] ?? '0'}</TableCell>
       <TableCell>{row['Total Sessions'] ?? '0'}</TableCell>
       <TableCell>{row['Total Completed Bookings'] ?? '0'}</TableCell>
-      <TableCell>{row['Cancellation Rate'] ?? 'N/A'}</TableCell>
+      <TableCell>{row['Cancellation Rate'] ?? t('n/a')}</TableCell>
       <TableCell>{renderStars(row['Average Rating'])}</TableCell>
     </TableRow>
   );

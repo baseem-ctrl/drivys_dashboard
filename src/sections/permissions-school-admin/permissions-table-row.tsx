@@ -22,6 +22,7 @@ import {
   useGetRolesBySchoolAdmin,
   useMappedRolesBySchoolAdmin,
 } from 'src/api/role-permission-school-admin';
+import { useTranslation } from 'react-i18next';
 
 type PermissionTableRowProps = {
   row: {
@@ -40,6 +41,8 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
     0,
     10000
   );
+  const { t } = useTranslation();
+
   const [selectedRoleId, setSelectedRoleId] = useState<number | ''>('');
   const [rights, setRights] = useState({
     create: false,
@@ -127,7 +130,7 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
             textTransform="capitalize"
             color="text.primary"
           >
-            {row?.name || 'N/A'}
+            {row?.name || t('n/a')}
           </Typography>
         </TableCell>
 

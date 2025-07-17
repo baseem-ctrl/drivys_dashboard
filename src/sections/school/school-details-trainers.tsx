@@ -240,12 +240,14 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
                 name="trainer_id"
                 label={t('trainer')}
                 options={users} // Use the full list of user objects as options
-                getOptionLabel={(option) => (option ? `${option.name ? option.name : 'N/A'}` : '')} // Display only the name in the input field, or 'NO Name' if empty
+                getOptionLabel={(option) =>
+                  option ? `${option.name ? option.name : t('n/a')}` : ''
+                } // Display only the name in the input field, or 'NO Name' if empty
                 isOptionEqualToValue={(option, value) => option.id === value.id} // Compare based on IDs
                 onInputChange={(_, value) => setSearch(value)} // Set the search value when user types in the field
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name ? `${option.name} - ${option.email}` : 'N/A'}{' '}
+                    {option.name ? `${option.name} - ${option.email}` : t('n/a')}{' '}
                     {/* Show "name - email" in the dropdown, or 'NO Name - NO Email' if name is empty */}
                   </li>
                 )}
@@ -369,7 +371,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
               </Stack>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                 {[
-                  // { label: 'Name', value: items?.name ?? 'N/A' },
+                  // { label: 'Name', value: items?.name ??  t('n/a') },
                   {
                     label: t('phone_number'),
                     value: trainer?.user?.country_code

@@ -49,9 +49,11 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { useGetBookingSchoolAdminById } from 'src/api/booking-school-admin';
 import BookingAdminDetailsToolbar from '../booking-admin-details-tool-bar';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
+  const { t } = useTranslation();
 
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -205,7 +207,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.name ? user?.name : 'N/A'}
+                        {user && user?.name ? user?.name : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -216,7 +218,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.email ? user?.email : 'N/A'}
+                        {user && user?.email ? user?.email : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -227,7 +229,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.phone ? user?.phone : 'N/A'}
+                        {user && user?.phone ? user?.phone : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -238,7 +240,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.country_code ? user?.country_code : 'N/A'}
+                        {user && user?.country_code ? user?.country_code : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -251,7 +253,7 @@ const BookingDetailsComponent = () => {
                       <Box component="span" sx={{ flex: 1 }}>
                         {bookingDetails && bookingDetails?.gear_type
                           ? bookingDetails?.gear_type
-                          : 'N/A'}
+                          : t('n/a')}
                       </Box>
                     </Box>
 
@@ -263,7 +265,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A'}
+                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -274,7 +276,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.locale ? user?.locale : 'N/A'}
+                        {user && user?.locale ? user?.locale : t('n/a')}
                       </Box>
                     </Box>
                     {/* <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -311,7 +313,7 @@ const BookingDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          'N/A'
+                          t('n/a')
                         )}
                       </Box>
                     </Box>
@@ -376,7 +378,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.name : 'N/A'}
+                        {driver && driver?.locale ? driver?.name : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -387,7 +389,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.email ? driver?.email : 'N/A'}
+                        {driver && driver?.email ? driver?.email : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -398,7 +400,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.phone ? driver?.phone : 'N/A'}
+                        {driver && driver?.phone ? driver?.phone : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -409,7 +411,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.country_code ? driver?.country_code : 'N/A'}
+                        {driver && driver?.country_code ? driver?.country_code : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
@@ -420,7 +422,7 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.locale : 'N/A'}
+                        {driver && driver?.locale ? driver?.locale : t('n/a')}
                       </Box>
                     </Box>
 
@@ -432,7 +434,9 @@ const BookingDetailsComponent = () => {
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver.dob ? new Date(driver.dob).toLocaleDateString() : 'N/A'}
+                        {driver && driver.dob
+                          ? new Date(driver.dob).toLocaleDateString()
+                          : t('n/a')}
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
@@ -450,7 +454,7 @@ const BookingDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          'N/A'
+                          t('n/a')
                         )}
                       </Box>
                     </Box>
@@ -488,7 +492,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || 'N/A'}
+                    {pkg?.package_translations[0]?.name || t('n/a')}
                   </Box>
                 </Box>
 
@@ -500,7 +504,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.number_of_sessions || 'N/A'}
+                    {pkg?.number_of_sessions || t('n/a')}
                   </Box>
                 </Box>
 
@@ -512,7 +516,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || 'N/A'}
+                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
                   </Box>
                 </Box>
               </CardContent>
@@ -546,7 +550,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.label || 'N/A'}
+                    {pickup_location?.label || t('n/a')}
                   </Box>
                 </Box>
 
@@ -558,8 +562,9 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.address || 'N/A'}, {pickup_location?.building_name || 'N/A'},{' '}
-                    {pickup_location?.plot_number || 'N/A'}
+                    {pickup_location?.address || t('n/a')},{' '}
+                    {pickup_location?.building_name || t('n/a')},{' '}
+                    {pickup_location?.plot_number || t('n/a')}
                   </Box>
                 </Box>
 
@@ -571,7 +576,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.city || 'N/A'}
+                    {pickup_location?.city || t('n/a')}
                   </Box>
                 </Box>
 
@@ -583,7 +588,7 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    <Phone fontSize="small" /> {pickup_location?.phone_number || 'N/A'}
+                    <Phone fontSize="small" /> {pickup_location?.phone_number || t('n/a')}
                   </Box>
                 </Box>
               </CardContent>
@@ -629,7 +634,7 @@ const BookingDetailsComponent = () => {
                       <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
                         Payment Method :
                       </Typography>
-                      <Typography>{bookingDetails?.booking_method || 'N/A'}</Typography>
+                      <Typography>{bookingDetails?.booking_method || t('n/a')}</Typography>
                     </Box>
 
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
@@ -760,7 +765,7 @@ const BookingDetailsComponent = () => {
                   Total Amount:
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
-                  {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : 'N/A'}
+                  {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : t('n/a')}
                 </Typography>
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                   <Table>
@@ -777,8 +782,8 @@ const BookingDetailsComponent = () => {
                     </TableHead>
                     <TableBody>
                       {sessions.map((session) => (
-                        <TableRow key={session?.id || 'N/A'}>
-                          <TableCell>{session?.booking_id || 'N/A'}</TableCell>
+                        <TableRow key={session?.id || t('n/a')}>
+                          <TableCell>{session?.booking_id || t('n/a')}</TableCell>
                           <TableCell>
                             <ListItemText
                               primary={`Total Sessions Booked:${session?.no_of_sessions}`}
@@ -799,7 +804,7 @@ const BookingDetailsComponent = () => {
                               }}
                             />
                           </TableCell>
-                          {/* <TableCell>{session?.session_status || 'N/A'}</TableCell> */}
+                          {/* <TableCell>{session?.session_status ||  t('n/a')}</TableCell> */}
                           <TableCell>
                             <Chip
                               label={session?.session_status}
@@ -831,7 +836,7 @@ const BookingDetailsComponent = () => {
                                 ))}
                               </Box>
                             ) : (
-                              'N/A'
+                              t('n/a')
                             )}
                           </TableCell>
 
@@ -840,7 +845,7 @@ const BookingDetailsComponent = () => {
                               ? moment(session.start_time)
                                   .utcOffset('+04:00')
                                   .format('DD/MM/YY h:mm A')
-                              : 'N/A'}
+                              : t('n/a')}
                           </TableCell>
 
                           <TableCell>
@@ -848,9 +853,9 @@ const BookingDetailsComponent = () => {
                               ? moment(session.end_time)
                                   .utcOffset('+04:00')
                                   .format('DD/MM/YY h:mm A')
-                              : 'N/A'}
+                              : t('n/a')}
                           </TableCell>
-                          <TableCell>{session?.session_type || 'N/A'}</TableCell>
+                          <TableCell>{session?.session_type || t('n/a')}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

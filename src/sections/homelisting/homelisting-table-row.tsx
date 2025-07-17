@@ -63,7 +63,7 @@ export default function HomeListingTableRow({
   revalidateHomeListing,
   onViewRow,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
   const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
@@ -187,16 +187,20 @@ export default function HomeListingTableRow({
         </TableCell> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.translations.length > 0 ? row.translations[0].title : 'N/A'}
+          {row.translations.find(
+            (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.title ||
+            row.translations[0]?.title ||
+            t('n/a')}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.catalogue_type || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.catalogue_type || t('n/a')}</TableCell>
 
         {/* <TableCell>
           <Avatar alt={row.name} src={row?.sliders?.virtual_path} sx={{ mr: 2 }} />
         </TableCell> */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.display_type || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{display_order || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row?.display_type || t('n/a')}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{display_order || t('n/a')}</TableCell>
         <TableCell>
           <Label variant="soft" color={is_active === 1 ? 'success' : 'error'}>
             {is_active === 1 ? t('Active') : t('Not Active')}
@@ -251,7 +255,7 @@ export default function HomeListingTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          {t("View")}
+          {t('View')}
         </MenuItem>
 
         <MenuItem
@@ -261,7 +265,7 @@ export default function HomeListingTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
 
         <MenuItem
@@ -272,7 +276,7 @@ export default function HomeListingTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
       </CustomPopover>
     </>

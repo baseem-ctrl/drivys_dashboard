@@ -2,10 +2,13 @@ import { useEffect } from 'react';
 import { Typography, Box, Stack, Card, Grid } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function CityDetails({ onEdit, city }) {
+  const { t } = useTranslation();
+
   const renderContent = (
     <>
       {city?.city_translations && city.city_translations.length > 0 ? (
@@ -38,7 +41,7 @@ export default function CityDetails({ onEdit, city }) {
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {translation.name ?? 'N/A'}
+                              {translation.name ?? t('n/a')}
                             </Box>
                           </Box>
 
@@ -50,7 +53,7 @@ export default function CityDetails({ onEdit, city }) {
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {translation.locale ?? 'N/A'}
+                              {translation.locale ?? t('n/a')}
                             </Box>
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
@@ -61,7 +64,7 @@ export default function CityDetails({ onEdit, city }) {
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {city.max_slot ?? 'N/A'}
+                              {city.max_slot ?? t('n/a')}
                             </Box>
                           </Box>
 
@@ -155,7 +158,7 @@ export default function CityDetails({ onEdit, city }) {
                                           0,
                                           8
                                         )}...${city.certificate_link.slice(-6)}`
-                                      : 'N/A'}
+                                      : t('n/a')}
                                   </Typography>
                                 </Box>
                               </Box>
@@ -170,7 +173,7 @@ export default function CityDetails({ onEdit, city }) {
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
                               <Typography variant="body2">
-                                {city?.reschedule_fee ?? 'N/A'}
+                                {city?.reschedule_fee ?? t('n/a')}
                               </Typography>
                             </Box>
                           </Box>
@@ -183,7 +186,7 @@ export default function CityDetails({ onEdit, city }) {
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
                               <Typography variant="body2">
-                                {city?.free_reschedule_before ?? 'N/A'}
+                                {city?.free_reschedule_before ?? t('n/a')}
                               </Typography>
                             </Box>
                           </Box>
@@ -200,7 +203,7 @@ export default function CityDetails({ onEdit, city }) {
                                   ? 'Hours'
                                   : city?.free_reschedule_before_type === 1
                                   ? 'Days'
-                                  : 'N/A'}
+                                  : t('n/a')}
                               </Typography>
                             </Box>
                           </Box>
@@ -213,7 +216,7 @@ export default function CityDetails({ onEdit, city }) {
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
                               <Typography variant="body2">
-                                {city.price_per_km ? city?.price_per_km : 'N/A'}
+                                {city.price_per_km ? city?.price_per_km : t('n/a')}
                               </Typography>
                             </Box>
                           </Box>
@@ -226,7 +229,7 @@ export default function CityDetails({ onEdit, city }) {
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
                               <Typography variant="body2">
-                                {city.min_price ? city?.min_price : 'N/A'}
+                                {city.min_price ? city?.min_price : t('n/a')}
                               </Typography>
                             </Box>
                           </Box>

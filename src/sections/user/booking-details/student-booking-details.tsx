@@ -83,7 +83,7 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                 <TableCell>
                   <Grid container alignItems="center" spacing={1}>
                     <Grid item>
-                      <Typography>{booking?.driver?.name || 'N/A'}</Typography>
+                      <Typography>{booking?.driver?.name || t('n/a')}</Typography>
                     </Grid>
                   </Grid>
                 </TableCell>
