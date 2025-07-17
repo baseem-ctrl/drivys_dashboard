@@ -223,17 +223,27 @@ export default function PaymentAssistantView() {
                   // }
                 />
                 <TableBody>
-                  {paymentListLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
+                  {paymentListLoading ? (
+                    Array.from(new Array(5)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : tableData?.length > 0 ? (
+                    [...tableData]
+                      .sort(getComparator(table.order, table.orderBy))
+                      .map((row) => (
+                        <PaymentRow key={row.id} row={row} reload={revalidatePaymentList} />
                       ))
-                    : [...(tableData || [])]
-                        .sort(getComparator(table.order, table.orderBy))
-                        .map((row) => <PaymentRow row={row} reload={revalidatePaymentList} />)}
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={TABLE_HEAD?.length || 6} align="center" sx={{ py: 5 }}>
+                        {t('No data available')}
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Scrollbar>

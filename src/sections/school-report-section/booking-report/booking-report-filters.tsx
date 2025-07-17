@@ -42,7 +42,7 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
     bookingStatusValidating,
     revalidateBookingStatusEnum,
   } = useGetBookingStatusEnum();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
@@ -180,7 +180,7 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
         value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         onChange={(event, newValue) => handleFilterCategory(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
       />
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>

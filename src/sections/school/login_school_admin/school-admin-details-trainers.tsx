@@ -49,6 +49,7 @@ type Props = {
 export default function SchoolAdminTrainers({ candidates, create, onCreate, vendor_id }: Props) {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
+
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [trainerId, setTrainerId] = useState('');
@@ -516,7 +517,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                 </Stack>
                 <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                   {[
-                    { label: 'Name (Ar)', value: trainer?.user?.name_ar ?? 'N/A' },
+                    { label: 'Name (Ar)', value: trainer?.user?.name_ar ?? t('n/a') },
                     {
                       label: 'Phone Number',
                       value: trainer?.user?.country_code

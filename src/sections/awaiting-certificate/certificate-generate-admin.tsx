@@ -184,7 +184,7 @@ export default function GenerateCertificateForm() {
             >
               <RHFAutocompleteSearch
                 name="category_id"
-                label="Select Category"
+                label={t('Select Category')}
                 placeholder="Search for a category"
                 loading={categoryLoading}
                 options={categoryOptions}

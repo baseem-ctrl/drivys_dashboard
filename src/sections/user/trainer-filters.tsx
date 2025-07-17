@@ -235,7 +235,7 @@ export default function TrainerFilters({
             : filters.vehicle_type_id
         }
         onChange={(event, newValue) => handleFilterCategory(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}

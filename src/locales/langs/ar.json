@@ -269,6 +269,8 @@
   "user_preferences": "تفضيلات المستخدم",
   "area": "المنطقة",
   "gear": "ناقل الحركة",
+  "gear_type": "ناقل الحركة",
+
   "gender": "الجنس",
   "school_commission_trainer": "عمولة المدرسة (تفضيل المدرب)",
   "vehicle_type": "نوع المركبة",
@@ -1136,6 +1138,7 @@
   "rescheduling_flexibility": "مرونة إعادة الجدولة",
   "payout_list": "قائمة المدفوعات",
   "assistant": "مساعد",
+  "ASSISTANT": "مساعد",
   "amount": "المبلغ",
   "remarks": "ملاحظات",
   "select_package": "اختر الباقة",
