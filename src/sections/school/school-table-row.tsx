@@ -111,7 +111,7 @@ export default function SchoolTableRow({
   };
 
   const [editingRowId, setEditingRowId] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState(vendor_translations?.[0]?.locale ?? '');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language ?? '');
   const [localeOptions, setLocaleOptions] = useState([]);
 
   const confirm = useBoolean();
@@ -303,7 +303,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            selectedLanguage
+            selectedLanguage.toUpperCase()
           )}
         </TableCell>
 
