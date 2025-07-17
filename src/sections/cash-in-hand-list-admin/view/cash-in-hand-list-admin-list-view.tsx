@@ -35,26 +35,10 @@ import {
 import CashInHandListRow from '../cash-in-hand-list-admin-table-row';
 import CashCollectedRow from '../cash-collected-row';
 import CashInHandFilter from '../cash-in-hand-list-admin-filters';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'collector-id', label: 'Collector', width: 180 },
-  { id: 'status_text', label: 'Status Text', width: 180 },
-  { id: 'collected-cash-in-hand', label: 'Collected Cash', width: 180 },
-  { id: 'max-collected-cash-in-hand', label: 'Max Cash In Hand', width: 180 },
-  { id: 'action', label: '', width: 180 },
-];
-
-const COLECTED_TABLE_HEAD = [
-  { id: 'collector-id', label: 'Collector', width: 180 },
-  { id: 'payment_method', label: 'Payment Method', width: 180 },
-  { id: 'txn_amount', label: 'Amount', width: 120 },
-
-  { id: 'payment_status', label: 'Payment Status', width: 150 },
-  { id: 'remarks', label: 'Remarks', width: 250 },
-  { id: 'collected_on', label: 'Collected On', width: 180 },
-];
 const defaultFilters = {
   cash_clearance_date_from: null,
   cash_clearance_date_to: null,
@@ -65,6 +49,25 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CashInHandList() {
+  const { t } = useTranslation();
+
+  const TABLE_HEAD = [
+    { id: 'collector-id', label: t('collector'), width: 180 },
+    { id: 'status_text', label: t('status'), width: 180 },
+    { id: 'collected-cash-in-hand', label: t('collected_cash'), width: 180 },
+    { id: 'max-collected-cash-in-hand', label: t('max_cash_in_hand'), width: 180 },
+    { id: 'action', label: '', width: 180 },
+  ];
+
+  const COLECTED_TABLE_HEAD = [
+    { id: 'collector-id', label: t('collector'), width: 180 },
+    { id: 'payment_method', label: t('payment_method'), width: 180 },
+    { id: 'txn_amount', label: t('amount'), width: 120 },
+    { id: 'payment_status', label: t('payment_status'), width: 150 },
+    { id: 'remarks', label: t('remarks'), width: 250 },
+    { id: 'collected_on', label: t('collected_on'), width: 180 },
+  ];
+
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const confirm = useBoolean();

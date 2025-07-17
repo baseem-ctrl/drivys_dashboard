@@ -296,7 +296,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
             {tableData?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} sx={{ textAlign: 'center', fontStyle: 'italic' }}>
-                  No records available
+                  {t('no_records_available')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -355,28 +355,30 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                           color="primary"
                           sx={{ fontWeight: 'bold', fontSize: '15px', px: 2, py: 1, mt: 3, mb: 1 }}
                         >
-                          Session Details:
+                          {t('session_details')}
                         </Typography>
                         <Box sx={{ width: '100%', overflowX: 'auto' }}>
                           <Table sx={{ width: '100%' }}>
                             <TableHead>
                               <TableRow>
-                                <TableCell sx={{ width: '250px' }}>Start Time</TableCell>
-                                <TableCell sx={{ width: '250px' }}>End Time</TableCell>
-                                <TableCell sx={{ width: '220px' }}>Outstanding</TableCell>
-                                <TableCell sx={{ width: '230px' }}>Drivys Payout</TableCell>
-                                <TableCell sx={{ width: '120px' }}>Revenue</TableCell>
-                                <TableCell sx={{ width: '130px' }}>School Payout</TableCell>
-                                <TableCell sx={{ width: '130px' }}>Trainer Payout</TableCell>
-                                <TableCell sx={{ width: '140px' }}>Transferred Amount</TableCell>
-                                <TableCell sx={{ width: '160px' }}>Session Status</TableCell>
+                                <TableCell sx={{ width: '250px' }}>{t('start_time')}</TableCell>
+                                <TableCell sx={{ width: '250px' }}>{t('end_time')}</TableCell>
+                                <TableCell sx={{ width: '220px' }}>{t('outstanding')}</TableCell>
+                                <TableCell sx={{ width: '230px' }}>{t('drivys_payout')}</TableCell>
+                                <TableCell sx={{ width: '120px' }}>{t('revenue')}</TableCell>
+                                <TableCell sx={{ width: '130px' }}>{t('school_payout')}</TableCell>
+                                <TableCell sx={{ width: '130px' }}>{t('trainer_payout')}</TableCell>
+                                <TableCell sx={{ width: '140px' }}>
+                                  {t('transferred_amount')}
+                                </TableCell>
+                                <TableCell sx={{ width: '160px' }}>{t('session_status')}</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               {sessionStatusLoading ? (
                                 <TableRow>
                                   <TableCell colSpan={9} sx={{ textAlign: 'center' }}>
-                                    Loading...
+                                    {t('loading')}
                                   </TableCell>
                                 </TableRow>
                               ) : item?.sessions?.length > 0 ? (
@@ -384,7 +386,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                                   const statusLabel =
                                     sessionStatusEnum.find(
                                       (status) => status.value === session.session_status
-                                    )?.name || 'Unknown';
+                                    )?.name || t('unknown');
 
                                   return (
                                     <TableRow key={sessionIndex}>
@@ -415,7 +417,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                               ) : (
                                 <TableRow>
                                   <TableCell colSpan={9} sx={{ textAlign: 'center' }}>
-                                    No sessions available
+                                    {t('no_sessions_available')}
                                   </TableCell>
                                 </TableRow>
                               )}

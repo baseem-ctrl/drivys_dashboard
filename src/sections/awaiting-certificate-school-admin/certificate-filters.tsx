@@ -16,6 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ export default function CertificateFilters({
       onLocaleChange(newValue);
     }
   };
-
+  const { t } = useTranslation();
   // Function to handle the publish status change
   const handlePublishStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onFilters('is_published', event.target.value);
@@ -73,10 +74,10 @@ export default function CertificateFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        {t('filters')}
       </Typography>
 
-      <Tooltip title="Reset">
+      <Tooltip title={t('reset')}>
         <IconButton onClick={onResetFilters}>
           <Badge color="error" variant="dot" invisible={!canReset}>
             <Iconify icon="solar:restart-bold" />
@@ -93,12 +94,12 @@ export default function CertificateFilters({
   const renderLocale = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        Locale
+        {t('locale')}
       </Typography>
       <FormControl fullWidth variant="outlined">
         <Select value={filters?.locale || ''} onChange={handleFilterLocale} displayEmpty>
           <MenuItem value="" disabled>
-            Select Locale
+            {t('select_locale')}
           </MenuItem>
           {localeOptions?.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -113,7 +114,7 @@ export default function CertificateFilters({
   const renderPublishStatus = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 1 }}>
-        Publish Status
+        {t('publish_status')}
       </Typography>
       <FormControl>
         <FormControlLabel
@@ -124,7 +125,7 @@ export default function CertificateFilters({
               value="published"
             />
           }
-          label="Show All Published"
+          label={t('show_all_published')}
         />
         <FormControlLabel
           control={
@@ -134,7 +135,7 @@ export default function CertificateFilters({
               value="unpublished"
             />
           }
-          label="Show All Unpublished"
+          label={t('show_all_unpublished')}
         />
       </FormControl>
     </Stack>
@@ -144,7 +145,7 @@ export default function CertificateFilters({
   const renderOrderInput = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1, mt: 2 }}>
-        Display Order ID
+        {t('display_order_id')}
       </Typography>
       <TextField
         value={selectedOrder === undefined ? ' ' : selectedOrder}
@@ -166,7 +167,7 @@ export default function CertificateFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        {t('filters')}
       </Button>
 
       <Drawer

@@ -138,8 +138,8 @@ const RefundDetailsComponent = () => {
       <Grid container spacing={4} sx={{ maxWidth: 1200, mx: 'auto', mt: 4 }}>
         <Grid item xs={12}>
           <Tabs value={value} onChange={(event, newValue) => setValue(newValue)}>
-            <Tab label="Booking Details" />
-            <Tab label="Payment & Summary" />
+            <Tab label={t('booking_details')} />
+            <Tab label={t('payment_and_summary')} />
           </Tabs>
         </Grid>
         {/* User Information */}
@@ -164,7 +164,7 @@ const RefundDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 4, fontWeight: 'bold', color: 'primary.main' }}>
-                  User Information:
+                  {t('user_information')}:
                 </Typography>
                 <Grid container spacing={5} alignItems="center">
                   <Grid item>
@@ -196,51 +196,55 @@ const RefundDetailsComponent = () => {
                   <Grid item>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Name
+                        {t('name')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.name ? user?.name : t('n/a')}
+                        {user && user?.name ? user?.name : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> Email
+                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t('email')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.email ? user?.email : t('n/a')}
+                        {user && user?.email ? user?.email : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> Phone
+                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t('phone')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.phone ? user?.phone : t('n/a')}
+                        {user && user?.phone ? user?.phone : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Country Code
+                        {t('country_code')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.country_code ? user?.country_code : t('n/a')}
+                        {user && user?.country_code ? user?.country_code : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Gear Type
+                        {t('gear_type')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -248,54 +252,37 @@ const RefundDetailsComponent = () => {
                       <Box component="span" sx={{ flex: 1 }}>
                         {bookingDetails && bookingDetails?.gear_type
                           ? bookingDetails?.gear_type
-                          : t('n/a')}
+                          : t('n_a')}
                       </Box>
                     </Box>
 
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        DOB
+                        {t('dob')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : t('n/a')}
+                        {user && user.dob ? new Date(user.dob).toLocaleDateString() : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Locale
+                        {t('locale')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {user && user?.locale ? user?.locale : t('n/a')}
+                        {user && user?.locale ? user?.locale : t('n_a')}
                       </Box>
                     </Box>
-                    {/* <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
-                    <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                      Active
-                    </Box>
-                    <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                      :
-                    </Box>
-                    <Box component="span" sx={{ flex: 1 }}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: user.is_active ? 'green' : 'red',
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        {user.is_active ? 'Yes' : 'No'}
-                      </Typography>
-                    </Box>
-                  </Box> */}
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Active
+                        {t('active')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -308,7 +295,7 @@ const RefundDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          t('n/a')
+                          t('n_a')
                         )}
                       </Box>
                     </Box>
@@ -341,8 +328,9 @@ const RefundDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 4, fontWeight: 'bold', color: 'primary.main' }}>
-                  Driver Information:
+                  {t('driver_information')}:
                 </Typography>
+
                 <Grid container spacing={5} alignItems="center">
                   <Grid item>
                     {driver && driver?.photo_url ? (
@@ -373,63 +361,67 @@ const RefundDetailsComponent = () => {
                   <Grid item>
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Name
+                        {t('name')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
                       </Box>
                       <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.name : t('n/a')}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
-                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> Email
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.email ? driver?.email : t('n/a')}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
-                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> Phone
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.phone ? driver?.phone : t('n/a')}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
-                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Country Code
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.country_code ? driver?.country_code : t('n/a')}
-                      </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
-                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Locale
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {driver && driver?.locale ? driver?.locale : t('n/a')}
+                        {driver && driver?.locale ? driver?.name : t('n_a')}
                       </Box>
                     </Box>
 
                     <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        DOB
+                        <Email fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t('email')}
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {driver && driver?.email ? driver?.email : t('n_a')}
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
+                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                        <Phone fontSize="small" sx={{ verticalAlign: 'middle' }} /> {t('phone')}
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {driver && driver?.phone ? driver?.phone : t('n_a')}
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
+                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                        {t('country_code')}
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {driver && driver?.country_code ? driver?.country_code : t('n_a')}
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
+                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                        {t('locale')}
+                      </Box>
+                      <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
+                        :
+                      </Box>
+                      <Box component="span" sx={{ flex: 1 }}>
+                        {driver && driver?.locale ? driver?.locale : t('n_a')}
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', width: '100%', mb: 1 }}>
+                      <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
+                        {t('dob')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -437,12 +429,13 @@ const RefundDetailsComponent = () => {
                       <Box component="span" sx={{ flex: 1 }}>
                         {driver && driver.dob
                           ? new Date(driver.dob).toLocaleDateString()
-                          : t('n/a')}
+                          : t('n_a')}
                       </Box>
                     </Box>
+
                     <Box sx={{ display: 'flex', width: '100%', mb: 1, alignItems: 'center' }}>
                       <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                        Active
+                        {t('active')}
                       </Box>
                       <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                         :
@@ -455,7 +448,7 @@ const RefundDetailsComponent = () => {
                             disabled
                           />
                         ) : (
-                          t('n/a')
+                          t('n_a')
                         )}
                       </Box>
                     </Box>
@@ -482,48 +475,49 @@ const RefundDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Package Details:
+                  {t('package_details')}:
                 </Typography>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Package Name
+                    {t('package_name')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n/a')}
+                    {pkg?.package_translations[0]?.name || t('n_a')}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Number of Sessions
+                    {t('number_of_sessions')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.number_of_sessions || t('n/a')}
+                    {pkg?.number_of_sessions || t('n_a')}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    School
+                    {t('school')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
+                    {pkg?.vendor?.vendor_translations[0]?.name || t('n_a')}
                   </Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
         )}
+
         {/* Pickup Location */}
         {value === 0 && (
           <Grid item xs={12} md={6}>
@@ -540,62 +534,63 @@ const RefundDetailsComponent = () => {
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
               >
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Pickup Location:
+                  {t('pickup_location')}:
                 </Typography>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Label
+                    {t('label')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.label || t('n/a')}
+                    {pickup_location?.label || t('n_a')}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Address
+                    {t('address')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.address || t('n/a')},{' '}
-                    {pickup_location?.building_name || t('n/a')},{' '}
-                    {pickup_location?.plot_number || t('n/a')}
+                    {pickup_location?.address || t('n_a')},{' '}
+                    {pickup_location?.building_name || t('n_a')},{' '}
+                    {pickup_location?.plot_number || t('n_a')}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    City
+                    {t('city')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pickup_location?.city || t('n/a')}
+                    {pickup_location?.city || t('n_a')}
                   </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Phone
+                    {t('phone')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    <Phone fontSize="small" /> {pickup_location?.phone_number || t('n/a')}
+                    <Phone fontSize="small" /> {pickup_location?.phone_number || t('n_a')}
                   </Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
         )}
+
         {value === 1 && (
           <Grid item xs={12} md={6}>
             <Card
@@ -605,15 +600,16 @@ const RefundDetailsComponent = () => {
                 minHeight: cardHeight,
                 minWidth: 400,
                 overflow: 'auto',
-                position: 'relative', // Added for positioning the icon
+                position: 'relative',
               }}
             >
               <CardContent
                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}
               >
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Payment Information:
+                  {t('payment_information')}
                 </Typography>
+
                 <Box sx={{ display: 'flex', ml: 5 }}>
                   <Button
                     color={
@@ -632,9 +628,10 @@ const RefundDetailsComponent = () => {
                     {bookingDetails.payment_status}
                   </Button>
                 </Box>
+
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, mt: 7, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Booking Method
+                    {t('booking_method')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -646,29 +643,31 @@ const RefundDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Due
+                    {t('amount_due')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.amount_due || t('n/a')}`} {/* Format to currency */}
+                    {`$${bookingDetails?.amount_due || t('n/a')}`}
                   </Box>
                 </Box>
+
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Discount
+                    {t('discount')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {`$${bookingDetails?.discount || t('n/a')}`} {/* Format to currency */}
+                    {`$${bookingDetails?.discount || t('n/a')}`}
                   </Box>
                 </Box>
+
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Paid
+                    {t('amount_paid')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -680,7 +679,7 @@ const RefundDetailsComponent = () => {
 
                 <Box sx={{ display: 'flex', width: '100%', mb: 1, ml: 5 }}>
                   <Box component="span" sx={{ minWidth: '170px', fontWeight: 'bold' }}>
-                    Amount Refunded
+                    {t('amount_refunded')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '10px', fontWeight: 'bold' }}>
                     :
@@ -708,10 +707,10 @@ const RefundDetailsComponent = () => {
             >
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
-                  Booking Summary:
+                  {t('booking_summary')}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Total Amount:
+                  {t('total_amount')}
                 </Typography>
                 <Typography sx={{ fontWeight: '500' }}>
                   {bookingDetails.sub_total ? `$${bookingDetails.sub_total}` : t('n/a')}
@@ -720,13 +719,13 @@ const RefundDetailsComponent = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Booking ID</TableCell>
-                        <TableCell>Session No</TableCell>
-                        <TableCell>Session Status</TableCell>
-                        <TableCell>Rating</TableCell>
-                        <TableCell>Start Time</TableCell>
-                        <TableCell>End Time</TableCell>
-                        <TableCell>Session Type</TableCell>
+                        <TableCell>{t('booking_id')}</TableCell>
+                        <TableCell>{t('session_no')}</TableCell>
+                        <TableCell>{t('session_status')}</TableCell>
+                        <TableCell>{t('rating')}</TableCell>
+                        <TableCell>{t('start_time')}</TableCell>
+                        <TableCell>{t('end_time')}</TableCell>
+                        <TableCell>{t('session_type')}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -734,7 +733,6 @@ const RefundDetailsComponent = () => {
                         <TableRow key={session?.id || t('n/a')}>
                           <TableCell>{session?.booking_id || t('n/a')}</TableCell>
                           <TableCell>{session?.session_no || t('n/a')}</TableCell>
-
                           <TableCell>{session?.session_status || t('n/a')}</TableCell>
                           <TableCell>
                             {session.user_rating ? (
@@ -755,7 +753,6 @@ const RefundDetailsComponent = () => {
                               t('n/a')
                             )}
                           </TableCell>
-
                           <TableCell>
                             {session?.start_time
                               ? moment(session?.start_time)
