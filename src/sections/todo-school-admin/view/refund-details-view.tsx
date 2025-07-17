@@ -496,7 +496,8 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n/a')}
+                    {pkg?.package_translations?.find((item) => item?.locale === i18n.language)
+                      ?.name || t('n/a')}
                   </Box>
                 </Box>
 
@@ -520,7 +521,9 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
+                    {pkg?.vendor?.vendor_translations?.find(
+                      (item) => item?.locale === i18n.language
+                    )?.name || t('n/a')}{' '}
                   </Box>
                 </Box>
               </CardContent>
