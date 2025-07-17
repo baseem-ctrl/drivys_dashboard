@@ -190,6 +190,7 @@
   "refund_status": "حالة الاسترداد",
   "created": "تم الإنشاء",
   "status": "الحالة",
+  "verification_status": "الحالة",
   "all": "الكل",
   "approved": "تم الموافقة",
   "trainer": "المدرب",
@@ -269,6 +270,8 @@
   "user_preferences": "تفضيلات المستخدم",
   "area": "المنطقة",
   "gear": "ناقل الحركة",
+  "gear_type": "ناقل الحركة",
+
   "gender": "الجنس",
   "school_commission_trainer": "عمولة المدرسة (تفضيل المدرب)",
   "vehicle_type": "نوع المركبة",
@@ -1136,6 +1139,7 @@
   "rescheduling_flexibility": "مرونة إعادة الجدولة",
   "payout_list": "قائمة المدفوعات",
   "assistant": "مساعد",
+  "ASSISTANT": "مساعد",
   "amount": "المبلغ",
   "remarks": "ملاحظات",
   "select_package": "اختر الباقة",
@@ -1265,5 +1269,9 @@
   "school_revenue": "إيرادات المدرسة",
   "revenue_report_list": "قائمة تقارير الإيرادات",
   "revenue_report": "تقرير الإيرادات",
-  "revenue_by_trainer": "الإيرادات حسب المدرب"
+  "revenue_by_trainer": "الإيرادات حسب المدرب",
+  "select_locale": "اختر اللغة",
+  "show_all_published": "عرض جميع المنشورات",
+  "show_all_unpublished": "عرض جميع غير المنشورات",
+  "display_order_id": "معرّف ترتيب العرض"
 }

@@ -18,7 +18,7 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
   });
   const datePickerRef = useRef<HTMLDivElement>(null);
   const clearFilterClicked = useRef(false);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
@@ -103,7 +103,7 @@ export default function RevenueReportFilter({ filters, onFilters }: any) {
         value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         onChange={(event, newValue) => handleFilterCategory(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
         sx={{ minWidth: 180 }}
       />
 

@@ -226,7 +226,7 @@ const EditableForm: React.FC = () => {
               onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
               loading={schoolLoading}
               renderInput={(params) => (
-                <TextField {...params} label="Default School" placeholder="Select School" />
+                <TextField {...params} label="Default School" placeholder={t('Select School')} />
               )}
               renderOption={(props, option) => (
                 <li {...props} key={option.value}>

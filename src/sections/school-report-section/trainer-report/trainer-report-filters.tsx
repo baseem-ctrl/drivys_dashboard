@@ -31,7 +31,7 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     user_types: 'TRAINER',
   });
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
@@ -127,7 +127,7 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
           value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           onChange={(event, newValue) => handleFilterCategory(newValue)}
-          renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+          renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
           sx={{ minWidth: 180 }}
         />
       </Box>
@@ -140,7 +140,7 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
           value={schoolOptions.find((opt) => opt.value === filters.school_id) || null}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           onChange={(event, newValue) => handleFilterSchool(newValue)}
-          renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+          renderInput={(params) => <TextField placeholder={...params} />}
           renderOption={(props, option) => (
             <li {...props} key={option.value}>
               {option.label}

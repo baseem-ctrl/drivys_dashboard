@@ -16,7 +16,7 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     endDate: new Date(),
     key: 'selection',
   });
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const datePickerRef = useRef<HTMLDivElement>(null);
   const clearFilterClicked = useRef(false);
@@ -144,7 +144,7 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
           value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           onChange={(event, newValue) => handleFilterCategory(newValue)}
-          renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+          renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
           sx={{ minWidth: 180 }}
         />
       </Box>

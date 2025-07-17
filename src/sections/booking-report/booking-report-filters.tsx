@@ -42,7 +42,7 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
     bookingStatusValidating,
     revalidateBookingStatusEnum,
   } = useGetBookingStatusEnum();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
@@ -122,13 +122,13 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
   const renderPaymentStatus = (
     <Stack>
       <FormControl fullWidth variant="outlined">
-        <InputLabel id="booking-status-label">Booking Status</InputLabel>
+        <InputLabel id="booking-status-label">{t('booking_status')}</InputLabel>
         <Select
           labelId="booking-status-label"
           id="booking-status"
           value={filters?.booking_status ?? ''}
           onChange={(e) => handleFilterPaymentStatus(Number(e.target.value))}
-          label="Booking Status"
+          label={t('booking_status')}
         >
           {bookingStatusEnum?.map((status) => (
             <MenuItem key={status.value} value={status.value}>
@@ -143,13 +143,13 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
   const renderPaymentMethod = (
     <Stack>
       <FormControl fullWidth variant="outlined">
-        <InputLabel id="payment-method-label">Payment Method</InputLabel>
+        <InputLabel id="payment-method-label">{t('payment_method')}</InputLabel>
         <Select
           labelId="payment-method-label"
           id="payment-method"
           value={filters?.payment_method ?? ''}
           onChange={(e) => handleFilterPaymentMethod(Number(e.target.value))}
-          label="Payment Method"
+          label={t('payment_method')}
         >
           {paymentMethodEnum?.map((method) => (
             <MenuItem key={method.value} value={method.value}>
@@ -180,7 +180,7 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
         value={categoryOptions.find((opt) => opt.value === filters.category_id) || null}
         isOptionEqualToValue={(option, value) => option.value === value.value}
         onChange={(event, newValue) => handleFilterCategory(newValue)}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
       />
 
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -196,7 +196,7 @@ export default function BookingReportFilter({ filters, onFilters }: any) {
             '&:hover': { backgroundColor: '#e0e0e0', borderColor: '#aaa' },
           }}
         >
-          Select Date
+          {t('select_date')}
         </Button>
         {(filters.startDate ||
           filters.endDate ||

@@ -99,7 +99,7 @@ export default function BookingFilters({
         onChange={(event, newValue) =>
           handleFilterChange('category_id', newValue ? newValue.value : null)
         }
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}

@@ -48,7 +48,7 @@ export default function RefundFilters({
   canReset,
   onResetFilters,
 }: Props) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { category } = useGetAllCategory({
     limit: 1000,
@@ -132,7 +132,7 @@ export default function RefundFilters({
           handleFilterChange('category_id', newValue?.value);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select Category" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select Category')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}

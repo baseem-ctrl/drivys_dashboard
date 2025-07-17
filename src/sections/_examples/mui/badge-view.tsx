@@ -11,6 +11,7 @@ import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import ComponentBlock from '../component-block';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -115,7 +116,7 @@ export default function BadgeView() {
             </Badge>
           </ComponentBlock>
 
-          <ComponentBlock title="Status">
+          <ComponentBlock title={t('Status')}>
             {STATUS.map((status) => (
               <Badge
                 key={status}

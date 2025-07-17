@@ -12,6 +12,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { enUS } from 'date-fns/locale';
 import '../overview/e-commerce/view/CustomDateRangePicker.css';
+import { useLocales } from 'src/locales';
 
 export default function BookingTableToolbar({
   filters,
@@ -30,6 +31,7 @@ export default function BookingTableToolbar({
     endDate: new Date(),
     key: 'selection',
   });
+  const { t } = useLocales();
 
   const handleSelect = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
@@ -128,7 +130,7 @@ export default function BookingTableToolbar({
           onChange={(event, newValue) => handleChange('vendor')(newValue?.value || '')}
           renderInput={(params) => (
             <TextField
-              placeholder="Select School"
+              placeholder={t('Select School')}
               {...params}
               onChange={(e) => setSearch(e.target.value)}
               fullWidth
