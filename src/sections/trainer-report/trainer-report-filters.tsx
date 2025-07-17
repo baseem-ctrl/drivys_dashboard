@@ -140,7 +140,7 @@ export default function TrainerReportFilter({ filters, onFilters }: any) {
           value={schoolOptions.find((opt) => opt.value === filters.school_id) || null}
           isOptionEqualToValue={(option, value) => option.value === value.value}
           onChange={(event, newValue) => handleFilterSchool(newValue)}
-          renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+          renderInput={(params) => <TextField placeholder={t('Select School')} {...params} />}
           renderOption={(props, option) => (
             <li {...props} key={option.value}>
               {option.label}

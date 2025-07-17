@@ -223,7 +223,7 @@ export default function TrainerFilters({
         getOptionLabel={(option) => option.label}
         value={!filters.vendor_id || filters.vendor_id === undefined ? '' : filters.vendor_id}
         onChange={(event, newValue) => handleFilterChange('vendor_id', newValue)}
-        renderInput={(params) => <TextField placeholder="Select School" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select School')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
