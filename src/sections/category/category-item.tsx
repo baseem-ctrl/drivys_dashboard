@@ -55,6 +55,7 @@ import ImagesPerCategoryView from './get-images-dialog';
 import { RHFAutocomplete, RHFSelect, RHFTextField } from 'src/components/hook-form';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useGetAllLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -87,6 +88,7 @@ export default function JobItem({
   const viewImages = useBoolean();
   const deletecustomer = useBoolean();
   const { t } = useLocales();
+  const { i18n } = useTranslation();
 
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
@@ -94,10 +96,12 @@ export default function JobItem({
   const [selectedImageIds, setSelectedImageIds] = useState([]);
   const [localeOptions, setLocaleOptions] = useState([]);
 
-  //To set english as the 1st display language if present or the first available lang
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
     const translations = category?.category_translations || [];
-    return translations.find((trans) => trans.locale.toLowerCase() === 'en')?.locale;
+    return (
+      translations.find((trans) => trans.locale.toLowerCase() === i18n.language.toLowerCase())
+        ?.locale || translations[0]?.locale
+    );
   });
 
   const [isSubmittingImage, setIsSubmitting] = useState(false);
