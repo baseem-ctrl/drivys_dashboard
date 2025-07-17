@@ -2,6 +2,7 @@ import React from 'react';
 import { TableRow, TableCell, Typography, IconButton, Stack, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTranslation } from 'react-i18next';
 
 type RolesTableRowProps = {
   row: {
@@ -14,6 +15,8 @@ type RolesTableRowProps = {
 };
 
 export default function RolesTableRow({ row, onEdit, onDelete }: RolesTableRowProps) {
+  const { t } = useTranslation();
+
   return (
     <TableRow hover sx={{ '&:last-child td': { borderBottom: 0 } }}>
       <TableCell>
@@ -23,7 +26,7 @@ export default function RolesTableRow({ row, onEdit, onDelete }: RolesTableRowPr
           textTransform="capitalize"
           color="text.primary"
         >
-          {row?.name || 'N/A'}
+          {row?.name || t('n/a')}
         </Typography>
       </TableCell>
 

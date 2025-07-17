@@ -16,6 +16,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { createOrUpdateDialect } from 'src/api/dialect';
 import { LoadingButton } from '@mui/lab';
 import { useSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editedDialect, setEditedDialect] = useState(dialect);
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -94,7 +96,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.language_name ?? 'N/A'}
+                          {dialect.language_name ?? t('n/a')}
                         </Box>
                       </Box>
 
@@ -106,7 +108,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.dialect_name ?? 'N/A'}
+                          {dialect.dialect_name ?? t('n/a')}
                         </Box>
                       </Box>
 
@@ -118,7 +120,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.keywords ?? 'N/A'}
+                          {dialect.keywords ?? t('n/a')}
                         </Box>
                       </Box>
 
@@ -130,7 +132,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.description ?? 'N/A'}
+                          {dialect.description ?? t('n/a')}
                         </Box>
                       </Box>
 
@@ -162,7 +164,8 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.created_by_user.name ?? 'N/A'} ({dialect.created_by_user.email})
+                          {dialect.created_by_user.name ?? t('n/a')} (
+                          {dialect.created_by_user.email})
                         </Box>
                       </Box>
 
@@ -174,7 +177,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                           :
                         </Box>
                         <Box component="span" sx={{ flex: 1 }}>
-                          {dialect.order ?? 'N/A'}
+                          {dialect.order ?? t('n/a')}
                         </Box>
                       </Box>
                     </Stack>
@@ -207,7 +210,8 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {dialect.created_by_user.country_code}-{dialect.created_by_user.phone ?? 'N/A'}
+                    {dialect.created_by_user.country_code}-
+                    {dialect.created_by_user.phone ?? t('n/a')}
                   </Box>
                 </Box>
 
@@ -219,7 +223,7 @@ export default function DialectDetails({ onEdit, dialect, reload, setSelectedDia
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {dialect.created_by_user.user_type ?? 'N/A'}
+                    {dialect.created_by_user.user_type ?? t('n/a')}
                   </Box>
                 </Box>
 

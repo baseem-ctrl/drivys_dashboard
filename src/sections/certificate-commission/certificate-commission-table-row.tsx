@@ -78,11 +78,11 @@ export default function CertificateCommissionRow({ reload, row }: StudentReviewR
               : ''
           }
         >
-          {vendor_name || 'N/A'}
+          {vendor_name || t('n/a')}
         </Typography>
       </TableCell>
-      <TableCell>{max_commission || 'N/A'}%</TableCell>
-      <TableCell>{min_commission || 'N/A'}%</TableCell>
+      <TableCell>{max_commission || t('n/a')}%</TableCell>
+      <TableCell>{min_commission || t('n/a')}%</TableCell>
       <TableCell>
         {isEditing ? (
           <TextField

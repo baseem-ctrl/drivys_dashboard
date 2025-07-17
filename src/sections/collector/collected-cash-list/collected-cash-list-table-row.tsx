@@ -16,6 +16,7 @@ import { Typography } from '@mui/material';
 import axios from 'axios';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface RowProps {
   trainer_id: number;
@@ -36,6 +37,7 @@ interface CollectedCashListRowProps {
 const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
   const [isOpen, setIsOpen] = useState(false); // To manage the visibility of the detailed table
   const [transactionData, setTransactionData] = useState<any[]>([]); // Data for the detailed table
+  const { t } = useTranslation();
 
   // Function to fetch transaction data based on trainer_id
   const fetchTransactionData = async (trainerId: number) => {
@@ -92,20 +94,20 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
             },
           }}
         >
-          <Typography variant="body2">{row?.trainer_name || 'N/A'}</Typography>
+          <Typography variant="body2">{row?.trainer_name || t('n/a')}</Typography>
         </TableCell>
         <TableCell>
-          {typeof row?.collected_amount === 'number' ? row.collected_amount.toFixed(2) : 'N/A'}
+          {typeof row?.collected_amount === 'number' ? row.collected_amount.toFixed(2) : t('n/a')}
         </TableCell>
         <TableCell>
           {row?.last_collected_at
             ? moment(row.last_collected_at, 'HH:mm:ss dddd YYYY-MM-DD').format(
                 'DD MMM YYYY, hh:mm A'
               )
-            : 'N/A'}
+            : t('n/a')}
         </TableCell>
-        <TableCell>{row?.total_number_of_bookings || 'N/A'}</TableCell>
-        <TableCell>{row?.remarks ?? 'N/A'}</TableCell>
+        <TableCell>{row?.total_number_of_bookings || t('n/a')}</TableCell>
+        <TableCell>{row?.remarks ?? t('n/a')}</TableCell>
       </TableRow>
 
       {isOpen && transactionData && transactionData.length > 0 && (
@@ -136,12 +138,12 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
                       <TableCell>
                         {moment(transaction.created_at, 'HH:mm:ss dddd YYYY-MM-DD').format(
                           'DD MMM YYYY, hh:mm A'
-                        ) ?? 'N/A'}
+                        ) ?? t('n/a')}
                       </TableCell>
 
                       <TableCell>
                         <Chip
-                          label={transaction.payment_method ?? 'N/A'}
+                          label={transaction.payment_method ?? t('n/a')}
                           color="primary"
                           variant="soft"
                           size="small"
@@ -150,7 +152,7 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
 
                       <TableCell>
                         <Chip
-                          label={transaction.payment_status ?? 'N/A'}
+                          label={transaction.payment_status ?? t('n/a')}
                           color={transaction.payment_status === 'PAID' ? 'success' : 'error'}
                           variant="soft"
                           size="small"
@@ -158,7 +160,7 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
                       </TableCell>
 
                       <TableCell>
-                        <Typography variant="body2">{transaction.remarks ?? 'N/A'}</Typography>
+                        <Typography variant="body2">{transaction.remarks ?? t('n/a')}</Typography>
                       </TableCell>
                     </TableRow>
                   ))}

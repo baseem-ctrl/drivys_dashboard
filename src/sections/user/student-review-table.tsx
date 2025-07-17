@@ -16,6 +16,7 @@ import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { deleteReview } from 'src/api/review';
 import { useSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 type Review = {
   session_id: number;
@@ -43,6 +44,7 @@ type Props = {
 const StudentReviewsTable: React.FC<Props> = ({ students }) => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const handleBookingClick = (booking_id) => {
     router.push(paths.dashboard.booking.details(booking_id));
@@ -145,7 +147,7 @@ const StudentReviewsTable: React.FC<Props> = ({ students }) => {
                         )}
                       </Box>
                     ) : (
-                      'N/A'
+                      t('n/a')
                     )}
                   </TableCell>
                   <TableCell>{review?.driver_comments || 'No Comments'}</TableCell>

@@ -86,7 +86,7 @@ export default function BookingTableRow({
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell

@@ -28,6 +28,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { updateValue } from 'src/api/app-settings';
 import { enqueueSnackbar, useSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ type Props = {
 
 export default function AppSettingTableRow({ row, reload }: Props) {
   const { key, value, id } = row;
+  const { t } = useTranslation();
 
   const confirm = useBoolean();
 
@@ -139,7 +141,7 @@ export default function AppSettingTableRow({ row, reload }: Props) {
               )}
             />
           ) : (
-            String(value) || 'N/A'
+            String(value) || t('n/a')
           )}
         </TableCell>
 

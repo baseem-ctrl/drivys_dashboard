@@ -10,9 +10,11 @@ import { Link } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import { Chip, Stack } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function SchoolReportsRow({ row }) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSchoolDetails = (id) => {
     router.push(paths.dashboard.school.details(id));
@@ -48,10 +50,10 @@ export default function SchoolReportsRow({ row }) {
           }}
           onClick={() => handleSchoolDetails(row['School ID'])}
         >
-          {row['School Name'] || 'N/A'}
+          {row['School Name'] || t('n/a')}
         </Typography>
       </TableCell>
-      <TableCell>{row['Trainers Count'] ?? 'N/A'}</TableCell>
+      <TableCell>{row['Trainers Count'] ?? t('n/a')}</TableCell>
 
       <TableCell>
         <Stack direction="row" alignItems="center" spacing={1}>

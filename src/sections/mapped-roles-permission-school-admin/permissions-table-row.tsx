@@ -1,5 +1,6 @@
 import React from 'react';
 import { TableRow, TableCell, Typography, Chip, Stack } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type PermissionTableRowProps = {
   row: {
@@ -24,6 +25,8 @@ type PermissionTableRowProps = {
 };
 
 export default function PermissionTableRow({ row, reload }: PermissionTableRowProps) {
+  const { t } = useTranslation();
+
   const accessRights: string[] = [];
   if (row.create) accessRights.push('Create');
   if (row.read) accessRights.push('Read');
@@ -34,7 +37,7 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
     <TableRow hover sx={{ '&:last-child td': { borderBottom: 0 } }}>
       <TableCell>
         <Typography variant="subtitle2" fontWeight={600} textTransform="capitalize">
-          {row.role?.name || 'N/A'}
+          {row.role?.name || t('n/a')}
         </Typography>
         <Typography variant="caption" color="text.secondary">
           {row.role?.description || '-'}
@@ -43,7 +46,7 @@ export default function PermissionTableRow({ row, reload }: PermissionTableRowPr
 
       <TableCell>
         <Typography variant="subtitle2" fontWeight={600} textTransform="capitalize">
-          {row.permission?.name || 'N/A'}
+          {row.permission?.name || t('n/a')}
         </Typography>
         <Typography variant="caption" color="text.secondary">
           {row.permission?.description || '-'}

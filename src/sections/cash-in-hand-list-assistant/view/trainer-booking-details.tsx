@@ -144,9 +144,9 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
         <Tooltip
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
-              <Typography variant="body1">{details?.name ?? 'N/A'}</Typography>
+              <Typography variant="body1">{details?.name ?? t('n/a')}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {details?.email ?? 'N/A'}
+                {details?.email ?? t('n/a')}
               </Typography>
             </Box>
           }
@@ -480,7 +480,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                   <TableCell>
                     {item?.processed_at
                       ? moment(item.processed_at).format('DD MMM YYYY, HH:mm A')
-                      : 'N/A'}
+                      :  t('n/a')}
                   </TableCell>
 
                   <TableCell>
@@ -491,7 +491,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                         style={{ width: '60px', height: 'auto', borderRadius: '4px' }}
                       />
                     ) : (
-                      'N/A'
+                       t('n/a')
                     )}
                   </TableCell>
 
@@ -512,7 +512,7 @@ export const BookingDetailsCashInHandTable: React.FC<{}> = () => {
                         size="small"
                       />
                     ) : (
-                      'N/A'
+                       t('n/a')
                     )}
                   </TableCell>
                 </TableRow>

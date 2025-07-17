@@ -35,7 +35,7 @@ export default function UserCard({ student }: Props) {
   const theme = useTheme();
   const { user } = useAuthContext();
   const router = useRouter();
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const {
     id,
@@ -107,7 +107,7 @@ export default function UserCard({ student }: Props) {
         </Link>
 
         {locale !== 'undefined' && locale && (
-          <Label color="info">{(locale === 'undefined' ? '' : locale) ?? 'N/A'}</Label>
+          <Label color="info">{(locale === 'undefined' ? '' : locale) ?? t('n/a')}</Label>
         )}
       </Stack>
 
@@ -136,7 +136,7 @@ export default function UserCard({ student }: Props) {
       >
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            {t("Date of birth")}
+            {t('Date of birth')}
           </Typography>
           <Typography
             variant="caption"
@@ -149,7 +149,7 @@ export default function UserCard({ student }: Props) {
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            {t("Phone")}
+            {t('Phone')}
           </Typography>
           <Typography
             variant="caption"
@@ -162,7 +162,7 @@ export default function UserCard({ student }: Props) {
 
         <div>
           <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.secondary' }}>
-            {t("Gender")}
+            {t('Gender')}
           </Typography>
           <Typography
             variant="caption"

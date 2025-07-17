@@ -346,7 +346,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            email || 'N/A'
+            email || t('n/a')
           )}
         </TableCell>
 
@@ -368,7 +368,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            phone_number || 'N/A'
+            phone_number || t('n/a')
           )}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -392,7 +392,7 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            certificate_commission_in_percentage || 'N/A'
+            certificate_commission_in_percentage || t('n/a')
           )}
         </TableCell>
 
@@ -429,7 +429,7 @@ export default function SchoolTableRow({
               {status}
             </Label>
           ) : (
-            'N/A'
+            t('n/a')
           )}
         </TableCell>
         <TableCell>

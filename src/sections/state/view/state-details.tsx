@@ -1,10 +1,13 @@
 import { Typography, Box, Stack, Card, Grid } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
 export default function StateDetails({ onEdit, state }) {
+  const { t } = useTranslation();
+
   const renderContent = (
     <>
       {state?.translations && state.translations.length > 0 ? (
@@ -35,7 +38,7 @@ export default function StateDetails({ onEdit, state }) {
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {translation.name ?? 'N/A'}
+                              {translation.name ?? t('n/a')}
                             </Box>
                           </Box>
 
@@ -47,7 +50,7 @@ export default function StateDetails({ onEdit, state }) {
                               :
                             </Box>
                             <Box component="span" sx={{ flex: 1 }}>
-                              {translation.locale ?? 'N/A'}
+                              {translation.locale ?? t('n/a')}
                             </Box>
                           </Box>
 

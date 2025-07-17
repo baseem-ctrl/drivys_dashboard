@@ -344,7 +344,7 @@ export default function UserNewEditForm({
       roles:
         currentUser?.roles?.map((r) => ({
           value: r.role?.id,
-          label: r.role?.name || 'N/A',
+          label: r.role?.name || t('n/a'),
         })) || [],
 
       user_type: currentUser?.user_type || '',
@@ -975,7 +975,7 @@ export default function UserNewEditForm({
                   multiple
                   options={roles?.map((role: any) => ({
                     value: role.id,
-                    label: role?.name || 'N/A',
+                    label: role?.name || t('n/a'),
                   }))}
                   loading={rolesLoading}
                 />

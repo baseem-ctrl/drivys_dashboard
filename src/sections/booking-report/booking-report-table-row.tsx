@@ -25,6 +25,7 @@ import { deleteReview, updateReview } from 'src/api/review';
 import { useSnackbar } from 'src/components/snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,7 @@ export default function ReportBookingRow({ reload, row, userType }) {
   const handleRowClick = () => {
     setIsReviewsVisible(!isReviewsVisible);
   };
+  const { t } = useTranslation();
   const [editedComment, setEditedComment] = useState('');
   const [editingState, setEditingState] = useState({});
 
@@ -129,7 +131,7 @@ export default function ReportBookingRow({ reload, row, userType }) {
           }}
           onClick={() => handleUserDetails(row.trainer_id)}
         >
-          {row['School Name'] || 'N/A'}
+          {row['School Name'] || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell>{row['Total Number of Bookings'] || '0'}</TableCell>

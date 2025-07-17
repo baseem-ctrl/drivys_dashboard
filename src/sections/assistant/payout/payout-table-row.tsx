@@ -267,7 +267,7 @@ export default function PayoutRow({ row, selected }: Props) {
               label={t('remarks')}
               value={
                 <Typography variant="body2" fontStyle="italic" color="text.secondary">
-                  {row.booking.assistant_payment_proof.remarks || 'N/A'}
+                  {row.booking.assistant_payment_proof.remarks || t('n/a')}
                 </Typography>
               }
             />

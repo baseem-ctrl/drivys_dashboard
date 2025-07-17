@@ -168,7 +168,7 @@ export default function RefundTableRow({
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
@@ -184,7 +184,7 @@ export default function RefundTableRow({
           }
         }}
       >
-        {row?.booking?.id || 'N/A'}
+        {row?.booking?.id || t('n/a')}
       </TableCell>
       <TableCell>
         <Typography
@@ -222,7 +222,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row?.booking?.booking_status || 'N/A'}
+          {row?.booking?.booking_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -236,7 +236,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row.booking?.payment_status || 'N/A'}
+          {row.booking?.payment_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -249,7 +249,7 @@ export default function RefundTableRow({
       </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
-      <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
+      <TableCell>{row.reason ? row?.booking?.refund_reason : t('n/a')}</TableCell>
       <TableCell>
         <Tooltip title={refundStatus === 'approved' ? 'You can process the refund now' : ''} arrow>
           <div style={{ display: 'flex', alignItems: 'center' }}>

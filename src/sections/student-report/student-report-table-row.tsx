@@ -7,9 +7,11 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function StudentReportsRow({ row }) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleStudentDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
@@ -45,12 +47,12 @@ export default function StudentReportsRow({ row }) {
           }}
           onClick={() => handleStudentDetails(row['Student ID'])}
         >
-          {row['Student Name'] || 'N/A'}
+          {row['Student Name'] || t('n/a')}
         </Typography>
       </TableCell>
       <TableCell>{row['Total Sessions'] ?? '0'}</TableCell>
       <TableCell>{row['Completed Sessions'] ?? '0'}</TableCell>
-      <TableCell>{row['Category'] ?? 'N/A'}</TableCell>
+      <TableCell>{row['Category'] ?? t('n/a')}</TableCell>
       <TableCell>
         {' '}
         <span className="dirham-symbol">&#x00EA;</span>

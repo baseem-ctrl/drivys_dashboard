@@ -42,7 +42,7 @@ export default function DilectTableRow({
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell>{dialect_name || 'N/A'}</TableCell>
+        <TableCell>{dialect_name || t('n/a')}</TableCell>
         <TableCell>{language_name}</TableCell>
         <TableCell>{description}</TableCell>
         <TableCell>{keywords}</TableCell>
@@ -81,7 +81,7 @@ export default function DilectTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -91,15 +91,15 @@ export default function DilectTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure you want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete?')}
         onConfirm={() => {
           confirm.onFalse();
           onDeleteRow();

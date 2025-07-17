@@ -127,14 +127,14 @@ export default function BookingTableToolbar({
             fullWidth
             options={
               trainerList?.map((trainer: any) => ({
-                label: `${trainer?.user?.name ?? 'N/A'} (${trainer?.user?.email ?? 'N/A'})`,
+                label: `${trainer?.user?.name ?? t('n/a')} (${trainer?.user?.email ?? t('n/a')})`,
                 value: trainer.user_id,
               })) ?? []
             }
             value={
               trainerList
                 ?.map((trainer: any) => ({
-                  label: `${trainer?.user?.name ?? 'N/A'} (${trainer?.user?.email ?? 'N/A'})`,
+                  label: `${trainer?.user?.name ?? t('n/a')} (${trainer?.user?.email ?? t('n/a')})`,
                   value: trainer.user_id,
                 }))
                 .find((item) => item.value === filters.trainer_id) || null

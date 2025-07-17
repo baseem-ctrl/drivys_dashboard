@@ -281,7 +281,7 @@ export default function OverviewEcommerceView() {
     return {
       name: category,
       data: series.map((item) => {
-        const labelData = item.data[index] || { label: 'N/A', data: 0 };
+        const labelData = item.data[index] || { label: t('n/a'), data: 0 };
         return labelData;
       }),
     };

@@ -231,7 +231,7 @@ export default function SchoolPackageListView() {
                           <TableCell>{row?.package_translations[0]?.name}</TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {(row?.number_of_sessions || 'N/A') ?? 'NA'}
+                            {(row?.number_of_sessions || t('n/a')) ?? 'NA'}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>

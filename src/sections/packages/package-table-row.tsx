@@ -255,7 +255,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLanguage || 'NA'
+            selectedLanguage || t('n/a')
           )}
         </TableCell>
 
@@ -293,7 +293,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            number_of_sessions || 'N/A'
+            number_of_sessions || t('n/a')
           )}
         </TableCell>
 
@@ -390,7 +390,7 @@ export default function PackageTableRow({
             ) : drivys_commision || drivys_commision === 0 ? (
               drivys_commision
             ) : (
-              'N/A'
+              t('n/a')
             )}
           </Box>
         </TableCell>
@@ -405,7 +405,7 @@ export default function PackageTableRow({
                 <Select {...field} value={field.value || ''}>
                   {category.map((cat) => (
                     <MenuItem key={cat.id} value={cat.id}>
-                      {cat.category_translations[0]?.name || 'N/A'}
+                      {cat.category_translations[0]?.name || t('n/a')}
                     </MenuItem>
                   ))}
                 </Select>
@@ -416,8 +416,8 @@ export default function PackageTableRow({
               primary={(() => {
                 const selectedCategory = category?.find((cat) => cat.id === row.category_id);
                 return selectedCategory
-                  ? selectedCategory.category_translations[0]?.name || 'N/A'
-                  : 'N/A';
+                  ? selectedCategory.category_translations[0]?.name || t('n/a')
+                  : t('n/a');
               })()}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{

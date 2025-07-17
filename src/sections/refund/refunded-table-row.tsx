@@ -22,6 +22,7 @@ import { updateRefundRequestStatus, updateRequestStatus } from 'src/api/refund';
 import { useGetPaymentRefundStatusEnum, useGetRefundRequestStatusEnum } from 'src/api/enum';
 import { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,7 @@ export default function RefundedTableRow({
   const { enqueueSnackbar } = useSnackbar();
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
+  const { t } = useTranslation();
 
   const mapStatusToValue = (
     statusName: string,
@@ -116,7 +118,7 @@ export default function RefundedTableRow({
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
@@ -132,7 +134,7 @@ export default function RefundedTableRow({
           }
         }}
       >
-        {driver?.name || 'N/A'}
+        {driver?.name || t('n/a')}
       </TableCell>
       <TableCell>
         <Typography
@@ -170,7 +172,7 @@ export default function RefundedTableRow({
               : 'success'
           }
         >
-          {row?.booking_status || 'N/A'}
+          {row?.booking_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -184,7 +186,7 @@ export default function RefundedTableRow({
               : 'success'
           }
         >
-          {row.payment_status || 'N/A'}
+          {row.payment_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -193,7 +195,7 @@ export default function RefundedTableRow({
         {row?.sub_total}
       </TableCell>
       <TableCell>{row?.payment_method}</TableCell>
-      <TableCell>{row.refund_reason ? row.refund_reason : 'N/A'}</TableCell>
+      <TableCell>{row.refund_reason ? row.refund_reason : t('n/a')}</TableCell>
 
       <TableCell>
         {moment(row?.created_at)

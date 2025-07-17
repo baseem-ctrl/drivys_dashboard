@@ -18,7 +18,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { collectCashAdmin } from 'src/api/admin-collector';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 interface RowProps {
   name: any;
@@ -38,6 +38,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
     setTrainerId(id);
@@ -95,7 +96,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           },
         }}
       >
-        <Typography variant="body2">{row?.name ?? 'N/A'}</Typography>
+        <Typography variant="body2">{row?.name ?? t('n/a')}</Typography>
       </TableCell>
 
       <TableCell>
@@ -116,7 +117,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
               {row?.collected_max_cash_in_hand_allowed}
             </>
           ) : (
-            'N/A'
+            t('n/a')
           )}
         </Typography>
       </TableCell>

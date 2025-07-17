@@ -54,7 +54,7 @@ export default function HomeListingTrainers({
   revalidateDetails,
   detailsLoading,
 }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const params = useParams();
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { enqueueSnackbar } = useSnackbar();
@@ -194,7 +194,7 @@ export default function HomeListingTrainers({
       {create && (
         <Stack component={Card} direction="column" spacing={2} sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
-            {t("Add New Trainer")}
+            {t('Add New Trainer')}
           </Typography>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Box rowGap={1} display="grid" gridTemplateColumns="repeat(2, 1fr)" columnGap={2}>
@@ -216,7 +216,7 @@ export default function HomeListingTrainers({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label={t("Search Trainer")}
+                    label={t('Search Trainer')}
                     variant="outlined"
                     InputProps={{
                       ...params.InputProps,
@@ -296,8 +296,8 @@ export default function HomeListingTrainers({
                 </Stack>
                 <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                   {[
-                    { label: 'Name', value: trainerdisplayed?.name ?? 'N/A' },
-                    { label: 'Email', value: trainerdisplayed?.email ?? 'N/A' },
+                    { label: 'Name', value: trainerdisplayed?.name ?? t('n/a') },
+                    { label: 'Email', value: trainerdisplayed?.email ?? t('n/a') },
                     {
                       label: 'Phone Number',
                       value: trainerdisplayed?.country_code

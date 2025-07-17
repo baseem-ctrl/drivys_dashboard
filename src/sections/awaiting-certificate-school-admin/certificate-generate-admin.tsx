@@ -23,7 +23,7 @@ export default function GenerateCertificateForm() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const { users: studentUsers, usersLoading: studentUsersLoading } = useGetUsers({
     page: 0,
@@ -45,7 +45,7 @@ export default function GenerateCertificateForm() {
   const categoryOptions = category?.map((cat) => {
     const firstTranslation = cat.category_translations[0];
     return {
-      label: firstTranslation?.name || 'N/A',
+      label: firstTranslation?.name || t('n/a'),
       value: cat.id,
     };
   });
@@ -57,7 +57,7 @@ export default function GenerateCertificateForm() {
   const cityOptions = city?.map((cityItem) => {
     const firstTranslation = cityItem.city_translations[0];
     return {
-      label: firstTranslation?.name || 'N/A',
+      label: firstTranslation?.name || t('n/a'),
       value: cityItem.id,
     };
   });
@@ -151,7 +151,7 @@ export default function GenerateCertificateForm() {
                   options={studentUsers
                     ?.filter((user) => user.id != null)
                     .map((user) => ({
-                      label: user.name || 'N/A',
+                      label: user.name || t('n/a'),
                       value: user.id,
                     }))}
                   setSearchOwner={setSearchValue}
@@ -167,7 +167,7 @@ export default function GenerateCertificateForm() {
                   options={trainerUsers
                     ?.filter((user) => user.id != null)
                     .map((user) => ({
-                      label: user.name || 'N/A',
+                      label: user.name || t('n/a'),
                       value: user.id,
                     }))}
                   setSearchOwner={setSearchValue}
@@ -207,7 +207,7 @@ export default function GenerateCertificateForm() {
                   placeholder="Search for gear"
                   loading={gearLoading}
                   options={gearData?.map((gear) => ({
-                    label: gear.name || 'N/A',
+                    label: gear.name || t('n/a'),
                     value: gear.id,
                   }))}
                 />

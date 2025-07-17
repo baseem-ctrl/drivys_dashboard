@@ -67,7 +67,7 @@ export default function CityTableRow({
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {max_slot ?? 'N/A'}
+          {max_slot ?? t('n/a')}
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>

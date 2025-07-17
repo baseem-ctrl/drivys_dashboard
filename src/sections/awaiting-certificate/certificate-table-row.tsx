@@ -44,12 +44,12 @@ export default function CertificateRow({ row, reload, path }) {
     <>
       <TableRow hover>
         <TableCell>
-          <Typography variant="body2">{city?.city_translations[0]?.name || 'N/A'}</Typography>
+          <Typography variant="body2">{city?.city_translations[0]?.name || t('n/a')}</Typography>
         </TableCell>
 
-        <TableCell>{gear || 'N/A'}</TableCell>
+        <TableCell>{gear || t('n/a')}</TableCell>
 
-        <TableCell>{request_date || 'N/A'}</TableCell>
+        <TableCell>{request_date || t('n/a')}</TableCell>
         <TableCell>
           {city?.certificate_link ? (
             <a
@@ -74,7 +74,7 @@ export default function CertificateRow({ row, reload, path }) {
               </span>
             </a>
           ) : (
-            'N/A'
+            t('n/a')
           )}
         </TableCell>
 
@@ -85,20 +85,20 @@ export default function CertificateRow({ row, reload, path }) {
               status === 'PENDING'
                 ? 'warning'
                 : status === 'REJECTED'
-                  ? 'error'
-                  : status === 'APPROVED'
-                    ? 'success'
-                    : 'default'
+                ? 'error'
+                : status === 'APPROVED'
+                ? 'success'
+                : 'default'
             }
             style={{ cursor: 'pointer' }}
           >
             {status === 'PENDING'
               ? 'Pending'
               : status === 'REJECTED'
-                ? 'Rejected'
-                : status === 'APPROVED'
-                  ? 'Approved'
-                  : 'N/A'}
+              ? 'Rejected'
+              : status === 'APPROVED'
+              ? 'Approved'
+              : t('n/a')}
           </Label>
         </TableCell>
 
@@ -114,11 +114,11 @@ export default function CertificateRow({ row, reload, path }) {
             }}
             onClick={() => handleTrainerDetails(trainer?.id)}
           >
-            {trainer?.name || 'N/A'}
+            {trainer?.name || t('n/a')}
           </Typography>
         </TableCell>
 
-        <TableCell>{txn?.id || 'N/A'}</TableCell>
+        <TableCell>{txn?.id || t('n/a')}</TableCell>
 
         <TableCell>
           <Typography
@@ -132,13 +132,13 @@ export default function CertificateRow({ row, reload, path }) {
             }}
             onClick={() => handleUserDetails(user?.id)}
           >
-            {user?.name || 'N/A'}
+            {user?.name || t('n/a')}
           </Typography>
         </TableCell>
 
         <TableCell>
           <Typography variant="body2">
-            {vehicle_type?.category_translations[0]?.name || 'N/A'}
+            {vehicle_type?.category_translations[0]?.name || t('n/a')}
           </Typography>
         </TableCell>
 
@@ -187,7 +187,7 @@ export default function CertificateRow({ row, reload, path }) {
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Update Status")}
+          {t('Update Status')}
         </MenuItem>
       </CustomPopover>
     </>

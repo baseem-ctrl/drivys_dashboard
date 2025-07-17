@@ -40,7 +40,7 @@ export default function NotificationFilter({ filters, onFilters }: any) {
           options={userOptions}
           loading={usersLoading}
           value={userOptions.find((item) => item.value === filters.user_id) || null}
-          getOptionLabel={(option) => option.label || 'N/A'}
+          getOptionLabel={(option) => option.label || t('n/a')}
           isOptionEqualToValue={(option, value) => option.value === value?.value}
           onChange={handleUserChange}
           renderInput={(params) => (

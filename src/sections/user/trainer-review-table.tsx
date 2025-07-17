@@ -149,7 +149,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
                             )}
                           </Box>
                         ) : (
-                          'N/A'
+                          t('n/a')
                         )}
                       </TableCell>
                       <TableCell>{review?.user_comments || t('No Comments')}</TableCell>

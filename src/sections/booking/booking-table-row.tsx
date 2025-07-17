@@ -73,7 +73,7 @@ export default function BookingTableRow({
             }
           }}
         >
-          {user?.name || 'N/A'}
+          {user?.name || t('n/a')}
         </Link>
       </TableCell>
       <TableCell
@@ -89,7 +89,7 @@ export default function BookingTableRow({
           }
         }}
       >
-        {driver?.name || 'N/A'}
+        {driver?.name || t('n/a')}
       </TableCell>
       <TableCell>
         <Label
@@ -106,7 +106,7 @@ export default function BookingTableRow({
               : 'success'
           }
         >
-          {row?.booking_status || 'N/A'}
+          {row?.booking_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -124,7 +124,7 @@ export default function BookingTableRow({
               : 'success'
           }
         >
-          {row.payment_status || 'N/A'}
+          {row.payment_status || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>

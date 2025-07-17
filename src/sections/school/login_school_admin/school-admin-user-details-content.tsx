@@ -63,6 +63,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useGetTrainerReview } from 'src/api/review-school-admin';
 import { useAuthContext } from 'src/auth/hooks';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -86,6 +87,7 @@ export default function UserDetailsContentAdmin({
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [showAll, setShowAll] = useState(false);
   const { user } = useAuthContext();
+  const { t } = useTranslation();
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -169,7 +171,7 @@ export default function UserDetailsContentAdmin({
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: 'Name', value: details?.name ?? 'N/A' },
+                { label: 'Name', value: details?.name ?? t('n/a') },
                 { label: 'Email', value: details?.email ?? 'NA' },
                 {
                   label: 'Phone Number',
@@ -189,7 +191,7 @@ export default function UserDetailsContentAdmin({
                         ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
                         : 'NA',
                     }))
-                  : [{ label: 'Languages', value: 'N/A' }]),
+                  : [{ label: 'Languages', value: t('n/a') }]),
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
@@ -198,7 +200,7 @@ export default function UserDetailsContentAdmin({
                           details?.vendor_commission_in_percentage !== undefined &&
                           details?.vendor_commission_in_percentage !== null
                             ? `${details.vendor_commission_in_percentage} %`
-                            : 'N/A',
+                            : t('n/a'),
                       },
                       {
                         label: 'Certificate Commission',
@@ -207,7 +209,7 @@ export default function UserDetailsContentAdmin({
                             undefined &&
                           details?.user_preference?.certificate_commission_in_percentage !== null
                             ? `${details.user_preference.certificate_commission_in_percentage} %`
-                            : 'N/A',
+                            : t('n/a'),
                       },
                     ]
                   : []),
@@ -220,7 +222,7 @@ export default function UserDetailsContentAdmin({
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {item.value ?? 'N/A'}
+                    {item.value ?? t('n/a')}
                   </Box>
                   {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>
@@ -418,7 +420,7 @@ export default function UserDetailsContentAdmin({
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                    {item.value ?? 'N/A'}
+                    {item.value ?? t('n/a')}
                   </Box>
                 </Box>
               ))}
@@ -435,18 +437,18 @@ export default function UserDetailsContentAdmin({
                 {[
                   {
                     label: 'Max Cash Allowed in Hand',
-                    value: details?.max_cash_in_hand_allowed ?? 'N/A',
+                    value: details?.max_cash_in_hand_allowed ?? t('n/a'),
                   },
-                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? 'N/A' },
+                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? t('n/a') },
                   {
                     label: 'Cash Clearance Date',
-                    value: details?.cash_clearance_date ?? 'N/A',
+                    value: details?.cash_clearance_date ?? t('n/a'),
                   },
                   {
                     label: 'Last Booking At',
                     value: details?.last_booking_was
                       ? moment.utc(details?.last_booking_was).format('lll')
-                      : 'N/A',
+                      : t('n/a'),
                   },
                   ,
                 ].map((item, index) => (
@@ -464,7 +466,7 @@ export default function UserDetailsContentAdmin({
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1, marginTop: '15px' }}>
-                      {item.value ?? 'N/A'}
+                      {item.value ?? t('n/a')}
                     </Box>
                   </Box>
                 ))}
@@ -507,11 +509,11 @@ export default function UserDetailsContentAdmin({
             {[
               {
                 label: 'City',
-                value: details?.user_preference?.city?.city_translations[0]?.name ?? 'N/A',
+                value: details?.user_preference?.city?.city_translations[0]?.name ?? t('n/a'),
               },
               {
                 label: 'Area',
-                value: details?.user_preference?.state_province?.translations[0]?.name ?? 'N/A',
+                value: details?.user_preference?.state_province?.translations[0]?.name ?? t('n/a'),
               },
               { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
@@ -537,7 +539,7 @@ export default function UserDetailsContentAdmin({
                   :
                 </Box>
                 <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                  {item.value ?? 'N/A'}
+                  {item.value ?? t('n/a')}
                 </Box>
                 {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
               </Box>
@@ -556,11 +558,11 @@ export default function UserDetailsContentAdmin({
                 {[
                   {
                     label: 'Account Holder Name',
-                    value: details?.bank_detail[0]?.account_holder_name ?? 'N/A',
+                    value: details?.bank_detail[0]?.account_holder_name ?? t('n/a'),
                   },
                   {
                     label: 'Account Number',
-                    value: details?.bank_detail[0]?.account_number ?? 'N/A',
+                    value: details?.bank_detail[0]?.account_number ?? t('n/a'),
                   },
                   { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? 'NA' },
 
@@ -599,7 +601,7 @@ export default function UserDetailsContentAdmin({
                       :
                     </Box>
                     <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                      {item.value ?? 'N/A'}
+                      {item.value ?? t('n/a')}
                     </Box>
                     {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                   </Box>
@@ -630,26 +632,28 @@ export default function UserDetailsContentAdmin({
                 </Typography>
                 {/* Address Details */}
                 {[
-                  { label: 'Address', value: address?.address ?? 'N/A' },
-                  { label: 'Street', value: address?.street ?? 'N/A' },
-                  { label: 'Building Name', value: address?.building_name ?? 'N/A' },
+                  { label: 'Address', value: address?.address ?? t('n/a') },
+                  { label: 'Street', value: address?.street ?? t('n/a') },
+                  { label: 'Building Name', value: address?.building_name ?? t('n/a') },
                   {
                     label: 'City',
                     value:
-                      address?.city ?? address?.city_id_city?.city_translations?.[0]?.name ?? 'N/A',
+                      address?.city ??
+                      address?.city_id_city?.city_translations?.[0]?.name ??
+                      t('n/a'),
                   },
                   {
                     label: 'Area',
                     value: address?.state_province
                       ? address?.state_province?.translations?.[0]?.name
-                      : 'N/A',
+                      : t('n/a'),
                   },
-                  { label: 'Country Code', value: address?.country_code ?? 'N/A' },
-                  { label: 'Label', value: address?.label ?? 'N/A' },
-                  { label: 'Phone Number', value: address?.phone_number ?? 'N/A' },
-                  { label: 'Plot Number', value: address?.plot_number ?? 'N/A' },
-                  { label: 'Country', value: address?.country ?? 'N/A' },
-                  { label: 'Landmark', value: address?.landmark ?? 'N/A' },
+                  { label: 'Country Code', value: address?.country_code ?? t('n/a') },
+                  { label: 'Label', value: address?.label ?? t('n/a') },
+                  { label: 'Phone Number', value: address?.phone_number ?? t('n/a') },
+                  { label: 'Plot Number', value: address?.plot_number ?? t('n/a') },
+                  { label: 'Country', value: address?.country ?? t('n/a') },
+                  { label: 'Landmark', value: address?.landmark ?? t('n/a') },
                 ].map((item, idx) => (
                   <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
                     <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>

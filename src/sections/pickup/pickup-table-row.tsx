@@ -61,7 +61,7 @@ export default function PickupTableRow({
     const city = cities?.find((c) => c.id === id);
     return (
       city?.city_translations?.find((trans) => trans.locale?.toLowerCase() === currentLocale)
-        ?.name ?? 'N/A'
+        ?.name ?? t('n/a')
     );
   };
   return (
@@ -76,7 +76,7 @@ export default function PickupTableRow({
             },
           }}
         >
-          {getCityNameByLocale(city_id) || 'N/A'}
+          {getCityNameByLocale(city_id) || t('n/a')}
         </TableCell>
         <TableCell>{formattedStartDate}</TableCell>
         <TableCell>{formattedEndDate}</TableCell>
