@@ -51,9 +51,9 @@ const displayTypeOptions = [
   { label: 'GRID', value: 'GRID' },
 ];
 export default function HomeListingDetailsContent({ details, loading, reload }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(
-    details?.translations?.length > 0 ? details?.translations[0]?.locale : ''
+    details?.translations?.length > 0 ? i18n.language : ''
   );
   const [editMode, setEditMode] = useState(false);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');

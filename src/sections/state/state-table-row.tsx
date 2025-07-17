@@ -31,7 +31,7 @@ export default function StateTableRow({
   onDeleteRow,
   reload,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id, is_published, order, translations, city } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -41,17 +41,25 @@ export default function StateTableRow({
     setProvinceID(stateId);
     onSelectRow();
   };
+  const activeTranslation =
+    translations.find((t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()) ||
+    translations[0];
+
   return (
     <>
       <TableRow hover selected={selected}>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          {translations[zerothIndex].name}
+          {activeTranslation.name}
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          {translations[zerothIndex].locale}
+          {activeTranslation.locale}
         </TableCell>
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
-          {city?.city_translations[0]?.name}
+          {city?.city_translations?.find(
+            (c: any) => c.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ||
+            city?.city_translations?.[0]?.name ||
+            t('n/a')}
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(translations[zerothIndex].state_province_id)}>
