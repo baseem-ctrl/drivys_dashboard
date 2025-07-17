@@ -33,7 +33,7 @@ type Props = {
 };
 
 export default function CityCreateEditForm({ title, currentCity, open, onClose, reload }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -59,25 +59,27 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     value: lang.language_culture,
     label: lang.name,
   }));
-  const defaultValues = useMemo(
-    () => ({
-      name: currentCity?.city_translations[0]?.name || '',
-      locale: currentCity?.city_translations[0]?.locale || localeOptions[0]?.value,
+  const defaultValues = useMemo(() => {
+    const translated = currentCity?.city_translations?.find(
+      (item) => item?.locale === i18n.language
+    );
+
+    return {
+      name: translated?.name || '',
+      locale: translated?.locale || localeOptions[0]?.value,
       published: currentCity?.is_published === 1 ? true : false,
       is_certificate_available: !!currentCity?.is_certificate_available ?? false,
       certificate_price: currentCity?.certificate_price || 0,
       price_per_km: currentCity?.price_per_km || 0,
       min_price: currentCity?.min_price || 0,
-
       certificate_link: currentCity?.certificate_link || '',
       reschedule_fee: currentCity?.reschedule_fee ?? '',
       max_slot: currentCity?.max_slot ?? '',
-
       free_reschedule_before: currentCity?.free_reschedule_before ?? '',
       free_reschedule_before_type: currentCity?.free_reschedule_before_type ?? '',
-    }),
-    [currentCity]
-  );
+    };
+  }, [currentCity, i18n.language]);
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,

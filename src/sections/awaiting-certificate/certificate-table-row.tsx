@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 export default function CertificateRow({ row, reload, path }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { city, comments, gear, request_date, status, trainer, txn, user, vehicle_type = [] } = row;
   const router = useRouter();
   const popover = usePopover();
@@ -43,9 +43,10 @@ export default function CertificateRow({ row, reload, path }) {
   return (
     <>
       <TableRow hover>
-        <TableCell>
-          <Typography variant="body2">{city?.city_translations[0]?.name || t('n/a')}</Typography>
-        </TableCell>
+        <Typography variant="body2">
+          {city?.city_translations?.find((item) => item?.locale === i18n.language)?.name ||
+            t('n/a')}
+        </Typography>
 
         <TableCell>{gear || t('n/a')}</TableCell>
 

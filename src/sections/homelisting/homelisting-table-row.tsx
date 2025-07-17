@@ -67,7 +67,7 @@ export default function HomeListingTableRow({
   const { translations, catalogue_type, display_order, is_active, id, title, display_type } = row;
   const { language } = useGetAllLanguage(0, 1000);
   const [editingRowId, setEditingRowId] = useState(null);
-  const [selectedLanguage, setSelectedLanguage] = useState(translations?.[0]?.locale ?? '');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language ?? '');
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[0]?.value ?? '');
   const [selectedDisplayType, setSelectedDisplayType] = useState(
     displayTypeOptions[0]?.value ?? ''

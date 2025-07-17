@@ -53,7 +53,7 @@ import { useTranslation } from 'react-i18next';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -492,7 +492,8 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n/a')}
+                    {pkg?.package_translations?.find((item) => item?.locale === i18n.language)
+                      ?.name || t('n/a')}
                   </Box>
                 </Box>
 

@@ -958,7 +958,7 @@ export default function UserDetailsContent({
                                 sx={{ padding: '6px 16px', minWidth: '100px' }}
                                 onClick={handleVerifyClick}
                               >
-                                Verify
+                                {t('verify')}
                               </Button>
 
                               <Popover
