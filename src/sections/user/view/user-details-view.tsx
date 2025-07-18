@@ -27,6 +27,7 @@ import UserProfileView from './user-profile-view';
 import { useGetAddressList } from 'src/api/users';
 import UserDetailsContent from '../user-details-content';
 import { useAuthContext } from 'src/auth/hooks';
+import AssistantUserDetailsContent from '../assistant-user-details-content';
 
 // ----------------------------------------------------------------------
 
@@ -102,14 +103,18 @@ export default function UserDetailsView({ id }: Props) {
         />
       )}
 
-      <UserDetailsContent
-        details={details}
-        addresses={addresses || []}
-        loading={detailsLoading}
-        addressesLoading={addressesLoading}
-        reload={revalidateAddresses}
-        user={user?.user?.user_type}
-      />
+      {user?.user?.user_type !== 'ASSISTANT' ? (
+        <UserDetailsContent
+          details={details}
+          addresses={addresses || []}
+          loading={detailsLoading}
+          addressesLoading={addressesLoading}
+          reload={revalidateAddresses}
+          user={user?.user?.user_type}
+        />
+      ) : (
+        <AssistantUserDetailsContent />
+      )}
     </Container>
   );
 }
