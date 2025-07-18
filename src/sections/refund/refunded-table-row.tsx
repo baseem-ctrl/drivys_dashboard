@@ -89,11 +89,13 @@ export default function RefundedTableRow({
   };
 
   const handleClickDetails = (id) => {
-    router.push(paths.dashboard.booking.details(id));
+    console.log('heyyy');
+    router.push(paths.dashboard.user.details(id));
   };
   const handleClickPackageDetails = (id) => {
     router.push(paths.dashboard.package.details(id));
   };
+  console.log('row?.session?.[0]?.booking_id ', row?.sessions);
 
   return (
     <TableRow hover selected={selected}>
@@ -129,8 +131,23 @@ export default function RefundedTableRow({
         }}
         onClick={(event) => {
           event.stopPropagation();
-          if (row.driver) {
-            handleClickDetails(driver_id);
+          if (row?.sessions[0]?.booking_id) {
+            handleClickPackageDetails(row?.sessions?.[0]?.booking_id);
+          }
+        }}
+      >
+        {row?.sessions?.[0]?.booking_id || t('n/a')}
+      </TableCell>
+      <TableCell
+        sx={{
+          cursor: 'pointer',
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'underline' },
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (row?.driver_details?.driver_id) {
+            handleClickDetails(row?.driver_details?.driver_id);
           }
         }}
       >

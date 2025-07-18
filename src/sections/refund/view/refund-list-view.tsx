@@ -66,6 +66,7 @@ export default function RefundListView() {
     ],
     refunded: [
       { id: 'name', label: t('Customer Name'), width: 180 },
+      { id: 'booking_id', label: t('Booking ID') },
       { id: 'vendorName', label: t('Driver Name'), width: 180 },
       { id: 'packages', label: t('Package'), width: 180 },
       { id: 'orderStatus', label: t('Booking Status'), width: 150 },
