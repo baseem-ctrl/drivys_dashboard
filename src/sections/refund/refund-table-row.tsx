@@ -139,12 +139,12 @@ export default function RefundTableRow({
   };
 
   const handleClickDetails = (id) => {
-    router.push(paths.dashboard.booking.details(id));
+    router.push(paths.dashboard.user.details(id));
   };
   const handleClickPackageDetails = (id) => {
-    router.push(paths.dashboard.package.details(id));
+    router.push(paths.dashboard.booking.details(id));
   };
-
+  console.log('row', row);
   return (
     <TableRow hover selected={selected}>
       <TableCell
@@ -163,12 +163,12 @@ export default function RefundTableRow({
           }}
           onClick={(event) => {
             event.stopPropagation();
-            if (user) {
-              handleClickDetails(user?.id);
+            if (row?.user_id) {
+              handleClickDetails(row?.user_id);
             }
           }}
         >
-          {user?.name || t('n/a')}
+          {user?.name || 'N/A'}
         </Link>
       </TableCell>
       <TableCell
@@ -180,11 +180,11 @@ export default function RefundTableRow({
         onClick={(event) => {
           event.stopPropagation();
           if (row?.booking?.id) {
-            handleClickDetails(row?.booking?.id);
+            handleClickPackageDetails(row?.booking?.id);
           }
         }}
       >
-        {row?.booking?.id || t('n/a')}
+        {row?.booking?.id || 'N/A'}
       </TableCell>
       <TableCell>
         <Typography
@@ -222,7 +222,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row?.booking?.booking_status || t('n/a')}
+          {row?.booking?.booking_status || 'N/A'}
         </Label>
       </TableCell>
       <TableCell>
@@ -236,7 +236,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row.booking?.payment_status || t('n/a')}
+          {row.booking?.payment_status || 'N/A'}
         </Label>
       </TableCell>
       <TableCell>
@@ -251,7 +251,7 @@ export default function RefundTableRow({
       </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
-      <TableCell>{row.reason ? row?.booking?.refund_reason : t('n/a')}</TableCell>
+      <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
       <TableCell>
         <Tooltip
           title={refundStatus === 'approved' ? t('You can process the refund now') : ''}
