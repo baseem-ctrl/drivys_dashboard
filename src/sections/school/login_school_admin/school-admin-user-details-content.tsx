@@ -436,10 +436,26 @@ export default function UserDetailsContentAdmin({
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
                 {[
                   {
-                    label: 'Max Cash Allowed in Hand',
-                    value: details?.max_cash_in_hand_allowed ?? t('n/a'),
+                    label: t('max_cash_allowed_in_hand'),
+                    value: (
+                      <>
+                        {details?.max_cash_in_hand_allowed ?? t('n/a')}{' '}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                      </>
+                    ),
                   },
-                  { label: 'Cash in Hand', value: details?.cash_in_hand ?? t('n/a') },
+
+                  {
+                    label: 'Cash in Hand',
+                    value: details?.cash_in_hand ? (
+                      <>
+                        {details.cash_in_hand} <span className="dirham-symbol">د.إ</span>
+                      </>
+                    ) : (
+                      t('n/a')
+                    ),
+                  },
+
                   {
                     label: 'Cash Clearance Date',
                     value: details?.cash_clearance_date ?? t('n/a'),

@@ -1057,9 +1057,26 @@ export default function UserDetailsContent({
                 {[
                   {
                     label: t('max_cash_allowed_in_hand'),
-                    value: details?.max_cash_in_hand_allowed ?? t('n/a'),
+                    value: details?.max_cash_in_hand_allowed ? (
+                      <>
+                        <span className="dirham-symbol">&#x00EA;</span>{' '}
+                        {details.max_cash_in_hand_allowed}{' '}
+                      </>
+                    ) : (
+                      t('n/a')
+                    ),
                   },
-                  { label: t('cash_in_hand'), value: details?.cash_in_hand ?? t('n/a') },
+                  {
+                    label: t('cash_in_hand'),
+                    value: details?.cash_in_hand ? (
+                      <>
+                        <span className="dirham-symbol">&#x00EA;</span> {details.cash_in_hand}
+                      </>
+                    ) : (
+                      t('n/a')
+                    ),
+                  },
+
                   {
                     label: t('cash_clearance_date'),
 
