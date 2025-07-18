@@ -328,7 +328,7 @@ export default function HomeListingTrainers({
         ) : (
           !create && (
             <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-              No trainer found
+              {t('no_trainer_found')}
             </Typography>
           )
         )

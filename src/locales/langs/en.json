@@ -1254,5 +1254,25 @@
   "Background Color": "Background Color",
   "choose_background_color": "Choose Background Color",
   "reward": "reward",
-  "Rejected Requests": "Rejected Requests"
+  "Rejected Requests": "Rejected Requests",
+  "title_with_locale": "Title ({{locale}})",
+  "no_trainer_found": "No trainer found",
+  "city_name": "City Name",
+  "maximum_slot": "Maximum Slot",
+
+  "certificate_available": "Certificate Available",
+  "certificate_price": "Certificate Price",
+  "certificate_link": "Certificate Link",
+  "reschedule_fee": "Reschedule Fee",
+  "fee_reschedule_before": "Fee Reschedule Before",
+  "fee_reschedule_before_type": "Fee Reschedule Before Type",
+  "hours": "Hours",
+  "days": "Days",
+  "minimum_price": "Minimum Price",
+  "not_available": "N/A",
+  "no_packages_info": "No packages available. Click Add Package to create a new one.",
+  "add_package": "Add Package",
+  "delete_package": "Delete Package",
+  "delete_package_confirmation": "Are you sure you want to delete this package?",
+  "edit_package": "Edit Package"
 }

@@ -244,9 +244,10 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
               <Stack spacing={2} sx={{ flex: 1 }}>
                 {[
                   ...(details?.translations?.length
-                    ? details.translations.map((t) => ({
-                        label: `Title (${t.locale})`,
-                        value: t.title ?? t('n/a'),
+                    ? details.translations.map((translation) => ({
+                        label: t('title_with_locale', { locale: translation.locale }),
+
+                        value: translation.title ?? t('n/a'),
                       }))
                     : [{ label: t('Title'), value: t('n/a') }]),
                   { label: t('Display Order'), value: details?.display_order ?? 'NA' },

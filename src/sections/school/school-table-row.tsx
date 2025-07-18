@@ -69,7 +69,6 @@ export default function SchoolTableRow({
     certificate_commission_in_percentage,
     id,
   } = row;
-
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
   const { schoolAdminList, schoolAdminLoading } = useGetAllSchoolAdmin(1000, 1, i18n.language);
@@ -303,7 +302,13 @@ export default function SchoolTableRow({
               )}
             />
           ) : (
-            selectedLanguage.toUpperCase()
+            <>
+              {row.vendor_translations?.find(
+                (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.locale ||
+                row.vendor_translations[0]?.locale ||
+                t('n/a')}
+            </>
           )}
         </TableCell>
 
@@ -325,7 +330,9 @@ export default function SchoolTableRow({
             <Link color="inherit" sx={{ cursor: 'pointer' }} onClick={onViewRow}>
               {row.vendor_translations?.find(
                 (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || t('n/a')}
+              )?.name ||
+                row.vendor_translations[0]?.name ||
+                t('n/a')}
             </Link>
           )}
         </TableCell>

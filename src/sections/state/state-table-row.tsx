@@ -44,7 +44,6 @@ export default function StateTableRow({
   const activeTranslation =
     translations.find((t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()) ||
     translations[0];
-
   return (
     <>
       <TableRow hover selected={selected}>
