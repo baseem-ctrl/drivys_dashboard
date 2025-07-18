@@ -35,7 +35,7 @@ export default function CityTableRow({
   reload,
   handleCheckboxClick,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { is_published, display_order, city_translations, max_slot } = row;
   const confirm = useBoolean();
   const quickEdit = useBoolean();
@@ -51,6 +51,10 @@ export default function CityTableRow({
     event.stopPropagation();
     handleCheckboxClick(event, row.id);
   };
+  const matchedTranslation =
+    city_translations.find((t) => t.locale.toLowerCase() === i18n.language.toLowerCase()) ||
+    city_translations[0] ||
+    t('n/a');
   return (
     <>
       <TableRow hover selected={selected}>
@@ -60,10 +64,10 @@ export default function CityTableRow({
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].name}
+          {matchedTranslation.name}
         </TableCell>
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>
-          {city_translations[zerothIndex].locale}
+          {matchedTranslation.locale}
         </TableCell>
 
         <TableCell onClick={() => handleRowClick(city_translations[zerothIndex].city_id)}>

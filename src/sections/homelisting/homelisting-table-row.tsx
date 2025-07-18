@@ -185,7 +185,13 @@ export default function HomeListingTableRow({
         {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell> */}
-
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {row.translations.find(
+            (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.locale ||
+            row.translations[0]?.locale ||
+            t('n/a')}
+        </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {row.translations.find(
             (t: any) => t.locale?.toLowerCase() === i18n.language.toLowerCase()

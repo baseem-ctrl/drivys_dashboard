@@ -34,6 +34,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
   const [editMode, setEditMode] = useState('');
   const [selectedPackage, setSelectedPackage] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const handleDeletePackage = async (id) => {
     try {
@@ -93,14 +94,14 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
     setSelectedPackage(null);
     quickEdit.onTrue();
   };
-  const { t } = useTranslation();
+
   return (
     <Box>
       <Grid container justifyContent="flex-end" sx={{ marginBottom: '20px' }}>
         {Array.isArray(packageDetails) && packageDetails.length <= 0 && (
           <Grid item xs={12}>
             <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-              {t('No packages available. Click Add Package to create a new one.')}
+              {t('no_packages_info')}
             </Typography>
           </Grid>
         )}
@@ -186,7 +187,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                       dangerouslySetInnerHTML={{
                         __html: packageItem?.package?.package_translations
                           ? packageItem?.package?.package_translations[0].session_inclusions
-                          : 'NA' || 'No inclusions available',
+                          : t('n/a') || 'No inclusions available',
                       }}
                     />
                   </Stack>

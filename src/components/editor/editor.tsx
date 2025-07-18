@@ -19,6 +19,7 @@ export default function Editor({
   ...other
 }: EditorProps) {
   const { t } = useTranslation();
+
   const modules = {
     toolbar: {
       container: `#${id}`,
@@ -52,7 +53,7 @@ export default function Editor({
         <ReactQuill
           modules={modules}
           formats={formats}
-          placeholder={t("Write something awesome...")}
+          placeholder={t('Write something awesome...')}
           {...other}
         />
       </StyledEditor>

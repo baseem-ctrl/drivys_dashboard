@@ -35,8 +35,9 @@ export default function CityDetails({ onEdit, city }) {
                         <Stack spacing={1} sx={{ width: '100%' }}>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              City Name
+                              {t('city_name')}
                             </Box>
+
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
                             </Box>
@@ -47,7 +48,7 @@ export default function CityDetails({ onEdit, city }) {
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Locale
+                              {t('locale')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -58,7 +59,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Maximum Slot
+                              {t('maximum_slot')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -70,7 +71,7 @@ export default function CityDetails({ onEdit, city }) {
 
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Published
+                              {t('published')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -89,7 +90,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Certificate Available
+                              {t('certificate_available')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -117,7 +118,7 @@ export default function CityDetails({ onEdit, city }) {
                                   component="span"
                                   sx={{ minWidth: '250px', fontWeight: 'bold' }}
                                 >
-                                  Certificate Price
+                                  {t('certificate_price')}
                                 </Box>
                                 <Box
                                   component="span"
@@ -139,7 +140,7 @@ export default function CityDetails({ onEdit, city }) {
                                   component="span"
                                   sx={{ minWidth: '250px', fontWeight: 'bold' }}
                                 >
-                                  Certificate Link
+                                  {t('certificate_link')}
                                 </Box>
                                 <Box
                                   component="span"
@@ -166,7 +167,7 @@ export default function CityDetails({ onEdit, city }) {
                           )}
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Reschedule Fee
+                              {t('reschedule_fee')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -179,7 +180,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Fee Reschedule Before
+                              {t('fee_reschedule_before')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -192,7 +193,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Fee Reschedule Before Type
+                              {t('fee_reschedule_before_type')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -209,7 +210,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Price Per Km
+                              {t('price_per_km')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -222,7 +223,7 @@ export default function CityDetails({ onEdit, city }) {
                           </Box>
                           <Box sx={{ display: 'flex', width: '100%' }}>
                             <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
-                              Minimum Price
+                              {t('minimum_price')}
                             </Box>
                             <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                               :
@@ -243,7 +244,7 @@ export default function CityDetails({ onEdit, city }) {
           ))}
         </Grid>
       ) : (
-        <Typography>No city translations available.</Typography>
+        <Typography> {t('not_available')}</Typography>
       )}
     </>
   );

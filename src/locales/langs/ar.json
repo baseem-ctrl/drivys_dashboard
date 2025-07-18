@@ -1313,5 +1313,7 @@
   "Background Color": "لون الخلفية",
   "choose_background_color": "اختر لون الخلفية",
   "reward": "مكافأة",
-  "Rejected Requests": "الطلبات المرفوضة"
+  "Rejected Requests": "الطلبات المرفوضة",
+  "title_with_locale": " العنوان ({{locale}})",
+  "no_trainer_found": "لا توجد بيانات متاحة"
 }

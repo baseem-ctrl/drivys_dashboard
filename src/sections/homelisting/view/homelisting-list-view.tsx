@@ -72,7 +72,7 @@ export default function HomelistingListView() {
   const { t } = useTranslation();
 
   const TABLE_HEAD = [
-    // { id: 'locale', label: 'Language' },
+    { id: 'locale', label: t('locale') },
     { id: 'title', label: t('Title') },
     // { id: 'description', label: 'Description' },
     { id: 'catalogue_type', label: t('Catalogue type') },

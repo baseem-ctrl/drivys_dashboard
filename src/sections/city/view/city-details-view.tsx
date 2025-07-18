@@ -22,12 +22,13 @@ import CityNewEditForm from '../city-new-edit-form';
 import { paths } from 'src/routes/paths';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { useTable } from 'src/components/table';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function CityDetailsView() {
   const table = useTable({ defaultRowsPerPage: 20 });
-
+  const { t, i18n } = useTranslation();
   const [currentTab, setCurrentTab] = useState('cityDetails');
   const { id } = useParams();
   const { packageCityList, packageCityListLoading, revalidatePackage, totalPages } =
@@ -41,8 +42,8 @@ export default function CityDetailsView() {
   const [openEditPopup, setOpenEditPopup] = useState(false);
 
   const CITY_DETAILS_TABS = [
-    { value: 'cityDetails', label: 'City Details' },
-    { value: 'package', label: 'Package' },
+    { value: 'cityDetails', label: t('city') },
+    { value: 'package', label: t('package') },
   ];
   const handleEditClick = () => {
     setOpenEditPopup(true);
@@ -76,18 +77,19 @@ export default function CityDetailsView() {
       </Box>
     );
   }
+  const localizedTranslation = city?.city_translations?.find(
+    (translation) => translation.locale?.toLowerCase() === i18n.language?.toLowerCase()
+  );
 
+  const cityName = localizedTranslation?.name ?? city?.city_translations?.[0]?.name;
   return (
     <Container maxWidth="lg" sx={{ pb: 4 }}>
       <CustomBreadcrumbs
-        heading="Details"
+        heading={t('Details')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'City',
-            href: paths.dashboard.system.city,
-          },
-          { name: `${city?.city_translations?.[0]?.name}` },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('city'), href: paths.dashboard.system.city },
+          { name: cityName },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -118,7 +120,7 @@ export default function CityDetailsView() {
         </>
       )}
       <Dialog open={openEditPopup} onClose={handleClosePopup}>
-        <DialogTitle>Edit City</DialogTitle>
+        <DialogTitle>{t('edit')}</DialogTitle>
         <DialogContent>
           <CityNewEditForm city={city} reload={revalidate} handleClosePopup={handleClosePopup} />
         </DialogContent>

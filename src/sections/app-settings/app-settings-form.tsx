@@ -80,6 +80,7 @@ const EditableForm: React.FC = () => {
   };
 
   const [formData, setFormData] = useState<FormField[]>([]);
+  // Instead of just item.value, derive the locale-based value like:
 
   useEffect(() => {
     if (data && Array.isArray(data)) {
