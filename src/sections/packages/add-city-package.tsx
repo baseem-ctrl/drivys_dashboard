@@ -39,8 +39,7 @@ export default function AddCityPackage({
   id,
   reload,
 }: Props) {
-
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const { city, cityLoading } = useGetAllCity({
@@ -104,18 +103,23 @@ export default function AddCityPackage({
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>{t("Add City")} </DialogTitle>
+        <DialogTitle>{t('Add City')} </DialogTitle>
 
         <DialogContent>
           <Grid container spacing={2} sx={{ mb: 4, mt: 2 }}>
             <Grid item xs={12}>
               <RHFAutocompleteSearch
                 name={`cities_ids[${currentCityData?.length || 0}][id]`}
-                label={t("Select City")}
+                label={t('Select City')}
                 multiple={false}
                 options={city?.map((option: any) => ({
                   value: option?.id,
-                  label: option?.city_translations[0]?.name ?? 'Unknown',
+                  label:
+                    option?.city_translations?.find(
+                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ??
+                    option?.city_translations?.[0]?.name ??
+                    'Unknown',
                 }))}
                 loading={cityLoading}
               />
@@ -124,7 +128,7 @@ export default function AddCityPackage({
             <Grid item xs={6}>
               <RHFTextField
                 name={`cities_ids[${currentCityData?.length || 0}][min_price]`}
-                label={t("City Min Price")}
+                label={t('City Min Price')}
                 type="number"
                 inputProps={{ min: 0 }}
               />
@@ -133,7 +137,7 @@ export default function AddCityPackage({
             <Grid item xs={6}>
               <RHFTextField
                 name={`cities_ids[${currentCityData?.length || 0}][max_price]`}
-                label={t("City Max Price")}
+                label={t('City Max Price')}
                 type="number"
                 inputProps={{ min: 0 }}
               />
@@ -143,10 +147,10 @@ export default function AddCityPackage({
 
         <DialogActions>
           <Button variant="outlined" onClick={handleClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {t("Submit")}
+            {t('Submit')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

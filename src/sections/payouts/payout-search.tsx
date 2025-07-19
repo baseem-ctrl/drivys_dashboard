@@ -27,8 +27,7 @@ export default function PayoutSearch({
   setSearchValue,
   usersLoading,
 }: Props) {
-
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
   };
@@ -58,17 +57,37 @@ export default function PayoutSearch({
           fullWidth
           options={
             options?.map((item: any) => ({
-              label: `${item?.name ?? item?.vendor_translations?.[0]?.name ?? 'NA'}(${item?.email ?? 'NA'
-                })`,
+              label: `${
+                item?.vendor_translations?.find(
+                  (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                )?.name ??
+                item?.vendor_translations?.[0]?.name ??
+                item?.name ??
+                'NA'
+              } (${item?.email ?? 'NA'})`,
               value: item.id,
             })) ?? []
           }
-          value={options.find((item) => item.id === filters.trainer_id)?.name || null}
+          value={
+            options
+              ?.map((item: any) => ({
+                label: `${
+                  item?.vendor_translations?.find(
+                    (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ??
+                  item?.vendor_translations?.[0]?.name ??
+                  item?.name ??
+                  'NA'
+                }`,
+                value: item.id,
+              }))
+              ?.find((opt) => opt.value === filters.trainer_id) || null
+          }
           onChange={(event, newValue) => handleChange('trainer_id')(newValue?.value || '')}
           loading={usersLoading}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select Trainer")}
+              placeholder={t('Select Trainer')}
               {...params}
               onChange={(e) => setSearchValue(e.target.value)}
               fullWidth
@@ -113,7 +132,7 @@ export default function PayoutSearch({
           loading={schoolLoading}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select School")}
+              placeholder={t('Select School')}
               {...params}
               InputProps={{
                 ...params.InputProps,

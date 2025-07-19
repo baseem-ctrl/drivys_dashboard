@@ -343,7 +343,13 @@ export default function PackageTableRow({
                   {...field}
                   value={schoolList.find((item) => item.id === field?.value) || null}
                   options={schoolList}
-                  getOptionLabel={(option) => option?.vendor_translations?.[0]?.name || 'Unknown'}
+                  getOptionLabel={(option) =>
+                    option?.vendor_translations?.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                    option?.vendor_translations?.[0]?.name ||
+                    'Unknown'
+                  }
                   onChange={(event, newValue) => {
                     field.onChange(newValue?.id || '');
                   }}
@@ -362,9 +368,10 @@ export default function PackageTableRow({
             <ListItemText
               primary={
                 vendor?.vendor_translations?.find(
-                  (item) =>
-                    item?.locale?.toLowerCase() === 'en' || item?.locale?.toLowerCase() === 'ar'
-                )?.name ?? 'NA'
+                  (item) => item?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                )?.name ??
+                vendor?.vendor_translations?.[0]?.name ??
+                'NA'
               }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
@@ -411,7 +418,11 @@ export default function PackageTableRow({
                 <Select {...field} value={field.value || ''}>
                   {category.map((cat) => (
                     <MenuItem key={cat.id} value={cat.id}>
-                      {cat.category_translations[0]?.name || t('n/a')}
+                      {cat.category_translations.find(
+                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ||
+                        cat.category_translations[0]?.name ||
+                        t('n/a')}
                     </MenuItem>
                   ))}
                 </Select>
@@ -422,7 +433,11 @@ export default function PackageTableRow({
               primary={(() => {
                 const selectedCategory = category?.find((cat) => cat.id === row.category_id);
                 return selectedCategory
-                  ? selectedCategory.category_translations[0]?.name || t('n/a')
+                  ? selectedCategory.category_translations.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      selectedCategory.category_translations[0]?.name ||
+                      t('n/a')
                   : t('n/a');
               })()}
               primaryTypographyProps={{ typography: 'body2' }}

@@ -28,6 +28,7 @@ import { Box, Link } from '@mui/material';
 import { updateUser } from 'src/api/users';
 import { useSnackbar } from 'src/components/snackbar';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ export default function UserTableRow({
   const { name, photo_url, dob, user_type, is_active, email, phone, country_code } = row;
 
   const confirm = useBoolean();
-  const { t } = useLocales();
+  const { t, i18n } = useTranslation();
 
   const quickEdit = useBoolean();
   const { enqueueSnackbar } = useSnackbar();
@@ -148,7 +149,11 @@ export default function UserTableRow({
         {currentUserType === 'TRAINER' && (
           <>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
-              {row?.vendor?.vendor_translations[0]?.name ?? t('n_a')}
+              {row?.vendor?.vendor_translations?.find(
+                (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ||
+                row?.vendor?.vendor_translations?.[0]?.name ||
+                t('n_a')}
             </TableCell>
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
               {row?.max_cash_in_hand_allowed ?? t('n_a')}
@@ -161,8 +166,8 @@ export default function UserTableRow({
                   row?.is_suspended === true || row?.is_suspended === 1
                     ? 'success'
                     : row?.is_suspended === false || row?.is_suspended === 0
-                      ? 'error'
-                      : 'warning'
+                    ? 'error'
+                    : 'warning'
                 }
                 sx={{ alignContent: 'center' }}
               >
@@ -172,7 +177,7 @@ export default function UserTableRow({
           </>
         )}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title={t("Quick Edit")} placement="top" arrow>
+          <Tooltip title={t('Quick Edit')} placement="top" arrow>
             <IconButton
               color={quickEdit.value ? 'inherit' : 'default'}
               onClick={(e) => {
@@ -217,7 +222,7 @@ export default function UserTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          {t("Delete")}
+          {t('Delete')}
         </MenuItem>
 
         <MenuItem
@@ -227,7 +232,7 @@ export default function UserTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          {t("Edit")}
+          {t('Edit')}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -236,7 +241,7 @@ export default function UserTableRow({
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          {t("View")}
+          {t('View')}
         </MenuItem>
         {user_type === 'TRAINER' && (
           <MenuItem
@@ -254,12 +259,12 @@ export default function UserTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title={t("Delete")}
-        content={t("Are you sure want to delete?")}
+        title={t('Delete')}
+        content={t('Are you sure want to delete?')}
         onConfirm={onDeleteRow}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            {t("Delete")}
+            {t('Delete')}
           </Button>
         }
       />

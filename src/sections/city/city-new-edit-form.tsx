@@ -22,16 +22,20 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFSwitch, RHFTextField } from 'src/components/hook-form';
 import { updateCityTranslation } from 'src/api/city';
 import { useGetAllLanguage } from 'src/api/language';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
+  const { i18n } = useTranslation();
+
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
   }));
+
   const CitySchema = Yup.object().shape({
     name: Yup.string().required('City name is required'),
     locale: Yup.string().required('Locale is required'),
@@ -46,11 +50,23 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
     free_reschedule_before: Yup.mixed(),
     free_reschedule_before_type: Yup.mixed(),
   });
+
   const methods = useForm({
     resolver: yupResolver(CitySchema),
     defaultValues: {
-      name: city?.city_translations?.[0]?.name || '',
-      locale: city?.city_translations?.[0]?.locale || 'ar',
+      name:
+        city?.city_translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.name ||
+        city?.city_translations?.[0]?.name ||
+        '',
+      locale:
+        city?.city_translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale ||
+        city?.city_translations?.[0]?.locale ||
+        'ar',
+
       published: city?.is_published === 1,
       id: city?.id || '',
       is_certificate_available: !!city?.is_certificate_available ?? false,
@@ -84,9 +100,14 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
   const values = watch();
   useEffect(() => {
     if (city) {
+      const matchedTranslation =
+        city?.city_translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        ) || city?.city_translations?.[0];
+
       reset({
-        name: city?.city_translations?.[0]?.name || '',
-        locale: city?.city_translations?.[0]?.locale || 'ar',
+        name: matchedTranslation?.name || '',
+        locale: matchedTranslation?.locale || 'ar',
         published: city?.is_published === 1,
         id: city?.id || '',
         is_certificate_available: !!city?.is_certificate_available ?? false,
@@ -94,7 +115,7 @@ export default function CityNewEditForm({ handleClosePopup, city, reload }) {
         certificate_link: city?.certificate_link || '',
       });
     }
-  }, [city, reset]);
+  }, [city, reset, i18n.language]);
 
   // Update name based on locale
   useEffect(() => {

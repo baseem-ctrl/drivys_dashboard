@@ -34,7 +34,7 @@ export default function RefundTableRow({
 }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
@@ -201,7 +201,9 @@ export default function RefundTableRow({
             }
           }}
         >
-          {row?.booking?.package?.package_translations[0]?.name ?? 'Unknown Package'}
+          {row?.booking?.package?.package_translations?.find(
+            (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ?? t('Unknown Package')}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>

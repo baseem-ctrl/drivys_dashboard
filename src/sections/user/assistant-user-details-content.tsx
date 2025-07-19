@@ -108,7 +108,7 @@ type Props = {
   reload?: VoidFunction;
 };
 
-export default function UserDetailsContent({
+export default function AssistantUserDetailsContent({
   addresses,
   addressesLoading,
   details,
@@ -136,8 +136,6 @@ export default function UserDetailsContent({
   const [currentTab, setCurrentTab] = useState('details');
   const [studentTab, setStudentTab] = useState('details');
   const [showAll, setShowAll] = useState(false);
-  const { i18n } = useTranslation();
-
   const { trainerReviews, trainerReviewsLoading, revalidateTrainerReviews } = useGetTrainerReview({
     trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
     student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
@@ -315,6 +313,8 @@ export default function UserDetailsContent({
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
+  const { i18n } = useTranslation();
+
   useEffect(() => {
     if (details?.license_file) {
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
@@ -705,7 +705,7 @@ export default function UserDetailsContent({
                           >
                             {details?.vendor?.vendor_translations?.find(
                               (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.name || details?.vendor?.vendor_translations?.[0]?.name}
+                            ) || details?.vendor?.vendor_translations?.[0]}
                           </Link>
                         ) : (
                           details?.school_name ?? t('n/a')

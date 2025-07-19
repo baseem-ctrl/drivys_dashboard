@@ -448,11 +448,14 @@ export default function PackageCreateForm({
               <RHFAutocompleteSearch
                 name="vendor_id"
                 label={t('Select School')}
-                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
                 options={schoolList?.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}${
-                    item.email ? ` - ${item.email}` : ''
-                  }`,
+                  label: `${
+                    item.vendor_translations.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                    item.vendor_translations?.[0]?.name ||
+                    'Unknown'
+                  }${item.email ? ` - ${item.email}` : ''}`,
                   value: item.id,
                 }))}
                 onInputChange={(e: any) => handleSearchChange(e)}
@@ -549,7 +552,12 @@ export default function PackageCreateForm({
                         multiple={false}
                         options={city?.map((option: any) => ({
                           value: option?.id,
-                          label: option?.city_translations[0]?.name ?? 'Unknown',
+                          label:
+                            option.city_translations.find(
+                              (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.name ||
+                            option.city_translations?.[0]?.name ||
+                            'Unknown',
                         }))}
                         onChange={(event, value) => {
                           handleCityFieldChange(index, 'id', value?.value || null);

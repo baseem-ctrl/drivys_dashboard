@@ -34,7 +34,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
   const [editMode, setEditMode] = useState('');
   const [selectedPackage, setSelectedPackage] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleDeletePackage = async (id) => {
     try {
@@ -145,9 +145,13 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
                 >
                   <Box>
                     <Typography variant="h5" color="#CF5A0D">
-                      {packageItem?.package?.package_translations
-                        ? packageItem?.package?.package_translations[0]?.name.toUpperCase()
-                        : 'NA' || t('UNNAMED PACKAGE')}
+                      {(
+                        packageItem?.package?.package_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                        )?.name ||
+                        packageItem?.package?.package_translations?.[0]?.name ||
+                        t('UNNAMED PACKAGE')
+                      )?.toUpperCase()}
                     </Typography>
                     {packageItem?.package?.number_of_sessions ?? '0'} Sessions
                   </Box>

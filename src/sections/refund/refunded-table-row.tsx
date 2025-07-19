@@ -36,7 +36,7 @@ export default function RefundedTableRow({
   const { enqueueSnackbar } = useSnackbar();
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const mapStatusToValue = (
     statusName: string,
@@ -95,7 +95,6 @@ export default function RefundedTableRow({
   const handleClickPackageDetails = (id) => {
     router.push(paths.dashboard.package.details(id));
   };
-  console.log('row?.session?.[0]?.booking_id ', row?.sessions);
 
   return (
     <TableRow hover selected={selected}>
@@ -168,7 +167,9 @@ export default function RefundedTableRow({
             }
           }}
         >
-          {row?.package?.package_translations[0]?.name ?? 'Unknown Package'}
+          {row?.package?.package_translations?.find(
+            (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ?? t('Unknown Package')}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>

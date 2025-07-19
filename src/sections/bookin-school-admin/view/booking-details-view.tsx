@@ -517,7 +517,11 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
+                    {pkg?.vendor?.vendor_translations?.find(
+                      (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      pkg?.vendor?.vendor_translations?.[0]?.name ||
+                      t('n/a')}
                   </Box>
                 </Box>
               </CardContent>
