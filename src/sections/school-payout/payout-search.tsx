@@ -27,7 +27,7 @@ export default function PayoutSearch({
   setSearchValue,
   usersLoading,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
   };
@@ -57,9 +57,13 @@ export default function PayoutSearch({
           fullWidth
           options={
             options?.map((item: any) => ({
-              label: `${item?.name ?? item?.vendor_translations?.[0]?.name ?? 'NA'}(${
-                item?.email ?? 'NA'
-              })`,
+              label: `${
+                item?.vendor_translations?.find(
+                  (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                )?.name ??
+                item?.name ??
+                'NA'
+              } (${item?.email ?? 'NA'})`,
               value: item.id,
             })) ?? []
           }

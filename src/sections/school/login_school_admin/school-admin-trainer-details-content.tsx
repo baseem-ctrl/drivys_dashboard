@@ -66,7 +66,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
     trainerDetails?.id
   );
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [selectedPackageId, setSelectedPackageId] = useState(null);
   const [editMode, setEditMode] = useState('');
@@ -319,10 +319,9 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                     >
                       <Box>
                         <Typography variant="h5" color="#CF5A0D">
-                          {' '}
-                          {item?.package?.package_translations
-                            ? item?.package?.package_translations[0]?.name
-                            : 'NA'}{' '}
+                          {item?.package?.package_translations?.find(
+                            (pt) => pt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          )?.name ?? 'NA'}
                         </Typography>
                         {item?.package?.number_of_sessions} Sessions
                       </Box>

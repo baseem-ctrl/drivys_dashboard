@@ -155,6 +155,7 @@ export default function UserTableRow({
                 row?.vendor?.vendor_translations?.[0]?.name ||
                 t('n_a')}
             </TableCell>
+
             <TableCell sx={{ whiteSpace: 'nowrap' }}>
               {row?.max_cash_in_hand_allowed ?? t('n_a')}
             </TableCell>

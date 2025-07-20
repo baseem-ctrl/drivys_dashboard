@@ -60,19 +60,26 @@ export default function SchoolCreateForm({
     published: Yup.boolean(),
   });
 
-  const defaultValues = useMemo(
-    () => ({
+  import { useTranslation } from 'react-i18next';
+
+  const { i18n } = useTranslation();
+
+  const defaultValues = useMemo(() => {
+    const matchedTranslation = currentDelivery?.delivery_slot_translation?.find(
+      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+    );
+
+    return {
       start_time: currentDelivery?.start_time || '',
       end_time: currentDelivery?.end_time || '',
       max_orders: currentDelivery?.max_orders || '',
       day_of_week: currentDelivery?.day_of_week || '',
-      name: '',
-      description: '',
-      locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
+      name: matchedTranslation?.name || '',
+      description: matchedTranslation?.description || '',
+      locale: matchedTranslation?.locale || '',
       published: currentDelivery?.published || false,
-    }),
-    [currentDelivery]
-  );
+    };
+  }, [currentDelivery, i18n.language]);
 
   const methods = useForm({
     resolver: yupResolver(DeliverySchema),

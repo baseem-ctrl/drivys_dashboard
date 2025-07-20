@@ -41,7 +41,7 @@ type Props = {
 export default function StateCreateEditForm({ title, currentState, open, onClose, reload }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const CitySchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -59,19 +59,38 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
   }));
   const defaultValues = useMemo(
     () => ({
-      name: currentState?.translations?.[0]?.name || '',
-      locale: currentState?.translations?.[0]?.locale || localeOptions[0]?.value,
+      name:
+        currentState?.translations?.find(
+          (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.name ??
+        currentState?.translations?.[0]?.name ??
+        '',
+
+      locale:
+        currentState?.translations?.find(
+          (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale ??
+        currentState?.translations?.[0]?.locale ??
+        localeOptions[0]?.value,
+
       city_id: currentState?.city
         ? {
-          value: currentState?.city?.id,
-          label: currentState?.city?.city_translations[0]?.name || 'Unknown',
-        }
+            value: currentState?.city?.id,
+            label:
+              currentState?.city?.city_translations?.find(
+                (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ??
+              currentState?.city?.city_translations?.[0]?.name ??
+              'Unknown',
+          }
         : null,
+
       published: currentState?.is_published === 1,
-      order: currentState?.order || 0, // Set default order to 0 if not provided
+      order: currentState?.order || 0,
     }),
     [currentState]
   );
+
   const methods = useForm({
     resolver: yupResolver(CitySchema) as any,
     defaultValues,
@@ -176,9 +195,9 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="locale" label={t("Locale")}>
+            <RHFSelect name="locale" label={t('Locale')}>
               <MenuItem value="" disabled>
-                {t("Select Locale")}
+                {t('Select Locale')}
               </MenuItem>
               {localeOptions?.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -189,10 +208,15 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
 
             <RHFAutocomplete
               name="city_id"
-              label={t("City")}
+              label={t('City')}
               options={city?.map((option: any) => ({
                 value: option?.id,
-                label: option?.city_translations[0]?.name ?? 'Unknown',
+                label:
+                  option?.city_translations?.find(
+                    (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ??
+                  option?.city_translations?.[0]?.name ??
+                  t('Unknown'),
               }))}
               getOptionLabel={(option) => option?.label ?? ''}
               renderOption={(props, option: any) => (
@@ -202,15 +226,15 @@ export default function StateCreateEditForm({ title, currentState, open, onClose
               )}
             />
 
-            <RHFTextField name="name" label={t("Name")} />
-            <RHFTextField name="order" label={t("Order")} type="number" />
-            <RHFSwitch name="published" label={t("Published")} />
+            <RHFTextField name="name" label={t('Name')} />
+            <RHFTextField name="order" label={t('Order')} type="number" />
+            <RHFSwitch name="published" label={t('Published')} />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             {currentState?.id ? t('Update') : t('Create')}

@@ -210,21 +210,33 @@ export default function RefundFilters({
       </Typography>
       <Autocomplete
         options={
-          city?.map((city: any) => ({
-            label:
-              city.city_translations?.length > 0 ? city.city_translations[0].name : 'Unknown City',
-            value: city.id,
-          })) ?? []
+          city?.map((city: any) => {
+            const translation =
+              city.city_translations?.find(
+                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              ) || city.city_translations?.[0];
+
+            return {
+              label: translation?.name || 'Unknown City',
+              value: city.id,
+            };
+          }) ?? []
         }
         getOptionLabel={(option) => option.label || 'Unknown'}
         value={
           filters.city_id
-            ? {
-                label:
-                  city.find((item: any) => item.id === filters.city_id)?.city_translations?.[0]
-                    ?.name || 'Unknown City',
-                value: filters.city_id,
-              }
+            ? (() => {
+                const selectedCity = city.find((item: any) => item.id === filters.city_id);
+                const translation =
+                  selectedCity?.city_translations?.find(
+                    (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  ) || selectedCity?.city_translations?.[0];
+
+                return {
+                  label: translation?.name || 'Unknown City',
+                  value: filters.city_id,
+                };
+              })()
             : null
         }
         onChange={(event, newValue) => {

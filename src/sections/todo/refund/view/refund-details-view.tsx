@@ -495,7 +495,14 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n/a')}
+                    {(() => {
+                      const translation =
+                        pkg?.package_translations?.find(
+                          (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                        ) || pkg?.package_translations?.[0];
+
+                      return translation?.name || t('n/a');
+                    })()}
                   </Box>
                 </Box>
 

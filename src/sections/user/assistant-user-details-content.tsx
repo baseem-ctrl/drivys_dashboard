@@ -226,9 +226,13 @@ export default function AssistantUserDetailsContent({
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
+      const matchingTranslation = details.vendor_translations.find(
+        (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+      setSelectedLanguage(matchingTranslation?.locale || details.vendor_translations[0]?.locale);
     }
   }, [details]);
+
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
       setMarkerPosition({
@@ -476,12 +480,15 @@ export default function AssistantUserDetailsContent({
 
       {details?.school && (
         <Stack spacing={2}>
-          {details.school?.vendor_translations?.[0]?.name && (
+          {details.school?.vendor_translations?.length > 0 && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>{t('school')}:</strong>{' '}
-              {details.school.vendor_translations[0].name ?? t('name_not_available')}
+              {details.school.vendor_translations.find(
+                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ?? t('name_not_available')}
             </Typography>
           )}
+
           {details.school?.commission_in_percentage && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>{t('commission')}:</strong> {details.school.commission_in_percentage}%
@@ -782,9 +789,12 @@ export default function AssistantUserDetailsContent({
 
                       {
                         label: 'City Assigned',
-                        value: details.city_assigned.map(
-                          (city) => city?.city?.city_translations?.[0]?.name ?? t('Unknown')
-                        ),
+                        value: details.city_assigned.map((city) => {
+                          const translation = city?.city?.city_translations?.find(
+                            (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          );
+                          return translation?.name ?? t('Unknown');
+                        }),
                       },
                     ]
                   : []),
@@ -1141,21 +1151,30 @@ export default function AssistantUserDetailsContent({
             {[
               {
                 label: t('city'),
-                value: details?.user_preference?.city?.city_translations[0]?.name ?? t('n/a'),
+                value:
+                  details?.user_preference?.city?.city_translations?.find(
+                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
               {
                 label: t('area'),
-                value: details?.user_preference?.state_province?.translations[0]?.name ?? t('n/a'),
+                value:
+                  details?.user_preference?.state_province?.translations?.find(
+                    (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
+
               { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
               { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
 
               {
                 label: t('vehicle_type'),
                 value:
-                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ??
-                  t('n/a'),
+                  details?.user_preference?.vehicle_type?.category_translations?.find(
+                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
+
               ...(details?.user_type === 'STUDENT'
                 ? [
                     {
@@ -1776,15 +1795,19 @@ export default function AssistantUserDetailsContent({
                   label: t('city'),
                   value:
                     address?.city ??
-                    address?.city_id_city?.city_translations?.[0]?.name ??
+                    address?.city_id_city?.city_translations?.find(
+                      (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ??
                     t('n/a'),
                 },
                 {
                   label: t('area'),
-                  value: address?.state_province
-                    ? address?.state_province?.translations?.[0]?.name
-                    : t('n/a'),
+                  value:
+                    address?.state_province?.translations?.find(
+                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ?? t('n/a'),
                 },
+
                 // { label: t('country_code'), value: address?.country_code ?? 'UAE' },
                 { label: t('label'), value: address?.label ?? t('n/a') },
                 { label: t('phone_number'), value: address?.phone_number ?? t('n/a') },

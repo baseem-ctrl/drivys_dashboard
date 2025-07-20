@@ -42,7 +42,7 @@ interface BookingDetails {
 }
 
 export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const settings = useSettingsContext();
   const router = useRouter();
   const quickCreate = useBoolean();
@@ -120,7 +120,11 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
               <Typography variant="body1">
-                {details?.vendor_translations?.[0]?.name ?? t('n/a')}
+                {details?.vendor_translations?.find(
+                  (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                )?.name ??
+                  details?.vendor_translations?.[0]?.name ??
+                  t('n/a')}
               </Typography>
             </Box>
           }
@@ -158,9 +162,11 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
               }}
               onClick={() => handleUserClick(id)}
             >
-              {details?.vendor_translations?.[0]?.name
-                ? details?.vendor_translations?.[0]?.name
-                : 'U'}
+              {details?.vendor_translations?.find(
+                (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ??
+                details?.vendor_translations?.[0]?.name ??
+                'U'}
             </Avatar>
           )}
         </Tooltip>

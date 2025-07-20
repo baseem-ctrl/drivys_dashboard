@@ -27,8 +27,7 @@ export default function PayoutSearch({
   setSearchValue,
   usersLoading,
 }: Props) {
-
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
   };
@@ -58,8 +57,13 @@ export default function PayoutSearch({
           fullWidth
           options={
             options?.map((item: any) => ({
-              label: `${item?.name ?? item?.vendor_translations?.[0]?.name ?? 'NA'}(${item?.email ?? 'NA'
-                })`,
+              label: `${
+                item?.vendor_translations?.find(
+                  (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                )?.name ??
+                item?.name ??
+                'NA'
+              } (${item?.email ?? 'NA'})`,
               value: item.id,
             })) ?? []
           }
@@ -68,7 +72,7 @@ export default function PayoutSearch({
           loading={usersLoading}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select Trainer")}
+              placeholder={t('Select Trainer')}
               {...params}
               onChange={(e) => setSearchValue(e.target.value)}
               fullWidth
@@ -113,7 +117,7 @@ export default function PayoutSearch({
           loading={schoolLoading}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select School")}
+              placeholder={t('Select School')}
               {...params}
               InputProps={{
                 ...params.InputProps,

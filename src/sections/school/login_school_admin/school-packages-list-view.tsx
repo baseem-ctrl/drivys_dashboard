@@ -76,7 +76,7 @@ const defaultFilters: any = {
 
 export default function SchoolPackageListView() {
   const table = useTable({ defaultRowsPerPage: 15 });
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const TABLE_HEAD = [
     { id: 'locale', label: t('language') },
     { id: 'name', label: t('name') },
@@ -225,10 +225,16 @@ export default function SchoolPackageListView() {
                           style={{ cursor: 'pointer' }}
                         >
                           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                            {row?.package_translations[0]?.locale ?? 'NA'}
+                            {row?.package_translations?.find(
+                              (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.locale ?? 'NA'}
                           </TableCell>
 
-                          <TableCell>{row?.package_translations[0]?.name}</TableCell>
+                          <TableCell>
+                            {row?.package_translations?.find(
+                              (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.name ?? 'NA'}
+                          </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
                             {(row?.number_of_sessions || t('n/a')) ?? 'NA'}
@@ -244,9 +250,9 @@ export default function SchoolPackageListView() {
                             {row?.drivys_commision ?? 'NA'}
                           </TableCell>
                           <TableCell>
-                            {row?.category?.category_translations
-                              ? row?.category?.category_translations[0]?.name
-                              : 'NA' ?? 'NA'}
+                            {row?.category?.category_translations?.find(
+                              (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.name ?? 'NA'}
                           </TableCell>
                         </TableRow>
                       ))}
