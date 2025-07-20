@@ -31,7 +31,7 @@ export default function StateNewEditForm({
   reload,
 }) {
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const StateSchema = Yup.object().shape({
     name: Yup.string().required('State name is required'),
@@ -42,8 +42,16 @@ export default function StateNewEditForm({
   const methods = useForm({
     resolver: yupResolver(StateSchema),
     defaultValues: {
-      name: state?.translations?.[0]?.name || '',
-      locale: state?.translations?.[0]?.locale || 'en',
+      name:
+        state?.translations?.find((t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase())
+          ?.name ||
+        state?.translations?.[0]?.name ||
+        '',
+      locale:
+        state?.translations?.find((t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase())
+          ?.locale ||
+        state?.translations?.[0]?.locale ||
+        'en',
       published: state?.is_published === '1',
       id: state?.id || '',
     },
@@ -73,14 +81,19 @@ export default function StateNewEditForm({
 
   useEffect(() => {
     if (state) {
+      const translation =
+        state?.translations?.find(
+          (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        ) || state?.translations?.[0];
+
       reset({
-        name: state?.translations?.[0]?.name || '',
-        locale: state?.translations?.[0]?.locale || 'en',
+        name: translation?.name || '',
+        locale: translation?.locale || 'en',
         published: state?.is_published === '1',
         id: state?.id || '',
       });
     }
-  }, [state, reset]);
+  }, [state, reset, i18n.language]);
 
   const onSubmit = handleSubmit(async (state) => {
     try {

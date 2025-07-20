@@ -20,6 +20,7 @@ import Grid from '@mui/system/Unstable_Grid/Grid';
 import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -36,6 +37,7 @@ export default function SchoolQuickEditForm({
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
+  const { i18n } = useTranslation();
 
   // State to track translations for each locale
   const [translations, setTranslations] = useState<any>({});
@@ -68,9 +70,24 @@ export default function SchoolQuickEditForm({
       end_time: currentDelivery?.end_time || '',
       max_orders: currentDelivery?.max_orders || '',
       day_of_week: currentDelivery?.day_of_week || '',
-      name: currentDelivery?.translations?.[0]?.name || '',
-      description: currentDelivery?.translations?.[0]?.description || '',
-      locale: currentDelivery?.translations?.[0]?.locale || '',
+      name:
+        currentDelivery?.translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.name ||
+        currentDelivery?.translations?.[0]?.name ||
+        '',
+      description:
+        currentDelivery?.translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.description ||
+        currentDelivery?.translations?.[0]?.description ||
+        '',
+      locale:
+        currentDelivery?.translations?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale ||
+        currentDelivery?.translations?.[0]?.locale ||
+        '',
       published: currentDelivery?.published || false,
     }),
     [currentDelivery]

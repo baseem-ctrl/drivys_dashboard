@@ -21,6 +21,7 @@ import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/componen
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
 import { TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -59,7 +60,7 @@ export default function SchoolCreateForm({
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
   });
-
+  const { i18n } = useTranslation();
   const defaultValues = useMemo(
     () => ({
       start_time: currentDelivery?.start_time || '',
@@ -68,7 +69,12 @@ export default function SchoolCreateForm({
       day_of_week: currentDelivery?.day_of_week || '',
       name: '',
       description: '',
-      locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
+      locale:
+        currentDelivery?.delivery_slot_translation?.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale ||
+        currentDelivery?.delivery_slot_translation?.[0]?.locale ||
+        '',
       published: currentDelivery?.published || false,
     }),
     [currentDelivery]

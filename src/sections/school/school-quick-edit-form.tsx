@@ -62,19 +62,22 @@ export default function SchoolQuickEditForm({
   });
 
   // Default form values
-  const defaultValues = useMemo(
-    () => ({
+  const defaultValues = useMemo(() => {
+    const matchedTranslation = currentDelivery?.translations?.find(
+      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+    );
+
+    return {
       start_time: currentDelivery?.start_time || '',
       end_time: currentDelivery?.end_time || '',
       max_orders: currentDelivery?.max_orders || '',
       day_of_week: currentDelivery?.day_of_week || '',
-      name: currentDelivery?.translations?.[0]?.name || '',
-      description: currentDelivery?.translations?.[0]?.description || '',
-      locale: currentDelivery?.translations?.[0]?.locale || '',
+      name: matchedTranslation?.name || '',
+      description: matchedTranslation?.description || '',
+      locale: matchedTranslation?.locale || '',
       published: currentDelivery?.published || false,
-    }),
-    [currentDelivery]
-  );
+    };
+  }, [currentDelivery, i18n.language]);
 
   const methods = useForm({
     resolver: yupResolver(DeliverySchema) as any,

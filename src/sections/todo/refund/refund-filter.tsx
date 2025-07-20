@@ -199,28 +199,40 @@ export default function RefundFilters({
       </Typography>
       <Autocomplete
         options={
-          city?.map((city: any) => ({
-            label:
-              city.city_translations?.length > 0 ? city.city_translations[0].name : 'Unknown City',
-            value: city.id,
-          })) ?? []
+          city?.map((city: any) => {
+            const translation =
+              city.city_translations?.find(
+                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              ) || city.city_translations?.[0];
+
+            return {
+              label: translation?.name || t('unknown_city'),
+              value: city.id,
+            };
+          }) ?? []
         }
-        getOptionLabel={(option) => option.label || 'Unknown'}
+        getOptionLabel={(option) => option.label || t('unknown')}
         value={
           filters.city_id
-            ? {
-                label:
-                  city.find((item: any) => item.id === filters.city_id)?.city_translations?.[0]
-                    ?.name || 'Unknown City',
-                value: filters.city_id,
-              }
+            ? (() => {
+                const matchedCity = city.find((item: any) => item.id === filters.city_id);
+                const translation =
+                  matchedCity?.city_translations?.find(
+                    (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  ) || matchedCity?.city_translations?.[0];
+
+                return {
+                  label: translation?.name || t('unknown_city'),
+                  value: filters.city_id,
+                };
+              })()
             : null
         }
         onChange={(event, newValue) => {
           handleFilterChange('city_id', newValue?.value);
         }}
         isOptionEqualToValue={(option, value) => option.value === value?.value}
-        renderInput={(params) => <TextField placeholder="Select City" {...params} />}
+        renderInput={(params) => <TextField placeholder={t('select_city')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}

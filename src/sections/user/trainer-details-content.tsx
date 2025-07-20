@@ -67,7 +67,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
   const { details, detailsLoading, revalidateDetails } = useGetPackagesDetailsByTrainer(
     Trainerdetails?.id
   );
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const quickEdit = useBoolean();
   const confirm = useBoolean();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -365,9 +365,9 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                     >
                       <Box>
                         <Typography variant="h5" color="#CF5A0D">
-                          {item?.package?.package_translations
-                            ? item?.package?.package_translations[0]?.name
-                            : 'NA'}
+                          {item?.package?.package_translations?.find(
+                            (pt: any) => pt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          )?.name ?? 'NA'}
                         </Typography>
                         {item?.package?.number_of_sessions} Sessions
                       </Box>

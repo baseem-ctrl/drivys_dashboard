@@ -66,9 +66,13 @@ export default function PickupCreateEditForm({
       city_id: currentPickup?.city
         ? {
             value: currentPickup?.city?.id,
-            label: currentPickup?.city?.city_translations[0]?.name || 'Unknown',
+            label:
+              currentPickup?.city?.city_translations?.find(
+                (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name || 'Unknown',
           }
         : null,
+
       end_date: currentPickup?.end_date ? moment(currentPickup.end_date).toDate() : new Date(),
       end_time: currentPickup?.end_time && parseTime(currentPickup?.end_time),
       start_date: currentPickup?.start_date
@@ -169,11 +173,14 @@ export default function PickupCreateEditForm({
               label={t('City')}
               options={city?.map((option: any) => ({
                 value: option?.id,
-                label: option?.city_translations[0]?.name ?? 'Unknown',
+                label:
+                  option?.city_translations?.find(
+                    (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? 'Unknown',
               }))}
               getOptionLabel={(option) => option?.label ?? ''}
               renderOption={(props, option: any) => (
-                <li {...props} key={option?.value.toString()}>
+                <li {...props} key={option?.value?.toString()}>
                   {option?.label ?? 'Unknown'}
                 </li>
               )}

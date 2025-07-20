@@ -49,7 +49,7 @@ export default function SchoolCreateForm({
   revalidateDeliverey,
 }: Props) {
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useLocales();
+  const { t, i18n } = useTranslation();
 
   const { language } = useGetAllLanguage(0, 1000);
   const { revalidateSearch } = useGetSchoolAdmin(1000, 1);
@@ -158,7 +158,10 @@ export default function SchoolCreateForm({
       status: '',
       name: '',
       about: '',
-      locale: currentDelivery?.delivery_slot_translation?.[0]?.locale || '',
+      locale:
+        currentDelivery?.delivery_slot_translation?.find(
+          (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale || '',
       is_active: true,
       create_new_user: false,
       user_id: '',

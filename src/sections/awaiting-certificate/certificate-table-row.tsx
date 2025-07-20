@@ -139,7 +139,11 @@ export default function CertificateRow({ row, reload, path }) {
 
         <TableCell>
           <Typography variant="body2">
-            {vehicle_type?.category_translations[0]?.name || t('n/a')}
+            {vehicle_type?.category_translations?.find(
+              (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+            )?.name ||
+              vehicle_type?.category_translations?.[0]?.name ||
+              t('n/a')}
           </Typography>
         </TableCell>
 

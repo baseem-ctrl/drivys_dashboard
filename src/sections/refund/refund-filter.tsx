@@ -211,19 +211,22 @@ export default function RefundFilters({
         options={
           city?.map((city: any) => ({
             label:
-              city.city_translations?.length > 0
-                ? city.city_translations[0].name
-                : t('Unknown City'),
+              city.city_translations?.find(
+                (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name || t('Unknown City'),
             value: city.id,
           })) ?? []
         }
-        getOptionLabel={(option) => option.label || 'Unknown'}
+        getOptionLabel={(option) => option.label || t('Unknown City')}
         value={
           filters.city_id
             ? {
                 label:
-                  city.find((item: any) => item.id === filters.city_id)?.city_translations?.[0]
-                    ?.name || t('Unknown City'),
+                  city
+                    .find((item: any) => item.id === filters.city_id)
+                    ?.city_translations?.find(
+                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || t('Unknown City'),
                 value: filters.city_id,
               }
             : null

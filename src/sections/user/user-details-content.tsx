@@ -96,6 +96,7 @@ import TrainerReviewsTable from './trainer-review-table';
 import StudentReviewRow from '../student-review/review-table-row';
 import StudentReviewsTable from './student-review-table';
 import { DatePicker } from '@mui/x-date-pickers';
+import { useTranslation } from 'react-i18next';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -135,6 +136,8 @@ export default function UserDetailsContent({
   const [currentTab, setCurrentTab] = useState('details');
   const [studentTab, setStudentTab] = useState('details');
   const [showAll, setShowAll] = useState(false);
+  const { i18n } = useTranslation();
+
   const { trainerReviews, trainerReviewsLoading, revalidateTrainerReviews } = useGetTrainerReview({
     trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
     student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
@@ -225,9 +228,13 @@ export default function UserDetailsContent({
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
+      const matched = details.vendor_translations.find(
+        (vt: any) => vt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+      setSelectedLanguage(matched?.locale ?? details.vendor_translations[0].locale);
     }
-  }, [details]);
+  }, [details, i18n.language]);
+
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
       setMarkerPosition({
@@ -473,12 +480,15 @@ export default function UserDetailsContent({
 
       {details?.school && (
         <Stack spacing={2}>
-          {details.school?.vendor_translations?.[0]?.name && (
+          {details.school?.vendor_translations?.length > 0 && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>{t('school')}:</strong>{' '}
-              {details.school.vendor_translations[0].name ?? t('name_not_available')}
+              {details.school.vendor_translations.find(
+                (vt: any) => vt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ?? t('name_not_available')}
             </Typography>
           )}
+
           {details.school?.commission_in_percentage && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>{t('commission')}:</strong> {details.school.commission_in_percentage}%
@@ -700,7 +710,9 @@ export default function UserDetailsContent({
                             onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
                             onMouseOut={(e) => (e.target.style.color = 'inherit')}
                           >
-                            {details?.vendor?.vendor_translations?.[0]?.name}
+                            {details?.vendor?.vendor_translations?.find(
+                              (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.name || details?.vendor?.vendor_translations?.[0]?.name}
                           </Link>
                         ) : (
                           details?.school_name ?? t('n/a')
@@ -776,9 +788,12 @@ export default function UserDetailsContent({
                       },
 
                       {
-                        label: 'City Assigned',
+                        label: t('city_assigned'),
                         value: details.city_assigned.map(
-                          (city) => city?.city?.city_translations?.[0]?.name ?? t('Unknown')
+                          (city: any) =>
+                            city?.city?.city_translations?.find(
+                              (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                            )?.name ?? t('unknown')
                         ),
                       },
                     ]
@@ -1136,21 +1151,30 @@ export default function UserDetailsContent({
             {[
               {
                 label: t('city'),
-                value: details?.user_preference?.city?.city_translations[0]?.name ?? t('n/a'),
+                value:
+                  details?.user_preference?.city?.city_translations?.find(
+                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
               {
                 label: t('area'),
-                value: details?.user_preference?.state_province?.translations[0]?.name ?? t('n/a'),
+                value:
+                  details?.user_preference?.state_province?.translations?.find(
+                    (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
+
               { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
               { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
 
               {
                 label: t('vehicle_type'),
                 value:
-                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ??
-                  t('n/a'),
+                  details?.user_preference?.vehicle_type?.category_translations?.find(
+                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
+
               ...(details?.user_type === 'STUDENT'
                 ? [
                     {
@@ -1771,15 +1795,20 @@ export default function UserDetailsContent({
                   label: t('city'),
                   value:
                     address?.city ??
-                    address?.city_id_city?.city_translations?.[0]?.name ??
+                    address?.city_id_city?.city_translations?.find(
+                      (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ??
                     t('n/a'),
                 },
                 {
                   label: t('area'),
                   value: address?.state_province
-                    ? address?.state_province?.translations?.[0]?.name
+                    ? address?.state_province?.translations?.find(
+                        (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ?? t('n/a')
                     : t('n/a'),
                 },
+
                 // { label: t('country_code'), value: address?.country_code ?? 'UAE' },
                 { label: t('label'), value: address?.label ?? t('n/a') },
                 { label: t('phone_number'), value: address?.phone_number ?? t('n/a') },

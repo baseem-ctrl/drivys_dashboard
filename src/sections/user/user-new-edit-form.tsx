@@ -364,8 +364,14 @@ export default function UserNewEditForm({
         })) || [],
       city_assigned:
         currentUser?.city_assigned?.map((c) => ({
-          value: c.city?.city_translations?.[0]?.city_id ?? '',
-          label: c.city?.city_translations?.[0]?.name ?? '',
+          value:
+            c.city?.city_translations?.find(
+              (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+            )?.city_id || '',
+          label:
+            c.city?.city_translations?.find(
+              (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+            )?.name || '',
         })) || [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
@@ -396,12 +402,16 @@ export default function UserNewEditForm({
       vehicle_type_id:
         category
           ?.find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
-          ?.category_translations.map((translation: any) => translation.name) // Extract all names
-          .join(' - ') || '',
+          ?.category_translations?.find(
+            (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name || '',
       vendor_id: currentUser?.vendor?.id
         ? schoolList?.length > 0 &&
-          schoolList.find((school) => school.id === currentUser?.vendor?.id)?.vendor_translations[0]
-            ?.name
+          schoolList
+            .find((school) => school.id === currentUser?.vendor?.id)
+            ?.vendor_translations?.find(
+              (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+            )?.name
         : [{ label: 'Other', value: null }],
       gender:
         genderData?.length > 0
@@ -414,14 +424,19 @@ export default function UserNewEditForm({
       city_id: currentUser?.user_preference?.city_id
         ? {
             value: currentUser?.user_preference?.city_id,
-            label: currentUser?.user_preference?.city?.city_translations?.[0]?.name || t('unknown'),
+            label:
+              currentUser?.user_preference?.city?.city_translations?.find(
+                (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name || t('unknown'),
           }
         : '',
       area_id: currentUser?.user_preference?.state_province
         ? {
             value: currentUser?.user_preference?.state_province_id,
             label:
-              currentUser?.user_preference?.state_province?.translations?.[0]?.name || t('unknown'),
+              currentUser?.user_preference?.state_province?.translations?.find(
+                (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name || t('unknown'),
           }
         : '',
       vendor_commission_in_percentage: currentUser?.vendor_commission_in_percentage,
@@ -459,8 +474,10 @@ export default function UserNewEditForm({
       currentUser?.user_preference,
       genderData,
       gearData,
+      i18n.language,
     ]
   );
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -581,14 +598,21 @@ export default function UserNewEditForm({
     }
 
     if (selectedOption) {
+      const schoolName =
+        selectedOption?.vendor_translations?.find(
+          (translation) => translation?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+        )?.name ??
+        selectedOption?.vendor_translations?.[0]?.name ??
+        t('name_not_available');
+
       setDefaultOption({
-        label: `${selectedOption?.vendor_translations?.[0]?.name}-${selectedOption.email}`,
+        label: `${schoolName}-${selectedOption.email}`,
         value: selectedOption?.id,
       });
     } else {
-      setDefaultOption({ label: 'OTHER', value: null });
+      setDefaultOption({ label: t('other'), value: null });
     }
-  }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues]);
+  }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues, i18n.language, t]);
 
   const watchedVendorId = watch('vendor_id');
 
@@ -598,13 +622,19 @@ export default function UserNewEditForm({
         const school = schoolList.find((item) => item.id === watchedVendorId.value);
         setSelectedSchool(school || null);
       } else {
+        // If watchedVendorId is just a string (name), match with translations considering i18n.language
         const school = schoolList.find(
-          (item) => item.vendor_translations?.[0]?.name === watchedVendorId
+          (item) =>
+            item.vendor_translations?.some(
+              (translation) =>
+                translation.locale?.toLowerCase() === i18n.language?.toLowerCase() &&
+                translation.name === watchedVendorId
+            )
         );
         setSelectedSchool(school || null);
       }
     }
-  }, [watchedVendorId, schoolList]);
+  }, [watchedVendorId, schoolList, i18n.language]);
 
   // Function to add more language entry
   const handleAddMore = () => {
@@ -1000,27 +1030,41 @@ export default function UserNewEditForm({
               {values.user_type === 'COLLECTOR' && (
                 <RHFAutocompleteSearch
                   name="city_assigned"
-                  label={t('City Assigned')}
-                  multiple // Enable multiple selection
+                  label={t('city_assigned')}
+                  multiple
                   // disabled={currentUser?.id}
                   options={
-                    city?.map((c) => ({
-                      value: c.city_translations?.[0]?.city_id,
-                      label: c.city_translations?.[0]?.name ?? t('unknown'),
-                    })) || []
+                    city?.map((c) => {
+                      const translation =
+                        c.city_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                        ) ?? c.city_translations?.[0];
+
+                      return {
+                        value: translation?.city_id,
+                        label: translation?.name ?? t('unknown'),
+                      };
+                    }) || []
                   }
                 />
               )}
               {values.user_type === 'ASSISTANT' && (
                 <RHFAutocompleteSearch
                   name="city_assigned"
-                  label={t('City Assigned')}
+                  label={t('city_assigned')}
                   multiple
                   options={
-                    city?.map((c) => ({
-                      value: c.city_translations?.[0]?.city_id,
-                      label: c.city_translations?.[0]?.name ?? t('unknown'),
-                    })) || []
+                    city?.map((c) => {
+                      const translation =
+                        c.city_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                        ) ?? c.city_translations?.[0];
+
+                      return {
+                        value: translation?.city_id,
+                        label: translation?.name ?? t('unknown'),
+                      };
+                    }) || []
                   }
                 />
               )}
@@ -1028,13 +1072,20 @@ export default function UserNewEditForm({
               {values.user_type === 'ASSISTANT' && (
                 <RHFAutocompleteSearch
                   name="school_ids"
-                  label={t('School')}
+                  label={t('school')}
                   multiple
                   options={
-                    schoolList?.map((c) => ({
-                      value: c.vendor_translations?.[0]?.vendor_id,
-                      label: c.vendor_translations?.[0]?.name ?? t('unknown'),
-                    })) || []
+                    schoolList?.map((c) => {
+                      const translation =
+                        c.vendor_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                        ) ?? c.vendor_translations?.[0];
+
+                      return {
+                        value: translation?.vendor_id,
+                        label: translation?.name ?? t('unknown'),
+                      };
+                    }) || []
                   }
                 />
               )}
@@ -1221,12 +1272,19 @@ export default function UserNewEditForm({
                     options={
                       schoolList && schoolList.length > 0
                         ? [
-                            ...schoolList.map((item) => ({
-                              label: `${item.vendor_translations?.[0]?.name}${
-                                item.email ? ` - ${item.email}` : ''
-                              }`,
-                              value: item.id,
-                            })),
+                            ...schoolList.map((item) => {
+                              const translation =
+                                item.vendor_translations?.find(
+                                  (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                                ) ?? item.vendor_translations?.[0];
+
+                              return {
+                                label: `${translation?.name ?? t('unknown')}${
+                                  item.email ? ` - ${item.email}` : ''
+                                }`,
+                                value: item.id,
+                              };
+                            }),
                             { label: t('other'), value: null },
                           ]
                         : [{ label: t('other'), value: null }]
@@ -1366,10 +1424,17 @@ export default function UserNewEditForm({
                       name="city_id"
                       label={t('city')}
                       options={
-                        city?.map((option: any) => ({
-                          value: option?.id ?? 'unknown',
-                          label: option?.city_translations?.[0]?.name ?? t('unknown'),
-                        })) ?? []
+                        city?.map((option: any) => {
+                          const translation =
+                            option?.city_translations?.find(
+                              (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                            ) ?? option?.city_translations?.[0];
+
+                          return {
+                            value: option?.id ?? 'unknown',
+                            label: translation?.name ?? t('unknown'),
+                          };
+                        }) ?? []
                       }
                       getOptionLabel={(option) => option?.label ?? ''}
                       renderOption={(props, option: any) => (
@@ -1383,10 +1448,17 @@ export default function UserNewEditForm({
                       name="area_id"
                       label={t('area')}
                       options={
-                        states?.map((option: any) => ({
-                          value: option?.id ?? 'unknown',
-                          label: option?.translations?.[0]?.name ?? t('unknown'),
-                        })) ?? []
+                        states?.map((option: any) => {
+                          const translation =
+                            option?.translations?.find(
+                              (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                            ) ?? option?.translations?.[0];
+
+                          return {
+                            value: option?.id ?? 'unknown',
+                            label: translation?.name ?? t('unknown'),
+                          };
+                        }) ?? []
                       }
                       getOptionLabel={(option) => option?.label ?? ''}
                       renderOption={(props, option: any) => (

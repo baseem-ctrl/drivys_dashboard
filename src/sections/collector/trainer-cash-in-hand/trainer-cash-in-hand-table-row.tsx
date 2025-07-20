@@ -28,7 +28,7 @@ interface StudentReviewRowProps {
 
 export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowProps) {
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -97,7 +97,11 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
         }}
       >
         <Typography variant="body2">
-          {row?.vendor?.vendor_translations[0]?.name || t('n/a')}
+          {row?.vendor?.vendor_translations?.find(
+            (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ||
+            row?.vendor?.vendor_translations?.[0]?.name ||
+            t('n/a')}
         </Typography>
       </TableCell>
       <TableCell

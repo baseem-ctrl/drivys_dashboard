@@ -45,7 +45,7 @@ type Props = {
 };
 
 export default function UserQuickEditForm({ currentUser, open, onClose, reload }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthContext();
   const [searchValue, setSearchValue] = useState('');
 
@@ -88,8 +88,17 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
     user_type: Yup.string(),
     vendor_id: Yup.mixed().nullable(),
   });
-  const defaultValues = useMemo(
-    () => ({
+  const defaultValues = useMemo(() => {
+    // Find vendor name matching current locale or fallback
+    const vendor = schoolList.find((school) => school.id === currentUser?.vendor?.id);
+    const vendorName =
+      vendor?.vendor_translations?.find(
+        (vt) => vt.locale?.toLowerCase() === i18n.language?.toLowerCase()
+      )?.name ??
+      vendor?.vendor_translations?.[0]?.name ??
+      t('name_not_available');
+
+    return {
       name: currentUser?.name || '',
       name_ar: currentUser?.name_ar || '',
 
@@ -99,11 +108,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       user_type: currentUser?.user_type || '',
       country_code: currentUser?.country_code || '',
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
-      vendor_id: schoolList.find((school) => school.id === currentUser?.vendor?.id)
-        ?.vendor_translations[0]?.name,
-    }),
-    [currentUser]
-  );
+      vendor_id: vendorName,
+    };
+  }, [currentUser, schoolList, i18n.language, t]);
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
@@ -177,7 +184,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>{t("Quick Update")}</DialogTitle>
+        <DialogTitle>{t('Quick Update')}</DialogTitle>
 
         <DialogContent>
           <Box
@@ -190,7 +197,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             }}
             pt={3}
           >
-            <RHFSelect name="user_type" label={t("User Type")}>
+            <RHFSelect name="user_type" label={t('User Type')}>
               {filteredValues?.length > 0 &&
                 filteredValues?.map((option: any) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -198,14 +205,14 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
                   </MenuItem>
                 ))}
             </RHFSelect>
-            <RHFTextField name="name" label={t("Full Name")} />
+            <RHFTextField name="name" label={t('Full Name')} />
             {values.user_type === 'TRAINER' && (
-              <RHFTextField name="name_ar" label={t("Name (Ar)")} />
+              <RHFTextField name="name_ar" label={t('Name (Ar)')} />
             )}{' '}
-            <RHFTextField name="email" label={t("Email Address")} />
+            <RHFTextField name="email" label={t('Email Address')} />
             <RHFTextField
               name="password"
-              label={t("Password")}
+              label={t('Password')}
               type={password.value ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
@@ -220,13 +227,23 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             {values.user_type === 'TRAINER' && (
               <RHFAutocompleteSearch
                 name="vendor_id"
-                label={t("Select School")}
-                placeholder={t("Search School...")}
-                options={schoolList?.map((item: any) => ({
-                  label: `${item.vendor_translations?.[0]?.name}${item.email ? ` - ${item.email}` : ''
-                    }`,
-                  value: item.id,
-                }))}
+                label={t('Select School')}
+                placeholder={t('Search School...')}
+                options={
+                  schoolList?.map((item: any) => {
+                    const translation =
+                      item.vendor_translations?.find(
+                        (vt: any) => vt.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                      ) ?? item.vendor_translations?.[0];
+
+                    return {
+                      label: `${translation?.name ?? t('unknown')}${
+                        item.email ? ` - ${item.email}` : ''
+                      }`,
+                      value: item.id,
+                    };
+                  }) ?? []
+                }
                 setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                 disableClearable={true}
                 loading={schoolLoading}
@@ -235,7 +252,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
             <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={1}>
               <RHFTextField
                 name="country_code"
-                label={t("Country")}
+                label={t('Country')}
                 sx={{ maxWidth: 100 }}
                 prefix="+"
                 error={!!errors.country_code}
@@ -243,23 +260,23 @@ export default function UserQuickEditForm({ currentUser, open, onClose, reload }
               />
               <RHFTextField
                 name="phone"
-                label={t("Phone Number")}
+                label={t('Phone Number')}
                 sx={{ flex: 1 }}
                 error={!!errors.phone}
                 helperText={errors.phone?.message}
               />
             </Box>
-            <RHFSwitch name="is_active" label={t("Is Active")} />{' '}
+            <RHFSwitch name="is_active" label={t('Is Active')} />{' '}
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {t("Update")}
+            {t('Update')}
           </LoadingButton>
         </DialogActions>
       </FormProvider>

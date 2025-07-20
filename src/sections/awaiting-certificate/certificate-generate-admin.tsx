@@ -42,10 +42,14 @@ export default function GenerateCertificateForm() {
     published: '1',
     locale: i18n.language,
   });
+
   const categoryOptions = category?.map((cat) => {
-    const firstTranslation = cat.category_translations[0];
+    const matchedTranslation =
+      cat.category_translations?.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      ) || cat.category_translations?.[0];
     return {
-      label: firstTranslation?.name || t('n/a'),
+      label: matchedTranslation?.name || t('n/a'),
       value: cat.id,
     };
   });
@@ -55,9 +59,13 @@ export default function GenerateCertificateForm() {
     page: 0,
   });
   const cityOptions = city?.map((cityItem) => {
-    const firstTranslation = cityItem.city_translations[0];
+    const matchedTranslation =
+      cityItem.city_translations?.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      ) || cityItem.city_translations?.[0];
+
     return {
-      label: firstTranslation?.name || t('n/a'),
+      label: matchedTranslation?.name || t('n/a'),
       value: cityItem.id,
     };
   });

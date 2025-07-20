@@ -110,7 +110,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.package_translations?.length > 0) {
-      setSelectedLanguage(details?.package_translations[0]?.locale);
+      setSelectedLanguage(
+        details?.package_translations.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale ?? details?.package_translations[0]?.locale
+      );
     }
   }, [details]);
 
@@ -161,12 +165,24 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       background_color: details?.background_color || '',
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
       drivys_commision: details?.drivys_commision || '',
-      vendor_id: schoolList.find((school) => school?.id === details?.vendor?.id)
-        ?.vendor_translations[0]?.name,
+      vendor_id:
+        schoolList
+          .find((school) => school?.id === details?.vendor?.id)
+          ?.vendor_translations?.find(
+            (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ??
+        schoolList.find((school) => school?.id === details?.vendor?.id)?.vendor_translations?.[0]
+          ?.name,
+
       category_id:
         category?.length > 0
-          ? category.find((category) => category?.id === details?.category_id)
-              ?.category_translations[0]?.name
+          ? category
+              .find((category) => category?.id === details?.category_id)
+              ?.category_translations?.find(
+                (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ??
+            category.find((category) => category?.id === details?.category_id)
+              ?.category_translations?.[0]?.name
           : '',
     }),
     [selectedLocaleObject, details, schoolList, category]
@@ -257,7 +273,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   useEffect(() => {
     if (details?.session_details) {
       const initialTitles = details.session_details?.map((session) => ({
-        title: session.translations?.[0]?.title || '',
+        title:
+          session.translations?.find(
+            (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.title ??
+          session.translations?.[0]?.title ??
+          '',
       }));
       setSessionTitles(initialTitles);
     }
@@ -579,7 +600,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 ),
               },
               ...(details?.vendor?.vendor_translations?.flatMap((itm: any) => [
-                { label: `${t('School Name')} (${t(itm?.locale)})`, value: itm?.name ?? t('n/a') },
+                {
+                  label: `${t('School Name')} (${t(itm?.locale?.toLowerCase() || 'n/a')})`,
+                  value: itm?.name ?? t('n/a'),
+                },
               ]) || []),
 
               { label: t('Number of sessions'), value: details?.number_of_sessions ?? 'NA' },
@@ -595,13 +619,17 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
               {
                 label: t('Category'),
-                value: (() => {
-                  const selectedCategory = category?.find((cat) => cat.id === details?.category_id);
-                  return selectedCategory
-                    ? selectedCategory.category_translations[0]?.name || t('n/a') // Adjust if you need a specific locale
-                    : t('n/a');
-                })(),
+                value:
+                  category
+                    ?.find((cat) => cat.id === details?.category_id)
+                    ?.category_translations?.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ??
+                  category?.find((cat) => cat.id === details?.category_id)
+                    ?.category_translations?.[0]?.name ??
+                  t('n/a'),
               },
+
               {
                 label: t('is_published'),
                 value:
@@ -661,13 +689,17 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     <Iconify color="red" icon="bi:x-square-fill" />
                   ),
               },
-
               ...((details?.number_of_sessions !== -1 &&
                 details?.session_details
                   ?.slice(0, Math.floor(numberOfSessions / 2))
                   ?.map((sessionItem: any) => ({
                     label: `${t('Slot')} ${sessionItem.slot_number} ${t('Title')}`,
-                    value: sessionItem.translations?.[0]?.title ?? t('n/a'),
+                    value:
+                      sessionItem.translations?.find(
+                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.title ??
+                      sessionItem.translations?.[0]?.title ??
+                      t('n/a'),
                   }))) ||
                 []),
             ]?.map((item, index) => (
@@ -754,27 +786,39 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     label={t('Select School')}
                     placeholder="Search School..."
                     options={schoolList?.map((item: any) => ({
-                      label: `${item.vendor_translations?.[0]?.name}${
-                        item.email ? ` - ${item.email}` : ''
-                      }`,
+                      label: `${
+                        item.vendor_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                        )?.name ??
+                        item.vendor_translations?.[0]?.name ??
+                        'Unknown'
+                      }${item.email ? ` - ${item.email}` : ''}`,
                       value: item.id,
                     }))}
                     setSearchOwner={(searchTerm: any) => setSearchValue(searchTerm)}
                     disableClearable={true}
                     loading={schoolLoading}
                   />
+
                   <RHFAutocompleteSearch
                     name="category_id"
                     label={t('Select Category')}
                     placeholder={t('Search Category...')}
                     options={category?.map((item: any) => ({
-                      label: `${item.category_translations?.[0]?.name}`,
+                      label: `${
+                        item.category_translations?.find(
+                          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                        )?.name ??
+                        item.category_translations?.[0]?.name ??
+                        'Unknown'
+                      }`,
                       value: item.id,
                     }))}
                     setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
                     disableClearable={true}
                     loading={categoryLoading}
                   />
+
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_published" label={t('Publish')} />
                   </Stack>
@@ -958,7 +1002,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {cityItem?.city?.city_translations[0]?.name ?? t('n/a')}
+                    {cityItem?.city?.city_translations?.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ??
+                      cityItem?.city?.city_translations?.[0]?.name ??
+                      t('n/a')}
                   </Box>
                 </Box>
 
