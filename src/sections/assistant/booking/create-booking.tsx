@@ -209,7 +209,9 @@ export default function CreateBooking() {
 
   const handleBack = () => {
     setActiveStep((prev) => prev - 1);
+    setPickupLocationSelected(null);
   };
+  console.log('pick up locstion', pickupLocationSelected);
 
   const handleSelectStudent = (id: number) => {
     setSelectedStudentId(id);
@@ -281,7 +283,7 @@ export default function CreateBooking() {
         formData.append('pickup_location', pickupLocationSelected);
       }
 
-      formData.append('is_paid', paymentProof ? '1' : '0');
+      // formData.append('is_paid', paymentProof ? '1' : '0');
 
       sessions.forEach(({ start_time, end_time, session_no }, index) => {
         const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
@@ -299,9 +301,9 @@ export default function CreateBooking() {
         }
       });
 
-      if (paymentProof) {
-        formData.append('payment_proof', paymentProof); // binary file
-      }
+      // if (paymentProof) {
+      //   formData.append('payment_proof', paymentProof); // binary file
+      // }
 
       if (remarks) formData.append('remarks', remarks);
       if (txnId) formData.append('txn_id', txnId);
@@ -310,7 +312,7 @@ export default function CreateBooking() {
 
       if (response.status === 'success') {
         enqueueSnackbar(t('booking_created_success'), { variant: 'success' });
-        router.push(paths.dashboard.assistant.overview);
+        router.push(paths.dashboard.assistant.booking.list);
       }
     } catch (error: any) {
       const errorDetails = error?.message?.errors;
