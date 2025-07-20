@@ -57,6 +57,7 @@ const RefundDetailsComponent = () => {
 
   const theme = useTheme();
   const router = useRouter();
+  const { i18n } = useTranslation();
 
   const { bookingDetails, bookingError, bookingLoading, revalidateBooking } = useGetBookingById(id);
   const { user, package: pkg, driver, pickup_location, total, sessions } = bookingDetails;
@@ -522,8 +523,10 @@ const RefundDetailsComponent = () => {
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
                     {pkg?.vendor?.vendor_translations?.find(
-                      (item) => item?.locale === i18n.language
-                    )?.name || t('n/a')}{' '}
+                      (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      pkg?.vendor?.vendor_translations?.[0]?.name ||
+                      t('n/a')}
                   </Box>
                 </Box>
               </CardContent>

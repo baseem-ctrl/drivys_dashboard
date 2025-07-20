@@ -51,7 +51,7 @@ import { useTranslation } from 'react-i18next';
 
 const RefundDetailsComponent = () => {
   const settings = useSettingsContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -486,7 +486,9 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n_a')}
+                    {pkg?.package_translations?.find(
+                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || t('n_a')}{' '}
                   </Box>
                 </Box>
 
@@ -510,7 +512,11 @@ const RefundDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || t('n_a')}
+                    {pkg?.vendor?.vendor_translations?.find(
+                      (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      pkg?.vendor?.vendor_translations?.[0]?.name ||
+                      t('n_a')}
                   </Box>
                 </Box>
               </CardContent>

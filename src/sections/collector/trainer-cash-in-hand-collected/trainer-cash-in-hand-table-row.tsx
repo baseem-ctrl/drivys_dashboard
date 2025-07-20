@@ -29,7 +29,7 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [amount, setAmount] = useState<null | HTMLElement>(null);
   const [trainerId, setTrainerId] = useState<string | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Open popover and set trainer ID
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
@@ -79,7 +79,11 @@ export default function TrainerCashInHandRow({ reload, row }: StudentReviewRowPr
     <TableRow hover>
       <TableCell>
         <Typography variant="body2">
-          {row?.vendor?.vendor_translations[0]?.name || t('n/a')}
+          {row?.vendor?.vendor_translations?.find(
+            (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+          )?.name ||
+            row?.vendor?.vendor_translations?.[0]?.name ||
+            t('n/a')}
         </Typography>
       </TableCell>
       <TableCell>{row?.user?.name || t('n/a')}</TableCell>

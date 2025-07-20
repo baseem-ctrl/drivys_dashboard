@@ -108,7 +108,7 @@ type Props = {
   reload?: VoidFunction;
 };
 
-export default function UserDetailsContent({
+export default function AssistantUserDetailsContent({
   addresses,
   addressesLoading,
   details,
@@ -136,8 +136,6 @@ export default function UserDetailsContent({
   const [currentTab, setCurrentTab] = useState('details');
   const [studentTab, setStudentTab] = useState('details');
   const [showAll, setShowAll] = useState(false);
-  const { i18n } = useTranslation();
-
   const { trainerReviews, trainerReviewsLoading, revalidateTrainerReviews } = useGetTrainerReview({
     trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
     student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
@@ -228,12 +226,12 @@ export default function UserDetailsContent({
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
-      const matched = details.vendor_translations.find(
-        (vt: any) => vt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      const matchingTranslation = details.vendor_translations.find(
+        (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
       );
-      setSelectedLanguage(matched?.locale ?? details.vendor_translations[0].locale);
+      setSelectedLanguage(matchingTranslation?.locale || details.vendor_translations[0]?.locale);
     }
-  }, [details, i18n.language]);
+  }, [details]);
 
   useEffect(() => {
     if (defaultValues.latitude && defaultValues.longitude) {
@@ -319,6 +317,8 @@ export default function UserDetailsContent({
   } = Schoolethods;
   const { isSubmitting, errors } = schoolFormState;
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
+  const { i18n } = useTranslation();
+
   useEffect(() => {
     if (details?.license_file) {
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
@@ -484,7 +484,7 @@ export default function UserDetailsContent({
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>{t('school')}:</strong>{' '}
               {details.school.vendor_translations.find(
-                (vt: any) => vt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
               )?.name ?? t('name_not_available')}
             </Typography>
           )}
@@ -712,7 +712,7 @@ export default function UserDetailsContent({
                           >
                             {details?.vendor?.vendor_translations?.find(
                               (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.name || details?.vendor?.vendor_translations?.[0]?.name}
+                            ) || details?.vendor?.vendor_translations?.[0]}
                           </Link>
                         ) : (
                           details?.school_name ?? t('n/a')
@@ -788,13 +788,13 @@ export default function UserDetailsContent({
                       },
 
                       {
-                        label: t('city_assigned'),
-                        value: details.city_assigned.map(
-                          (city: any) =>
-                            city?.city?.city_translations?.find(
-                              (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.name ?? t('unknown')
-                        ),
+                        label: 'City Assigned',
+                        value: details.city_assigned.map((city) => {
+                          const translation = city?.city?.city_translations?.find(
+                            (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          );
+                          return translation?.name ?? t('Unknown');
+                        }),
                       },
                     ]
                   : []),
@@ -1802,11 +1802,10 @@ export default function UserDetailsContent({
                 },
                 {
                   label: t('area'),
-                  value: address?.state_province
-                    ? address?.state_province?.translations?.find(
-                        (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name ?? t('n/a')
-                    : t('n/a'),
+                  value:
+                    address?.state_province?.translations?.find(
+                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ?? t('n/a'),
                 },
 
                 // { label: t('country_code'), value: address?.country_code ?? 'UAE' },

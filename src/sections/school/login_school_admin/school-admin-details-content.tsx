@@ -44,7 +44,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
   //   details?.vendor_translations?.length > 0 ? details?.vendor_translations[0]?.locale : ''
   // );
   const [editMode, setEditMode] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -291,12 +291,19 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                           { label: 'Street Address', value: details?.street_address ?? t('n/a') },
                           {
                             label: 'City',
-                            value: details?.city?.city_translations[0]?.name ?? t('n/a'),
+                            value:
+                              details?.city?.city_translations?.find(
+                                (ct) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                              )?.name ?? t('n/a'),
                           },
                           {
                             label: 'State',
-                            value: details?.state?.translations[0]?.name ?? t('n/a'),
+                            value:
+                              details?.state?.translations?.find(
+                                (st) => st?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                              )?.name ?? t('n/a'),
                           },
+
                           { label: 'Country', value: details?.country ?? t('n/a') },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>

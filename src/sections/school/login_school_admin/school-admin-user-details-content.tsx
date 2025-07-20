@@ -87,7 +87,7 @@ export default function UserDetailsContentAdmin({
   const [newAddress, setNewAddress] = useState(null); // state to store new stundet address
   const [showAll, setShowAll] = useState(false);
   const { user } = useAuthContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
@@ -524,13 +524,20 @@ export default function UserDetailsContentAdmin({
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
             {[
               {
-                label: 'City',
-                value: details?.user_preference?.city?.city_translations[0]?.name ?? t('n/a'),
+                label: t('city'),
+                value:
+                  details?.user_preference?.city?.city_translations?.find(
+                    (ct) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
               {
-                label: 'Area',
-                value: details?.user_preference?.state_province?.translations[0]?.name ?? t('n/a'),
+                label: t('area'),
+                value:
+                  details?.user_preference?.state_province?.translations?.find(
+                    (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                  )?.name ?? t('n/a'),
               },
+
               { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
 
               { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
@@ -652,18 +659,22 @@ export default function UserDetailsContentAdmin({
                   { label: 'Street', value: address?.street ?? t('n/a') },
                   { label: 'Building Name', value: address?.building_name ?? t('n/a') },
                   {
-                    label: 'City',
+                    label: t('city'),
                     value:
                       address?.city ??
-                      address?.city_id_city?.city_translations?.[0]?.name ??
+                      address?.city_id_city?.city_translations?.find(
+                        (ct) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ??
                       t('n/a'),
                   },
                   {
-                    label: 'Area',
-                    value: address?.state_province
-                      ? address?.state_province?.translations?.[0]?.name
-                      : t('n/a'),
+                    label: t('area'),
+                    value:
+                      address?.state_province?.translations?.find(
+                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ?? t('n/a'),
                   },
+
                   { label: 'Country Code', value: address?.country_code ?? t('n/a') },
                   { label: 'Label', value: address?.label ?? t('n/a') },
                   { label: 'Phone Number', value: address?.phone_number ?? t('n/a') },

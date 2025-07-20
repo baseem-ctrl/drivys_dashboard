@@ -112,7 +112,9 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
         <Typography variant="body2" color="black" sx={{ fontSize: '12px' }}>
           {trainer?.user?.vendor?.vendor_translations?.find(
             (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-          )?.name || t('n/a')}
+          )?.name ||
+            trainer?.user?.vendor?.vendor_translations?.[0]?.name ||
+            t('n/a')}
         </Typography>
         <Chip
           label={trainer?.user?.is_active ? t('available') : t('unavailable')}

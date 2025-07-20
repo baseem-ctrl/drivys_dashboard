@@ -120,7 +120,9 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
           title={
             <Box sx={{ textAlign: 'center', p: 1 }}>
               <Typography variant="body1">
-                {details?.vendor_translations?.[0]?.name ?? t('n/a')}
+                {details?.vendor_translations?.find(
+                  (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                )?.name ?? t('n/a')}
               </Typography>
             </Box>
           }
@@ -158,9 +160,9 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
               }}
               onClick={() => handleUserClick(id)}
             >
-              {details?.vendor_translations?.[0]?.name
-                ? details?.vendor_translations?.[0]?.name
-                : 'U'}
+              {details?.vendor_translations?.find(
+                (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              )?.name ?? 'U'}
             </Avatar>
           )}
         </Tooltip>

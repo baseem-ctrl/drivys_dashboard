@@ -54,7 +54,7 @@ import { useTranslation } from 'react-i18next';
 
 const BookingDetailsComponent = () => {
   const settings = useSettingsContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -519,7 +519,11 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.package_translations[0]?.name || t('n/a')}
+                    {pkg?.package_translations?.find(
+                      (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      pkg?.package_translations?.[0]?.name ||
+                      t('n/a')}
                   </Box>
                 </Box>
 
@@ -543,7 +547,11 @@ const BookingDetailsComponent = () => {
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {pkg?.vendor?.vendor_translations[0]?.name || t('n/a')}
+                    {pkg?.vendor?.vendor_translations?.find(
+                      (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      pkg?.vendor?.vendor_translations?.[0]?.name ||
+                      t('n/a')}
                   </Box>
                 </Box>
               </CardContent>

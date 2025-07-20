@@ -23,6 +23,7 @@ import { updateRefundRequestStatus, updateRequestStatus } from 'src/api/refund';
 import { useGetPaymentRefundStatusEnum, useGetRefundRequestStatusEnum } from 'src/api/enum';
 import { useEffect, useState } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +35,7 @@ export default function RefundTableRow({
 }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { t } = useLocales();
+  const { i18n, t } = useTranslation();
 
   const { user, driver, driver_id } = row;
   const { refundRequestStatusEnum } = useGetRefundRequestStatusEnum();
@@ -201,7 +202,14 @@ export default function RefundTableRow({
             }
           }}
         >
-          {row?.booking?.package?.package_translations[0]?.name ?? 'Unknown Package'}
+          {(() => {
+            const translation =
+              row?.booking?.package?.package_translations?.find(
+                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
+              ) || row?.booking?.package?.package_translations?.[0];
+
+            return translation?.name ?? t('unknown_package');
+          })()}
         </Typography>
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>

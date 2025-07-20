@@ -35,6 +35,7 @@ import { updateUserVerification } from 'src/api/school-admin';
 import Scrollbar from 'src/components/scrollbar';
 import { IUserTableFilterValue } from 'src/types/city';
 import TodoListSearch from 'src/sections/todo/todo-pending-request-filter';
+import { useTranslation } from 'react-i18next';
 
 // Type Definitions
 type ItemProps = {
@@ -68,6 +69,7 @@ export default function PendingRequests({
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useAuthContext();
   const { t } = useLocales();
+  const { i18n } = useTranslation();
 
   const {
     pendingRequests,
@@ -233,7 +235,11 @@ export default function PendingRequests({
                         }
                       >
                         {t('school_name')} :{' '}
-                        {request?.vendor?.vendor_translations[0]?.name || t('n/a')}
+                        {request?.vendor?.vendor_translations?.find(
+                          (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                        )?.name ||
+                          request?.vendor?.vendor_translations?.[0]?.name ||
+                          t('n/a')}{' '}
                       </Typography>
                       {/* </Tooltip> */}
                       <Typography variant="body2" sx={{ color: '#CF5A0D', cursor: 'default' }}>
@@ -241,24 +247,37 @@ export default function PendingRequests({
                         {moment(request?.requested_time).format('MMMM D, YYYY, hh:mm A') ||
                           t('n/a')}
                       </Typography>
-                      {request?.user?.user_preference?.city?.city_translations[0]?.name && (
+                      {(request?.user?.user_preference?.city?.city_translations?.find(
+                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ||
+                        request?.user?.user_preference?.city?.city_translations?.[0]?.name) && (
                         <Typography
                           variant="body2"
                           sx={{ cursor: 'default', color: 'text.secondary' }}
                         >
                           Trainer from{' '}
-                          {request?.user?.user_preference?.city?.city_translations[0]?.name ||
-                            'N / A'}
+                          {request?.user?.user_preference?.city?.city_translations?.find(
+                            (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          )?.name ||
+                            request?.user?.user_preference?.city?.city_translations?.[0]?.name ||
+                            t('n/a')}
                         </Typography>
                       )}
-                      {request?.user?.user_preference?.vehicle_type?.category_translations[0]
-                        ?.name && (
+                      {(request?.user?.user_preference?.vehicle_type?.category_translations?.find(
+                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      )?.name ||
+                        request?.user?.user_preference?.vehicle_type?.category_translations?.[0]
+                          ?.name) && (
                         <Typography
                           variant="body2"
                           sx={{ cursor: 'default', color: 'text.secondary' }}
                         >
-                          {request?.user?.user_preference?.vehicle_type?.category_translations[0]
-                            ?.name || 'N / A'}
+                          {(request?.user?.user_preference?.vehicle_type?.category_translations?.find(
+                            (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          )?.name ||
+                            request?.user?.user_preference?.vehicle_type?.category_translations?.[0]
+                              ?.name) ??
+                            'N / A'}
                         </Typography>
                       )}
                     </Stack>

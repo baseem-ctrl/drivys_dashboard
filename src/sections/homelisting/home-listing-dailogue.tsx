@@ -197,11 +197,6 @@ export default function HomeListingDialog({
     control,
     name: 'trainers', // Field array name for addons
   });
-  const mapOptions = (items: any[], translationKey: string) =>
-    items?.map((item) => ({
-      label: item[translationKey]?.[0]?.name || 'No Name',
-      value: item.id,
-    }));
 
   const mapOptionsUser = (items: any[]) =>
     items?.map((item) => ({

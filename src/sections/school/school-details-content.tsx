@@ -103,9 +103,13 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.vendor_translations?.length > 0) {
-      setSelectedLanguage(details?.vendor_translations[0]?.locale);
+      const matchingTranslation = details.vendor_translations.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+
+      setSelectedLanguage(matchingTranslation?.locale || details.vendor_translations[0]?.locale);
     }
-  }, [details]);
+  }, [details, i18n.language]);
 
   const [localeOptions, setLocaleOptions] = useState([]);
 
@@ -231,16 +235,30 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
   });
 
   const cityOptions =
-    city?.map((cityItem) => ({
-      value: cityItem.id,
-      label: cityItem.city_translations?.[0]?.name || t('unnamed_city'),
-    })) || [];
+    city?.map((cityItem) => {
+      const translation = cityItem.city_translations?.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+      return {
+        value: cityItem.id,
+        label: translation?.name || t('unnamed_city'),
+      };
+    }) || [];
+
   const stateOptions =
-    states?.map((stateItem) => ({
-      value: stateItem.id,
-      label: stateItem.translations?.[0]?.name || t('unknown_state'),
-      cityName: stateItem.city?.city_translations?.[0]?.name || t('unknown_city'),
-    })) || [];
+    states?.map((stateItem) => {
+      const stateTranslation = stateItem.translations?.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+      const cityTranslation = stateItem.city?.city_translations?.find(
+        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+      );
+      return {
+        value: stateItem.id,
+        label: stateTranslation?.name || t('unknown_state'),
+        cityName: cityTranslation?.name || t('unknown_city'),
+      };
+    }) || [];
 
   const [uploadedFileUrl, setUploadedFileUrl] = useState('');
   useEffect(() => {
@@ -1030,19 +1048,26 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
                 };
 
                 const translatedCityName =
-                  city?.find((cityItem) => {
-                    const cityId = cityItem?.city_translations?.[0]?.city_id?.toString();
-                    const detailsCity = details?.city?.id.toString();
-                    return cityId === detailsCity;
-                  })?.city_translations?.[0]?.name || t('n/a');
+                  city
+                    ?.find((cityItem) => {
+                      const cityId = cityItem?.id?.toString();
+                      const detailsCity = details?.city?.id?.toString();
+                      return cityId === detailsCity;
+                    })
+                    ?.city_translations?.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || t('n/a');
 
                 const translatedStateName =
-                  stateList?.find((stateItem) => {
-                    const stateProvinceId =
-                      stateItem?.translations?.[0]?.state_province_id?.toString();
-                    const detailsState = details?.state?.id.toString();
-                    return stateProvinceId === detailsState;
-                  })?.translations?.[0]?.name || t('n/a');
+                  stateList
+                    ?.find((stateItem) => {
+                      const stateId = stateItem?.id?.toString();
+                      const detailsState = details?.state?.id?.toString();
+                      return stateId === detailsState;
+                    })
+                    ?.translations?.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name || t('n/a');
 
                 return (
                   <Box key={details.id} sx={{ width: '100%' }}>

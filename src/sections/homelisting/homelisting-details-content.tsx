@@ -60,7 +60,11 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
   // This useEffect sets the initial selectedLanguage value once details are available
   useEffect(() => {
     if (details?.translations?.length > 0) {
-      setSelectedLanguage(details?.translations[0]?.locale);
+      setSelectedLanguage(
+        details?.translations.find(
+          (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+        )?.locale || details?.translations[0]?.locale
+      );
     }
   }, [details]);
 
