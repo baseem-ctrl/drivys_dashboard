@@ -505,8 +505,8 @@ export default function SchoolTableRow({
             />
           ) : (
             <ListItemText
-              primary={vendor_user?.user?.name ?? 'NA'}
-              secondary={vendor_user?.user?.email ?? 'NA'}
+              primary={vendor_user?.user?.name ?? t('n/a')}
+              secondary={vendor_user?.user?.email ?? t('n/a')}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
                 component: 'span',

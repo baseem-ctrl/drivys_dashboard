@@ -254,9 +254,9 @@ export default function HomeListingDetailsContent({ details, loading, reload }: 
                         value: translation.title ?? t('n/a'),
                       }))
                     : [{ label: t('Title'), value: t('n/a') }]),
-                  { label: t('Display Order'), value: details?.display_order ?? 'NA' },
-                  { label: t('Catalogue Type'), value: details?.catalogue_type ?? 'NA' },
-                  { label: t('Display Type'), value: details?.display_type ?? 'NA' },
+                  { label: t('Display Order'), value: details?.display_order ?? t('n/a') },
+                  { label: t('Catalogue Type'), value: details?.catalogue_type ?? t('n/a') },
+                  { label: t('Display Type'), value: details?.display_type ?? t('n/a') },
                   {
                     label: t('Is Active'),
                     value: (

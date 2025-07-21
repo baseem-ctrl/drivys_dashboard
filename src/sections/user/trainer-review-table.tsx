@@ -97,7 +97,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
                 {student?.reviews?.length > 0 ? (
                   student.reviews.map((review) => (
                     <TableRow key={review?.session_id}>
-                      <TableCell>{review?.session_id ?? 'NA'}</TableCell>
+                      <TableCell>{review?.session_id ?? t('n/a')}</TableCell>
                       <TableCell>
                         <Typography
                           variant="body2"
@@ -112,7 +112,7 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
                             review?.student_id ? handleUserDetails(review?.student_id) : ''
                           }
                         >
-                          {review?.student_name ?? 'NA'}
+                          {review?.student_name ?? t('n/a')}
                         </Typography>
                       </TableCell>
 

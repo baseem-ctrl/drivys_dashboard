@@ -279,7 +279,7 @@ export default function PackageTableRow({
               )}
             />
           ) : (
-            selectedLocaleObject?.name || 'NA'
+            selectedLocaleObject?.name || t('n/a')
           )}
         </TableCell>
 
@@ -371,7 +371,7 @@ export default function PackageTableRow({
                   (item) => item?.locale?.toLowerCase() === i18n.language?.toLowerCase()
                 )?.name ??
                 vendor?.vendor_translations?.[0]?.name ??
-                'NA'
+                t('n/a')
               }
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{

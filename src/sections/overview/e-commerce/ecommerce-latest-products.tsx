@@ -93,7 +93,7 @@ function ProductItem({ product }: ProductItemProps) {
             component={RouterLink}
             href={paths.dashboard.package.details(id)}
           >
-            {package_name ?? 'NA'}
+            {package_name ?? t('n/a')}
           </Link>
         }
         secondary={

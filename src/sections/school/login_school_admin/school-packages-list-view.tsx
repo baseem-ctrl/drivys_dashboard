@@ -227,17 +227,17 @@ export default function SchoolPackageListView() {
                           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
                             {row?.package_translations?.find(
                               (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.locale ?? 'NA'}
+                            )?.locale ?? t('n/a')}
                           </TableCell>
 
                           <TableCell>
                             {row?.package_translations?.find(
                               (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.name ?? 'NA'}
+                            )?.name ?? t('n/a')}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {(row?.number_of_sessions || t('n/a')) ?? 'NA'}
+                            {(row?.number_of_sessions || t('n/a')) ?? t('n/a')}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -247,12 +247,12 @@ export default function SchoolPackageListView() {
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.drivys_commision ?? 'NA'}
+                            {row?.drivys_commision ?? t('n/a')}
                           </TableCell>
                           <TableCell>
                             {row?.category?.category_translations?.find(
                               (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            )?.name ?? 'NA'}
+                            )?.name ?? t('n/a')}
                           </TableCell>
                         </TableRow>
                       ))}

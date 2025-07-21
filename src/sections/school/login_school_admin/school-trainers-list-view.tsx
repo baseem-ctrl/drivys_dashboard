@@ -304,15 +304,15 @@ export default function SchoolTrainersListView() {
                           <TableCell>
                             <ListItemText
                               primary={row?.user?.name ?? 'Nِ'}
-                              secondary={row?.user?.email ?? 'NA'}
+                              secondary={row?.user?.email ?? t('n/a')}
                             />
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.vehicle_number ?? 'NA'}
+                            {row?.vehicle_number ?? t('n/a')}
                           </TableCell>
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.user?.dob?.split('T')[0] ?? 'NA'}
+                            {row?.user?.dob?.split('T')[0] ?? t('n/a')}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>

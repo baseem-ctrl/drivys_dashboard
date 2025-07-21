@@ -122,7 +122,7 @@ export default function BookingTableToolbar({
           fullWidth
           options={
             vendorOptions?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}(${item?.email ?? 'NA'})`,
+              label: `${item?.name ?? t('n/a')}(${item?.email ?? t('n/a')})`,
               value: item.id,
             })) ?? []
           }
@@ -130,7 +130,7 @@ export default function BookingTableToolbar({
           onChange={(event, newValue) => handleChange('vendor')(newValue?.value || '')}
           renderInput={(params) => (
             <TextField
-              placeholder={t("Select School")}
+              placeholder={t('Select School')}
               {...params}
               onChange={(e) => setSearch(e.target.value)}
               fullWidth
@@ -146,10 +146,10 @@ export default function BookingTableToolbar({
 
       <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
         <TextField
-          label={t("Search by Name")}
+          label={t('Search by Name')}
           value={filters.search || ''}
           onChange={(e) => handleChange('search')(e.target.value)}
-          placeholder={t("Search by student, driver, or school name")}
+          placeholder={t('Search by student, driver, or school name')}
           fullWidth
         />
         {filters.search && (
@@ -209,7 +209,7 @@ export default function BookingTableToolbar({
             },
           }}
         >
-          {t("Select Date")}
+          {t('Select Date')}
         </Button>
         {filters.start_date && filters.end_date && (
           <IconButton onClick={handleClearDates} aria-label="clear dates" sx={{ marginLeft: 2 }}>

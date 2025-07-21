@@ -657,7 +657,7 @@ export default function AssistantUserDetailsContent({
                             label: `${t('language')} ${index + 1}`,
                             value: lang?.dialect?.id
                               ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
-                              : 'NA',
+                              : t('n/a'),
                           }))
                         : []),
                     ]

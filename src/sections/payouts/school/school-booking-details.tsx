@@ -289,8 +289,8 @@ export const SchoolBookingDetailsTable: React.FC<{ booking: BookingDetails }> = 
           <TableBody>
             {payoutsList?.map((booking, index) => (
               <TableRow key={index}>
-                <TableCell>{booking?.vendor_payout?.vendor_name ?? 'NA'} </TableCell>
-                <TableCell>{booking?.trainer_details?.trainer_name ?? 'NA'} </TableCell>
+                <TableCell>{booking?.vendor_payout?.vendor_name ?? t('n/a')} </TableCell>
+                <TableCell>{booking?.trainer_details?.trainer_name ?? t('n/a')} </TableCell>
 
                 <TableCell
                   sx={{

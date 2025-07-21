@@ -427,7 +427,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                   </IconButton>
 
                   <Avatar
-                    alt={trainer?.user?.name ?? 'NA'}
+                    alt={trainer?.user?.name ?? t('n/a')}
                     src={trainer?.user?.photo_url}
                     sx={{ width: 48, height: 48 }}
                   />
@@ -522,29 +522,29 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                       label: 'Phone Number',
                       value: trainer?.user?.country_code
                         ? `${trainer?.user?.country_code}-${trainer?.user?.phone}`
-                        : trainer?.user?.phone ?? 'NA',
+                        : trainer?.user?.phone ?? t('n/a'),
                     },
                     {
                       label: 'Hand Cash Allowed',
-                      value: trainer?.max_cash_in_hand_allowed ?? 'NA',
+                      value: trainer?.max_cash_in_hand_allowed ?? t('n/a'),
                     },
 
-                    { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? 'NA' },
+                    { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? t('n/a') },
                     {
                       label: 'School Commission',
-                      value: trainer?.vendor_commission_in_percentage ?? 'NA',
+                      value: trainer?.vendor_commission_in_percentage ?? t('n/a'),
                     },
                     {
                       label: 'Cash Clearance Date',
                       value: trainer?.cash_clearance_date
                         ? moment(trainer.cash_clearance_date).format('YYYY-MM-DD') // Format the date using moment
-                        : 'NA', // Default value if date is not available
+                        : t('n/a'), // Default value if date is not available
                     },
                     {
                       label: 'Last Booking',
                       value: trainer?.last_booking_was
                         ? moment(trainer.last_booking_was).format('YYYY-MM-DD') // Format the date using moment
-                        : 'NA', // Default value if date is not available
+                        : t('n/a'), // Default value if date is not available
                     },
                   ].map((item, index) => (
                     <Box key={index} sx={{ display: 'flex', width: '100%' }}>

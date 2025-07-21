@@ -122,7 +122,7 @@ export default function BookingTableToolbar({
           fullWidth
           options={
             vendorOptions?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}(${item?.email ?? 'NA'})`,
+              label: `${item?.name ?? t('n/a')}(${item?.email ?? t('n/a')})`,
               value: item.id,
             })) ?? []
           }

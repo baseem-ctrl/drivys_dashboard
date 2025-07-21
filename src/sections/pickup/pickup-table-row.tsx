@@ -47,10 +47,10 @@ export default function PickupTableRow({
   const formattedEndDate = moment(end_date).format('YYYY-MM-DD');
   // Assuming you have start_date, start_time, end_date, and end_time in your data
   const startDateTime =
-    start_date && start_time ? moment(`${start_date} ${start_time}`).format('HH:mm A') : 'NA';
+    start_date && start_time ? moment(`${start_date} ${start_time}`).format('HH:mm A') : t('n/a');
 
   const endDateTime =
-    end_date && end_time ? moment(`${end_date} ${end_time}`).format('HH:mm A') : 'NA';
+    end_date && end_time ? moment(`${end_date} ${end_time}`).format('HH:mm A') : t('n/a');
   const handleClick = () => {
     router.push(paths.dashboard.system.viewDetails(city_id));
   };
