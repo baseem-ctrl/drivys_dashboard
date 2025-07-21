@@ -136,17 +136,17 @@ export default function BookingReportListSchoolAdminView() {
       const queryParams = new URLSearchParams(
         Object.fromEntries(Object.entries(params).filter(([_, value]) => value))
       ).toString();
-
-      const response = await fetch(
-        `${import.meta.env.VITE_HOST_API}admin/reportBySchool/bookings?${queryParams}`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'text/csv',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let baseUrl = import.meta.env.VITE_HOST_API;
+      if (!baseUrl.endsWith('/')) {
+        baseUrl += '/';
+      }
+      const response = await fetch(`${baseUrl}admin/reportBySchool/bookings?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'text/csv',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Failed to download CSV');
