@@ -229,6 +229,8 @@ export const paths = {
       trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
       trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
       package: `${ROOTS.DASHBOARD}/school/package-list`,
+      detailsPackage: (id: string) => `${ROOTS.DASHBOARD}/school/package-list/${id}`,
+
       awatingCertificate: `${ROOTS.DASHBOARD}/school/awaiting-certificate`,
       approvedCertificate: `${ROOTS.DASHBOARD}/school/approved-certificate`,
       // payout: `${ROOTS.DASHBOARD}/school/package-list`,

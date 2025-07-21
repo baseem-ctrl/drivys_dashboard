@@ -133,10 +133,10 @@ export default function SchoolPackageListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!tableData?.length && canReset) || !tableData?.length;
-  const handleRowClick = (e: any, user_id: string) => {
+  const handleRowClick = (e: any, id: string) => {
     e.stopPropagation();
 
-    router.push(paths.dashboard.school.detailsadmin(user_id));
+    router.push(paths.dashboard.school.detailsPackage(id));
   };
   const renderFilters = (
     <Stack
@@ -221,7 +221,7 @@ export default function SchoolPackageListView() {
                       tableData?.map((row) => (
                         <TableRow
                           hover
-                          onClick={(e) => (row?.vendor_id ? handleRowClick(e, row?.vendor_id) : '')}
+                          onClick={(e) => (row?.vendor_id ? handleRowClick(e, row?.id) : '')}
                           style={{ cursor: 'pointer' }}
                         >
                           <TableCell sx={{ display: 'flex', alignItems: 'center' }}>

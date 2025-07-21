@@ -413,7 +413,15 @@ const schooladminRoutes = [
         path: 'trainers-list',
         element: <SchoolTrainersListView />,
       },
-      { path: 'package-list', element: <SchoolPackageListView /> },
+      // { path: 'package-list', element: <SchoolPackageListView /> },
+      {
+        path: 'package-list',
+        children: [
+          { element: <SchoolPackageListView />, index: true },
+          { path: ':id', element: <PackageDetailsPage /> },
+        ],
+      },
+
       // { path: 'package-list', element: <SchoolPackageListView /> },
 
       { path: 'school-payouts', element: <SchoolAdminPayoutPage /> },
