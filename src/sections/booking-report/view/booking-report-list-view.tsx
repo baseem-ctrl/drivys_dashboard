@@ -142,7 +142,7 @@ export default function BookingReportListView() {
       ).toString();
 
       const response = await fetch(
-        `${import.meta.env.VITE_HOST_API}admin/reports/bookings?${queryParams}`,
+        `${import.meta.env.VITE_HOST_API}/admin/reports/bookings?${queryParams}`,
         {
           method: 'GET',
           headers: {

@@ -133,7 +133,6 @@ export default function HomeListingNewEdit({
     control,
     name: 'trainers', // Field array name for addons
   });
-=
 
   const mapOptionsUser = (items: any[]) =>
     items?.map((item) => ({
