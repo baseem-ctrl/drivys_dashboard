@@ -60,7 +60,7 @@ export default function PayoutListView() {
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const TABLE_HEAD = [
-    { id: 'assistant', label: t('assistant'), width: 200 },
+    // { id: 'assistant', label: t('assistant'), width: 200 },
     { id: 'user', label: t('student'), width: 200 },
     { id: 'trainer', label: t('trainer'), width: 200 },
     { id: 'booking_status', label: t('booking_status'), width: 200 },

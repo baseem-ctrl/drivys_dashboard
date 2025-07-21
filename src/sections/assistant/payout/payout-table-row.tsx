@@ -66,21 +66,20 @@ export default function PayoutRow({ row, selected }: Props) {
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
   const handleClickDetails = (id) => {
-    // router.push(paths.dashboard.user.details(id));
+    router.push(paths.dashboard.user.details(id));
   };
-
   return (
     <>
       {' '}
       <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
-        <TableCell
+        {/* <TableCell
           sx={{
             // cursor: 'pointer',
             textDecoration: 'none',
             // '&:hover': { textDecoration: 'underline' },
           }}
         >
-          {/* <Link
+          <Link
             color="inherit"
             sx={{
               // cursor: 'pointer',
@@ -93,22 +92,22 @@ export default function PayoutRow({ row, selected }: Props) {
                 handleClickDetails(user?.id);
               }
             }}
-          > */}
-          {i18n.language.toLowerCase() === 'ar'
-            ? row?.booking?.assistant?.name_ar || t('n/a')
-            : row?.booking?.assistant?.name || t('n/a')}
-          {/* </Link> */}
-        </TableCell>
+          >
+            {i18n.language.toLowerCase() === 'ar'
+              ? row?.booking?.assistant?.name_ar || t('n/a')
+              : row?.booking?.assistant?.name || t('n/a')}
+          </Link>
+        </TableCell> */}
         <TableCell
           sx={{
-            // cursor: 'pointer',
+            cursor: 'pointer',
             textDecoration: 'none',
-            // '&:hover': { textDecoration: 'underline' },
+            '&:hover': { textDecoration: 'underline' },
           }}
           onClick={(event) => {
             event.stopPropagation();
-            if (row.driver) {
-              handleClickDetails(driver_id);
+            if (row?.booking?.user_id) {
+              handleClickDetails(row?.booking?.user_id);
             }
           }}
         >
@@ -120,11 +119,12 @@ export default function PayoutRow({ row, selected }: Props) {
           sx={{
             cursor: 'pointer',
             textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' },
           }}
           onClick={(event) => {
             event.stopPropagation();
-            if (row.driver) {
-              handleClickDetails(driver_id);
+            if (row?.booking?.driver?.id) {
+              handleClickDetails(row?.booking?.driver?.id);
             }
           }}
         >

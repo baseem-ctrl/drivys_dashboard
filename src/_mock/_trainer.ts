@@ -7,6 +7,10 @@ export const TRAINER_DETAILS_TABS = [
   { value: 'user-document', label: 'User Document' },
   { value: 'booking', label: 'Booking' },
 ];
+export const ASSISTANT_DETAILS_TABS = [{ value: 'details', label: 'Trainer Details' }];
+
+export const COLLECTOR_DETAILS_TABS = [{ value: 'details', label: 'Trainer Details' }];
+
 export const TRAINER_DETAILS_SCHOOL_ADMIN_TABS = [
   { value: 'details', label: 'Trainer Details' },
   { value: 'working-hours', label: 'Working Hours' },
