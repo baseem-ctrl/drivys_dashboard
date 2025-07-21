@@ -9,6 +9,7 @@ import PackageDetails from '../package-details-content';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcrumbs';
 import { useGetPackageById } from 'src/api/package';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -20,16 +21,22 @@ export default function PackageDetailsView({ id }: Props) {
   const settings = useSettingsContext();
   const { t } = useTranslation();
   const { details, detailsLoading, revalidateDetails } = useGetPackageById(id);
+  const { user } = useAuthContext();
 
   const currentPackage = details;
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Package Details")}
+        heading={t('Package Details')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
-          { name: t('Package'), href: paths.dashboard.package.root },
+          {
+            name: t('Package'),
+            href:
+              user.user.user_type === 'ADMIN'
+                ? paths.dashboard.package.root
+                : paths.dashboard.school.package,
+          },
           { name: t('Details') },
         ]}
         sx={{
