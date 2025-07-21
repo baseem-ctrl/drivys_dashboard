@@ -35,11 +35,10 @@ type Props = {
   id: string;
 };
 
-export default function UserDetailsView({ id }: Props) {
+export default function AssistantUserDetailsView({ id }: Props) {
   const { t } = useLocales();
   const { user } = useAuthContext();
   const settings = useSettingsContext();
-  const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const {
     details: assistantDetails,
     detailsLoading: assistantDetailsLoading,
@@ -53,8 +52,6 @@ export default function UserDetailsView({ id }: Props) {
     limit: 10,
     search: '',
   });
-
-  const currentJob = details;
 
   // const [publish, setPublish] = useState(currentJob?.publish);
 
@@ -95,39 +92,14 @@ export default function UserDetailsView({ id }: Props) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      {user?.user?.user_type !== 'COLLECTOR' && (
-        <CustomBreadcrumbs
-          heading={t('user_details')}
-          links={[
-            { name: t('dashboard'), href: paths.dashboard.root },
-            { name: t('users'), href: paths.dashboard.user.list },
-            { name: `${details?.user?.name ?? t('details')}` },
-          ]}
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        />
-      )}
-
-      {user?.user?.user_type !== 'ASSISTANT' ? (
-        <UserDetailsContent
-          details={details}
-          addresses={addresses || []}
-          loading={detailsLoading}
-          addressesLoading={addressesLoading}
-          reload={revalidateAddresses}
-          user={user?.user?.user_type}
-        />
-      ) : (
-        <AssistantUserDetailsContent
-          details={assistantDetails}
-          addresses={addresses || []}
-          loading={assistantDetailsLoading}
-          addressesLoading={addressesLoading}
-          reload={revalidateAddresses}
-          user={user?.user?.user_type}
-        />
-      )}
+      <AssistantUserDetailsContent
+        details={assistantDetails}
+        addresses={addresses || []}
+        loading={assistantDetailsLoading}
+        addressesLoading={addressesLoading}
+        reload={revalidateAddresses}
+        user={user?.user?.user_type}
+      />
     </Container>
   );
 }

@@ -63,7 +63,6 @@ export default function CommissionListView() {
     category_id?: any;
   }>({});
   const TABLE_HEAD = [
-    { id: 'assistant', label: t('assistant'), width: 200 },
     { id: 'user', label: t('student'), width: 200 },
     { id: 'trainer', label: t('trainer'), width: 200 },
     { id: 'status', label: t('booking_status'), width: 200 },

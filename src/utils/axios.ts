@@ -470,6 +470,9 @@ export const endpoints = {
       list: 'assistant/booking/get-booking-list',
       scheduleRemainingSession: 'assistant/booking/schedule-remaining-slot',
     },
+    users: {
+      getUserById: 'assistant/trainer/get-user/',
+    },
     payout: {
       list: 'assistant/transaction/transaction-list',
     },
