@@ -335,11 +335,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('drivys_commision', payload.drivys_commision);
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
       formData.append('number_of_sessions', payload.number_of_sessions);
-      const vendorIds = data?.vendor_id?.map((item: any) => item.value);
-      console.log('Vendor IDs Array:', vendorIds);
-      // Expect: [2, 4]
+      if (data.vendor_id?.value) {
+        formData.append('vendor_id[]', data.vendor_id.value);
+      }
 
-      formData.append('vendor_id', JSON.stringify(vendorIds));
       formData.append('package_id', details.id || '');
       formData.append('category_id', payload.category_id || '');
 

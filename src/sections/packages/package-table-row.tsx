@@ -193,7 +193,7 @@ export default function PackageTableRow({
               package_translations[0]?.session_inclusions,
           },
         ],
-        vendor_id: data?.vendor_id || vendor?.vendor_user?.vendor_id,
+        vendor_id: [data?.vendor_id || vendor?.vendor_user?.vendor_id],
         is_published: data?.is_published ? '1' : '0',
         number_of_sessions: data?.number_of_sessions || number_of_sessions,
         category_id: data?.category_id,

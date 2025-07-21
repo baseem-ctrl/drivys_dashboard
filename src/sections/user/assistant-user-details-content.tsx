@@ -75,7 +75,11 @@ import { useGetAllLanguage } from 'src/api/language';
 // import { RHFTextField } from 'src/components/hook-form';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-import { TRAINER_DETAILS_TABS } from 'src/_mock/_trainer';
+import {
+  ASSISTANT_DETAILS_TABS,
+  COLLECTOR_DETAILS_TABS,
+  TRAINER_DETAILS_TABS,
+} from 'src/_mock/_trainer';
 import TrainerDetailsContent from './trainer-details-content';
 import StudentDetailsContent from './student-details-content';
 import UserDocumentDetails from './user-document/user-document-details';
@@ -117,6 +121,7 @@ export default function AssistantUserDetailsContent({
   user,
 }: Props) {
   const { reset, control } = useForm();
+  console.log('details', details);
   const { t, currentLang } = useLocales();
   const matchedLocale = details?.vendor_translations?.find(
     (t) => t?.locale?.toLowerCase() === currentLang.toLowerCase()
@@ -141,27 +146,12 @@ export default function AssistantUserDetailsContent({
     student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
   });
 
-  const { studentReviews, studentReviewsLoading, revalidateStudentReviews } = useGetStudentReview({
-    trainer_id: details?.user_type === 'TRAINER' ? details?.id : undefined,
-    student_id: details?.user_type === 'STUDENT' ? details?.id : undefined,
-  });
   const toggleShowAll = () => setShowAll((prev) => !prev);
   const displayedAddresses = showAll ? addresses : addresses.slice(0, 2);
   const currentTrainer = details;
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
     useGetAllLanguage(0, 1000);
-  const { schoolAdminList, schoolAdminLoading } = useGetSchoolAdmin(1000, 1, '');
-  const { city, cityLoading, cityError } = useGetAllCity({
-    limit: 100,
-  });
 
-  const {
-    userDocuments,
-    userDocumentLoading,
-    userDocumentError,
-    totalPages,
-    revalidateUserDocuments,
-  } = useGetUserDocumentList({ userId: details.id });
   const [markerPosition, setMarkerPosition] = useState({
     lat: parseFloat(addresses?.latitude) || 24.4539,
     lng: parseFloat(addresses?.longitude) || 54.3773,
@@ -199,19 +189,7 @@ export default function AssistantUserDetailsContent({
     latitude: '', //
     state_province_id: '',
   });
-  const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    // setAddressForm({ longitude: lng, latitude: lat });
-    setMarkerPosition({ lat, lng });
-    setAddressForm((prev) => ({
-      ...prev,
-      latitude: lat.toString(),
-      longitude: lng.toString(),
-    }));
-    // setValue('latitude', lat.toString());
-    // setValue('longitude', lng.toString());
-  };
+
   const defaultValues = useMemo(
     () => ({
       street_address: addresses[0]?.street_address || '',
@@ -324,19 +302,7 @@ export default function AssistantUserDetailsContent({
       setUploadedFileUrl(details.license_file); // Set the initial file URL from the response
     }
   }, [details]);
-  const handleChange = (event: { target: { value: any } }) => {
-    setSelectedLanguage(event.target.value);
-    const selectedLocaleObject = details?.vendor_translations.find(
-      (item: { locale: string }) => item.locale === event.target.value
-    );
 
-    // Update the form values to reflect the selected locale
-    if (selectedLocaleObject) {
-      schoolSetValue('name', selectedLocaleObject.name); // Update name to match the locale
-    } else {
-      schoolSetValue('name', '');
-    }
-  };
   useEffect(() => {
     if (details) {
       const defaultVendorValues = {
@@ -355,12 +321,7 @@ export default function AssistantUserDetailsContent({
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
-  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
-    setCurrentTab(newValue);
-  }, []);
-  const handleStudentChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
-    setStudentTab(newValue);
-  }, []);
+
   const handleVerify = async () => {
     try {
       const body = {
@@ -412,107 +373,11 @@ export default function AssistantUserDetailsContent({
   const today = new Date();
   const daysRemaining = givenExpiryDate ? differenceInDays(givenExpiryDate, today) : null;
 
-  const statusColor = daysRemaining <= 0 ? 'error' : daysRemaining <= 30 ? 'warning' : 'success';
-
-  const statusLabel =
-    daysRemaining > 0
-      ? `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} remaining`
-      : daysRemaining === 0
-      ? 'Expires today'
-      : `Expired ${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) > 1 ? 's' : ''} ago`;
   const router = useRouter();
-  const handleEditRow = useCallback(() => {
-    router.push(paths.dashboard.user.edit(details?.id));
-  }, [details?.id]);
+
   const handleClickTrainer = (id) => {
     router.push(paths.dashboard.school.details(id));
   };
-  const handleClickSchool = (id) => {
-    router.push(paths.dashboard.school.details(id));
-  };
-  const renderSchool = (
-    <Stack
-      component={Paper}
-      variant="outlined"
-      spacing={3}
-      sx={{
-        p: 4,
-        borderRadius: 3,
-        cursor: 'pointer',
-        maxWidth: 400,
-        boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.15)',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        '&:hover': {
-          transform: 'scale(1.05)',
-          boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
-        },
-        backgroundColor: 'background.paper',
-        position: 'relative',
-      }}
-      onClick={() => handleClickSchool(details?.school?.id)}
-    >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 16,
-          right: 16,
-          borderRadius: '50%',
-          width: 10,
-          height: 10,
-          bgcolor: details?.school?.status === 'active' ? 'success.main' : 'grey.400',
-        }}
-      />
-
-      <Typography
-        variant="h6"
-        sx={{
-          color: 'primary.main',
-          fontWeight: 700,
-          textAlign: 'center',
-          borderBottom: '2px solid',
-          borderColor: 'primary.light',
-          pb: 1,
-          mb: 2,
-        }}
-      >
-        {t('school_details')}
-      </Typography>
-
-      {details?.school && (
-        <Stack spacing={2}>
-          {details.school?.vendor_translations?.length > 0 && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>{t('school')}:</strong>{' '}
-              {details.school.vendor_translations.find(
-                (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-              )?.name ?? t('name_not_available')}
-            </Typography>
-          )}
-
-          {details.school?.commission_in_percentage && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>{t('commission')}:</strong> {details.school.commission_in_percentage}%
-            </Typography>
-          )}
-          {details.school?.status && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>{t('status')}:</strong> {details.school.status}
-            </Typography>
-          )}
-          {details.school?.phone_number && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>{t('contact')}:</strong> {details.school.phone_number}
-            </Typography>
-          )}
-          {details.school?.email && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>{t('email')}:</strong> {details.school.email}
-            </Typography>
-          )}
-        </Stack>
-      )}
-    </Stack>
-  );
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -527,19 +392,16 @@ export default function AssistantUserDetailsContent({
             right: '1rem',
           }}
         >
-          <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} />
+          {/* <Iconify icon="solar:pen-bold" onClick={handleEditRow} sx={{ cursor: 'pointer' }} /> */}
         </Stack>
       )}
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
+        sx={{ width: '100%', flexWrap: 'wrap', p: 2.5 }}
         direction={{
           xs: 'column',
           md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-          // pr: { xs: 2.5, md: 1 },
         }}
       >
         <Grid item xs={12} sm={8} md={8}>
@@ -663,30 +525,6 @@ export default function AssistantUserDetailsContent({
                     ]
                   : []),
 
-                ...(details?.user_type !== 'ASSISTANT'
-                  ? [
-                      {
-                        label: t('roles'),
-                        value:
-                          details?.roles?.length > 0 ? (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                              {details.roles.map((r) => (
-                                <Chip
-                                  key={r.role?.id}
-                                  label={r.role?.name}
-                                  color="success"
-                                  variant="soft"
-                                  size="small"
-                                />
-                              ))}
-                            </Box>
-                          ) : (
-                            t('n/a')
-                          ),
-                      },
-                    ]
-                  : []),
-
                 // ...(details?.user_type === 'COLLECTOR' && details?.city_assigned?.length
                 //   ? details?.city_assigned.map((city, index) => ({
                 //       label: `${t('city')} ${index + 1}
@@ -694,71 +532,6 @@ export default function AssistantUserDetailsContent({
                 //       value: ` ${city?.city?.city_translations?.[0]?.name ?? t('Unknown')}`,
                 //     }))
                 //   : []),
-
-                ...(details?.user_type === 'TRAINER'
-                  ? [
-                      {
-                        label: t('school_name'),
-                        value: details?.vendor?.vendor_translations?.[0]?.name ? (
-                          <Link
-                            onClick={() => handleClickTrainer(details?.vendor?.id)}
-                            style={{
-                              textDecoration: 'underline',
-                              color: 'inherit',
-                              cursor: 'pointer',
-                            }}
-                            onMouseOver={(e) => (e.target.style.color = '#CF5A0D')}
-                            onMouseOut={(e) => (e.target.style.color = 'inherit')}
-                          >
-                            {details?.vendor?.vendor_translations?.find(
-                              (item) => item?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                            ) || details?.vendor?.vendor_translations?.[0]}
-                          </Link>
-                        ) : (
-                          details?.school_name ?? t('n/a')
-                        ),
-                      },
-                      {
-                        label: t('school_commission'),
-                        value:
-                          details?.vendor_commission_in_percentage != null
-                            ? `${details.vendor_commission_in_percentage} %`
-                            : t('n/a'),
-                      },
-
-                      {
-                        label: t('certificate_commission'),
-                        value:
-                          details?.user_preference?.certificate_commission_in_percentage != null
-                            ? `${details.user_preference.certificate_commission_in_percentage} %`
-                            : t('n/a'),
-                      },
-                      {
-                        label: t('min_price'),
-                        value:
-                          details?.user_preference?.min_price != null ? (
-                            <>
-                              <span className="dirham-symbol">&#x00EA;</span>
-                              {details.user_preference?.min_price}
-                            </>
-                          ) : (
-                            t('n/a')
-                          ),
-                      },
-                      {
-                        label: t('price_per_km'),
-                        value:
-                          details?.user_preference?.price_per_km != null ? (
-                            <>
-                              <span className="dirham-symbol">&#x00EA;</span>
-                              {details.user_preference?.price_per_km}
-                            </>
-                          ) : (
-                            t('n/a')
-                          ),
-                      },
-                    ]
-                  : []),
               ].map((item, index) => (
                 <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                   <Box component="span" sx={{ minWidth: '250px', fontWeight: 'bold' }}>
@@ -859,38 +632,6 @@ export default function AssistantUserDetailsContent({
                   </Box>
                 </Box>
               ))}
-              {details?.user_type === 'TRAINER' &&
-                trainerReviews &&
-                trainerReviews[0]?.avg_rating && (
-                  <Grid item xs={12} sm={12} md={6}>
-                    <Box sx={{ display: 'flex', width: '100%' }}>
-                      <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                        {t('average_review')}
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {/* Display stars based on avg_rating */}
-                        <Box display="flex" alignItems="center">
-                          {Array.from({ length: 5 }).map((_, index) =>
-                            index < trainerReviews[0].avg_rating ? (
-                              <StarIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            ) : (
-                              <StarBorderIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            )
-                          )}
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Grid>
-                )}
             </Stack>
           </Scrollbar>
         </Grid>
@@ -904,10 +645,21 @@ export default function AssistantUserDetailsContent({
         }}
         sx={{
           p: 2.5,
+          width: '100%',
           // pr: { xs: 2.5, md: 1 },
         }}
       >
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          sx={{
+            p: 2.5,
+            width: '100%',
+            // pr: { xs: 2.5, md: 1 },
+          }}
+        >
           <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
             {t('account_status')}
           </Typography>
@@ -1061,78 +813,10 @@ export default function AssistantUserDetailsContent({
             </Stack>
           </Scrollbar>
         </Grid>
-
-        {details?.user_type === 'TRAINER' && (
-          <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
-              {t('school_financial_summary')}
-            </Typography>
-            <Scrollbar>
-              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
-                {[
-                  {
-                    label: t('max_cash_allowed_in_hand'),
-                    value: details?.max_cash_in_hand_allowed ? (
-                      <>
-                        <span className="dirham-symbol">&#x00EA;</span>{' '}
-                        {details.max_cash_in_hand_allowed}{' '}
-                      </>
-                    ) : (
-                      t('n/a')
-                    ),
-                  },
-                  {
-                    label: t('cash_in_hand'),
-                    value: details?.cash_in_hand ? (
-                      <>
-                        <span className="dirham-symbol">&#x00EA;</span> {details.cash_in_hand}
-                      </>
-                    ) : (
-                      t('n/a')
-                    ),
-                  },
-
-                  {
-                    label: t('cash_clearance_date'),
-
-                    value: moment.utc(details?.cash_clearance_date).format('lll') ?? t('n/a'),
-                  },
-
-                  {
-                    label: t('last_booking_at'),
-                    value: details?.last_booking_was
-                      ? moment.utc(details?.last_booking_was).format('lll')
-                      : t('n/a'),
-                  },
-                ].map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
-                    >
-                      {item.label}
-                    </Box>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
-                    >
-                      :
-                    </Box>
-                    <Box component="span" sx={{ flex: 1, marginTop: '15px' }}>
-                      {item.value ?? t('n/a')}
-                    </Box>
-                  </Box>
-                ))}
-              </Stack>
-            </Scrollbar>
-          </Grid>
-        )}
       </Stack>
     </Stack>
   );
-  const handleBookingClick = (booking) => {
-    router.push(paths.dashboard.booking.details(booking));
-  };
+
   const renderUserPreferences = (
     <Stack
       component={Card}
@@ -1143,7 +827,17 @@ export default function AssistantUserDetailsContent({
         md: 'row',
       }}
     >
-      <Grid item xs={12} sm={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={12}
+        sx={{
+          p: 2.5,
+          width: '100%',
+          // pr: { xs: 2.5, md: 1 },
+        }}
+      >
         <Typography sx={{ fontWeight: '800' }}>{t('user_preferences')}</Typography>
 
         <Scrollbar>
@@ -1151,17 +845,11 @@ export default function AssistantUserDetailsContent({
             {[
               {
                 label: t('city'),
-                value:
-                  details?.user_preference?.city?.city_translations?.find(
-                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                  )?.name ?? t('n/a'),
+                value: details?.user_preference?.city,
               },
               {
                 label: t('area'),
-                value:
-                  details?.user_preference?.state_province?.translations?.find(
-                    (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                  )?.name ?? t('n/a'),
+                value: details?.user_preference?.state_province,
               },
 
               { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
@@ -1169,10 +857,7 @@ export default function AssistantUserDetailsContent({
 
               {
                 label: t('vehicle_type'),
-                value:
-                  details?.user_preference?.vehicle_type?.category_translations?.find(
-                    (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                  )?.name ?? t('n/a'),
+                value: details?.user_preference?.vehicle_type,
               },
 
               ...(details?.user_type === 'STUDENT'
@@ -1268,898 +953,7 @@ export default function AssistantUserDetailsContent({
         )}
     </Stack>
   );
-  const filteredTrainerTabs =
-    user === 'COLLECTOR'
-      ? TRAINER_DETAILS_TABS.filter((tab) => tab.value === 'details')
-      : TRAINER_DETAILS_TABS;
 
-  const renderStudentTabs = (
-    <Tabs
-      value={studentTab}
-      onChange={handleStudentChangeTab}
-      sx={{
-        mb: { xs: 3, md: 5 },
-      }}
-    >
-      {STUDENT_DETAILS_TABS.map((tab) => (
-        <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
-      ))}
-    </Tabs>
-  );
-  const renderTabs = (
-    <Tabs
-      value={currentTab}
-      onChange={handleChangeTab}
-      sx={{
-        mb: { xs: 3, md: 5 },
-      }}
-    >
-      {filteredTrainerTabs.map((tab) => (
-        <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
-      ))}
-    </Tabs>
-  );
-  const { isLoaded } = useGoogleMaps();
-  const mapContainerStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
-
-  const { states, stateLoading, stateError } = useGetStateList({
-    limit: 1000,
-    city_id: addressForm?.city_id ?? '',
-  });
-
-  const handleUpdateExistingUserAddress = async (
-    body: Address,
-    markerPosition: { lat: number; lng: number },
-    id: string,
-    user_id: string
-  ) => {
-    try {
-      const updatedAddress = {
-        ...body,
-        latitude: markerPosition.lat || addressForm.latitude,
-        longitude: markerPosition.lng || addressForm.longitude,
-      };
-
-      // Call the update API with the updated address data
-      const response = await updateExistingUserAddress(updatedAddress, id, user_id);
-
-      // Display success message if the update is successful
-      if (response && response.status === 'success') {
-        setNewAddress(null);
-        setEditingIndex(null);
-        reload();
-        enqueueSnackbar(t('user_address_updated'), { variant: 'success' });
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
-
-  const handleCreateNewUserAddress = async (body: Address) => {
-    try {
-      const response = await createNewAddressForUser(body);
-
-      if (response && response.status === 'success') {
-        setNewAddress(null);
-        setEditingIndex(null);
-        reload();
-        enqueueSnackbar(t('user_address_created'), { variant: 'success' });
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
-
-  const handleChangeStoreAddress = (e) => {
-    const { name, value } = e.target;
-    setAddressForm((prev) => ({ ...prev, [name]: value }));
-
-    if (name === 'latitude') {
-      setMarkerPosition((prev) => ({
-        ...prev,
-        lat: parseFloat(value) || 0,
-      }));
-    } else if (name === 'longitude') {
-      setMarkerPosition((prev) => ({
-        ...prev,
-        lng: parseFloat(value) || 0,
-      }));
-    }
-  };
-
-  // State to manage the visibility of the map for each address
-  const [showMapIndex, setShowMapIndex] = useState(null);
-  // Function to handle user deletion
-  const handleDeleteUserAddress = async (addressId: string, reloadData: () => void) => {
-    try {
-      const response = await deleteUserAddress(addressId);
-
-      if (response) {
-        enqueueSnackbar(t('user_address_deleted'), { variant: 'success' });
-        if (reloadData) reloadData();
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
-  // Add a method to handle the selected location from the map
-  const handleLocationSelect = (selectedLocation) => {
-    setAddressForm((prev) => ({
-      ...prev,
-      longitude: selectedLocation.lng,
-      latitude: selectedLocation.lat,
-    }));
-  };
-  const handleEditAddress = useCallback(
-    (index, address) => {
-      if (editingIndex === index) {
-        setEditingIndex(null);
-      } else {
-        setEditingIndex(index);
-        setAddressForm(address);
-      }
-    },
-    [addressForm, editingIndex] // Include editingIndex in the dependency array
-  );
-  const handleSetDeafult = async (addressId: any) => {
-    try {
-      const body = {
-        id: addressId,
-        is_default: 1,
-      };
-      const response = await createNewAddressForUser(body);
-      if (response) {
-        enqueueSnackbar(t('address_set_to_default'));
-        reload();
-      }
-    } catch (error) {
-      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
-        Object.values(error?.errors).forEach((errorMessage) => {
-          if (typeof errorMessage === 'object') {
-            enqueueSnackbar(errorMessage[0], { variant: 'error' });
-          } else {
-            enqueueSnackbar(errorMessage, { variant: 'error' });
-          }
-        });
-      } else {
-        enqueueSnackbar(error.message, { variant: 'error' });
-      }
-    }
-  };
-  const renderAddress = (
-    <Stack component={Card} spacing={3} sx={{ p: 3, mt: 2 }}>
-      <Scrollbar>
-        <Box>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setNewAddress({});
-              setShowMapIndex(null); // Reset map visibility
-              reset();
-            }}
-            sx={{ mb: 2 }}
-          >
-            {t('add_new_address')}
-          </Button>
-        </Box>
-
-        {/* Form for Adding or Editing an Address */}
-        {newAddress && !editingIndex && (
-          <Box
-            component="form"
-            onSubmit={(e) => {
-              const pathSegments = window.location.pathname.split('/');
-              const user_id = parseInt(pathSegments[pathSegments.length - 1], 10);
-              e.preventDefault(); // Prevent default form submission
-              const addressFormData = {
-                id: parseInt(addressForm.id, 10),
-                user_id,
-                plot_number: addressForm?.plot_number,
-                building_name: addressForm?.building_name,
-                street: addressForm?.street,
-                city_id: addressForm?.city_id,
-                label: addressForm?.label,
-                address: addressForm?.address,
-                landmark: addressForm?.landmark,
-                country_code: parseInt(addressForm?.country_code, 10),
-                phone_number: addressForm?.phone_number,
-                longitude: parseFloat(addressForm?.longitude) || markerPosition?.lng,
-                latitude: parseFloat(addressForm?.latitude) || markerPosition?.lat,
-                state_province_id: addressForm?.state_province_id,
-              };
-
-              handleCreateNewUserAddress(addressFormData); // Call to create a new user address
-            }}
-            sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}
-          >
-            {newAddress && !editingIndex && (
-              <Box sx={{ pt: 2, pb: 2 }}>
-                {isLoaded && load ? (
-                  <GoogleMap
-                    mapContainerStyle={mapContainerStyle}
-                    center={markerPosition}
-                    zoom={12}
-                    onClick={handleMapClick}
-                  >
-                    {(defaultValues?.latitude || defaultValues?.longitude) && (
-                      <Marker
-                        position={{
-                          lat: Number.isNaN(Number(defaultValues?.latitude))
-                            ? 0
-                            : Number(defaultValues?.latitude),
-                          lng: Number.isNaN(Number(defaultValues?.longitude))
-                            ? 0
-                            : Number(defaultValues?.longitude),
-                        }}
-                        icon={{
-                          url:
-                            marker && typeof marker === 'string'
-                              ? marker
-                              : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                          scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker as needed
-                        }}
-                      />
-                    )}
-                  </GoogleMap>
-                ) : (
-                  <div>{t('loading_map')}</div>
-                )}
-              </Box>
-            )}
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-              {newAddress
-                ? t('add_new_address')
-                : t('edit_address', { index: (editingIndex ?? 0) + 1 })}
-            </Typography>
-
-            {/* Form Fields in Rows */}
-            {/* Row 1 */}
-
-            {/* Row 2 */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-              <TextField
-                label={t('street_address')}
-                variant="outlined"
-                name="street"
-                value={addressForm.street}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-              <TextField
-                label={t('building_name')}
-                variant="outlined"
-                name="building_name"
-                value={addressForm.building_name}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-              <Controller
-                name="city_id"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('city')}
-                    variant="outlined"
-                    value={field.value || addressForm.city_id || ''}
-                    onChange={(e) => {
-                      const selectedCityId = e.target.value;
-
-                      const selectedCity = city.find((cityItem) => cityItem.id === selectedCityId);
-                      const selectedCityName = selectedCity
-                        ? selectedCity.city_translations
-                            .map((translation) => translation.name)
-                            .join(', ')
-                        : '';
-
-                      field.onChange(e);
-
-                      handleChangeStoreAddress({
-                        ...e,
-                        target: { name: 'city_id', value: selectedCityId },
-                      });
-                    }}
-                    sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    select
-                    fullWidth
-                    InputProps={{
-                      startAdornment: cityLoading ? (
-                        <InputAdornment position="start">
-                          <CircularProgress size={20} />
-                        </InputAdornment>
-                      ) : null,
-                    }}
-                  >
-                    {cityLoading ? (
-                      <MenuItem disabled>{t('loading_cities')}</MenuItem>
-                    ) : city?.length === 0 ? (
-                      <MenuItem disabled>{t('no_cities_found')}</MenuItem>
-                    ) : (
-                      city.map((cityItem) => {
-                        const cityNames = cityItem.city_translations.map(
-                          (translation) => translation.name
-                        );
-
-                        return (
-                          <MenuItem key={cityItem.id} value={cityItem.id}>
-                            {cityNames.join(', ') || t('unknown_city')}
-                          </MenuItem>
-                        );
-                      })
-                    )}
-                  </TextField>
-                )}
-              />
-            </Box>
-
-            {/* Row 3 */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-              <Controller
-                name="state_province_id"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('area')}
-                    variant="outlined"
-                    value={field.value || addressForm.state_province_id || ''}
-                    onChange={(e) => {
-                      const selectedAreaId = e.target.value;
-
-                      const selectedArea = states.find(
-                        (cityItem) => cityItem.id === selectedAreaId
-                      );
-                      const selectedAreaName = selectedArea
-                        ? selectedArea?.translations
-                            ?.map((translation) => translation?.name ?? t('unknown'))
-                            .join(', ')
-                        : '';
-
-                      field.onChange(e);
-
-                      handleChangeStoreAddress({
-                        ...e,
-                        target: { name: 'state_province_id', value: selectedAreaId },
-                      });
-                    }}
-                    sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    select
-                    fullWidth
-                    InputProps={{
-                      startAdornment: stateLoading ? (
-                        <InputAdornment position="start">
-                          <CircularProgress size={20} />
-                        </InputAdornment>
-                      ) : null,
-                    }}
-                  >
-                    {stateLoading ? (
-                      <MenuItem disabled>{t('loading_cities')}</MenuItem>
-                    ) : states?.length === 0 ? (
-                      <MenuItem disabled>{t('no_cities_found')}</MenuItem>
-                    ) : (
-                      states?.map((cityItem) => {
-                        const cityNames = cityItem?.translations?.map(
-                          (translation) => translation?.name ?? t('unknown')
-                        );
-
-                        return (
-                          <MenuItem key={cityItem.id} value={cityItem.id}>
-                            {cityNames.join(', ') || t('unknown_city')}
-                          </MenuItem>
-                        );
-                      })
-                    )}
-                  </TextField>
-                )}
-              />
-              <TextField
-                label={t('phone_number')}
-                variant="outlined"
-                name="phone_number"
-                value={addressForm.phone_number}
-                onChange={(e) => handleChangeStoreAddress(e, true)}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">+971</InputAdornment>,
-                }}
-              />
-
-              <TextField
-                label={t('plot_number')}
-                variant="outlined"
-                name="plot_number"
-                value={addressForm.plot_number}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-            </Box>
-
-            {/* Row 4 */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-              <TextField
-                label={t('address')}
-                variant="outlined"
-                name="address"
-                value={addressForm.address}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-              <TextField
-                label={t('label')}
-                variant="outlined"
-                fullWidth
-                name="label"
-                select
-                value={addressForm.label}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              >
-                <MenuItem value="home">{t('home')}</MenuItem>
-                <MenuItem value="office">{t('office')}</MenuItem>
-              </TextField>
-              <TextField
-                label={t('landmark')}
-                variant="outlined"
-                name="landmark"
-                value={addressForm.landmark}
-                onChange={handleChangeStoreAddress}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-            </Box>
-
-            {/* Row 5 */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-              <TextField
-                label={t('longitude')}
-                variant="outlined"
-                type="number"
-                name="longitude"
-                value={markerPosition.lng}
-                onChange={(e) => handleChangeStoreAddress(e, true)}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-              <TextField
-                label={t('latitude')}
-                variant="outlined"
-                type="number"
-                name="latitude"
-                value={markerPosition.lat}
-                onChange={(e) => handleChangeStoreAddress(e, true)}
-                sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-              />
-            </Box>
-
-            <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
-              <Button variant="contained" type="submit" sx={{ flex: 1, mr: 1 }}>
-                {t('save')}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setEditingIndex(null);
-                  setNewAddress(null);
-                  reset();
-                }}
-                sx={{ flex: 1 }}
-              >
-                {t('cancel')}
-              </Button>
-            </Box>
-          </Box>
-        )}
-
-        <Stack spacing={4} alignItems="flex-start" sx={{ typography: 'body2', mt: 2 }}>
-          {displayedAddresses.map((address, index) => (
-            <Box key={index} sx={{ width: '100%' }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                {t('address_details')} {index + 1}
-              </Typography>
-
-              {/* Address Details */}
-              {[
-                { label: t('address'), value: address?.address ?? t('n/a') },
-                { label: t('street'), value: address?.street ?? t('n/a') },
-                { label: t('building_name'), value: address?.building_name ?? t('n/a') },
-                {
-                  label: t('city'),
-                  value:
-                    address?.city ??
-                    address?.city_id_city?.city_translations?.find(
-                      (ct: any) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                    )?.name ??
-                    t('n/a'),
-                },
-                {
-                  label: t('area'),
-                  value:
-                    address?.state_province?.translations?.find(
-                      (tr: any) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                    )?.name ?? t('n/a'),
-                },
-
-                // { label: t('country_code'), value: address?.country_code ?? 'UAE' },
-                { label: t('label'), value: address?.label ?? t('n/a') },
-                { label: t('phone_number'), value: address?.phone_number ?? t('n/a') },
-                { label: t('plot_number'), value: address?.plot_number ?? t('n/a') },
-                { label: t('country'), value: address?.country ?? 'UAE' },
-                { label: t('landmark'), value: address?.landmark ?? t('n/a') },
-              ].map((item, idx) => (
-                <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
-                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {item.label}
-                  </Box>
-                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
-                    :
-                  </Box>
-                  <Box component="span">{item.value}</Box>
-                </Box>
-              ))}
-
-              {/* Edit and Delete Buttons */}
-              <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setShowMapIndex(showMapIndex === index ? null : index);
-                    setAddressForm({
-                      ...addressForm,
-                      longitude: address?.longitude, // Ensure these properties exist on the address object
-                      latitude: address?.latitude,
-                    });
-                    setMarkerPosition({
-                      lat: address?.latitude, // Ensure these properties exist on the address object
-                      lng: address?.longitude,
-                    });
-                    // handleEditAddress(index, address);
-                  }}
-                  // sx={{ mt: 1 }}
-                >
-                  {showMapIndex === index ? t('hide_map') : t('show_map')}
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    handleEditAddress(index, address);
-                  }}
-                >
-                  {t('edit')}
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleDeleteUserAddress(address.id, reload)}
-                >
-                  {t('delete')}
-                </Button>
-
-                {!address?.is_default && (
-                  <Button variant="outlined" onClick={() => handleSetDeafult(address.id)}>
-                    {t('set_default')}
-                  </Button>
-                )}
-              </Box>
-              {showMapIndex === index && (
-                <Box sx={{ pt: 2, pb: 2 }}>
-                  {isLoaded && load ? (
-                    <GoogleMap
-                      mapContainerStyle={mapContainerStyle}
-                      center={markerPosition}
-                      zoom={12}
-                      onClick={handleMapClick}
-                    >
-                      {markerPosition && (
-                        <Marker
-                          position={markerPosition}
-                          icon={{
-                            url:
-                              marker && typeof marker === 'string'
-                                ? marker
-                                : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
-                          }}
-                        />
-                      )}
-                    </GoogleMap>
-                  ) : (
-                    <div>{t('loading_map')}</div>
-                  )}
-                </Box>
-              )}
-              {editingIndex === index && !newAddress && (
-                <>
-                  {/* Form Fields in Rows */}
-                  {/* Row 1 */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-                    <TextField
-                      label="Plot Number"
-                      variant="outlined"
-                      fullWidth
-                      name="plot_number"
-                      value={addressForm.plot_number}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                    <TextField
-                      label="Street Address"
-                      variant="outlined"
-                      fullWidth
-                      name="street"
-                      value={addressForm.street}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                    <TextField
-                      label="Building Name"
-                      variant="outlined"
-                      fullWidth
-                      name="building_name"
-                      value={addressForm.building_name}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                  </Box>
-
-                  {/* Row 2 */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-                    <TextField
-                      label={t('phone_number')}
-                      variant="outlined"
-                      fullWidth
-                      name="phone_number"
-                      value={addressForm.phone_number}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start">+971</InputAdornment>,
-                      }}
-                    />
-                    <Controller
-                      name="city_id"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label={t('city')}
-                          variant="outlined"
-                          value={field.value || addressForm?.city_id || ''}
-                          onChange={(e) => {
-                            const selectedCityId = e.target.value;
-
-                            const selectedCity = city?.find(
-                              (cityItem) => cityItem?.id === selectedCityId
-                            );
-                            const selectedCityName = selectedCity
-                              ? selectedCity?.city_translations
-                                  ?.map((translation) => translation?.name ?? t('unknown'))
-                                  .join(', ')
-                              : '';
-
-                            field.onChange(e);
-
-                            handleChangeStoreAddress({
-                              ...e,
-                              target: { name: 'city_id', value: selectedCityId },
-                            });
-                          }}
-                          sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                          select
-                          fullWidth
-                          InputProps={{
-                            startAdornment: cityLoading ? (
-                              <InputAdornment position="start">
-                                <CircularProgress size={20} />
-                              </InputAdornment>
-                            ) : null,
-                          }}
-                        >
-                          {cityLoading ? (
-                            <MenuItem disabled>{t('loading_cities')}</MenuItem>
-                          ) : city?.length === 0 ? (
-                            <MenuItem disabled>{t('no_cities_found')}</MenuItem>
-                          ) : (
-                            city.map((cityItem) => {
-                              const cityNames = cityItem?.city_translations?.map(
-                                (translation) => translation?.name ?? t('unknown')
-                              );
-
-                              return (
-                                <MenuItem key={cityItem?.id} value={cityItem.id}>
-                                  {cityNames.join(', ') || t('unknown_city')}
-                                </MenuItem>
-                              );
-                            })
-                          )}
-                        </TextField>
-                      )}
-                    />
-                    <Controller
-                      name="state_province_id"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label={t('area')}
-                          variant="outlined"
-                          value={field.value || addressForm.state_province_id || ''}
-                          onChange={(e) => {
-                            const selectedAreaId = e.target.value;
-
-                            const selectedArea = states.find(
-                              (cityItem) => cityItem.id === selectedAreaId
-                            );
-                            const selectedAreaName = selectedArea
-                              ? selectedArea?.translations
-                                  ?.map((translation) => translation?.name ?? t('unknown'))
-                                  .join(', ')
-                              : '';
-
-                            field.onChange(e);
-
-                            handleChangeStoreAddress({
-                              ...e,
-                              target: { name: 'state_province_id', value: selectedAreaId },
-                            });
-                          }}
-                          sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                          select
-                          fullWidth
-                          InputProps={{
-                            startAdornment: stateLoading ? (
-                              <InputAdornment position="start">
-                                <CircularProgress size={20} />
-                              </InputAdornment>
-                            ) : null,
-                          }}
-                        >
-                          {stateLoading ? (
-                            <MenuItem disabled>{t('loading_areas')}</MenuItem>
-                          ) : states?.length === 0 ? (
-                            <MenuItem disabled>{t('no_areas_found')}</MenuItem>
-                          ) : (
-                            states?.map((cityItem) => {
-                              const areaNames = cityItem?.translations?.map(
-                                (translation) => translation?.name ?? t('unknown')
-                              );
-
-                              return (
-                                <MenuItem key={cityItem.id} value={cityItem.id}>
-                                  {areaNames.join(', ') || t('unknown_area')}
-                                </MenuItem>
-                              );
-                            })
-                          )}
-                        </TextField>
-                      )}
-                    />
-                  </Box>
-
-                  {/* Row 3 */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-                    <TextField
-                      label={t('label')}
-                      variant="outlined"
-                      fullWidth
-                      name="label"
-                      select
-                      value={addressForm.label}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    >
-                      <MenuItem value="home">{t('home')}</MenuItem>
-                      <MenuItem value="office">{t('office')}</MenuItem>
-                    </TextField>
-                    <TextField
-                      label={t('address')}
-                      variant="outlined"
-                      fullWidth
-                      name="address"
-                      value={addressForm.address}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                    <TextField
-                      label={t('landmark')}
-                      variant="outlined"
-                      fullWidth
-                      name="landmark"
-                      value={addressForm.landmark}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                  </Box>
-
-                  {/* Row 4 */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 2 }}>
-                    <TextField
-                      label={t('longitude')}
-                      variant="outlined"
-                      fullWidth
-                      name="longitude"
-                      type="number"
-                      value={markerPosition.lng}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                    <TextField
-                      label={t('latitude')}
-                      variant="outlined"
-                      fullWidth
-                      name="latitude"
-                      type="number"
-                      value={markerPosition.lat}
-                      onChange={handleChangeStoreAddress}
-                      sx={{ flex: 1, mt: 0.5, mb: 0.5 }}
-                    />
-                  </Box>
-
-                  {/* Submit and Cancel Buttons */}
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        handleUpdateExistingUserAddress(
-                          addressForm,
-                          markerPosition,
-                          address.id,
-                          address.user_id
-                        )
-                      }
-                      sx={{ flex: 1, mr: 1 }}
-                    >
-                      {t('submit')}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => setEditingIndex('')}
-                      sx={{ flex: 1 }}
-                    >
-                      {t('cancel')}
-                    </Button>
-                  </Box>
-                </>
-              )}
-            </Box>
-          ))}
-        </Stack>
-        {addresses.length > 2 && (
-          <Button variant="outlined" onClick={toggleShowAll}>
-            {showAll ? t('show_less') : t('show_more')}
-          </Button>
-        )}
-      </Scrollbar>
-    </Stack>
-  );
   return (
     <>
       {loading || !details.id ? (
@@ -2175,142 +969,11 @@ export default function AssistantUserDetailsContent({
         </Box>
       ) : (
         <>
-          {details?.user_type === 'TRAINER' && renderTabs}
-          {details?.user_type === 'TRAINER' && givenExpiryDate && (
-            <Card
-              sx={{
-                mt: 3,
-                px: 3,
-                py: 2.5,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                mb: 4,
-              }}
-            >
-              <Stack direction="row" alignItems="center" spacing={2}>
-                <Box
-                  sx={{
-                    backgroundColor: '#e3f2fd',
-                    borderRadius: '50%',
-                    p: 1.2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <CalendarMonthIcon sx={{ color: '#1976d2', fontSize: 28 }} />
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Trainer Certificate Expiry
-                  </Typography>
-                  <Typography variant="h6" fontWeight={600}>
-                    {details.certificate_expiry_date}
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Chip
-                label={statusLabel}
-                color={statusColor as 'error' | 'warning' | 'success'}
-                variant="outlined"
-                sx={{ mt: { xs: 2, md: 0 }, fontWeight: 500 }}
-              />
-            </Card>
-          )}
-
-          {details?.user_type === 'STUDENT' && renderStudentTabs}
-
-          <Grid container spacing={1} rowGap={1}>
-            <Grid xs={12} md={12}>
-              {/* For all other user types */}
-              {details?.user_type !== 'TRAINER' && studentTab === 'details' && renderContent}
-
-              {/* <----- For trainer user type with 3 tabs ----> */}
-              {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
-              {currentTab === 'packages' && details?.user_type === 'TRAINER' && (
-                <TrainerDetailsContent Trainerdetails={details} />
-              )}
-              {/* {studentTab === 'details' && details?.user_type === 'STUDENT' && renderContent}
-              {studentTab === 'booking' && details?.user_type === 'STUDENT' && renderContent} */}
-
-              {currentTab === 'students' && details?.user_type === 'TRAINER' && (
-                <StudentDetailsContent id={details?.id} />
-              )}
-              {currentTab === 'working-hours' && details?.user_type === 'TRAINER' && (
-                <TrainerWorkingHour userId={details?.id} details={details} />
-              )}
-
-              {/*<----- For trainer user type with 3 tabs ----> */}
-            </Grid>
-            <Grid xs={12}>
-              {currentTab === 'details' &&
-                studentTab === 'details' &&
-                details?.user_preference?.id &&
-                (details?.user_type === 'TRAINER' || details?.user_type === 'STUDENT') &&
-                renderUserPreferences}
-            </Grid>
-
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' &&
-                currentTab === 'details' &&
-                user !== 'COLLECTOR' &&
-                renderAddress}
-            </Grid>
-
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && studentTab === 'review' && (
-                <StudentReviewsTable students={studentReviews} />
-              )}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' && currentTab === 'review' && (
-                <TrainerReviewsTable trainers={trainerReviews} />
-              )}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && studentTab === 'details' && renderAddress}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && studentTab === 'user-document' && (
-                <UserDocumentDetails
-                  id={details?.id}
-                  documents={userDocuments}
-                  reload={revalidateUserDocuments}
-                />
-              )}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' && currentTab === 'user-document' && (
-                <UserDocumentDetails
-                  id={details?.id}
-                  documents={userDocuments}
-                  reload={revalidateUserDocuments}
-                />
-              )}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'STUDENT' && studentTab === 'booking' && (
-                <BookingStudentTable id={details?.id} handleBookingClick={handleBookingClick} />
-              )}
-            </Grid>
-            <Grid xs={12} md={12}>
-              {details?.user_type === 'TRAINER' && currentTab === 'booking' && (
-                <BookingTrainerTable id={details?.id} handleBookingClick={handleBookingClick} />
-              )}
-            </Grid>
-            {/* For trainer user type with 3 tabs, in the first tab only user preferences should be shown */}
-
-            <Grid xs={12}>
-              {details?.user_type === 'SCHOOL_ADMIN' && details?.school && renderSchool}
-            </Grid>
-            {/* User preferences For all other user types */}
+          <Grid xs={12} md={12}>
+            {details && renderContent}
           </Grid>
+
+          {details.user_type !== 'TRAINER' && renderUserPreferences}
         </>
         // <Grid container spacing={1} rowGap={1}>
         //   <Grid xs={12} md={12}>

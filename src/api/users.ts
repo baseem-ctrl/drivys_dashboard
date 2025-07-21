@@ -188,6 +188,28 @@ export function useGetUserDetails(userId: string) {
 
   return { ...memoizedValue, revalidateDetails };
 }
+export function useGetAssistantUserDetails(userId: string) {
+  const URL = endpoints.assistant.users.getUserById + userId;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+  const memoizedValue = useMemo(
+    () => ({
+      details: (data?.data as any) || {},
+      detailsError: error,
+      detailsLoading: isLoading,
+      detailsValdating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateDetails = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDetails };
+}
 export function deleteUser(id: any) {
   const URL = `${endpoints.users.delete}?user_id=${id}`;
   const response = drivysSmasher(URL);

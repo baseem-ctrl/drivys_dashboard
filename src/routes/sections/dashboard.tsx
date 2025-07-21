@@ -93,6 +93,7 @@ import CashInHandAssistantList from 'src/sections/cash-in-hand-list-assistant/vi
 import UnattendedStudentListView from 'src/sections/unattended-students/view/unattended-students-list-view';
 import CertificateListViewSchoolAdmin from 'src/sections/awaiting-certificate-school-admin/view/certificate-list-view';
 import { BookingDetailsCashInHandTable } from 'src/sections/cash-in-hand-list-assistant/view/trainer-booking-details';
+import AssistantDetailsPage from 'src/pages/dashboard/user/assistant-details';
 
 // ----------------------------------------------------------------------
 
@@ -519,6 +520,10 @@ const assistantRoutes = [
   {
     path: 'ecommerce',
     element: <OverviewAssistant />,
+  },
+  {
+    path: 'user',
+    children: [{ path: ':id', element: <AssistantDetailsPage /> }],
   },
   {
     path: 'assistant',

@@ -59,9 +59,8 @@ export default function BookingTableRow({
     // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
   };
   const handleClickDetails = (id) => {
-    // router.push(paths.dashboard.user.details(id));
+    router.push(paths.dashboard.user.details(id));
   };
-
   return (
     <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
       <TableCell>{row?.id}</TableCell>
@@ -69,7 +68,7 @@ export default function BookingTableRow({
         sx={{
           cursor: 'pointer',
           textDecoration: 'none',
-          // '&:hover': { textDecoration: 'underline' },
+          '&:hover': { textDecoration: 'underline' },
         }}
       >
         <Link
@@ -77,12 +76,12 @@ export default function BookingTableRow({
           sx={{
             cursor: 'pointer',
             textDecoration: 'none',
-            // '&:hover': { textDecoration: 'underline' },
+            '&:hover': { textDecoration: 'underline' },
           }}
           onClick={(event) => {
             event.stopPropagation();
-            if (user) {
-              handleClickDetails(user?.id);
+            if (row?.user) {
+              handleClickDetails(row?.user?.id);
             }
           }}
         >
@@ -98,7 +97,7 @@ export default function BookingTableRow({
         onClick={(event) => {
           event.stopPropagation();
           if (row.driver) {
-            handleClickDetails(driver_id);
+            handleClickDetails(row?.driver?.id);
           }
         }}
       >
