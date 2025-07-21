@@ -158,18 +158,18 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 { label: 'Name', value: details?.name ?? t('n/a') },
-                { label: 'Email', value: details?.email ?? 'NA' },
+                { label: 'Email', value: details?.email ?? t('n/a') },
                 {
                   label: 'Phone Number',
                   value: details?.country_code
                     ? `${details?.country_code}-${details?.phone}`
-                    : details?.phone ?? 'NA',
+                    : details?.phone ?? t('n/a'),
                 },
-                { label: 'User Type', value: details?.user_type ?? 'NA' },
+                { label: 'User Type', value: details?.user_type ?? t('n/a') },
 
-                { label: 'Preffered Language', value: details?.locale ?? 'NA' },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
-                { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
+                { label: 'Preffered Language', value: details?.locale ?? t('n/a') },
+                { label: 'Wallet Balance', value: details?.wallet_balance ?? t('n/a') },
+                { label: 'Wallet Points', value: details?.wallet_points ?? t('n/a') },
 
                 {
                   label: 'Is Active',
@@ -367,7 +367,7 @@ export default function TrainerDetailsContent({ Trainerdetails }: Props) {
                         <Typography variant="h5" color="#CF5A0D">
                           {item?.package?.package_translations?.find(
                             (pt: any) => pt?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                          )?.name ?? 'NA'}
+                          )?.name ?? t('n/a')}
                         </Typography>
                         {item?.package?.number_of_sessions} Sessions
                       </Box>

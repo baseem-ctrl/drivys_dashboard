@@ -45,12 +45,12 @@ export default function CollectedCashListFilter({ filters, onFilters }: any) {
           fullWidth
           options={
             users?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
+              label: `${item?.name ?? t('n/a')}`,
               value: item.id,
             })) ?? []
           }
           value={users.find((item) => item.id === filters.student_id) || null}
-          getOptionLabel={(option) => option.label || 'NA'}
+          getOptionLabel={(option) => option.label || t('n/a')}
           isOptionEqualToValue={(option, value) => option.value === value}
           renderInput={(params) => <TextField placeholder="Select Student" {...params} fullWidth />}
           onChange={handleStudentChange}
@@ -63,12 +63,12 @@ export default function CollectedCashListFilter({ filters, onFilters }: any) {
           fullWidth
           options={
             trainerUsers?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
+              label: `${item?.name ?? t('n/a')}`,
               value: item.id,
             })) ?? []
           }
           value={trainerUsers.find((item) => item.id === filters.trainer_id) || null}
-          getOptionLabel={(option) => option.label || 'NA'}
+          getOptionLabel={(option) => option.label || t('n/a')}
           isOptionEqualToValue={(option, value) => option.value === value}
           renderInput={(params) => <TextField placeholder="Select Trainer" {...params} fullWidth />}
           onChange={handleTrainerChange}

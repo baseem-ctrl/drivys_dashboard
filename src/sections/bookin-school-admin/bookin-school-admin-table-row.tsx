@@ -62,7 +62,7 @@ export default function BookingSchoolAdminTableRow({
         }}
       >
         <TableCell>{row?.id}</TableCell>
-        <TableCell>{user?.name ?? 'NA'}</TableCell>
+        <TableCell>{user?.name ?? t('n/a')}</TableCell>
         <TableCell
           sx={{
             cursor: 'pointer',

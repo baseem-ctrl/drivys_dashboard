@@ -91,13 +91,13 @@ function ProductItem({ product }: ProductItemProps) {
             component={RouterLink}
             href={paths.dashboard.user.details(product?.id)}
           >
-            {product.name ?? 'NA'}
+            {product.name ?? t('n/a')}
           </Link>
         }
         secondary={
           <>
             <Box component="span" sx={{ mr: 0.5 }}>
-              {product?.email ?? 'NA'}
+              {product?.email ?? t('n/a')}
             </Box>
             <Box
             // component="span"

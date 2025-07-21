@@ -19,7 +19,7 @@ export default function NotificationFilter({ filters, onFilters }: any) {
 
   const userOptions =
     users?.map((item: any) => ({
-      label: `${item?.name ?? 'NA'}`,
+      label: `${item?.name ?? t('n/a')}`,
       value: item.id,
     })) ?? [];
 

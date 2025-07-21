@@ -176,7 +176,7 @@ export default function PackageCreateForm({
       is_cash_pay_available: false,
       number_of_sessions: '',
       category_id: '',
-      vendor_id: '',
+      vendor_id: [],
       drivys_commision: '',
       min_price: '',
       max_price: '',
@@ -289,7 +289,12 @@ export default function PackageCreateForm({
 
     formData.append('is_cash_pay_available', formDataState.is_cash_pay_available ? 1 : 0);
 
-    if (data?.vendor_id?.value) formData.append('vendor_id', data?.vendor_id?.value);
+    if (Array.isArray(data?.vendor_id)) {
+      data.vendor_id.forEach((item: any) => {
+        formData.append('vendor_id[]', item.value);
+      });
+    }
+
     formData.append('background_color', data.background_color ? data.background_color : 'normal');
 
     if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
@@ -447,6 +452,7 @@ export default function PackageCreateForm({
             <Grid item xs={6}>
               <RHFAutocompleteSearch
                 name="vendor_id"
+                multiple
                 label={t('Select School')}
                 options={schoolList?.map((item: any) => ({
                   label: `${

@@ -172,24 +172,24 @@ export default function UserDetailsContentAdmin({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 { label: 'Name', value: details?.name ?? t('n/a') },
-                { label: 'Email', value: details?.email ?? 'NA' },
+                { label: 'Email', value: details?.email ?? t('n/a') },
                 {
                   label: 'Phone Number',
                   value: details?.country_code
                     ? `${details?.country_code}-${details?.phone}`
-                    : details?.phone ?? 'NA',
+                    : details?.phone ?? t('n/a'),
                 },
-                { label: 'User Type', value: details?.user_type ?? 'NA' },
+                { label: 'User Type', value: details?.user_type ?? t('n/a') },
 
-                { label: 'Preffered Language', value: details?.locale ?? 'NA' },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? 'NA' },
-                { label: 'Wallet Points', value: details?.wallet_points ?? 'NA' },
+                { label: 'Preffered Language', value: details?.locale ?? t('n/a') },
+                { label: 'Wallet Balance', value: details?.wallet_balance ?? t('n/a') },
+                { label: 'Wallet Points', value: details?.wallet_points ?? t('n/a') },
                 ...(details?.languages?.length
                   ? details?.languages.map((lang, index) => ({
                       label: `Language ${index + 1}`,
                       value: lang?.dialect?.id
                         ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
-                        : 'NA',
+                        : t('n/a'),
                     }))
                   : [{ label: 'Languages', value: t('n/a') }]),
                 ...(details?.user_type === 'TRAINER'
@@ -538,14 +538,15 @@ export default function UserDetailsContentAdmin({
                   )?.name ?? t('n/a'),
               },
 
-              { label: 'Gear', value: details?.user_preference?.gear ?? 'NA' },
+              { label: 'Gear', value: details?.user_preference?.gear ?? t('n/a') },
 
-              { label: 'Gender', value: details?.user_preference?.gender ?? 'NA' },
+              { label: 'Gender', value: details?.user_preference?.gender ?? t('n/a') },
 
               {
                 label: 'Vehicle type',
                 value:
-                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ?? 'NA',
+                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ??
+                  t('n/a'),
               },
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -587,9 +588,9 @@ export default function UserDetailsContentAdmin({
                     label: 'Account Number',
                     value: details?.bank_detail[0]?.account_number ?? t('n/a'),
                   },
-                  { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? 'NA' },
+                  { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? t('n/a') },
 
-                  { label: 'IBAN', value: details?.bank_detail[0]?.iban_number ?? 'NA' },
+                  { label: 'IBAN', value: details?.bank_detail[0]?.iban_number ?? t('n/a') },
 
                   {
                     label: 'Active',
@@ -605,7 +606,7 @@ export default function UserDetailsContentAdmin({
                     ? [
                         {
                           label: 'Trainer Language',
-                          value: details?.preferred_trainer_lang?.language_name ?? 'NA',
+                          value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
                         },
                       ]
                     : []),

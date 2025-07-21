@@ -179,9 +179,9 @@ export default function SchoolPayoutPage() {
 
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
-      : 'NA';
+      : t('n/a');
     const fields = [
-      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('School Name'), value: item?.vendor_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Total Earnings'),
@@ -212,7 +212,7 @@ export default function SchoolPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? 'NA'}
+            {item?.amount_required_from_admin ?? t('n/a')}
           </>
         ),
       },
@@ -285,9 +285,9 @@ export default function SchoolPayoutPage() {
 
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
-      : 'NA';
+      : t('n/a');
     const fields = [
-      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('School Name'), value: item?.vendor_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Total Earnings'),
@@ -320,7 +320,7 @@ export default function SchoolPayoutPage() {
           <>
             <span className="dirham-symbol">&#x00EA;</span>
 
-            {item?.amount_required_from_admin ?? 'NA'}
+            {item?.amount_required_from_admin ?? t('n/a')}
           </>
         ),
       },

@@ -87,12 +87,14 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                     </Grid>
                   </Grid>
                 </TableCell>
-                <TableCell>{booking?.driver?.email ?? 'NA'}</TableCell>
+                <TableCell>{booking?.driver?.email ?? t('n/a')}</TableCell>
                 <TableCell align="center">
                   <span className="dirham-symbol">&#x00EA;</span>
                   {booking.total}
                 </TableCell>
-                <TableCell align="center">{booking?.package?.number_of_sessions ?? 'NA'}</TableCell>
+                <TableCell align="center">
+                  {booking?.package?.number_of_sessions ?? t('n/a')}
+                </TableCell>
                 <TableCell>{booking?.no_of_sessions}</TableCell>
                 <TableCell>{booking?.no_of_sessions_completed}</TableCell>
                 <TableCell align="center">
@@ -129,7 +131,7 @@ const BookingStudentTable: React.FC<BookingTableProps> = ({ handleBookingClick, 
                     variant="soft"
                   />
                 </TableCell>
-                <TableCell align="center">{booking?.payment_method ?? 'NA'}</TableCell>
+                <TableCell align="center">{booking?.payment_method ?? t('n/a')}</TableCell>
               </TableRow>
             ))
           ) : (

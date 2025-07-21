@@ -63,8 +63,8 @@ export default function PayoutSearch({
                 )?.name ??
                 item?.vendor_translations?.[0]?.name ??
                 item?.name ??
-                'NA'
-              } (${item?.email ?? 'NA'})`,
+                t('n/a')
+              } (${item?.email ?? t('n/a')})`,
               value: item.id,
             })) ?? []
           }
@@ -77,7 +77,7 @@ export default function PayoutSearch({
                   )?.name ??
                   item?.vendor_translations?.[0]?.name ??
                   item?.name ??
-                  'NA'
+                  t('n/a')
                 }`,
                 value: item.id,
               }))

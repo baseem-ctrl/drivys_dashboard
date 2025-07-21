@@ -185,10 +185,10 @@ export default function TrainerPayoutPage() {
     const isPayoutAvailable = item?.amount_required_from_admin > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
-      : 'NA';
+      : t('n/a');
     const fields = [
-      { label: t('Trainer Name'), value: item?.trainer_name ?? 'NA' },
-      { label: t('School Name'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Trainer Name'), value: item?.trainer_name ?? t('n/a') },
+      { label: t('School Name'), value: item?.vendor_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Last Paid'),
@@ -221,7 +221,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_cash_amount_received ?? 'NA'}
+            {item?.total_cash_amount_received ?? t('n/a')}
           </>
         ),
       },
@@ -230,7 +230,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? 'NA'}
+            {item?.amount_required_from_admin ?? t('n/a')}
           </>
         ),
       },
@@ -301,10 +301,10 @@ export default function TrainerPayoutPage() {
     const isPayoutAvailable = item?.amount_required_from_admin > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
-      : 'NA';
+      : t('n/a');
     const fields = [
-      { label: t('Trainer'), value: item?.trainer_name ?? 'NA' },
-      { label: t('School'), value: item?.vendor_name ?? 'NA' },
+      { label: t('Trainer'), value: item?.trainer_name ?? t('n/a') },
+      { label: t('School'), value: item?.vendor_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
       {
         label: t('Last Paid'),
@@ -335,7 +335,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_cash_amount_received ?? 'NA'}
+            {item?.total_cash_amount_received ?? t('n/a')}
           </>
         ),
       },
@@ -344,7 +344,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? 'NA'}
+            {item?.amount_required_from_admin ?? t('n/a')}
           </>
         ),
       },

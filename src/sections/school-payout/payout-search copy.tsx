@@ -62,8 +62,8 @@ export default function PayoutSearch({
                   (t: any) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
                 )?.name ??
                 item?.name ??
-                'NA'
-              } (${item?.email ?? 'NA'})`,
+                t('n/a')
+              } (${item?.email ?? t('n/a')})`,
               value: item.id,
             })) ?? []
           }

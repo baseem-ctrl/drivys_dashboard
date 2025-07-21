@@ -56,19 +56,19 @@ export default function ReviewFilter({ filters, onFilters }: any) {
           fullWidth
           options={
             users?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
+              label: `${item?.name ?? t('n/a')}`,
               value: item.id,
             })) ?? []
           }
           value={
             users
               ?.map((item: any) => ({
-                label: `${item?.name ?? 'NA'}`,
+                label: `${item?.name ?? t('n/a')}`,
                 value: item.id,
               }))
               .find((item) => item.value === filters.student_id) || null
           }
-          getOptionLabel={(option) => option.label || 'NA'}
+          getOptionLabel={(option) => option.label || t('n/a')}
           isOptionEqualToValue={(option, value) => option.value === value?.value}
           renderInput={(params) => (
             <TextField placeholder={t('Select Student')} {...params} fullWidth />
@@ -83,19 +83,19 @@ export default function ReviewFilter({ filters, onFilters }: any) {
           fullWidth
           options={
             trainerUsers?.map((item: any) => ({
-              label: `${item?.name ?? 'NA'}`,
+              label: `${item?.name ?? t('n/a')}`,
               value: item.id,
             })) ?? []
           }
           value={
             trainerUsers
               ?.map((item: any) => ({
-                label: `${item?.name ?? 'NA'}`,
+                label: `${item?.name ?? t('n/a')}`,
                 value: item.id,
               }))
               .find((item) => item.value === filters.trainer_id) || null
           }
-          getOptionLabel={(option) => option.label || 'NA'}
+          getOptionLabel={(option) => option.label || t('n/a')}
           isOptionEqualToValue={(option, value) => option.value === value}
           renderInput={(params) => (
             <TextField placeholder={t('Select Trainer')} {...params} fullWidth />

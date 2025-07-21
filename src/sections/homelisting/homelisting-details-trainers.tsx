@@ -276,7 +276,7 @@ export default function HomeListingTrainers({
                   </IconButton>
 
                   <Avatar
-                    alt={trainerdisplayed?.name ?? 'NA'}
+                    alt={trainerdisplayed?.name ?? t('n/a')}
                     src={trainerdisplayed?.photo_url}
                     sx={{ width: 48, height: 48 }}
                   />

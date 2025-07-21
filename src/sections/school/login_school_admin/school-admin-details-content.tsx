@@ -55,13 +55,13 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
               { label: `Name (${itm?.locale})`, value: itm?.name ?? t('n/a') },
             ]) || []),
             // { label: 'Name', value: items?.name ??  t('n/a') },
-            { label: 'Email', value: details?.email ?? 'NA' },
-            { label: 'Phone Number', value: details?.phone_number ?? 'NA' },
+            { label: 'Email', value: details?.email ?? t('n/a') },
+            { label: 'Phone Number', value: details?.phone_number ?? t('n/a') },
             {
               label: 'Certificate Certificate Commission in (%)',
-              value: `${details?.certificate_commission_in_percentage ?? 'NA'}%`,
+              value: `${details?.certificate_commission_in_percentage ?? t('n/a')}%`,
             },
-            { label: 'License Expiry', value: details?.license_expiry ?? 'NA' },
+            { label: 'License Expiry', value: details?.license_expiry ?? t('n/a') },
             {
               label: 'License File',
               value: details?.license_file ? (
@@ -95,7 +95,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                 t('n/a')
               ),
             },
-            { label: 'Status', value: details?.status ?? 'NA' },
+            { label: 'Status', value: details?.status ?? t('n/a') },
             {
               label: 'Is Active',
               value: !!details?.is_active ? (

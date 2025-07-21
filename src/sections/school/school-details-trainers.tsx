@@ -341,7 +341,7 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
                 </IconButton>
 
                 <Avatar
-                  alt={trainer?.user?.name ?? 'NA'}
+                  alt={trainer?.user?.name ?? t('n/a')}
                   src={trainer?.user?.photo_url}
                   sx={{ width: 48, height: 48 }}
                 />

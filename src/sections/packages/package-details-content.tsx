@@ -335,7 +335,10 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('drivys_commision', payload.drivys_commision);
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
       formData.append('number_of_sessions', payload.number_of_sessions);
-      formData.append('vendor_id', payload.vendor_id || '');
+      if (data.vendor_id?.value) {
+        formData.append('vendor_id[]', data.vendor_id.value);
+      }
+
       formData.append('package_id', details.id || '');
       formData.append('category_id', payload.category_id || '');
 
@@ -585,20 +588,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   value: <PackageDescription description={itm?.session_inclusions} /> ?? t('n/a'),
                 },
               ]) || []),
-              {
-                label: t('School Id'),
-                value: (
-                  <Box
-                    component="span"
-                    onClick={() => {
-                      router.push(paths.dashboard.school.details(details?.vendor_id)); // Navigate to the school details page
-                    }}
-                    sx={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }} // Add some styles to indicate it's clickable
-                  >
-                    {details?.vendor_id ?? t('n/a')}
-                  </Box>
-                ),
-              },
+
               ...(details?.vendor?.vendor_translations?.flatMap((itm: any) => [
                 {
                   label: `${t('School Name')} (${t(itm?.locale?.toLowerCase() || 'n/a')})`,
@@ -606,7 +596,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 },
               ]) || []),
 
-              { label: t('Number of sessions'), value: details?.number_of_sessions ?? 'NA' },
+              { label: t('Number of sessions'), value: details?.number_of_sessions ?? t('n/a') },
               {
                 label: t('Drivys Commission'),
                 value: (
