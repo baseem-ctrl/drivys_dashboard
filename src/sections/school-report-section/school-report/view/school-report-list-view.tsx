@@ -94,17 +94,17 @@ export default function SchoolReportListSchoolAdminView() {
       );
 
       const queryParams = new URLSearchParams(filteredParams).toString();
-
-      const response = await fetch(
-        `${import.meta.env.VITE_HOST_API}admin/reportBySchool/school?${queryParams}`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'text/csv',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let baseUrl = import.meta.env.VITE_HOST_API;
+      if (!baseUrl.endsWith('/')) {
+        baseUrl += '/';
+      }
+      const response = await fetch(`${baseUrl}admin/reportBySchool/school?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'text/csv',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Failed to download CSV');
