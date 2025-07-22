@@ -25,6 +25,7 @@ interface TrainerPaymentDetailsProps {
   trainerId: any;
   studentId: any;
   packageId: any;
+  paymentMode: any;
 }
 
 const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
@@ -37,6 +38,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   trainerId,
   studentId,
   packageId,
+  paymentMode,
 }) => {
   const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
@@ -54,6 +56,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
     student_id: studentId,
     package_id: packageId,
     coupon_code: couponCode,
+    mode_of_payment: paymentMode,
   });
   const errorMessage = paymentSummaryError?.message?.errors?.coupon_code[0] || '';
 

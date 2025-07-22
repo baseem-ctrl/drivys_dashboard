@@ -82,7 +82,7 @@ export default function CreateBooking() {
   const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(
     Number.isNaN(preselectedTrainerId) ? null : preselectedTrainerId
   );
-
+  const [paymentMode, setPaymentMode] = useState<'CASH' | 'ONLINE' | null>('ONLINE');
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
     Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
   );
@@ -275,6 +275,8 @@ export default function CreateBooking() {
       console.log('pickupLocationSelected', pickupLocationSelected);
       formData.append('student_id', selectedStudentId.toString());
       formData.append('trainer_id', selectedTrainerId.toString());
+      formData.append('mode_of_payment', paymentMode);
+
       formData.append(
         'package_id',
         (initialStep >= 2 ? selectedPackageId : selectedPackageId?.package_id).toString()
@@ -465,11 +467,15 @@ export default function CreateBooking() {
             pickupLocationSelected={pickupLocationSelected}
             selectedTrainer={selectedTrainer}
             isPickUpEnabled={isPickUpEnabled}
+            paymentMode={paymentMode}
+            setPaymentMode={setPaymentMode}
           />
         );
+
       case 5:
         return (
           <TrainerPaymentDetails
+            paymentMode={paymentMode}
             txnId={txnId}
             setTxnId={setTxnId}
             remarks={remarks}
