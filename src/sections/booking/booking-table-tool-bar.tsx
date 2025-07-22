@@ -32,7 +32,7 @@ export default function BookingTableToolbar({
     endDate: new Date(),
     key: 'selection',
   });
-
+  console.log('filters', filters);
   const handleSelect = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
     setSelectionRange(ranges.selection);
@@ -82,7 +82,7 @@ export default function BookingTableToolbar({
   const { users, usersLoading, revalidateUsers } = useGetUsers({
     page: 0,
     limit: 1000,
-    user_types: 'STUDENT',
+    user_types: 'TRAINER',
   });
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
@@ -116,30 +116,40 @@ export default function BookingTableToolbar({
       gap={2}
       padding={2}
     >
-      {/* Vendor Filter (Autocomplete) */}
-      <Box sx={{ flex: 1 }}>
+      <Box flex={1} display="flex" alignItems="center" gap={1}>
         <Autocomplete
           fullWidth
           options={
-            vendorOptions?.map((item: any) => ({
-              label: `${item?.name ?? t('n/a')}(${item?.email ?? t('n/a')})`,
+            users?.map((item: any) => ({
+              label: `${item?.name ?? t('n/a')}`,
               value: item.id,
             })) ?? []
           }
-          value={vendorOptions.find((item) => item.id === filters.vendor)?.name || null}
-          onChange={(event, newValue) => handleChange('vendor')(newValue?.value || '')}
+          value={
+            users
+              ?.map((item: any) => ({
+                label: item?.name || '',
+                value: item.id,
+              }))
+              .find((item) => item.value === filters.driver_id) || null
+          }
+          getOptionLabel={(option) => option?.label ?? ''}
+          isOptionEqualToValue={(option, value) => option.value === value?.value}
+          onChange={(_, value) => handleChange('driver_id')(value)}
           renderInput={(params) => (
-            <TextField
-              placeholder={t('Select School')}
-              {...params}
-              onChange={(e) => setSearch(e.target.value)}
-              fullWidth
-            />
-          )}
-          renderOption={(props, option) => (
-            <li {...props} key={option.value}>
-              {option.label}
-            </li>
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <TextField {...params} placeholder={t('trainer')} fullWidth />
+              {filters.driver_id && (
+                <IconButton
+                  onClick={handleClear('driver_id')}
+                  size="small"
+                  sx={{ ml: 1 }}
+                  aria-label="clear trainer"
+                >
+                  <ClearIcon />
+                </IconButton>
+              )}
+            </Box>
           )}
         />
       </Box>
