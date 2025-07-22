@@ -173,6 +173,7 @@
   "trainer_from": "Trainer from",
   "n_a": "N/A",
   "reject": "Reject",
+  "city_assigned": "City Assigned",
   "accept": "Accept",
   "sessions": "sessions",
   "total_bookings": "Total Bookings",
@@ -1274,5 +1275,7 @@
   "add_package": "Add Package",
   "delete_package": "Delete Package",
   "delete_package_confirmation": "Are you sure you want to delete this package?",
-  "edit_package": "Edit Package"
+  "edit_package": "Edit Package",
+  "impression": "User Impression",
+  "user_reason": "User Reason"
 }

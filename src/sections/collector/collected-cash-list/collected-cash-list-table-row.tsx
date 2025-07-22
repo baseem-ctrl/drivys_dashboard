@@ -152,7 +152,7 @@ const CollectedCashListRow = ({ reload, row }: CollectedCashListRowProps) => {
 
                       <TableCell>
                         <Chip
-                          label={transaction.payment_status ?? t('n/a')}
+                          label={t(transaction.payment_status) ?? t('n/a')}
                           color={transaction.payment_status === 'PAID' ? 'success' : 'error'}
                           variant="soft"
                           size="small"

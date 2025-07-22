@@ -53,7 +53,7 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
 
       <TableCell>
         <Chip
-          label={row?.payment_method ?? t('n/a')}
+          label={t(row?.payment_method) ?? t('n/a')}
           color="primary"
           variant="soft"
           size="small"
@@ -71,7 +71,7 @@ const CashCollectedRow = ({ reload, row }: CollectedCashListRowProps) => {
 
       <TableCell>
         <Chip
-          label={row?.payment_status ?? t('n/a')}
+          label={t(row?.payment_status) ?? t('n/a')}
           color={
             row?.payment_status === 'PAID'
               ? 'success'

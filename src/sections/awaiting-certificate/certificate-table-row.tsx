@@ -94,11 +94,11 @@ export default function CertificateRow({ row, reload, path }) {
             style={{ cursor: 'pointer' }}
           >
             {status === 'PENDING'
-              ? 'Pending'
+              ? t('Pending')
               : status === 'REJECTED'
-              ? 'Rejected'
+              ? t('Rejected')
               : status === 'APPROVED'
-              ? 'Approved'
+              ? t('Approved')
               : t('n/a')}
           </Label>
         </TableCell>

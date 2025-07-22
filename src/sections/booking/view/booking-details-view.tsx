@@ -29,6 +29,7 @@ import {
   Container,
   ListItem,
   ListItemText,
+  Divider,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
@@ -66,7 +67,7 @@ const BookingDetailsComponent = () => {
   const { user, package: pkg, driver, pickup_location, total, sessions } = bookingDetails;
   const [value, setValue] = useState(0);
   const popover = usePopover();
-
+  console.log('sessions', sessions);
   const handleBookingStatusChange = async (event: any) => {
     const selectedStatus = event;
     const formData = new FormData();
@@ -166,6 +167,25 @@ const BookingDetailsComponent = () => {
             <Tab label={t('Payment & Summary')} />
           </Tabs>
         </Grid>
+        {value === 0 && (
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 3 }}>
+              <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>
+                <strong>{t('impression')}</strong>
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {sessions[0]?.user_comments || 'N/A'}
+              </Typography>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="subtitle1" sx={{ mb: 1 }} color="primary">
+                <strong> {t('reason')}</strong>
+              </Typography>
+              <Typography variant="body2">{sessions[0]?.user_impression || 'N/A'}</Typography>
+            </Card>
+          </Grid>
+        )}
         {/* User Information */}
         {value === 0 && (
           <Grid
