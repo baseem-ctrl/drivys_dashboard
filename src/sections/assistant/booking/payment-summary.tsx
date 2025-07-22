@@ -7,6 +7,7 @@ import {
   IconButton,
   Button,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,8 @@ export const PaymentSummaryBox = ({
   couponCode,
   setCouponCode,
   errorMessage,
+  paymentSummaryError,
+  paymentSummaryLoading,
 }: {
   summary: any;
   couponCode: any;
@@ -33,8 +36,26 @@ export const PaymentSummaryBox = ({
   useEffect(() => {
     setLocalError(errorMessage || '');
   }, [errorMessage]);
+  if (paymentSummaryLoading) {
+    return (
+      <Box
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: '16px',
+          p: 5,
+          backgroundColor: '#fff',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 200,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  if (!summary) {
+  if (paymentSummaryError) {
     return (
       <Box
         sx={{
@@ -74,15 +95,15 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary.package_price}
+              {summary?.package_price || '0'}
             </>
           }
           originalValue={
-            summary.package_price_before_discount &&
-            summary.package_price_before_discount !== summary.package_price ? (
+            summary?.package_price_before_discount &&
+            summary?.package_price_before_discount !== summary.package_price ? (
               <>
                 <span className="dirham-symbol">&#x00EA;</span>
-                {summary.package_price_before_discount}
+                {summary?.package_price_before_discount}
               </>
             ) : undefined
           }
@@ -92,15 +113,15 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary.transport_fee}
+              {summary?.transport_fee}
             </>
           }
           originalValue={
-            summary.transport_fee_before_discount &&
-            summary.transport_fee_before_discount !== summary.transport_fee ? (
+            summary?.transport_fee_before_discount &&
+            summary?.transport_fee_before_discount !== summary?.transport_fee ? (
               <>
                 <span className="dirham-symbol">&#x00EA;</span>
-                {summary.transport_fee_before_discount}
+                {summary?.transport_fee_before_discount}
               </>
             ) : undefined
           }
@@ -111,13 +132,22 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary.tax_amount}
+              {summary?.tax_amount}
+            </>
+          }
+        />
+        <SummaryRow
+          label={t('cash_service_fee')}
+          value={
+            <>
+              <span className="dirham-symbol">&#x00EA;</span>
+              {summary?.cash_service_charge}
             </>
           }
         />
         <Divider />
-        <SummaryRow label={t('booking_method')} value={summary.booking_method} />
-        <SummaryRow label={t('payment_method')} value={summary.payment_method} />
+        <SummaryRow label={t('booking_method')} value={summary?.booking_method} />
+        <SummaryRow label={t('payment_method')} value={summary?.payment_method} />
         <Divider sx={{ my: 1 }} />
         <Grid container spacing={1} alignItems="center">
           <Grid item xs>
@@ -173,7 +203,7 @@ export const PaymentSummaryBox = ({
         {isCouponApplied && (
           <Stack spacing={0.5} mt={0.5}>
             <Typography variant="caption" color="success.main">
-              {t('coupon_applied_successfully')} {t('you_saved')} AED {summary.discount_amount}!
+              {t('coupon_applied_successfully')} {t('you_saved')} AED {summary?.discount_amount}!
             </Typography>
           </Stack>
         )}
@@ -184,7 +214,7 @@ export const PaymentSummaryBox = ({
           </Typography>
           <Typography fontSize={14} fontWeight={700} color="primary">
             <span className="dirham-symbol">&#x00EA;</span>
-            {summary.total}
+            {summary?.total}
           </Typography>
         </Stack>
       </Stack>

@@ -77,6 +77,8 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
       setCouponCode={setCouponCode}
       couponCode={couponCode}
       errorMessage={errorMessage}
+      paymentSummaryError={paymentSummaryError}
+      paymentSummaryLoading={paymentSummaryLoading}
     />
   );
 };

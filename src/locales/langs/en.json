@@ -1281,5 +1281,6 @@
   "mode_of_payment": "Select a Mode of Payment",
   "payment_mode": "Payment Mode",
   "cash": "CASH",
-  "online": "ONLINE"
+  "online": "ONLINE",
+  "cash_service_fee": "Cash Service Fee"
 }
