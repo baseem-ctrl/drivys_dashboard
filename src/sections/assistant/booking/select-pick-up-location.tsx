@@ -24,6 +24,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import { useTranslation } from 'react-i18next';
+import PaymentModeSelector from './select-payment-mode';
 
 const getIcon = (label: string) => {
   switch (label?.toUpperCase()) {
@@ -42,6 +43,8 @@ interface AddressSelectorProps {
   pickupLocationSelected: number;
   selectedTrainer: any;
   isPickUpEnabled: any;
+  paymentMode: any;
+  setPaymentMode: any;
 }
 
 const AddressSelector: React.FC<AddressSelectorProps> = ({
@@ -50,6 +53,8 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   pickupLocationSelected,
   selectedTrainer,
   isPickUpEnabled,
+  paymentMode,
+  setPaymentMode,
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -254,6 +259,7 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
           )}
         </Box>
       )}
+      <PaymentModeSelector value={paymentMode} setPaymentMode={setPaymentMode} />
     </>
   );
 };

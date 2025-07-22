@@ -1335,5 +1335,9 @@
   "edit_package": "تعديل الباقة",
   "decline": "انخفاض",
   "impression": "انطباع المستخدم",
-  "user_reason": "سبب المستخدم"
+  "user_reason": "سبب المستخدم",
+  "mode_of_payment": "طريقة الدفع",
+  "payment_mode": "وسيلة الدفع",
+  "cash": "نقدًا",
+  "online": "عبر الإنترنت"
 }

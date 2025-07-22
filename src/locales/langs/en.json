@@ -1277,5 +1277,9 @@
   "delete_package_confirmation": "Are you sure you want to delete this package?",
   "edit_package": "Edit Package",
   "impression": "User Impression",
-  "user_reason": "User Reason"
+  "user_reason": "User Reason",
+  "mode_of_payment": "Select a Mode of Payment",
+  "payment_mode": "Payment Mode",
+  "cash": "CASH",
+  "online": "ONLINE"
 }

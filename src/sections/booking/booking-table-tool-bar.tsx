@@ -32,7 +32,6 @@ export default function BookingTableToolbar({
     endDate: new Date(),
     key: 'selection',
   });
-  console.log('filters', filters);
   const handleSelect = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
     setSelectionRange(ranges.selection);
