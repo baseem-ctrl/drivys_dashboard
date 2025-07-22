@@ -255,7 +255,7 @@ export default function PendingRequests({
                           variant="body2"
                           sx={{ cursor: 'default', color: 'text.secondary' }}
                         >
-                          Trainer from{' '}
+                          {t('trainer_from')}
                           {request?.user?.user_preference?.city?.city_translations?.find(
                             (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
                           )?.name ||

@@ -123,7 +123,7 @@ export default function UserTableRow({
               }}
             />
             <Label variant="soft" color="info">
-              {user_type}
+              {t(user_type)}
             </Label>
           </Link>
         </TableCell>

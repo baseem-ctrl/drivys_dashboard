@@ -27,6 +27,7 @@ import {
   Switch,
   Container,
   ListItemText,
+  Divider,
 } from '@mui/material';
 import { Star } from '@mui/icons-material';
 
@@ -154,6 +155,25 @@ const BookingDetailsComponent = () => {
           </Tabs>
         </Grid>
         {/* User Information */}
+        {value === 0 && (
+          <Grid item xs={12} md={12}>
+            <Card sx={{ p: 3 }}>
+              <Typography variant="subtitle1" color="primary" sx={{ mb: 1 }}>
+                <strong>{t('impression')}</strong>
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {sessions[0]?.user_comments || 'N/A'}
+              </Typography>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="subtitle1" sx={{ mb: 1 }} color="primary">
+                <strong> {t('reason')}</strong>
+              </Typography>
+              <Typography variant="body2">{sessions[0]?.user_impression || 'N/A'}</Typography>
+            </Card>
+          </Grid>
+        )}
         {value === 0 && (
           <Grid item xs={12} md={6}>
             <Card

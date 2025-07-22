@@ -214,8 +214,8 @@ export default function RefundTableRow({
 
         <Label variant="soft" sx={{ mt: 1, color: 'darkblue' }}>
           {row?.booking?.package?.is_unlimited
-            ? 'Unlimited Sessions'
-            : `${row?.booking?.package?.number_of_sessions ?? 0} Sessions`}
+            ? t('unlimited_sessions')
+            : `${row?.booking?.package?.number_of_sessions ?? 0} ${t('sessions')}`}
         </Label>
       </TableCell>
 
@@ -230,7 +230,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row?.booking?.booking_status || t('n/a')}
+          {t(row?.booking?.booking_status) || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -244,7 +244,7 @@ export default function RefundTableRow({
               : 'success'
           }
         >
-          {row.booking?.payment_status || t('n/a')}
+          {t(row.booking?.payment_status) || t('n/a')}
         </Label>
       </TableCell>
       <TableCell>
@@ -256,7 +256,7 @@ export default function RefundTableRow({
         {row?.remaining_amount_to_refund || '0'}
       </TableCell>
 
-      <TableCell>{row?.booking?.payment_method}</TableCell>
+      <TableCell>{t(row?.booking?.payment_method)}</TableCell>
       <TableCell>{row.reason ? row?.booking?.refund_reason : t('n/a')}</TableCell>
       <TableCell>
         <Tooltip title={refundStatus === 'approved' ? 'You can process the refund now' : ''} arrow>

@@ -83,6 +83,8 @@
   "system_settings": "إعدادات النظام",
   "language": "اللغة",
   "city": "المدينة",
+  "city_assigned": "المدينة",
+
   "areas": "المناطق",
   "dialect": "اللهجة",
   "pickup": "الاستلام",
@@ -1330,5 +1332,6 @@
   "add_package": "إضافة باقة",
   "delete_package": "حذف الباقة",
   "delete_package_confirmation": "هل أنت متأكد أنك تريد حذف هذه الباقة؟",
-  "edit_package": "تعديل الباقة"
+  "edit_package": "تعديل الباقة",
+  "decline": "انخفاض"
 }
