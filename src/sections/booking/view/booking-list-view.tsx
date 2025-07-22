@@ -125,7 +125,7 @@ export default function BookingListView() {
     search: filters.search,
     payment_status: filters.payment_status,
     payment_method: filters.payment_method,
-    driver_id: filters.vendor,
+    driver_id: filters.driver_id.value,
     start_date: filters.start_date,
     end_date: filters.end_date,
   });
