@@ -439,8 +439,8 @@ export default function UserDetailsContentAdmin({
                     label: t('max_cash_allowed_in_hand'),
                     value: (
                       <>
+                        <span className="dirham-symbol">&#x00EA;</span>{' '}
                         {details?.max_cash_in_hand_allowed ?? t('n/a')}{' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
                       </>
                     ),
                   },
@@ -449,7 +449,7 @@ export default function UserDetailsContentAdmin({
                     label: 'Cash in Hand',
                     value: details?.cash_in_hand ? (
                       <>
-                        {details.cash_in_hand} <span className="dirham-symbol">د.إ</span>
+                        <span className="dirham-symbol">&#x00EA;</span> {details.cash_in_hand}
                       </>
                     ) : (
                       t('n/a')
