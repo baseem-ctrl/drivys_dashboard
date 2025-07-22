@@ -1333,5 +1333,7 @@
   "delete_package": "حذف الباقة",
   "delete_package_confirmation": "هل أنت متأكد أنك تريد حذف هذه الباقة؟",
   "edit_package": "تعديل الباقة",
-  "decline": "انخفاض"
+  "decline": "انخفاض",
+  "impression": "انطباع المستخدم",
+  "user_reason": "سبب المستخدم"
 }
