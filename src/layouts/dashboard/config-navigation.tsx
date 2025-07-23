@@ -83,6 +83,7 @@ export function useNavData() {
     payouts: 'payout_vendor',
     trainer_payouts: 'payout_trainer',
     school_payouts: 'payout_vendor',
+    assistant_payouts: 'collection_from_assistant',
     reviews: 'reviews',
     trainer_review: 'reviews',
     student_review: 'reviews',
@@ -449,6 +450,7 @@ export function useNavData() {
       children: [
         { title: t('trainer_payouts'), path: paths.dashboard.payouts.root },
         { title: t('school_payouts'), path: paths.dashboard.payouts.school },
+        { title: t('assistant_payouts'), path: paths.dashboard.payouts.assistant },
 
         // { title: t('details'), path: paths.dashboard.tour.demo.details },
         // { title: t('create'), path: paths.dashboard.tour.new },

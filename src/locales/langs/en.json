@@ -1282,5 +1282,7 @@
   "payment_mode": "Payment Mode",
   "cash": "CASH",
   "online": "ONLINE",
-  "cash_service_fee": "Cash Service Fee"
+  "cash_service_fee": "Cash Service Fee",
+  "assistant_payouts": "Assistant Payouts",
+  "amount_required_from_assistant": "Amount Required from Assistant"
 }

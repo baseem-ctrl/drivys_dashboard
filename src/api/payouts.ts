@@ -377,3 +377,62 @@ export function useGetPayoutBySchool({
     revalidatePayoutBySchool,
   };
 }
+
+// Function to fetch the payout by Assistant
+
+export function useGetPayoutByAssistant({
+  assistant_id,
+  limit,
+  page,
+  sort_dir,
+  sorting_by,
+}: {
+  assistant_id?: number;
+  limit?: number;
+  page?: number;
+  sort_dir?: 'asc' | 'desc';
+  sorting_by?: string;
+} = {}) {
+  const queryParams = useMemo(() => {
+    const params: Record<string, any> = {};
+    if (assistant_id) params.assistant_id = assistant_id;
+    if (limit) params.limit = limit;
+    if (page) params.page = page;
+    if (sort_dir) params.sort_dir = sort_dir;
+    if (sorting_by) params.sorting_by = sorting_by;
+    return params;
+  }, [assistant_id, limit, page, sort_dir, sorting_by]);
+
+  const fullUrl = useMemo(
+    () => `${endpoints.payouts.payoutDetailsAssistant}?${new URLSearchParams(queryParams)}`,
+    [queryParams]
+  );
+
+  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const revalidatePayoutByAssistant = () => {
+    mutate(fullUrl);
+  };
+
+  const memoizedValue = useMemo(() => {
+    return {
+      payoutByAssistantList: data?.data || [],
+      payoutByAssistantLoading: isLoading,
+      payoutByAssistantError: error,
+      payoutByAssistantValidating: isValidating,
+      payoutByAssistantEmpty: data?.data?.length === 0,
+      totalPages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  return {
+    ...memoizedValue,
+    revalidatePayoutByAssistant,
+  };
+}
+export function processPayoutToAssistant(body: Record<string, any>) {
+  const URL = `${endpoints.payouts.payToAssistant}`;
+  return drivysCreator([URL, body]);
+}

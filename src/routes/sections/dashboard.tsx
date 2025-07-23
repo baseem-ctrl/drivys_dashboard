@@ -94,6 +94,7 @@ import UnattendedStudentListView from 'src/sections/unattended-students/view/una
 import CertificateListViewSchoolAdmin from 'src/sections/awaiting-certificate-school-admin/view/certificate-list-view';
 import { BookingDetailsCashInHandTable } from 'src/sections/cash-in-hand-list-assistant/view/trainer-booking-details';
 import AssistantDetailsPage from 'src/pages/dashboard/user/assistant-details';
+import AssistantPayoutPage from 'src/sections/payouts/assistant/assistant-payouts-view';
 
 // ----------------------------------------------------------------------
 
@@ -375,6 +376,7 @@ const allroutes = [
       { element: <TrainerPayoutPage />, index: true },
       { path: ':id', element: <BookingDetailsTable /> },
       { path: 'school', element: <SchoolPayoutPage /> },
+      { path: 'assistant', element: <AssistantPayoutPage /> },
       { path: 'school/:id', element: <SchoolBookingDetailsTable /> },
 
       // { path: 'new', element: <TourCreatePage /> },
