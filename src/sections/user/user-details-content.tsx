@@ -562,34 +562,30 @@ export default function UserDetailsContent({
               variant="square"
             />
 
-            {details?.user_preference?.bio && currentLang.value === 'en' && (
-              <Box sx={{ width: '100%', textAlign: 'center' }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Bio
-                </Typography>
-                <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-                  {details.user_preference.bio}
-                </Typography>
-              </Box>
-            )}
+            <Box sx={{ width: '100%', textAlign: 'center' }}>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                {t('Bio (En)')}
+              </Typography>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                {details.user_preference.bio || t('n/a')}
+              </Typography>
+            </Box>
 
-            {details?.user_preference?.bio_ar && currentLang.value === 'ar' && (
-              <Box sx={{ width: '100%', textAlign: 'center' }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Bio
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontFamily: 'Tahoma, sans-serif',
-                    color: '#333',
-                    whiteSpace: 'pre-line',
-                  }}
-                >
-                  {details.user_preference.bio_ar}
-                </Typography>
-              </Box>
-            )}
+            <Box sx={{ width: '100%', textAlign: 'center' }}>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                {t('Bio (Ar)')}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: 'Tahoma, sans-serif',
+                  color: '#333',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                {details.user_preference.bio_ar || t('n/a')}
+              </Typography>
+            </Box>
           </Card>
         </Grid>
 
@@ -598,15 +594,14 @@ export default function UserDetailsContent({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 {
-                  label:
-                    currentLang.value === 'ar'
-                      ? t('name_as_per_profile_card_ar')
-                      : t('name_as_per_profile_card'),
-                  value:
-                    currentLang.value === 'ar'
-                      ? details?.name_ar ?? t('n/a')
-                      : details?.name ?? t('n/a'),
+                  label: t('name_as_per_profile_card'),
+                  value: details?.name ?? t('n/a'),
                 },
+                {
+                  label: t('name_as_per_profile_card_ar'),
+                  value: details?.name_ar ?? t('n/a'),
+                },
+
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
