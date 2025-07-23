@@ -40,7 +40,7 @@ export default function PickupCreateEditForm({
   onClose,
   reload,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { city } = useGetAllCity({
     limit: 1000,
