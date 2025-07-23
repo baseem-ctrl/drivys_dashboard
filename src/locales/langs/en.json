@@ -1016,8 +1016,10 @@
   "roles_and_permission_mapping": "Mapping",
   "certificate_expiry_date": "Certificate Expiry Date",
   "roles": "Roles",
-  "name_as_per_profile_card": "Name as Per Profile Card",
-  "name_as_per_profile_card_ar": "Name as Per Profile Card",
+  "name_as_per_profile_card": "Name as Per Profile Card (En)",
+  "name_as_per_profile_card_ar": "Name as Per Profile Card (Ar)",
+  "name_as_per_profile_card_ur": "Name as Per Profile Card (Ur)",
+
   "support": "Support",
   "booking_date": "Booking Date",
   "priority": "Priority",
@@ -1319,5 +1321,8 @@
   "my_account": "My account",
   "logout": "Logout",
   "Female": "Femaile",
-  "Male": "Male"
+  "Male": "Male",
+  "Bio (En)": "Bio (En)",
+  "Bio (Ar)": "Bio (Ar)",
+  "Bio (Ur)": "Bio (Ur)"
 }

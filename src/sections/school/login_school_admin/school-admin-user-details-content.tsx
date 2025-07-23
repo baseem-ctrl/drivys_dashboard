@@ -165,11 +165,16 @@ export default function UserDetailsContentAdmin({
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
                 {
-                  label: t('name'),
-                  value:
-                    i18n.language === 'ar'
-                      ? details?.name_ar ?? details?.name ?? t('n/a')
-                      : details?.name ?? details?.name_ar ?? t('n/a'),
+                  label: t('name_as_per_profile_card'),
+                  value: details?.name ?? t('n/a'),
+                },
+                {
+                  label: t('name_as_per_profile_card_ar'),
+                  value: details?.name_ar ?? t('n/a'),
+                },
+                {
+                  label: t('name_as_per_profile_card_ur'),
+                  value: details?.name_ur ?? t('n/a'),
                 },
                 { label: t('email'), value: details?.email ?? t('n/a') },
                 {
