@@ -567,7 +567,7 @@ export default function UserDetailsContent({
                 {t('Bio (En)')}
               </Typography>
               <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-                {details.user_preference.bio || t('n/a')}
+                {details?.user_preference?.bio || t('n/a')}
               </Typography>
             </Box>
 
@@ -583,7 +583,22 @@ export default function UserDetailsContent({
                   whiteSpace: 'pre-line',
                 }}
               >
-                {details.user_preference.bio_ar || t('n/a')}
+                {details?.user_preference?.bio_ar || t('n/a')}
+              </Typography>
+            </Box>
+            <Box sx={{ width: '100%', textAlign: 'center' }}>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                {t('Bio (Ur)')}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: 'Tahoma, sans-serif',
+                  color: '#333',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                {details?.user_preference?.bio_ar || t('n/a')}
               </Typography>
             </Box>
           </Card>
@@ -600,6 +615,10 @@ export default function UserDetailsContent({
                 {
                   label: t('name_as_per_profile_card_ar'),
                   value: details?.name_ar ?? t('n/a'),
+                },
+                {
+                  label: t('name_as_per_profile_card_ur'),
+                  value: details?.name_ur ?? t('n/a'),
                 },
 
                 ...(details?.user_type === 'TRAINER'
