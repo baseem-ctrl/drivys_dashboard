@@ -1296,14 +1296,12 @@
   "school_verification_tooltip": "Indicates if the school has verified the user. Click \"Verify\" to verify.",
   "admin_verification": "Admin Verification",
   "admin_verification_tooltip": "Indicates if the admin has verified the user. Displays the verification date if verified.",
-
   "payment_amount": "Payment Amount",
-
   "coupon_used": "Coupon Used",
   "wallet_amount_used": "Wallet Amount Used",
   "total_sessions_booked": "Total Sessions Booked",
   "sign_in_to": "Sign in to",
-
+  "Both": "Both",
   "enter_otp": "Enter OTP",
   "enter_new_password": "Enter New Password",
   "forgot_password": "Forgot password?",
@@ -1319,5 +1317,7 @@
   "simple": "Simple",
   "open_menu": "Open Menu",
   "my_account": "My account",
-  "logout": "Logout"
+  "logout": "Logout",
+  "Female": "Femaile",
+  "Male": "Male"
 }
