@@ -320,7 +320,7 @@ export default function SchoolTrainersListView() {
                               variant="soft"
                               color={!!row?.user?.is_active ? 'success' : 'error'}
                             >
-                              {!!row?.user?.is_active ? 'Active' : 'In Active'}
+                              {!!row?.user?.is_active ? t('active') : t('inactive')}
                             </Label>
                           </TableCell>
 
@@ -333,7 +333,7 @@ export default function SchoolTrainersListView() {
                                   handleVerify(e, row?.user?.id);
                                 }}
                               >
-                                Verify
+                                {t('verify')}
                               </Button>
                             ) : (
                               moment(row?.user?.school_verified_at).format('lll')
@@ -393,7 +393,7 @@ export default function SchoolTrainersListView() {
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove
+            {t('remove')}
           </MenuItem>
 
           <MenuItem
@@ -403,14 +403,14 @@ export default function SchoolTrainersListView() {
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('edit')}
           </MenuItem>
         </CustomPopover>
         <ConfirmDialog
           open={confirm.value}
           onClose={confirm.onFalse}
           title="Remove"
-          content="Are you sure want to remove this trainer?"
+          content={t('confirm_remove_trainer')}
           onConfirm={handleRemoveTrianer}
           action={
             <Button variant="contained" color="error">
