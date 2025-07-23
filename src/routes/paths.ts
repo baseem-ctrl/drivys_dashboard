@@ -327,6 +327,8 @@ export const paths = {
     payouts: {
       root: `${ROOTS.DASHBOARD}/payouts`,
       school: `${ROOTS.DASHBOARD}/payouts/school`,
+      assistant: `${ROOTS.DASHBOARD}/payouts/assistant`,
+
       details: (id: string) => `${ROOTS.DASHBOARD}/payouts/${id}`,
       schoolDetails: (id: string) => `${ROOTS.DASHBOARD}/payouts/school/${id}`,
       // details: (id: string) => `${ROOTS.DASHBOARD}/payout/${id}`,

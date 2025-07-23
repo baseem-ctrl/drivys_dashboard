@@ -378,6 +378,8 @@ export const endpoints = {
     getPayoutByBooking: 'admin/payout/get-by-bookings',
     payToSchool: 'admin/payout/transfer/vendor-pay',
     getPayoutBySchool: 'admin/payout/get-trainers-payout-by-school',
+    payoutDetailsAssistant: 'admin/payout/get-by-assistants',
+    payToAssistant: 'admin/payout/transfer/assistants-pays',
   },
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',
