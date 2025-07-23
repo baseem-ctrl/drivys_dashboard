@@ -164,7 +164,13 @@ export default function UserDetailsContentAdmin({
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: t('name'), value: details?.name ?? t('n/a') },
+                {
+                  label: t('name'),
+                  value:
+                    i18n.language === 'ar'
+                      ? details?.name_ar ?? details?.name ?? t('n/a')
+                      : details?.name ?? details?.name_ar ?? t('n/a'),
+                },
                 { label: t('email'), value: details?.email ?? t('n/a') },
                 {
                   label: t('phone_number'),
@@ -430,7 +436,13 @@ export default function UserDetailsContentAdmin({
                   {
                     label: t('last_booking_at'),
                     value: details?.last_booking_was
-                      ? moment.utc(details?.last_booking_was).format('lll')
+                      ? new Intl.DateTimeFormat(i18n.language, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                        }).format(new Date(details.last_booking_was))
                       : t('n/a'),
                   },
                 ].map((item, index) => (
@@ -497,8 +509,17 @@ export default function UserDetailsContentAdmin({
                     (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
                   )?.name ?? t('n/a'),
               },
-              { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
-              { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
+              {
+                label: t('gear'),
+                value: details?.user_preference?.gear ? t(details.user_preference.gear) : t('n/a'),
+              },
+              {
+                label: t('gender'),
+                value: details?.user_preference?.gender
+                  ? t(details.user_preference.gender)
+                  : t('n/a'),
+              },
+
               {
                 label: t('vehicle_type'),
                 value:
