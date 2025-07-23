@@ -19,6 +19,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -29,16 +30,17 @@ export default function AccountPopover() {
 
   // const { user } = useMockedUser();
   const { user, logout } = useAuthContext();
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
   const OPTIONS = [
     {
-      label: 'Home',
+      label: t('home'),
       linkTo: '/',
     },
     {
-      label: 'Settings',
+      label: t('Settings'),
       linkTo:
         user?.user?.user_type === 'SCHOOL_ADMIN'
           ? paths.dashboard.school.account
@@ -129,7 +131,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          {t('logout')}
         </MenuItem>
       </CustomPopover>
     </>

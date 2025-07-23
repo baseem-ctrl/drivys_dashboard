@@ -27,12 +27,14 @@ import { Box, MenuItem, Select } from '@mui/material';
 import Logo from 'src/components/logo';
 import { CollectorLogin, ForgotPassword, VerifyOTP } from 'src/api/auth';
 import emailInboxIcon from 'src/assets/icons/email-inbox-icon';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
   const [showOtpField, setShowOtpField] = useState(false);
@@ -49,10 +51,12 @@ export default function JwtLoginView() {
   };
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: showOtpField ? Yup.string() : Yup.string().required('Password is required'),
-    otp: showOtpField ? Yup.string().required('OTP is required') : Yup.string(),
-    new_password: isOtpVerified ? Yup.string().required('New Password is required') : Yup.string(),
+    email: Yup.string().required(t('auth.email_required')).email(t('auth.email_invalid')),
+    password: showOtpField ? Yup.string() : Yup.string().required(t('auth.password_required')),
+    otp: showOtpField ? Yup.string().required(t('auth.otp_required')) : Yup.string(),
+    new_password: isOtpVerified
+      ? Yup.string().required(t('auth.new_password_required'))
+      : Yup.string(),
   });
 
   const defaultValues = {
@@ -106,10 +110,11 @@ export default function JwtLoginView() {
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">
-        Sign in to <span style={{ color: '#CF5A0D' }}>Drivys</span>
+        {t('sign_in_to')} <span style={{ color: '#CF5A0D' }}>Drivys</span>
       </Typography>
     </Stack>
   );
+
   const handleClickForgotPassword = async (data: any) => {
     try {
       let userType = '';
@@ -192,11 +197,11 @@ export default function JwtLoginView() {
   const renderForm = (
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-      <RHFTextField name="email" label="Email address" disabled={showOtpField} />
+      <RHFTextField name="email" label={t('email')} disabled={showOtpField} />
       {!showOtpField && (
         <RHFTextField
           name="password"
-          label="Password"
+          label={t('password')}
           type={password.value ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -210,8 +215,8 @@ export default function JwtLoginView() {
         />
       )}
 
-      {showOtpField && <RHFTextField name="otp" label="Enter OTP" />}
-      {isOtpVerified && <RHFTextField name="new_password" label="Enter New Password" />}
+      {showOtpField && <RHFTextField name="otp" label={t('enter_otp')} />}
+      {isOtpVerified && <RHFTextField name="new_password" label={t('auth.enter_new_password')} />}
 
       <Link
         variant="body2"
@@ -228,7 +233,7 @@ export default function JwtLoginView() {
         }}
         onClick={() => handleClickForgotPassword(methods.getValues())}
       >
-        Forgot password?
+        {t('forgot_password')}
       </Link>
 
       {!showOtpField && (
@@ -240,7 +245,7 @@ export default function JwtLoginView() {
           variant="contained"
           loading={isSubmitting}
         >
-          Login
+          {t('login')}
         </LoadingButton>
       )}
       {showOtpField && !isOtpVerified && (
@@ -252,7 +257,7 @@ export default function JwtLoginView() {
           variant="contained"
           onClick={() => setIsOtpVerified(true)}
         >
-          Verify OTP
+          {t('verify_otp')}
         </LoadingButton>
       )}
 
@@ -265,7 +270,7 @@ export default function JwtLoginView() {
           variant="contained"
           onClick={() => handleVerifyOTP(methods.getValues())}
         >
-          Set New Password
+          {t('set_new_password')}
         </LoadingButton>
       )}
     </Stack>
@@ -304,10 +309,10 @@ export default function JwtLoginView() {
             },
           }}
         >
-          <MenuItem value={0}>Login As Admin</MenuItem>
-          <MenuItem value={1}>Login As School</MenuItem>
-          <MenuItem value={2}>Login As Collector</MenuItem>
-          <MenuItem value={3}>Login As Assistant</MenuItem>
+          <MenuItem value={0}>{t('login_as_admin')}</MenuItem>
+          <MenuItem value={1}>{t('login_as_school')}</MenuItem>
+          <MenuItem value={2}>{t('login_as_collector')}</MenuItem>
+          <MenuItem value={3}>{t('login_as_assistant')}</MenuItem>
         </Select>
       </Box>
       {renderForm}
