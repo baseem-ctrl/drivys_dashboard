@@ -1341,5 +1341,17 @@
   "cash": "نقدًا",
   "online": "عبر الإنترنت",
   "assistant_payouts": "مدفوعات المساعد",
-  "cash_service_fee": "رسوم الخدمة النقدية"
+  "cash_service_fee": "رسوم الخدمة النقدية",
+  "create_new_trainer": "إنشاء مدرب جديد",
+  "name_en": "الاسم (إنجليزي)",
+  "email_address": "عنوان البريد الإلكتروني",
+  "school_commission_hint": "يجب أن تكون عمولة المدرسة بين",
+  "certificate_commission_hint": "يجب أن تكون عمولة الشهادة بين",
+  "error_loading_packages": "حدث خطأ أثناء تحميل الباقات",
+  "confirm_remove_trainer": "هل أنت متأكد أنك تريد إزالة هذا المدرب؟",
+  "school_verification": "التحقق من المدرسة",
+  "school_verification_tooltip": "يشير إلى ما إذا كانت المدرسة قد تحققت من المستخدم. اضغط على \"تحقق\" للتحقق.",
+  "admin_verification": "التحقق من المسؤول",
+  "admin_verification_tooltip": "يشير إلى ما إذا كان المسؤول قد تحقق من المستخدم. يعرض تاريخ التحقق إذا تم التحقق.",
+  "payment_amount": "قيمة الدفع"
 }
