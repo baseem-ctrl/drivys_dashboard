@@ -320,7 +320,7 @@ export default function SchoolTrainersListView() {
                               variant="soft"
                               color={!!row?.user?.is_active ? 'success' : 'error'}
                             >
-                              {!!row?.user?.is_active ? 'Active' : 'In Active'}
+                              {!!row?.user?.is_active ? t('active') : t('inactive')}
                             </Label>
                           </TableCell>
 
