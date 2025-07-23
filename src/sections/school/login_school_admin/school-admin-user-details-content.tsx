@@ -143,71 +143,61 @@ export default function UserDetailsContentAdmin({
           width: '-webkit-fill-available',
           cursor: 'pointer',
           position: 'absolute',
-          // top: '1.5rem',
           right: '1rem',
         }}
       ></Stack>
+
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-          // pr: { xs: 2.5, md: 1 },
-        }}
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{ p: 2.5 }}
       >
-        {/* <Grid item xs={12} sm={8} md={8}> */}
         <Avatar
           alt={details?.name}
           src={details?.photo_url}
           sx={{ width: 300, height: 300, borderRadius: 2, mb: 2 }}
           variant="square"
         />
-        {/* </Grid> */}
+
         <Grid item xs={12} sm={8} md={8}>
           <Scrollbar>
             <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
               {[
-                { label: 'Name', value: details?.name ?? t('n/a') },
-                { label: 'Email', value: details?.email ?? t('n/a') },
+                { label: t('name'), value: details?.name ?? t('n/a') },
+                { label: t('email'), value: details?.email ?? t('n/a') },
                 {
-                  label: 'Phone Number',
+                  label: t('phone_number'),
                   value: details?.country_code
                     ? `${details?.country_code}-${details?.phone}`
                     : details?.phone ?? t('n/a'),
                 },
-                { label: 'User Type', value: details?.user_type ?? t('n/a') },
-
-                { label: 'Preffered Language', value: details?.locale ?? t('n/a') },
-                { label: 'Wallet Balance', value: details?.wallet_balance ?? t('n/a') },
-                { label: 'Wallet Points', value: details?.wallet_points ?? t('n/a') },
+                { label: t('user_type'), value: details?.user_type ?? t('n/a') },
+                { label: t('preferred_language'), value: details?.locale ?? t('n/a') },
+                { label: t('wallet_balance'), value: details?.wallet_balance ?? t('n/a') },
+                { label: t('wallet_points'), value: details?.wallet_points ?? t('n/a') },
                 ...(details?.languages?.length
-                  ? details?.languages.map((lang, index) => ({
-                      label: `Language ${index + 1}`,
+                  ? details.languages.map((lang, index) => ({
+                      label: `${t('language')} ${index + 1}`,
                       value: lang?.dialect?.id
                         ? `${lang?.dialect?.language_name} (${lang?.dialect?.dialect_name}) - ${lang?.fluency_level}`
                         : t('n/a'),
                     }))
-                  : [{ label: 'Languages', value: t('n/a') }]),
+                  : [{ label: t('languages'), value: t('n/a') }]),
                 ...(details?.user_type === 'TRAINER'
                   ? [
                       {
-                        label: 'School Commission',
+                        label: t('school_commission'),
                         value:
-                          details?.vendor_commission_in_percentage !== undefined &&
-                          details?.vendor_commission_in_percentage !== null
+                          details?.vendor_commission_in_percentage !== undefined
                             ? `${details.vendor_commission_in_percentage} %`
                             : t('n/a'),
                       },
                       {
-                        label: 'Certificate Commission',
+                        label: t('certificate_commission'),
                         value:
                           details?.user_preference?.certificate_commission_in_percentage !==
-                            undefined &&
-                          details?.user_preference?.certificate_commission_in_percentage !== null
+                          undefined
                             ? `${details.user_preference.certificate_commission_in_percentage} %`
                             : t('n/a'),
                       },
@@ -222,215 +212,194 @@ export default function UserDetailsContentAdmin({
                     :
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
-                    {item.value ?? t('n/a')}
+                    {item.value}
                   </Box>
-                  {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                 </Box>
               ))}
-              {details?.user_type === 'TRAINER' &&
-                trainerReviews &&
-                trainerReviews[0]?.avg_rating && (
-                  <Grid item xs={12} sm={12} md={6}>
-                    <Box sx={{ display: 'flex', width: '100%' }}>
-                      <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                        Average Review
-                      </Box>
-                      <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
-                        :
-                      </Box>
-                      <Box component="span" sx={{ flex: 1 }}>
-                        {/* Display stars based on avg_rating */}
-                        <Box display="flex" alignItems="center">
-                          {Array.from({ length: 5 }).map((_, index) =>
-                            index < trainerReviews[0].avg_rating ? (
-                              <StarIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            ) : (
-                              <StarBorderIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            )
-                          )}
-                        </Box>
-                      </Box>
+
+              {details?.user_type === 'TRAINER' && trainerReviews?.[0]?.avg_rating && (
+                <Box sx={{ display: 'flex', width: '100%' }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {t('average_review')}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '40px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    <Box display="flex" alignItems="center">
+                      {Array.from({ length: 5 }).map((_, index) =>
+                        index < trainerReviews[0].avg_rating ? (
+                          <StarIcon key={index} style={{ color: '#CF5A0D', marginRight: '4px' }} />
+                        ) : (
+                          <StarBorderIcon
+                            key={index}
+                            style={{ color: '#CF5A0D', marginRight: '4px' }}
+                          />
+                        )
+                      )}
                     </Box>
-                  </Grid>
-                )}
+                  </Box>
+                </Box>
+              )}
             </Stack>
           </Scrollbar>
         </Grid>
       </Stack>
+
+      {/* Account Status */}
       <Stack
         spacing={1}
         alignItems={{ xs: 'center', md: 'center' }}
-        direction={{
-          xs: 'column',
-          md: 'row',
-        }}
-        sx={{
-          p: 2.5,
-          // pr: { xs: 2.5, md: 1 },
-        }}
+        direction={{ xs: 'column', md: 'row' }}
+        sx={{ p: 2.5 }}
       >
-        <Grid item xs={12} sm={12} md={6}>
-          <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>Account Status</Typography>
+        <Typography sx={{ fontWeight: '800', mb: '10px' }}>{t('account_status')}</Typography>
 
-          <Scrollbar>
-            <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
-              {[
-                {
-                  label: 'Active',
-                  tooltip: 'Indicates if the user is currently active.',
-                  value: (
-                    <Chip
-                      label={details?.is_active ? 'Yes' : 'No'}
-                      color={details?.is_active ? 'success' : 'error'}
-                      variant="soft"
-                    />
-                  ),
-                },
-                ...(details?.user_type === 'TRAINER'
-                  ? [
-                      {
-                        label: 'Admin Suspended',
-                        tooltip: 'Indicates if the trainer is suspended by an admin.',
-                        value: (
-                          <>
-                            <Chip
-                              label={details?.is_suspended ? 'Yes' : 'No'}
-                              color={details?.is_suspended ? 'error' : 'default'}
-                              variant="soft"
-                            />
-                          </>
-                        ),
-                      },
-                      {
-                        label: 'Auto Suspended',
-                        tooltip:
-                          'Indicates if the trainer is automatically suspended due to exceeding cash limits.',
-                        value: (
-                          <>
-                            <Chip
-                              label={
-                                details?.max_cash_in_hand_allowed
-                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                    ? 'Yes'
-                                    : 'No'
-                                  : 'No'
-                              }
-                              color={
-                                details?.max_cash_in_hand_allowed
-                                  ? details?.cash_in_hand >= details?.max_cash_in_hand_allowed
-                                    ? 'error'
-                                    : 'default'
-                                  : 'default'
-                              }
-                              variant="soft"
-                            />
-                          </>
-                        ),
-                      },
-                      {
-                        label: 'School Verification',
-                        tooltip:
-                          'Indicates if the school has verified the user. Click "Verify" to verify.',
-                        value: !details?.school_verified_at ? (
-                          <Box display="flex" alignItems="center" gap={2}>
-                            <Chip
-                              label="Not Verified"
-                              color="error"
-                              icon={<ErrorOutlineIcon />}
-                              variant="outlined"
-                              sx={{ fontWeight: 'bold' }}
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              startIcon={<CheckCircleIcon />}
-                              sx={{ padding: '6px 16px', minWidth: '100px' }}
-                              onClick={handleVerify}
-                            >
-                              Verify
-                            </Button>
-                          </Box>
-                        ) : (
+        <Scrollbar>
+          <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
+            {[
+              {
+                label: t('active'),
+                tooltip: t('active_tooltip'),
+                value: (
+                  <Chip
+                    label={details?.is_active ? t('yes') : t('no')}
+                    color={details?.is_active ? 'success' : 'error'}
+                    variant="soft"
+                  />
+                ),
+              },
+              ...(details?.user_type === 'TRAINER'
+                ? [
+                    {
+                      label: t('admin_suspended'),
+                      tooltip: t('admin_suspended_tooltip'),
+                      value: (
+                        <Chip
+                          label={details?.is_suspended ? t('yes') : t('no')}
+                          color={details?.is_suspended ? 'error' : 'default'}
+                          variant="soft"
+                        />
+                      ),
+                    },
+                    {
+                      label: t('auto_suspended'),
+                      tooltip: t('auto_suspended_tooltip'),
+                      value: (
+                        <Chip
+                          label={
+                            details?.max_cash_in_hand_allowed &&
+                            details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                              ? t('yes')
+                              : t('no')
+                          }
+                          color={
+                            details?.max_cash_in_hand_allowed &&
+                            details?.cash_in_hand >= details?.max_cash_in_hand_allowed
+                              ? 'error'
+                              : 'default'
+                          }
+                          variant="soft"
+                        />
+                      ),
+                    },
+                    {
+                      label: t('school_verification'),
+                      tooltip: t('school_verification_tooltip'),
+                      value: !details?.school_verified_at ? (
+                        <Box display="flex" alignItems="center" gap={2}>
                           <Chip
-                            label={`Verified on ${moment
-                              .utc(details?.school_verified_at)
-                              .format('ll')}`}
-                            color="success"
-                            icon={<CheckCircleIcon />}
+                            label={t('not_verified')}
+                            color="error"
+                            icon={<ErrorOutlineIcon />}
                             variant="outlined"
                             sx={{ fontWeight: 'bold' }}
                           />
-                        ),
-                      },
-                      {
-                        label: 'Admin Verification',
-                        tooltip:
-                          'Indicates if the admin has verified the user. Displays the verification date if verified.',
-                        value: !details?.verified_at ? (
-                          <Box display="flex" alignItems="center" gap={2}>
-                            <Chip
-                              label="Not Verified"
-                              color="error"
-                              icon={<ErrorOutlineIcon />}
-                              variant="outlined"
-                              sx={{ fontWeight: 'bold' }}
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              startIcon={<CheckCircleIcon />}
-                              sx={{ padding: '6px 16px', minWidth: '100px' }}
-                              onClick={handleVerify}
-                            >
-                              Verify
-                            </Button>
-                          </Box>
-                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={handleVerify}
+                          >
+                            {t('verify')}
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Chip
+                          label={`${t('verified_on')} ${moment
+                            .utc(details?.school_verified_at)
+                            .format('ll')}`}
+                          color="success"
+                          icon={<CheckCircleIcon />}
+                          variant="outlined"
+                          sx={{ fontWeight: 'bold' }}
+                        />
+                      ),
+                    },
+                    {
+                      label: t('admin_verification'),
+                      tooltip: t('admin_verification_tooltip'),
+                      value: !details?.verified_at ? (
+                        <Box display="flex" alignItems="center" gap={2}>
                           <Chip
-                            label={`Verified on ${moment.utc(details?.verified_at).format('ll')}`}
-                            color="success"
-                            icon={<CheckCircleIcon />}
+                            label={t('not_verified')}
+                            color="error"
+                            icon={<ErrorOutlineIcon />}
                             variant="outlined"
                             sx={{ fontWeight: 'bold' }}
                           />
-                        ),
-                      },
-                    ]
-                  : []),
-              ].map((item, index) => (
-                <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                  <Box
-                    component="span"
-                    sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
-                  >
-                    <Tooltip title={item?.tooltip || ''} arrow>
-                      <span>{item.label}</span>
-                    </Tooltip>
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
-                  >
-                    :
-                  </Box>
-                  <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                    {item.value ?? t('n/a')}
-                  </Box>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<CheckCircleIcon />}
+                            onClick={handleVerify}
+                          >
+                            {t('verify')}
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Chip
+                          label={`${t('verified_on')} ${moment
+                            .utc(details?.verified_at)
+                            .format('ll')}`}
+                          color="success"
+                          icon={<CheckCircleIcon />}
+                          variant="outlined"
+                          sx={{ fontWeight: 'bold' }}
+                        />
+                      ),
+                    },
+                  ]
+                : []),
+            ].map((item, index) => (
+              <Box key={index} sx={{ display: 'flex', width: '100%' }}>
+                <Box
+                  component="span"
+                  sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
+                >
+                  <Tooltip title={item.tooltip || ''} arrow>
+                    <span>{item.label}</span>
+                  </Tooltip>
                 </Box>
-              ))}
-            </Stack>
-          </Scrollbar>
-        </Grid>
+                <Box
+                  component="span"
+                  sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
+                >
+                  :
+                </Box>
+                <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
+                  {item.value ?? t('n/a')}
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+        </Scrollbar>
+
+        {/* Trainer's Financial Summary */}
         {details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800', marginBottom: '10px' }}>
-              School Financial Summary
+            <Typography sx={{ fontWeight: '800', mb: '10px' }}>
+              {t('school_financial_summary')}
             </Typography>
             <Scrollbar>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 2 }}>
@@ -440,13 +409,12 @@ export default function UserDetailsContentAdmin({
                     value: (
                       <>
                         <span className="dirham-symbol">&#x00EA;</span>{' '}
-                        {details?.max_cash_in_hand_allowed ?? t('n/a')}{' '}
+                        {details?.max_cash_in_hand_allowed ?? t('n/a')}
                       </>
                     ),
                   },
-
                   {
-                    label: 'Cash in Hand',
+                    label: t('cash_in_hand'),
                     value: details?.cash_in_hand ? (
                       <>
                         <span className="dirham-symbol">&#x00EA;</span> {details.cash_in_hand}
@@ -455,34 +423,26 @@ export default function UserDetailsContentAdmin({
                       t('n/a')
                     ),
                   },
-
                   {
-                    label: 'Cash Clearance Date',
+                    label: t('cash_clearance_date'),
                     value: details?.cash_clearance_date ?? t('n/a'),
                   },
                   {
-                    label: 'Last Booking At',
+                    label: t('last_booking_at'),
                     value: details?.last_booking_was
                       ? moment.utc(details?.last_booking_was).format('lll')
                       : t('n/a'),
                   },
-                  ,
                 ].map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '15px' }}
-                    >
+                    <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold', mt: 2 }}>
                       {item.label}
                     </Box>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '15px' }}
-                    >
+                    <Box component="span" sx={{ minWidth: '30px', fontWeight: 'bold', mt: 2 }}>
                       :
                     </Box>
-                    <Box component="span" sx={{ flex: 1, marginTop: '15px' }}>
-                      {item.value ?? t('n/a')}
+                    <Box component="span" sx={{ flex: 1, mt: 2 }}>
+                      {item.value}
                     </Box>
                   </Box>
                 ))}
@@ -493,7 +453,7 @@ export default function UserDetailsContentAdmin({
       </Stack>
     </Stack>
   );
-  console.log('currentTab', currentTab);
+
   const renderTabs = (
     <Tabs
       value={currentTab}
@@ -503,7 +463,7 @@ export default function UserDetailsContentAdmin({
       }}
     >
       {TRAINER_DETAILS_SCHOOL_ADMIN_TABS.map((tab) => (
-        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
       ))}
     </Tabs>
   );
@@ -518,7 +478,7 @@ export default function UserDetailsContentAdmin({
       }}
     >
       <Grid item xs={12} sm={12} md={6}>
-        <Typography sx={{ fontWeight: '800' }}>User Preferences:</Typography>
+        <Typography sx={{ fontWeight: '800' }}>{t('user_preferences')}</Typography>
 
         <Scrollbar>
           <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
@@ -537,15 +497,12 @@ export default function UserDetailsContentAdmin({
                     (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
                   )?.name ?? t('n/a'),
               },
-
-              { label: 'Gear', value: details?.user_preference?.gear ?? t('n/a') },
-
-              { label: 'Gender', value: details?.user_preference?.gender ?? t('n/a') },
-
+              { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
+              { label: t('gender'), value: details?.user_preference?.gender ?? t('n/a') },
               {
-                label: 'Vehicle type',
+                label: t('vehicle_type'),
                 value:
-                  details?.user_preference?.vehicle_type?.category_translations[0]?.name ??
+                  details?.user_preference?.vehicle_type?.category_translations?.[0]?.name ??
                   t('n/a'),
               },
             ].map((item, index) => (
@@ -563,40 +520,44 @@ export default function UserDetailsContentAdmin({
                   :
                 </Box>
                 <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                  {item.value ?? t('n/a')}
+                  {item.value}
                 </Box>
-                {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
               </Box>
             ))}
           </Stack>
         </Scrollbar>
       </Grid>
+
       {currentTab === 'details' &&
         details?.bank_detail?.length > 0 &&
         details?.user_type === 'TRAINER' && (
           <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800' }}>Bank Details:</Typography>
+            <Typography sx={{ fontWeight: '800' }}>{t('bank_details')}</Typography>
 
             <Scrollbar>
               <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
                 {[
                   {
-                    label: 'Account Holder Name',
+                    label: t('account_holder_name'),
                     value: details?.bank_detail[0]?.account_holder_name ?? t('n/a'),
                   },
                   {
-                    label: 'Account Number',
+                    label: t('account_number'),
                     value: details?.bank_detail[0]?.account_number ?? t('n/a'),
                   },
-                  { label: 'Bank Name', value: details?.bank_detail[0]?.bank_name ?? t('n/a') },
-
-                  { label: 'IBAN', value: details?.bank_detail[0]?.iban_number ?? t('n/a') },
-
                   {
-                    label: 'Active',
+                    label: t('bank_name'),
+                    value: details?.bank_detail[0]?.bank_name ?? t('n/a'),
+                  },
+                  {
+                    label: t('iban'),
+                    value: details?.bank_detail[0]?.iban_number ?? t('n/a'),
+                  },
+                  {
+                    label: t('active'),
                     value: (
                       <Chip
-                        label={details?.bank_detail[0]?.is_active ? 'Yes' : 'No'}
+                        label={details?.bank_detail[0]?.is_active ? t('yes') : t('no')}
                         color={details?.bank_detail[0]?.is_active ? 'success' : 'error'}
                         variant="soft"
                       />
@@ -605,7 +566,7 @@ export default function UserDetailsContentAdmin({
                   ...(details?.user_type === 'STUDENT'
                     ? [
                         {
-                          label: 'Trainer Language',
+                          label: t('trainer_language'),
                           value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
                         },
                       ]
@@ -627,7 +588,6 @@ export default function UserDetailsContentAdmin({
                     <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
                       {item.value ?? t('n/a')}
                     </Box>
-                    {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
                   </Box>
                 ))}
               </Stack>
@@ -652,13 +612,13 @@ export default function UserDetailsContentAdmin({
             <Grid container spacing={3} key={index}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Address Details {index + 1}
+                  {t('address_details')} {index + 1}
                 </Typography>
-                {/* Address Details */}
+
                 {[
-                  { label: 'Address', value: address?.address ?? t('n/a') },
-                  { label: 'Street', value: address?.street ?? t('n/a') },
-                  { label: 'Building Name', value: address?.building_name ?? t('n/a') },
+                  { label: t('address'), value: address?.address ?? t('n/a') },
+                  { label: t('street'), value: address?.street ?? t('n/a') },
+                  { label: t('building_name'), value: address?.building_name ?? t('n/a') },
                   {
                     label: t('city'),
                     value:
@@ -675,13 +635,12 @@ export default function UserDetailsContentAdmin({
                         (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
                       )?.name ?? t('n/a'),
                   },
-
-                  { label: 'Country Code', value: address?.country_code ?? t('n/a') },
-                  { label: 'Label', value: address?.label ?? t('n/a') },
-                  { label: 'Phone Number', value: address?.phone_number ?? t('n/a') },
-                  { label: 'Plot Number', value: address?.plot_number ?? t('n/a') },
-                  { label: 'Country', value: address?.country ?? t('n/a') },
-                  { label: 'Landmark', value: address?.landmark ?? t('n/a') },
+                  { label: t('country_code'), value: address?.country_code ?? t('n/a') },
+                  { label: t('label'), value: address?.label ?? t('n/a') },
+                  { label: t('phone_number'), value: address?.phone_number ?? t('n/a') },
+                  { label: t('plot_number'), value: address?.plot_number ?? t('n/a') },
+                  { label: t('country'), value: address?.country ?? t('n/a') },
+                  { label: t('landmark'), value: address?.landmark ?? t('n/a') },
                 ].map((item, idx) => (
                   <Box key={idx} sx={{ display: 'flex', width: '100%' }}>
                     <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
@@ -693,25 +652,23 @@ export default function UserDetailsContentAdmin({
                     <Box component="span">{item.value}</Box>
                   </Box>
                 ))}
-
-                {/* Edit and Delete Buttons */}
               </Grid>
+
               <Grid item xs={12} md={6}>
                 <Box sx={{ pt: 2, pb: 2 }}>
                   {isLoaded && load ? (
                     <GoogleMap
                       mapContainerStyle={mapContainerStyle}
                       center={{
-                        lat: address?.latitude, // Ensure these properties exist on the address object
+                        lat: address?.latitude,
                         lng: address?.longitude,
                       }}
                       zoom={12}
-                      // onClick={handleMapClick}
                     >
                       {address?.latitude && address?.longitude && (
                         <Marker
                           position={{
-                            lat: address?.latitude, // Ensure these properties exist on the address object
+                            lat: address?.latitude,
                             lng: address?.longitude,
                           }}
                           icon={{
@@ -719,22 +676,23 @@ export default function UserDetailsContentAdmin({
                               marker && typeof marker === 'string'
                                 ? marker
                                 : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                            scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
                       )}
                     </GoogleMap>
                   ) : (
-                    <div>Loading Map...</div>
+                    <div>{t('loading_map')}</div>
                   )}
                 </Box>
               </Grid>
             </Grid>
           ))}
         </Stack>
+
         {addresses.length > 2 && (
           <Button variant="outlined" onClick={toggleShowAll}>
-            {showAll ? 'Show Less' : 'Show More'}
+            {showAll ? t('show_less') : t('show_more')}
           </Button>
         )}
       </Scrollbar>

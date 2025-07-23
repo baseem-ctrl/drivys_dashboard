@@ -1,19 +1,22 @@
 import { Card, Typography, Box, Grid, Stack } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useGetPackageBySchool } from 'src/api/school';
 import Iconify from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
-
 export default function SchoolAdminPackageDetails({ id }) {
-  const { packageDetails, packageError, packageLoading, revalidatePackageDetails } =
-    useGetPackageBySchool(id);
+  const { t } = useTranslation();
+  const { packageDetails, packageError, packageLoading } = useGetPackageBySchool(id);
 
   if (packageLoading) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t('loading')}</Typography>;
   }
 
   if (packageError) {
-    return <Typography sx={{ color: 'red' }}>Error loading packages: {packageError}</Typography>; // Display error message
+    return (
+      <Typography sx={{ color: 'red' }}>
+        {t('error_loading_packages')}: {packageError}
+      </Typography>
+    );
   }
 
   return (
@@ -22,7 +25,7 @@ export default function SchoolAdminPackageDetails({ id }) {
         {Array.isArray(packageDetails) && packageDetails.length <= 0 && (
           <Grid item xs={12}>
             <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-              No packages available.
+              {t('no_packages_available')}
             </Typography>
           </Grid>
         )}
@@ -55,17 +58,19 @@ export default function SchoolAdminPackageDetails({ id }) {
                     {packageItem.package_translations.length > 0
                       ? packageItem.package_translations.map((trans) => (
                           <Typography key={trans.locale}>
-                            {trans.name.toUpperCase() || 'UNNAMED PACKAGE'}
+                            {trans.name.toUpperCase() || t('unnamed_package')}
                           </Typography>
                         ))
-                      : 'UNNAMED PACKAGE'}
+                      : t('unnamed_package')}
                   </Typography>
                 </Stack>
 
                 <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2, flexGrow: 1, overflow: 'auto' }}>
-                  <Typography variant="body2">{packageItem.number_of_sessions} Sessions</Typography>
+                  <Typography variant="body2">
+                    {packageItem.number_of_sessions} {t('sessions')}
+                  </Typography>
                   <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
-                    What's included
+                    {t('whats_included')}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />
@@ -74,7 +79,7 @@ export default function SchoolAdminPackageDetails({ id }) {
                       dangerouslySetInnerHTML={{
                         __html:
                           packageItem.package_translations.find((trans) => trans.locale === 'en')
-                            ?.session_inclusions || 'No inclusions available',
+                            ?.session_inclusions || t('no_inclusions_available'),
                       }}
                     />
                   </Stack>

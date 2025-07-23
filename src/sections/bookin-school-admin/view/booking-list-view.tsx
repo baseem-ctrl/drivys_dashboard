@@ -309,7 +309,7 @@ export default function BookingSchoolAdminListView() {
                 }}
                 label={
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{tab.name}</span>
+                    <span>{t(tab.name)}</span>
                     <Typography
                       sx={{
                         backgroundColor: backgroundColor,

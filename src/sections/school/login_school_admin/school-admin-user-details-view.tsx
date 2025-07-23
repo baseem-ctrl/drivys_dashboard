@@ -19,6 +19,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs/custom-breadcru
 import { Button } from '@mui/base';
 import { useGetAddressList, useGetUserDetails } from 'src/api/users';
 import UserDetailsContentAdmin from './school-admin-user-details-content';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ export default function UserDetailsViewAdmin({ id }: Props) {
   const settings = useSettingsContext();
   const { details, detailsLoading, revalidateDetails } = useGetUserDetails(id);
   const currentJob = details;
-
+  const { t } = useTranslation();
   const [publish, setPublish] = useState(currentJob?.publish);
 
   const [currentTab, setCurrentTab] = useState('details');
@@ -77,17 +78,16 @@ export default function UserDetailsViewAdmin({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="User Details"
+        heading={t('user_details')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Trainers', href: paths.dashboard.school.trainer },
-          { name: 'Details' },
+          { name: t('dashboard'), href: paths.dashboard.root },
+          { name: t('trainers'), href: paths.dashboard.school.trainer },
+          { name: t('details') },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
-
       <UserDetailsContentAdmin
         addresses={addresses || []}
         details={details}

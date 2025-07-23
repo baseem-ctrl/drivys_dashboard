@@ -14,6 +14,7 @@ import { formatDate } from 'src/utils/format-date';
 import { Typography } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useTranslation } from 'react-i18next';
 // import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
 
 // ----------------------------------------------------------------------
@@ -39,7 +40,7 @@ export default function BookingSchoolAdminTableRow({
   const quickEdit = useBoolean();
   const popover = usePopover();
   const zerothIndex = 0;
-
+  const { t } = useTranslation();
   const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
     row;
 
@@ -94,7 +95,7 @@ export default function BookingSchoolAdminTableRow({
                 : 'success'
             }
           >
-            {row?.booking_status}
+            {t(row?.booking_status)}
           </Label>
         </TableCell>
         <TableCell>
@@ -112,12 +113,12 @@ export default function BookingSchoolAdminTableRow({
                 : 'success'
             }
           >
-            {row?.payment_status}
+            {t(row?.payment_status)}
           </Label>
         </TableCell>
 
         <TableCell>{row?.sub_total}</TableCell>
-        <TableCell>{row?.payment_method}</TableCell>
+        <TableCell>{t(row?.payment_method)}</TableCell>
         <TableCell>{row.coupon_code ? row.coupon_code : 'No Coupon'}</TableCell>
         <TableCell>
           {moment(row?.created_at)
