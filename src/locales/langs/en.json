@@ -1284,5 +1284,22 @@
   "online": "ONLINE",
   "cash_service_fee": "Cash Service Fee",
   "assistant_payouts": "Assistant Payouts",
-  "amount_required_from_assistant": "Amount Required from Assistant"
+  "amount_required_from_assistant": "Amount Required from Assistant",
+  "create_new_trainer": "Create New Trainer",
+  "name_en": "Name (En)",
+  "email_address": "Email Address",
+  "school_commission_hint": "School Commission must be in between",
+  "certificate_commission_hint": "Certificate Commission must be in between",
+  "error_loading_packages": "Error loading packages",
+  "confirm_remove_trainer": "Are you sure want to remove this trainer?",
+  "school_verification": "School Verification",
+  "school_verification_tooltip": "Indicates if the school has verified the user. Click \"Verify\" to verify.",
+  "admin_verification": "Admin Verification",
+  "admin_verification_tooltip": "Indicates if the admin has verified the user. Displays the verification date if verified.",
+
+  "payment_amount": "Payment Amount",
+
+  "coupon_used": "Coupon Used",
+  "wallet_amount_used": "Wallet Amount Used",
+  "total_sessions_booked": "Total Sessions Booked"
 }

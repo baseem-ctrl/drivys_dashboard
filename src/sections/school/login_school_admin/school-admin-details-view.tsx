@@ -84,7 +84,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
-        heading="Schools Details"
+        heading={t('schools_details')}
         links={[{}]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -92,7 +92,7 @@ export default function SchoolAdminDetailsView({ id }: Props) {
         action={
           currentTab === 'trainers' && (
             <Button onClick={quickCreate.onTrue} variant="contained">
-              Create New Trainer
+              {t('create_new_trainer')}
             </Button>
           )
         }

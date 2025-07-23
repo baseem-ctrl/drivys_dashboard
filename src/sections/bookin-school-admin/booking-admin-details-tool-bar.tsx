@@ -72,7 +72,7 @@ export default function BookingAdminDetailsToolbar({
                   'default'
                 }
               >
-                {status}
+                {t(status)}
               </Label>
             </Stack>
 

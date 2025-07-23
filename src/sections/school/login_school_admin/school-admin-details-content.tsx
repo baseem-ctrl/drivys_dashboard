@@ -52,18 +52,20 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
         <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
           {[
             ...(details?.vendor_translations?.flatMap((itm: any) => [
-              { label: `Name (${itm?.locale})`, value: itm?.name ?? t('n/a') },
+              {
+                label: `${t('name')} (${itm?.locale})`,
+                value: itm?.name ?? t('n/a'),
+              },
             ]) || []),
-            // { label: 'Name', value: items?.name ??  t('n/a') },
-            { label: 'Email', value: details?.email ?? t('n/a') },
-            { label: 'Phone Number', value: details?.phone_number ?? t('n/a') },
+            { label: t('email'), value: details?.email ?? t('n/a') },
+            { label: t('phone_number'), value: details?.phone_number ?? t('n/a') },
             {
-              label: 'Certificate Certificate Commission in (%)',
+              label: t('certificate_commission_percentage'),
               value: `${details?.certificate_commission_in_percentage ?? t('n/a')}%`,
             },
-            { label: 'License Expiry', value: details?.license_expiry ?? t('n/a') },
+            { label: t('license_expiry'), value: details?.license_expiry ?? t('n/a') },
             {
-              label: 'License File',
+              label: t('license_file'),
               value: details?.license_file ? (
                 <a
                   href={details?.license_file}
@@ -78,7 +80,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
               ),
             },
             {
-              label: 'Website',
+              label: t('website'),
               value: details?.website ? (
                 <a
                   href={details?.website}
@@ -95,9 +97,9 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                 t('n/a')
               ),
             },
-            { label: 'Status', value: details?.status ?? t('n/a') },
+            { label: t('status'), value: details?.status ?? t('n/a') },
             {
-              label: 'Is Active',
+              label: t('is_active'),
               value: !!details?.is_active ? (
                 <Iconify color="green" icon="bi:check-square-fill" />
               ) : (
@@ -115,7 +117,6 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
               <Box component="span" sx={{ flex: 1 }}>
                 {item.value ?? t('n/a')}
               </Box>
-              {/* <Box component="span">{loading ? 'Loading...' : item.value}</Box> */}
             </Box>
           ))}
         </Stack>
@@ -243,7 +244,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
             }}
             sx={{ mb: 2 }}
           >
-            Add New Address
+            {t('add_new_address')}
           </Button>
         </Box>
 
@@ -263,7 +264,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                   <Box key={details.id} sx={{ width: '100%' }}>
                     {/* Address Section Title */}
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      Branch {index + 1}
+                      {t('branch')} {index + 1}
                     </Typography>
 
                     {/* Address Details and Map */}
@@ -288,23 +289,25 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                       {/* Address Details */}
                       <Box>
                         {[
-                          { label: 'Street Address', value: details?.street_address ?? t('n/a') },
                           {
-                            label: 'City',
+                            label: t('street_address'),
+                            value: details?.street_address ?? t('n/a'),
+                          },
+                          {
+                            label: t('city'),
                             value:
                               details?.city?.city_translations?.find(
                                 (ct) => ct?.locale?.toLowerCase() === i18n.language.toLowerCase()
                               )?.name ?? t('n/a'),
                           },
                           {
-                            label: 'State',
+                            label: t('state'),
                             value:
                               details?.state?.translations?.find(
                                 (st) => st?.locale?.toLowerCase() === i18n.language.toLowerCase()
                               )?.name ?? t('n/a'),
                           },
-
-                          { label: 'Country', value: details?.country ?? t('n/a') },
+                          { label: t('country'), value: details?.country ?? t('n/a') },
                         ].map((item, idx) => (
                           <Box key={idx} sx={{ display: 'flex', mb: 1 }}>
                             <Box sx={{ minWidth: '150px', fontWeight: 'bold' }}>{item.label}</Box>
@@ -324,7 +327,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                             <Marker position={defaultCenter} />
                           </GoogleMap>
                         ) : (
-                          <div>Loading Map...</div>
+                          <div>{t('loading_map')}</div>
                         )}
                       </Box>
                       <Button
@@ -335,7 +338,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                         }}
                         sx={{ mt: 2, display: editingIndex !== null ? 'none' : '' }}
                       >
-                        Edit
+                        {t('edit')}
                       </Button>
                     </Box>
                   </Box>
@@ -347,17 +350,18 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
         {(newAddress || editingIndex !== null) && (
           <Box component="form" onSubmit={onSubmit} sx={{ mb: 2, p: 2, border: '1px solid #ddd' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-              {newAddress ? 'Add New Address' : `Edit Address ${editingIndex + 1}`}
+              {newAddress ? t('add_new_address') : `${t('edit_address')} ${editingIndex + 1}`}
             </Typography>
+
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 {[
-                  { label: 'Street Address', name: 'street_address' },
-                  { label: 'City', name: 'city' },
-                  { label: 'State', name: 'state' },
-                  { label: 'Country', name: 'country' },
-                  { label: 'Latitude', name: 'latitude' },
-                  { label: 'Longitude', name: 'longitude' },
+                  { label: t('street_address'), name: 'street_address' },
+                  { label: t('city'), name: 'city' },
+                  { label: t('state'), name: 'state' },
+                  { label: t('country'), name: 'country' },
+                  { label: t('latitude'), name: 'latitude' },
+                  { label: t('longitude'), name: 'longitude' },
                 ].map((item, idx) => (
                   <Controller
                     key={idx}
@@ -374,11 +378,9 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                   />
                 ))}
 
-                {/* Map Component for Selecting Location */}
-
                 <Box sx={{ mt: 2 }}>
                   <Button variant="contained" type="submit" sx={{ mr: 1 }}>
-                    Save
+                    {t('save')}
                   </Button>
                   <Button
                     variant="outlined"
@@ -388,7 +390,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                       reset(defaultValues);
                     }}
                   >
-                    Cancel
+                    {t('cancel')}
                   </Button>
                 </Box>
               </Grid>
@@ -396,7 +398,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
               {/* Map Section */}
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                  Select Location on Map
+                  {t('select_location_on_map')}
                 </Typography>
                 <Box sx={{ height: 300 }}>
                   {isLoaded && load ? (
@@ -414,7 +416,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                               marker && typeof marker === 'string'
                                 ? marker
                                 : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                            scaledSize: new window.google.maps.Size(50, 50), // Adjust the size of the marker image as needed
+                            scaledSize: new window.google.maps.Size(50, 50),
                           }}
                         />
                       )}
@@ -423,10 +425,10 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                           position={{
                             lat: Number.isNaN(Number(defaultValues?.latitude))
                               ? 0
-                              : Number(defaultValues?.latitude), // Convert to number
+                              : Number(defaultValues?.latitude),
                             lng: Number.isNaN(Number(defaultValues?.longitude))
                               ? 0
-                              : Number(defaultValues?.longitude), // Convert to number
+                              : Number(defaultValues?.longitude),
                           }}
                           icon={{
                             url:
@@ -439,7 +441,7 @@ export default function SchoolAdminDetailsContent({ details, loading, reload }: 
                       )}
                     </GoogleMap>
                   ) : (
-                    <div>Loading Map...</div>
+                    <div>{t('loading_map')}</div>
                   )}
                 </Box>
               </Grid>

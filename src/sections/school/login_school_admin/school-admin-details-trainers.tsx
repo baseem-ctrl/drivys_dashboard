@@ -286,8 +286,9 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
       {create && (
         <Stack direction="column" spacing={2} sx={{ p: 3, width: '50%' }}>
           <Typography variant="h6" gutterBottom>
-            Create New Trainer
+            {t('create_new_trainer')}
           </Typography>
+
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Box rowGap={3} display="grid" gridTemplateColumns="1fr" columnGap={2}>
               <Grid xs={12} md={12}>
@@ -300,16 +301,15 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     display="grid"
                     gridTemplateColumns={{
                       xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(2, 1fr)', // Use 2 columns on larger screens
+                      sm: 'repeat(2, 1fr)',
                     }}
                   >
-                    <RHFTextField name="name" label="Name (En)" fullWidth />
-                    <RHFTextField name="name_ar" label="Name (Ar)" fullWidth />
-
-                    <RHFTextField name="email" label="Email Address" fullWidth />
+                    <RHFTextField name="name" label={t('name_en')} fullWidth />
+                    <RHFTextField name="name_ar" label={t('name_ar')} fullWidth />
+                    <RHFTextField name="email" label={t('email_address')} fullWidth />
                     <RHFTextField
                       name="password"
-                      label="Password"
+                      label={t('password')}
                       type={showPassword ? 'text' : 'password'}
                       fullWidth
                       InputProps={{
@@ -322,37 +322,44 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                         ),
                       }}
                     />
-                    <RHFTextField name="phone" label="Phone Number" type="number" prefix="+971" />
-                    <RHFTextField name="vehicle_number" label="Vehicle Number" fullWidth />
+                    <RHFTextField
+                      name="phone"
+                      label={t('phone_number')}
+                      type="number"
+                      prefix="+971"
+                    />
+                    <RHFTextField name="vehicle_number" label={t('vehicle_number')} fullWidth />
+
                     <div>
                       <RHFTextField
                         name="vendor_commission_in_percentage"
-                        label="School Commision"
+                        label={t('school_commission')}
                         fullWidth
                         suffix="%"
                       />
                       <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
-                        School Commission must be in between{' '}
-                        {candidates[0]?.vendor?.min_commision || '0'}% and{' '}
-                        {candidates[0]?.vendor?.max_commision || '0'}%
+                        {t('school_commission_hint')} {candidates[0]?.vendor?.min_commision || '0'}%{' '}
+                        {t('and')} {candidates[0]?.vendor?.max_commision || '0'}%
                       </FormHelperText>
                     </div>
+
                     <div>
                       <RHFTextField
                         name="certificate_commission_in_percentage"
-                        label="Certificate Commision"
+                        label={t('certificate_commission')}
                         fullWidth
                         suffix="%"
                       />
                       <FormHelperText sx={{ color: 'primary.main', ml: 1 }}>
-                        Certificate Commission must be in between{' '}
-                        {candidates[0]?.vendor?.certificate_min_commision || '0'}% and{' '}
+                        {t('certificate_commission_hint')}{' '}
+                        {candidates[0]?.vendor?.certificate_min_commision || '0'}% {t('and')}{' '}
                         {candidates[0]?.vendor?.certificate_max_commision || '0'}%
                       </FormHelperText>
                     </div>
+
                     <RHFTextField
                       name="dob"
-                      label="Date of Birth"
+                      label={t('date_of_birth')}
                       fullWidth
                       type="date"
                       InputLabelProps={{ shrink: true }}
@@ -367,10 +374,10 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                     sx={{ mt: 3 }}
                   >
                     <Button variant="outlined" sx={{ width: 'auto' }} onClick={handleCancelClick}>
-                      Cancel
+                      {t('cancel')}
                     </Button>
                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                      {'Create User'}
+                      {t('create_user')}
                     </LoadingButton>
                   </Stack>
                 </Card>
@@ -517,34 +524,33 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
                 </Stack>
                 <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2' }}>
                   {[
-                    { label: 'Name (Ar)', value: trainer?.user?.name_ar ?? t('n/a') },
+                    { label: t('name_ar'), value: trainer?.user?.name_ar ?? t('n/a') },
                     {
-                      label: 'Phone Number',
+                      label: t('phone_number'),
                       value: trainer?.user?.country_code
                         ? `${trainer?.user?.country_code}-${trainer?.user?.phone}`
                         : trainer?.user?.phone ?? t('n/a'),
                     },
                     {
-                      label: 'Hand Cash Allowed',
+                      label: t('hand_cash_allowed'),
                       value: trainer?.max_cash_in_hand_allowed ?? t('n/a'),
                     },
-
-                    { label: 'Cash in Hand', value: trainer?.cash_in_hand ?? t('n/a') },
+                    { label: t('cash_in_hand'), value: trainer?.cash_in_hand ?? t('n/a') },
                     {
-                      label: 'School Commission',
+                      label: t('school_commission'),
                       value: trainer?.vendor_commission_in_percentage ?? t('n/a'),
                     },
                     {
-                      label: 'Cash Clearance Date',
+                      label: t('cash_clearance_date'),
                       value: trainer?.cash_clearance_date
-                        ? moment(trainer.cash_clearance_date).format('YYYY-MM-DD') // Format the date using moment
-                        : t('n/a'), // Default value if date is not available
+                        ? moment(trainer.cash_clearance_date).format('YYYY-MM-DD')
+                        : t('n/a'),
                     },
                     {
-                      label: 'Last Booking',
+                      label: t('last_booking'),
                       value: trainer?.last_booking_was
-                        ? moment(trainer.last_booking_was).format('YYYY-MM-DD') // Format the date using moment
-                        : t('n/a'), // Default value if date is not available
+                        ? moment(trainer.last_booking_was).format('YYYY-MM-DD')
+                        : t('n/a'),
                     },
                   ].map((item, index) => (
                     <Box key={index} sx={{ display: 'flex', width: '100%' }}>
@@ -565,7 +571,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
           ) : (
             !create && (
               <Typography color="textSecondary" sx={{ color: '#CF5A0D' }}>
-                No trainer under this school
+                {t('no_trainer_under_this_school')}
               </Typography>
             )
           )
@@ -584,15 +590,15 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
         <ConfirmDialog
           open={confirm.value}
           onClose={confirm.onFalse}
-          title="Remove"
-          content="Are you sure want to remove this trainer?"
+          title={t('remove')}
+          content={t('confirm_remove_trainer')}
           onConfirm={() => {
             confirm.onFalse();
             handleRemove();
           }}
           action={
             <Button variant="contained" color="error">
-              Remove
+              {t('remove')}
             </Button>
           }
         />
@@ -609,7 +615,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
             }}
           >
             <Iconify icon="solar:eye-bold" />
-            View
+            {t('view')}
           </MenuItem>
 
           <MenuItem
@@ -620,7 +626,7 @@ export default function SchoolAdminTrainers({ candidates, create, onCreate, vend
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove
+            {t('remove')}
           </MenuItem>
         </CustomPopover>
       </Box>

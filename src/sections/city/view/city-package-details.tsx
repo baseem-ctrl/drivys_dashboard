@@ -23,6 +23,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useTable } from 'src/components/table';
 import { useTranslation } from 'react-i18next';
 import Iconify from 'src/components/iconify';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,7 @@ export default function CityPackageDetails({ reload, packageDetails, city }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const { t, i18n } = useTranslation();
-
+  const { user } = useAuthContext();
   const handleDeletePackage = async (id) => {
     try {
       const response = await deletePackageCityById(id);

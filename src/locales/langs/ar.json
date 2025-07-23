@@ -1339,5 +1339,7 @@
   "mode_of_payment": "طريقة الدفع",
   "payment_mode": "وسيلة الدفع",
   "cash": "نقدًا",
-  "online": "عبر الإنترنت"
+  "online": "عبر الإنترنت",
+  "assistant_payouts": "مدفوعات المساعد",
+  "cash_service_fee": "رسوم الخدمة النقدية"
 }

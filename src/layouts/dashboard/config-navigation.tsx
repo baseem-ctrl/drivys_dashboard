@@ -83,7 +83,7 @@ export function useNavData() {
     payouts: 'payout_vendor',
     trainer_payouts: 'payout_trainer',
     school_payouts: 'payout_vendor',
-    assistant_payouts: 'collection_from_assistant',
+    assistant_payouts: 'payout_assistant',
     reviews: 'reviews',
     trainer_review: 'reviews',
     student_review: 'reviews',
@@ -502,7 +502,7 @@ export function useNavData() {
       ],
     },
     {
-      title: t('My School'),
+      title: t('my_school'),
       path: paths.dashboard.school.admin('admin'),
       icon: ICONS.school,
     },

@@ -267,7 +267,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
       {details?.length < 1 && (
         <Grid item xs={12}>
           <Typography variant="body1" align="left" sx={{ color: '#CF5A0D' }}>
-            No packages available. Click Add Package to create a new one.
+            {t('no_packages_available')}
           </Typography>
         </Grid>
       )}
@@ -289,10 +289,11 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
               },
             }}
           >
-            Add Package
+            {t('add_package')}
           </Button>
         </Grid>
       </Grid>
+
       {detailsLoading ? (
         <Box
           sx={{
@@ -309,8 +310,8 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
           <Grid container spacing={2}>
             {Array.isArray(details) &&
               details.map((item: any) => (
-                <Grid item xs={12} sm={6} md={3}>
-                  <Stack component={Card} direction="column" key={item?.id}>
+                <Grid item xs={12} sm={6} md={3} key={item?.id}>
+                  <Stack component={Card} direction="column">
                     <Stack
                       sx={{ px: 3, pt: 3, pb: 2, typography: 'body2' }}
                       direction="row"
@@ -323,7 +324,7 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                             (pt) => pt?.locale?.toLowerCase() === i18n.language.toLowerCase()
                           )?.name ?? t('n/a')}
                         </Typography>
-                        {item?.package?.number_of_sessions} Sessions
+                        {item?.package?.number_of_sessions} {t('sessions')}
                       </Box>
                       <IconButton
                         onClick={(e) =>
@@ -344,25 +345,22 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
                     <Stack spacing={2} sx={{ px: 3, pt: 3, pb: 2 }}>
                       <Box display={'flex'}>
                         <Typography variant="h6">
-                          {' '}
                           <span className="dirham-symbol">&#x00EA;</span>
                         </Typography>
                         <Typography variant="h4">{parseFloat(item?.price) ?? '0'} </Typography>
                       </Box>
 
                       <Typography sx={{ fontSize: '14px', fontWeight: '700' }}>
-                        {' '}
-                        What's included{' '}
+                        {t('whats_included')}
                       </Typography>
 
                       <Stack direction="row" spacing={1}>
-                        {/* <Iconify icon="solar:check-circle-linear" color="#CF5A0D" />{' '} */}
                         <Typography
                           component="span"
                           dangerouslySetInnerHTML={{
                             __html:
                               item?.package?.package_translations?.[0]?.session_inclusions ||
-                              'No inclusions available',
+                              t('no_inclusions_available'),
                           }}
                         />
                       </Stack>
@@ -373,17 +371,18 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
           </Grid>
         </>
       ) : (
-        'No Packages'
+        t('no_packages')
       )}
+
       <>
         <Dialog open={confirm.value} onClose={confirm.onFalse}>
-          <DialogTitle>Delete Package</DialogTitle>
+          <DialogTitle>{t('delete_package')}</DialogTitle>
           <DialogContent>
-            <DialogContentText>Are you sure you want to delete this package?</DialogContentText>
+            <DialogContentText>{t('confirm_delete_package')}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={confirm.onFalse} color="primary">
-              Cancel
+              {t('cancel')}
             </Button>
 
             <LoadingButton
@@ -392,17 +391,14 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
               color="error"
               onClick={() => handleDeletePackage(selectedPackageId)}
             >
-              Delete
+              {t('delete')}
             </LoadingButton>
           </DialogActions>
         </Dialog>
+
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-          <MenuItem
-            onClick={() => {
-              handleEditPackage(selectedPackage);
-            }}
-          >
-            Edit Package
+          <MenuItem onClick={() => handleEditPackage(selectedPackage)}>
+            {t('edit_package')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -410,9 +406,10 @@ export default function SchoolAdminTrainerDetailsContent({ trainerDetails }: Pro
               handleClose();
             }}
           >
-            Delete Package
+            {t('delete_package')}
           </MenuItem>
         </Menu>
+
         <TrainerPackageCreateEditForm
           editMode={editMode}
           open={quickEdit.value}

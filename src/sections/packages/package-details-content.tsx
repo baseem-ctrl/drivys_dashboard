@@ -52,6 +52,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import AddCityPackage from './add-city-package';
 import { useTranslation } from 'react-i18next';
 import { useGetCities } from 'src/api/enum';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -62,6 +63,8 @@ type Props = {
 
 export default function PackageDetails({ details, loading, reload }: Props) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuthContext();
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [openAddCityDialog, setOpenAddCityDialog] = useState(false);
   const handleOpenAddCityDialog = () => {
@@ -560,7 +563,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      {!editMode && (
+      {!editMode && user?.user?.user_type === 'ADMIN' && (
         <Stack
           alignItems="end"
           onClick={() => setEditMode(true)}
@@ -926,7 +929,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const handleCardClick = (cityId) => {
     router.push(paths.dashboard.system.viewDetails(cityId));
   };
-  console.log('details', details);
   const renderCityContent = (
     <Stack spacing={3}>
       <Scrollbar>
@@ -957,17 +959,19 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
                 <hr style={{ borderColor: '#CF5A0D', margin: '0 0 16px 0', borderWidth: '1px' }} />
 
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleEditCity(index)} // Function to handle editing specific city
-                >
-                  <Iconify icon="solar:pen-bold" />
-                </Box>
+                {user?.user?.user_type === 'ADMIN' && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleEditCity(index)} // Function to handle editing specific city
+                  >
+                    <Iconify icon="solar:pen-bold" />
+                  </Box>
+                )}
 
                 <Box
                   sx={{
@@ -1152,7 +1156,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               </Grid>
             </Grid>
           )}{' '}
-          {selectedTab === 0 && (
+          {selectedTab === 0 && user?.user?.user_type === 'ADMIN' && (
             <Button
               variant="contained"
               color="primary"
@@ -1165,15 +1169,17 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           )}
           {selectedTab === 1 && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Iconify icon="eva:plus-fill" />}
-                sx={{ mt: 7, mb: 5 }}
-                onClick={handleOpenAddCityDialog}
-              >
-                {t('Add City')}
-              </Button>
+              {user?.user?.user_type === 'ADMIN' && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Iconify icon="eva:plus-fill" />}
+                  sx={{ mt: 7, mb: 5 }}
+                  onClick={handleOpenAddCityDialog}
+                >
+                  {t('Add City')}
+                </Button>
+              )}
             </Box>
           )}
           {selectedTab === 1 && details?.package_city?.length > 0 && (
@@ -1198,13 +1204,16 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             packageId={details?.id}
             sessionNumber={details?.number_of_sessions}
           />{' '}
-          {documents && documents.length > 0 && selectedTab === 0 && (
-            <PackageDocumentDetails
-              documents={documents}
-              reload={revalidateDocuments}
-              sessionNumber={details?.number_of_sessions}
-            />
-          )}
+          {documents &&
+            documents.length > 0 &&
+            selectedTab === 0 &&
+            user?.user?.user_type === 'ADMIN' && (
+              <PackageDocumentDetails
+                documents={documents}
+                reload={revalidateDocuments}
+                sessionNumber={details?.number_of_sessions}
+              />
+            )}
         </>
       )}
     </>
