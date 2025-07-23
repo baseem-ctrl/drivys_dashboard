@@ -1301,5 +1301,23 @@
 
   "coupon_used": "Coupon Used",
   "wallet_amount_used": "Wallet Amount Used",
-  "total_sessions_booked": "Total Sessions Booked"
+  "total_sessions_booked": "Total Sessions Booked",
+  "sign_in_to": "Sign in to",
+
+  "enter_otp": "Enter OTP",
+  "enter_new_password": "Enter New Password",
+  "forgot_password": "Forgot password?",
+  "login": "Login",
+  "verify_otp": "Verify OTP",
+  "set_new_password": "Set New Password",
+  "login_as_admin": "Login As Admin",
+  "login_as_school": "Login As School",
+  "login_as_collector": "Login As Collector",
+  "login_as_assistant": "Login As Assistant",
+  "otp_required": "OTP is required",
+  "new_password_required": "New Password is required",
+  "simple": "Simple",
+  "open_menu": "Open Menu",
+  "my_account": "My account",
+  "logout": "Logout"
 }

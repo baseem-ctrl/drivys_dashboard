@@ -16,6 +16,7 @@ import Iconify from 'src/components/iconify';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import ComponentBlock from '../component-block';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ export default function MenuView() {
   const [isOpenList, setOpenList] = useState<null | HTMLElement>(null);
 
   const [isOpenMaxHeight, setOpenMaxHeight] = useState<null | HTMLElement>(null);
-
+  const { t } = useTranslation();
   const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenMaxHeight(event.currentTarget);
   }, []);
@@ -111,14 +112,14 @@ export default function MenuView() {
             md: 'repeat(3, 1fr)',
           }}
         >
-          <ComponentBlock title="Simple">
+          <ComponentBlock title={t('simple')}>
             <Button variant="outlined" onClick={handleOpen}>
-              Open Menu
+              {t('open_menu')}
             </Button>
             <Menu id="simple-menu" anchorEl={isOpen} onClose={handleClose} open={Boolean(isOpen)}>
-              {['Profile', 'My account', 'Logout'].map((option) => (
-                <MenuItem key={option} selected={option === 'Profile'} onClick={handleClose}>
-                  {option}
+              {['profile', 'my_account', 'logout'].map((key) => (
+                <MenuItem key={key} selected={key === 'profile'} onClick={handleClose}>
+                  {t(key)}
                 </MenuItem>
               ))}
             </Menu>
