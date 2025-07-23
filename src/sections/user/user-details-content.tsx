@@ -1035,6 +1035,14 @@ export default function UserDetailsContent({
                           />
                         ),
                       },
+                      ...(details?.is_active === false
+                        ? [
+                            {
+                              label: t('reason'),
+                              value: details?.status_text || t('n/a'),
+                            },
+                          ]
+                        : []),
                     ]
                   : []),
               ].map((item, index) => (

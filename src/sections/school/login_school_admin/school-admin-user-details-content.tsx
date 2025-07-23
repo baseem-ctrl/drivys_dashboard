@@ -377,6 +377,14 @@ export default function UserDetailsContentAdmin({
                     },
                   ]
                 : []),
+              ...(details?.is_active === false
+                ? [
+                    {
+                      label: t('reason'),
+                      value: details?.status_text || t('n/a'),
+                    },
+                  ]
+                : []),
             ].map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box
