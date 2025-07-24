@@ -796,6 +796,79 @@ const BookingDetailsComponent = () => {
             </Card>
           </Grid>
         )}
+        {value === 0 && bookingDetails?.sessions?.[0]?.reschedules?.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main', ml: 4 }}
+            >
+              {t('Reschedule Details')} :
+            </Typography>
+
+            <TableContainer component={Paper} sx={{ ml: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('Original Start')}</TableCell>
+                    <TableCell>{t('Original End')}</TableCell>
+                    <TableCell>{t('New Start')}</TableCell>
+                    <TableCell>{t('New End')}</TableCell>
+                    <TableCell>{t('Requested By')}</TableCell>
+                    <TableCell>{t('Status')}</TableCell>
+                    <TableCell>{t('driver_comments')}</TableCell>
+                    <TableCell>{t('Reason')}</TableCell>
+                    <TableCell>{t('Reschedule Fee')}</TableCell>
+                    <TableCell>{t('Payment Method')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {bookingDetails.sessions[0].reschedules.map((reschedule) => (
+                    <TableRow key={reschedule.id}>
+                      <TableCell>
+                        {moment(reschedule.original_start)
+                          .utcOffset('+04:00')
+                          .format('DD/MM/YY h:mm A')}
+                      </TableCell>
+                      <TableCell>
+                        {moment(reschedule.original_end)
+                          .utcOffset('+04:00')
+                          .format('DD/MM/YY h:mm A')}
+                      </TableCell>
+                      <TableCell>
+                        {moment(reschedule.new_start).utcOffset('+04:00').format('DD/MM/YY h:mm A')}
+                      </TableCell>
+                      <TableCell>
+                        {moment(reschedule.new_end).utcOffset('+04:00').format('DD/MM/YY h:mm A')}
+                      </TableCell>
+                      <TableCell>{reschedule.requested_by || t('n/a')}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={reschedule.status}
+                          color={
+                            reschedule.status === 'Approved'
+                              ? 'success'
+                              : reschedule.status === 'Rejected'
+                              ? 'error'
+                              : 'warning'
+                          }
+                          variant="soft"
+                        />
+                      </TableCell>
+                      <TableCell>{sessions[0]?.driver_comments || t('n/a')}</TableCell>
+
+                      <TableCell>{reschedule.reason || t('n/a')}</TableCell>
+                      <TableCell>
+                        <span className="dirham-symbol">&#x00EA;</span>
+                        {reschedule.reschedule_fee ?? 0}
+                      </TableCell>
+                      <TableCell>{reschedule.payment_method || t('n/a')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        )}
       </Grid>
       <CustomPopover
         open={popover.open}
