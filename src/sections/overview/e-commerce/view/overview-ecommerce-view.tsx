@@ -173,22 +173,22 @@ export default function OverviewEcommerceView() {
     locale: i18n.language,
   });
 
-  const chartData = {
-    colors: ['#34C38F', '#FF7D1E'],
-    series: [
-      { label: 'Active Trainers', value: analytics.activeTrainers },
-      { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
-    ],
-    options: {
-      labels: ['Active Trainers', 'Inactive Trainers'],
-    },
-  };
+  // const chartData = {
+  //   colors: ['#34C38F', '#FF7D1E'],
+  //   series: [
+  //     { label: 'Active Trainers', value: analytics.activeTrainers },
+  //     { label: 'Inactive Trainers', value: analytics.inactiveTrainers },
+  //   ],
+  //   options: {
+  //     labels: ['Active Trainers', 'Inactive Trainers'],
+  //   },
+  // };
   const chartBookingData = {
     colors: ['#28a745', '#fd7e14', '#dc3545'],
     series: [
-      { label: t('completed'), value: analytics.completedBookingsCount },
-      { label: t('pending'), value: analytics.pendingBookingsCount },
-      { label: t('canceled'), value: analytics.canceledBookingsCount },
+      { label: t('completed'), value: analytics?.completedBookingsCount || 0 },
+      { label: t('pending'), value: analytics?.pendingBookingsCount || 0 },
+      { label: t('canceled'), value: analytics?.canceledBookingsCount || 0 },
     ],
     options: {
       labels: [t('completed'), t('pending'), t('canceled')],
@@ -215,14 +215,22 @@ export default function OverviewEcommerceView() {
     weeklyCompletedSessions,
     sessionSeriesData
   );
-  const transformedDataBooking = revenueByPackage.map((item) => ({
-    label: item.package_name,
-    value: parseFloat(item.total_revenue),
-  }));
-  const transformedRevenueByPaymentMethodData = paymentMethods?.map((item) => ({
-    label: item?.payment_method,
-    value: parseFloat(item?.total_amount),
-  }));
+  const transformedDataBooking = revenueByPackage.map((item) =>
+    item
+      ? {
+          label: item.package_name,
+          value: parseFloat(item.total_revenue),
+        }
+      : null
+  );
+  const transformedRevenueByPaymentMethodData = paymentMethods?.map((item) =>
+    item
+      ? {
+          label: item.payment_method,
+          value: parseFloat(item.total_amount),
+        }
+      : null
+  );
   const chartConfigRevenueByPaymentMethodData = {
     colors: ['#7a4ec9', '#fb7c63', '#ffbe57', '#5dc7e1', '#59bb90'],
     series: transformedRevenueByPaymentMethodData,
@@ -248,29 +256,33 @@ export default function OverviewEcommerceView() {
   const studentChartData = {
     colors: ['#FF6F61', '#6B5B95'],
     series: [
-      { label: t('active_students'), value: analytics.activeStudents || 0 },
-      { label: t('inactive_students'), value: analytics.inactiveStudents || 0 },
+      { label: t('active_students'), value: analytics?.activeStudents || 0 },
+      { label: t('inactive_students'), value: analytics?.inactiveStudents || 0 },
     ],
     options: {
       labels: [t('active_students'), t('inactive_students')],
     },
   };
 
-  const transformedDataRevenueByPackage = revenueByPackage.map((item) => ({
-    label: item.package_name,
-    value: parseFloat(item.total_revenue),
-  }));
+  const transformedDataRevenueByPackage = revenueByPackage.map((item) =>
+    item
+      ? {
+          label: item.package_name,
+          value: parseFloat(item.total_revenue),
+        }
+      : null
+  );
   const categories = studentInsights?.studentsDemographics
     ? Object.keys(studentInsights.studentsDemographics)
     : [];
 
   const series = categories.map((category) => {
-    const dataWithLabels = Object.entries(studentInsights.studentsDemographics[category]).map(
-      ([label, value]) => ({
-        label,
-        data: value,
-      })
-    );
+    const dataWithLabels = studentInsights.studentsDemographics[category]
+      ? Object.entries(studentInsights.studentsDemographics[category]).map(([label, value]) => ({
+          label,
+          data: value,
+        }))
+      : [];
 
     return {
       name: category,
@@ -287,11 +299,11 @@ export default function OverviewEcommerceView() {
     };
   });
 
-  const chartConfigBooking = {
-    colors: ['#008FFB', '#FF4560'],
-    series: transformedDataBooking,
-    options: {},
-  };
+  // const chartConfigBooking = {
+  //   colors: ['#008FFB', '#FF4560'],
+  //   series: transformedDataBooking,
+  //   options: {},
+  // };
   const chartConfig = {
     colors: ['#008FFB', '#FF4560'],
     series: transformedDataRevenueByPackage,
