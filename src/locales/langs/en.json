@@ -1324,5 +1324,10 @@
   "Male": "Male",
   "Bio (En)": "Bio (En)",
   "Bio (Ar)": "Bio (Ar)",
-  "Bio (Ur)": "Bio (Ur)"
+  "Bio (Ur)": "Bio (Ur)",
+  "Original Start": "Original Start",
+  "Original End": "Original End",
+  "New Start": "New Start",
+  "New End": "New End",
+  "Requested By": "Requested By"
 }
