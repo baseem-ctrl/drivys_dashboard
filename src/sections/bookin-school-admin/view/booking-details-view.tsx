@@ -815,6 +815,7 @@ const BookingDetailsComponent = () => {
                     <TableCell>{t('New End')}</TableCell>
                     <TableCell>{t('Requested By')}</TableCell>
                     <TableCell>{t('Status')}</TableCell>
+                    <TableCell>{t('driver_comments')}</TableCell>
                     <TableCell>{t('Reason')}</TableCell>
                     <TableCell>{t('Reschedule Fee')}</TableCell>
                     <TableCell>{t('Payment Method')}</TableCell>
@@ -853,6 +854,8 @@ const BookingDetailsComponent = () => {
                           variant="soft"
                         />
                       </TableCell>
+                      <TableCell>{sessions[0]?.driver_comments || t('n/a')}</TableCell>
+
                       <TableCell>{reschedule.reason || t('n/a')}</TableCell>
                       <TableCell>
                         <span className="dirham-symbol">&#x00EA;</span>
