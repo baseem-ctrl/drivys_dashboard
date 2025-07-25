@@ -880,8 +880,7 @@ export default function UserNewEditForm({
     enumLoading ||
     genderLoading ||
     gearLoading ||
-    categoryLoading ||
-    schoolLoading
+    categoryLoading
   ) {
     return (
       <Box
@@ -995,7 +994,7 @@ export default function UserNewEditForm({
                 {filteredValues?.length > 0 &&
                   filteredValues?.map((option: any) => (
                     <MenuItem key={option?.value} value={option?.value}>
-                      {option?.name}
+                      {t(option?.name)}
                     </MenuItem>
                   ))}
               </RHFSelect>
