@@ -10,7 +10,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { enUS, arSA } from 'date-fns/locale';
 import '../overview/e-commerce/view/CustomDateRangePicker.css';
 import { useLocales } from 'src/locales';
 
@@ -31,8 +31,12 @@ export default function BookingTableToolbar({
     endDate: new Date(),
     key: 'selection',
   });
-  const { t } = useLocales();
-
+  const { t, currentLang } = useLocales();
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[currentLang] || enUS;
   const handleSelect = (ranges: any) => {
     const { startDate, endDate } = ranges.selection;
     setSelectionRange(ranges.selection);
@@ -177,7 +181,7 @@ export default function BookingTableToolbar({
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2} // Show two months side by side
             direction="horizontal"
           />

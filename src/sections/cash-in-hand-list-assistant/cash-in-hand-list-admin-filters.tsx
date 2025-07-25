@@ -17,7 +17,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ClearIcon from '@mui/icons-material/Clear';
 
 export default function CashInHandFilter({ filters, onFilters }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const clearFilterClicked = useRef(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,11 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
     endDate: new Date(),
     key: 'selection',
   });
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const handleClearDates = () => {
     onFilters('cash_clearance_date_from', '');
     onFilters('cash_clearance_date_to', '');
@@ -172,7 +176,7 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
             onChange={handleSelect}
             showSelectionPreview
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />

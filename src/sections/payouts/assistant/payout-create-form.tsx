@@ -72,7 +72,7 @@ export default function PayoutCreateForm({ open, onClose, vendorId, reload, amou
         onClose();
         reload();
         enqueueSnackbar(response?.message, { variant: 'success' });
-        router.push(paths.dashboard.payouts.school);
+        router.push(paths.dashboard.payouts.assistant);
       }
     } catch (error) {
       enqueueSnackbar(t('Failed to create payout.'), { variant: 'error' });

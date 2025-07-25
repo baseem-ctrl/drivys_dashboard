@@ -5,8 +5,9 @@ import { useGetUsers } from 'src/api/users';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useRef, useState } from 'react';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import { useGetSchool } from 'src/api/school';
+import { useTranslation } from 'react-i18next';
 
 export default function SchoolReportFilter({ filters, onFilters }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -29,6 +30,12 @@ export default function SchoolReportFilter({ filters, onFilters }: any) {
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
   });
+  const { i18n } = useTranslation();
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const handleSchoolChange = (event: any, value: any) => {
     onFilters((prevFilters: any) => ({
       ...prevFilters,
@@ -154,7 +161,7 @@ export default function SchoolReportFilter({ filters, onFilters }: any) {
               onChange={handleSelect}
               showSelectionPreview={true}
               moveRangeOnFirstSelection={false}
-              locale={enUS}
+              locale={currentLocale}
               months={2}
               direction="horizontal"
             />

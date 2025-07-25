@@ -5,7 +5,7 @@ import { useGetUsers } from 'src/api/users';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useRef, useState } from 'react';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,11 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     page: 0,
   });
   const { i18n, t } = useTranslation();
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
@@ -190,7 +194,7 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
               onChange={handleSelect}
               showSelectionPreview={true}
               moveRangeOnFirstSelection={false}
-              locale={enUS}
+              locale={currentLocale}
               months={2}
               direction="horizontal"
             />

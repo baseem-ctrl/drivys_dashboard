@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { enUS, arSA } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
 import { useTranslation } from 'react-i18next';
 
@@ -52,7 +52,11 @@ export default function StudentFilter({ filters, onFilters }: any) {
   const toggleDatePicker = () => {
     setShowDatePicker(!showDatePicker);
   };
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const handleClearDates = () => {
     onFilters({ ...filters, startDate: undefined, endDate: undefined, category_id: undefined });
     setSelectionRange({
@@ -132,7 +136,7 @@ export default function StudentFilter({ filters, onFilters }: any) {
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />

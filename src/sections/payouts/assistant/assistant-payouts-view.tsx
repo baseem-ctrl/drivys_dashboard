@@ -66,7 +66,7 @@ export default function AssistantPayoutPage() {
   const router = useRouter();
   const openFilters = useBoolean();
   const quickCreate = useBoolean();
-  const [vendorId, setVendorId] = useState(false);
+  const [assistantId, setAssistantId] = useState(false);
   const [amount, setAmount] = useState(false);
 
   const [sortBy, setSortBy] = useState('');
@@ -250,7 +250,7 @@ export default function AssistantPayoutPage() {
                 onClick={(e) => {
                   e.stopPropagation();
                   quickCreate.onTrue();
-                  setVendorId(item?.vendor_id);
+                  setAssistantId(item?.assistant_id);
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
@@ -367,7 +367,7 @@ export default function AssistantPayoutPage() {
                 onClick={(e) => {
                   e.stopPropagation();
                   quickCreate.onTrue();
-                  setVendorId(item?.vendor_id);
+                  setAssistantId(item?.assistant_id);
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
@@ -478,7 +478,7 @@ export default function AssistantPayoutPage() {
       <PayoutCreateForm
         open={quickCreate.value}
         onClose={quickCreate.onFalse}
-        vendorId={vendorId}
+        vendorId={assistantId}
         reload={revalidatePayoutByAssistant}
         amount={amount}
       />

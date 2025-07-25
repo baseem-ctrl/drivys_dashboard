@@ -2,14 +2,14 @@ import { Box, TextField, Autocomplete, Grid, Button, IconButton } from '@mui/mat
 import { useEffect, useRef, useState } from 'react';
 import { useGetUsers } from 'src/api/users';
 import { DateRangePicker } from 'react-date-range';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import { format } from 'date-fns';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export default function CashInHandFilter({ filters, onFilters }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const clearFilterClicked = useRef(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
@@ -18,7 +18,11 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
     endDate: new Date(),
     key: 'selection',
   });
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const { users } = useGetUsers({
     page: 0,
     limit: 1000,
@@ -155,7 +159,7 @@ export default function CashInHandFilter({ filters, onFilters }: any) {
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />
