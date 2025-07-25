@@ -10,7 +10,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import '../overview/e-commerce/view/CustomDateRangePicker.css';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ export default function BookingTableToolbar({
   studentOptions,
   loading,
 }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { paymentMethodEnum, paymentMethodLoading, paymentMethodError } = useGetPaymentMethodEnum();
   const { paymentStatusEnum, paymentStatusLoading, paymentStatusError } = useGetPaymentStatusEnum();
   const [schoolOptions, setSchoolOptions] = useState([]);
@@ -83,6 +83,11 @@ export default function BookingTableToolbar({
     limit: 1000,
     user_types: 'TRAINER',
   });
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const handleChange = (name: string) => (value: any) => {
     onFilters(name, value);
   };
@@ -186,7 +191,7 @@ export default function BookingTableToolbar({
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />

@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { enUS, arSA } from 'date-fns/locale';
 import { useGetAllCategory } from 'src/api/category';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +30,11 @@ export default function PayoutFilter({ filters, onFilters }: any) {
   const handleFilterCategory = (newValue: string) => {
     onFilters({ ...filters, category_id: newValue.value });
   };
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const categoryOptions =
     category?.map((item: any) => ({
       label: item.category_translations.map((translation: any) => translation.name).join(' - '),
@@ -132,7 +136,7 @@ export default function PayoutFilter({ filters, onFilters }: any) {
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />

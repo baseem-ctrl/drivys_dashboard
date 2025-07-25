@@ -9,7 +9,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { enUS, arSA } from 'date-fns/locale';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './CustomDateRangePicker.css';
 import Iconify from 'src/components/iconify';
@@ -183,6 +183,11 @@ export default function OverviewEcommerceView() {
   //     labels: ['Active Trainers', 'Inactive Trainers'],
   //   },
   // };
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const chartBookingData = {
     colors: ['#28a745', '#fd7e14', '#dc3545'],
     series: [
@@ -471,7 +476,7 @@ export default function OverviewEcommerceView() {
                       onChange={handleSelect}
                       showSelectionPreview={true}
                       moveRangeOnFirstSelection={false}
-                      locale={enUS}
+                      locale={currentLocale}
                       months={2} // Show two months side by side
                       direction="horizontal"
                     />

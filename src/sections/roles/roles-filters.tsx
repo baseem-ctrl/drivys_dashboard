@@ -21,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import {
   useGetBookingStatusEnum,
   useGetPaymentMethodEnum,
@@ -43,7 +43,11 @@ export default function RolesFilter({ filters, onFilters }: any) {
     revalidateBookingStatusEnum,
   } = useGetBookingStatusEnum();
   const { i18n, t } = useTranslation();
-
+  const localeMap = {
+    en: enUS,
+    ar: arSA,
+  };
+  const currentLocale = localeMap[i18n.language] || enUS;
   const { category, categoryLoading } = useGetAllCategory({
     limit: 1000,
     page: 0,
@@ -227,7 +231,7 @@ export default function RolesFilter({ filters, onFilters }: any) {
             onChange={handleSelect}
             showSelectionPreview={true}
             moveRangeOnFirstSelection={false}
-            locale={enUS}
+            locale={currentLocale}
             months={2}
             direction="horizontal"
           />
