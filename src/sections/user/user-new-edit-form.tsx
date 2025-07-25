@@ -491,6 +491,7 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
+  console.log('errors', errors);
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
   const { states, isLoading: stateLoading } = useGetStateList({
@@ -1011,15 +1012,14 @@ export default function UserNewEditForm({
                 />
               )}
 
-              {currentLang.value === 'en' && (
-                <RHFTextField
-                  name="name"
-                  label={t('name_as_per_profile_card')}
-                  error={!!errors.name}
-                  helperText={errors.name?.message || ''}
-                />
-              )}
-              {values.user_type === 'TRAINER' && currentLang.value === 'ar' && (
+              <RHFTextField
+                name="name"
+                label={t('name_as_per_profile_card')}
+                error={!!errors.name}
+                helperText={errors.name?.message || ''}
+              />
+
+              {values.user_type === 'TRAINER' && (
                 <RHFTextField
                   name="name_ar"
                   label={t('name_as_per_profile_card_ar')}
