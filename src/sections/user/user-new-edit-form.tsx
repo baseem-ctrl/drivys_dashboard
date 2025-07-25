@@ -880,8 +880,7 @@ export default function UserNewEditForm({
     enumLoading ||
     genderLoading ||
     gearLoading ||
-    categoryLoading ||
-    schoolLoading
+    categoryLoading
   ) {
     return (
       <Box
