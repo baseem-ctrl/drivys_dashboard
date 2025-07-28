@@ -106,11 +106,30 @@ export default function PackageCreateForm({
   const [translations, setTranslations] = useState<any>({});
   const [selectedLocale, setSelectedLocale] = useState<string | null>('en');
   const [cityFields, setCityFields] = useState([
-    { id: null, min_price: '', max_price: '', commision: '' },
+    {
+      id: null,
+      min_price: '',
+      max_price: '',
+      commision: '',
+      discount_value: '',
+      discount_type: false,
+      offer_valid_until: null,
+    },
   ]);
 
   const handleAddCity = () => {
-    setCityFields((prevFields) => [...prevFields, { id: null, min_price: '', max_price: '' }]);
+    setCityFields((prevFields) => [
+      ...prevFields,
+      {
+        id: null,
+        min_price: '',
+        max_price: '',
+        commision: '',
+        discount_value: '',
+        discount_type: false,
+        offer_valid_until: null,
+      },
+    ]);
   };
 
   const handleCityFieldChange = (index: number, field: string, value: any) => {
@@ -237,6 +256,7 @@ export default function PackageCreateForm({
   const handleToggle = () => {
     setValue('is_drivys_commision_percentage', !values?.is_drivys_commision_percentage);
   };
+
   const previousLocaleRef = useRef(selectedLocale);
 
   // ** 1. Saving current locale's translation before switching **
@@ -345,6 +365,29 @@ export default function PackageCreateForm({
         if (city?.max_price !== undefined && city?.max_price !== '' && city?.max_price) {
           formData.append(`cities_ids[${index}][max_price]`, String(city.max_price));
         }
+        console.log(city.discount_value, 'discount_value');
+
+        if (
+          city?.discount_value !== undefined &&
+          city?.discount_value !== '' &&
+          city?.discount_value
+        ) {
+          console.log(city.discount_value, 'discount_value');
+
+          formData.append(`cities_ids[${index}][discount_value]`, String(city.discount_value));
+        }
+        if (city?.discount_value) {
+          formData.append(
+            `cities_ids[${index}][discount_type]`,
+            city.discount_type === true ? 'percentage' : 'amount'
+          );
+        }
+        if (city?.offer_valid_until) {
+          formData.append(
+            `cities_ids[${index}][offer_valid_until]`,
+            moment(city.offer_valid_until).format('YYYY-MM-DD')
+          );
+        }
       });
     } else {
       console.log('cities_ids is not an array or is undefined');
@@ -355,7 +398,17 @@ export default function PackageCreateForm({
       if (response) {
         reset();
         handleClose();
-        setCityFields([{ id: null, min_price: '', max_price: '' }]);
+        setCityFields([
+          {
+            id: null,
+            min_price: '',
+            max_price: '',
+            commision: '',
+            discount_value: '',
+            discount_type: false,
+            offer_valid_until: null,
+          },
+        ]);
         revalidateDeliverey();
         enqueueSnackbar(response?.message, { variant: 'success' });
       }
@@ -379,10 +432,27 @@ export default function PackageCreateForm({
   const handleClose = () => {
     reset(defaultValues);
     onClose();
-    setCityFields([{ id: null, min_price: '', max_price: '' }]);
+    setCityFields([
+      {
+        id: null,
+        min_price: '',
+        max_price: '',
+        commision: '',
+        discount_value: '',
+        discount_type: false,
+        offer_valid_until: null,
+      },
+    ]);
     setSelectedLocale(null);
   };
-
+  const handleToggleOffer = () => {
+    setCityFields((prevFields) =>
+      prevFields.map((field) => ({
+        ...field,
+        discount_type: !field.discount_type,
+      }))
+    );
+  };
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -489,6 +559,7 @@ export default function PackageCreateForm({
                 }}
               />
             </Grid>
+
             {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
 
             <Grid item xs={6}>
@@ -609,6 +680,52 @@ export default function PackageCreateForm({
                             </InputAdornment>
                           ),
                         }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <RHFTextField
+                        name={`cities_ids[${index}][discount_value]`}
+                        label={t('Offer Price')}
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        value={cityField.discount_value}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'discount_value', event.target.value)
+                        }
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <div onClick={handleToggleOffer} style={{ cursor: 'pointer' }}>
+                                {cityField.discount_type ? (
+                                  '%'
+                                ) : (
+                                  <span className="dirham-symbol">&#x00EA;</span>
+                                )}
+                              </div>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <RHFTextField
+                        name={`cities_ids[${index}][offer_valid_until]`}
+                        label={t('Offer Valid Until')}
+                        type="date"
+                        value={cityField.offer_valid_until || ''}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'offer_valid_until', event.target.value)
+                        }
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        // InputProps={{
+                        //   endAdornment: (
+                        //     <InputAdornment position="end">
+                        //       <Iconify icon="mdi:calendar" />
+                        //     </InputAdornment>
+                        //   ),
+                        // }}
                       />
                     </Grid>
 

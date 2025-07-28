@@ -53,6 +53,7 @@ import AddCityPackage from './add-city-package';
 import { useTranslation } from 'react-i18next';
 import { useGetCities } from 'src/api/enum';
 import { useAuthContext } from 'src/auth/hooks';
+import moment from 'moment';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -434,6 +435,20 @@ export default function PackageDetails({ details, loading, reload }: Props) {
               `cities_ids[${index}][commision_type]`,
               updatedCity?.commision_type ?? cityItem?.commision_type ?? ''
             );
+            formData.append(
+              `cities_ids[${index}][discount_value]`,
+              updatedCity?.discount_value ?? cityItem?.discount_value ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][discount_type]`,
+              updatedCity?.discount_type === true ? 'percentage' : 'amount'
+            );
+            if (updatedCity?.offer_valid_until) {
+              formData.append(
+                `cities_ids[${index}][offer_valid_until]`,
+                moment(updatedCity.offer_valid_until).format('YYYY-MM-DD')
+              );
+            }
           }
         });
       }
@@ -501,6 +516,20 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             formData.append(
               `cities_ids[${index}][commision_type]`,
               updatedCity?.commision_type ?? cityItem?.commision_type ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][discount_value]`,
+              updatedCity?.discount_value ?? cityItem?.discount_value ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][discount_type]`,
+              updatedCity?.discount_type ?? cityItem?.discount_type ?? ''
+            );
+            formData.append(
+              `cities_ids[${index}][offer_valid_until]`,
+              updatedCity?.offer_valid_until
+                ? moment(updatedCity.offer_valid_until).format('YYYY-MM-DD')
+                : ''
             );
           }
         });
@@ -929,6 +958,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const handleCardClick = (cityId) => {
     router.push(paths.dashboard.system.viewDetails(cityId));
   };
+
   const renderCityContent = (
     <Stack spacing={3}>
       <Scrollbar>
@@ -1039,6 +1069,37 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     {cityItem?.commision ??  t('n/a')}
                   </Box>
                 </Box> */}
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {t('Offer Price')}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.discount_type === 'amount' ? (
+                      <>
+                        {cityItem.discount_value ? cityItem.discount_value : t('n/a')}
+                        <span className="dirham-symbol">&#x00EA;</span>
+                      </>
+                    ) : (
+                      <>{cityItem.discount_value ? cityItem.discount_value : t('n/a')}%</>
+                    )}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 1 }}>
+                  <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
+                    {t('Offer Valid Until')}
+                  </Box>
+                  <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
+                    :
+                  </Box>
+                  <Box component="span" sx={{ flex: 1 }}>
+                    {cityItem?.offer_valid_until
+                      ? moment(cityItem.offer_valid_until).format('YYYY-MM-DD')
+                      : t('n/a')}
+                  </Box>
+                </Box>
               </Box>
             ))}
           </Stack>
@@ -1107,6 +1168,40 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                           label={t('Max Price')}
                           defaultValue={cityItem?.max_price ?? ''}
                           sx={{ mt: 1, mb: 3 }}
+                        />
+                        <RHFTextField
+                          name={`cities_ids[${index}][discount_value]`}
+                          label={t('Offer Price')}
+                          defaultValue={cityItem?.discount_value ?? ''}
+                          sx={{ mt: 1, mb: 3 }}
+                          type="number"
+                          inputProps={{ min: 0 }}
+                        />
+                        <RHFSelect
+                          name={`cities_ids[${index}][discount_type]`}
+                          label={t('Offer Type')}
+                          defaultValue={
+                            cityItem?.discount_type === 'percentage' ? 'percentage' : 'amount'
+                          }
+                          sx={{ mt: 1, mb: 3 }}
+                        >
+                          <MenuItem value="percentage">{t('Percentage')}</MenuItem>
+                          <MenuItem value="amount">{t('Amount')}</MenuItem>
+                        </RHFSelect>
+
+                        <RHFTextField
+                          name={`cities_ids[${index}][offer_valid_until]`}
+                          label={t('Offer Valid Until')}
+                          type="date"
+                          defaultValue={
+                            cityItem?.offer_valid_until
+                              ? moment(cityItem.offer_valid_until).format('YYYY-MM-DD')
+                              : ''
+                          }
+                          sx={{ mt: 1, mb: 3 }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
                         />
                       </>
                     )}

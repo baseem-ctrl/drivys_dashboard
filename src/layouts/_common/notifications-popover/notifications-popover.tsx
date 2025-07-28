@@ -196,7 +196,7 @@ export default function NotificationsPopover() {
           <IconButton onClick={handleMarkAllAsRead}>
             <Iconify icon="solar:settings-bold-duotone" />
           </IconButton>
-        </Stack>
+        </Stack> 
 
         <Divider /> */}
 
