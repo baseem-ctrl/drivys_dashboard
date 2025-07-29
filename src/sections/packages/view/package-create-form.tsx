@@ -112,7 +112,7 @@ export default function PackageCreateForm({
       max_price: '',
       commision: '',
       discount_value: '',
-      discount_type: false,
+      discount_type: 'percentage',
       offer_valid_until: null,
     },
   ]);
@@ -126,7 +126,7 @@ export default function PackageCreateForm({
         max_price: '',
         commision: '',
         discount_value: '',
-        discount_type: false,
+        discount_type: 'percentage',
         offer_valid_until: null,
       },
     ]);
@@ -377,10 +377,7 @@ export default function PackageCreateForm({
           formData.append(`cities_ids[${index}][discount_value]`, String(city.discount_value));
         }
         if (city?.discount_value) {
-          formData.append(
-            `cities_ids[${index}][discount_type]`,
-            city.discount_type === true ? 'percentage' : 'amount'
-          );
+          formData.append(`cities_ids[${index}][discount_type]`, city.discount_type);
         }
         if (city?.offer_valid_until) {
           formData.append(
@@ -405,7 +402,7 @@ export default function PackageCreateForm({
             max_price: '',
             commision: '',
             discount_value: '',
-            discount_type: false,
+            discount_type: 'percentage',
             offer_valid_until: null,
           },
         ]);
@@ -439,20 +436,13 @@ export default function PackageCreateForm({
         max_price: '',
         commision: '',
         discount_value: '',
-        discount_type: false,
+        discount_type: 'percentage',
         offer_valid_until: null,
       },
     ]);
     setSelectedLocale(null);
   };
-  const handleToggleOffer = () => {
-    setCityFields((prevFields) =>
-      prevFields.map((field) => ({
-        ...field,
-        discount_type: !field.discount_type,
-      }))
-    );
-  };
+
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -695,8 +685,8 @@ export default function PackageCreateForm({
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="end">
-                              <div onClick={handleToggleOffer} style={{ cursor: 'pointer' }}>
-                                {cityField.discount_type ? (
+                              <div style={{ cursor: 'pointer' }}>
+                                {cityField.discount_type === 'percentage' ? (
                                   '%'
                                 ) : (
                                   <span className="dirham-symbol">&#x00EA;</span>
@@ -706,6 +696,20 @@ export default function PackageCreateForm({
                           ),
                         }}
                       />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <RHFSelect
+                        name={`cities_ids[${index}][discount_type]`}
+                        label={t('Offer Type')}
+                        value={cityField?.discount_type}
+                        // sx={{ mt: 1, mb: 3 }}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'discount_type', event.target.value)
+                        }
+                      >
+                        <MenuItem value="percentage">{t('Percentage')}</MenuItem>
+                        <MenuItem value="amount">{t('Amount')}</MenuItem>
+                      </RHFSelect>
                     </Grid>
                     <Grid item xs={6}>
                       <RHFTextField

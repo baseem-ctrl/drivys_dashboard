@@ -1079,11 +1079,28 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Box component="span" sx={{ flex: 1 }}>
                     {cityItem?.discount_type === 'amount' ? (
                       <>
-                        {cityItem.discount_value ? cityItem.discount_value : t('n/a')}
-                        <span className="dirham-symbol">&#x00EA;</span>
+                        <span
+                          className="dirham-symbol"
+                          style={{
+                            marginRight: '4px',
+                            fontSize: '16px',
+                            verticalAlign: 'middle',
+                          }}
+                        >
+                          &#x00EA;
+                        </span>
+                        <span
+                          style={{
+                            marginRight: '4px',
+                            fontSize: '16px',
+                            verticalAlign: 'middle',
+                          }}
+                        >
+                          {cityItem.discount_value ? cityItem.discount_value : t('n/a')}
+                        </span>
                       </>
                     ) : (
-                      <>{cityItem.discount_value ? cityItem.discount_value : t('n/a')}%</>
+                      <>{cityItem.discount_value ? `${cityItem.discount_value} %` : t('n/a')}</>
                     )}
                   </Box>
                 </Box>

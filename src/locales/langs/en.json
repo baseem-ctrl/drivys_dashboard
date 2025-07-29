@@ -1331,5 +1331,8 @@
   "New Start": "New Start",
   "New End": "New End",
   "Requested By": "Requested By",
-  "driver_comments": "Driver Comments"
+  "driver_comments": "Driver Comments",
+  "Offer Price": "Offer Price",
+  "Offer Valid Until": "Offer Valid Until",
+  "Percentage": "Percentage"
 }
