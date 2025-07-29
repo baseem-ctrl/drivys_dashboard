@@ -1052,7 +1052,7 @@ export default function UserDetailsContent({
                       ...(details?.is_active === false
                         ? [
                             {
-                              label: t('reason'),
+                              label: t('inActivereason'),
                               value: details?.status_text || t('n/a'),
                             },
                           ]

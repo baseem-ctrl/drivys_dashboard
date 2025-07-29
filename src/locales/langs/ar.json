@@ -189,6 +189,7 @@
   "amount_to_refund": "المبلغ المسترد",
   "payment_method": "طريقة الدفع",
   "reason": "السبب",
+  "inActivereason": "سبب عدم النشاط",
   "refund_status": "حالة الاسترداد",
   "created": "تم الإنشاء",
   "status": "الحالة",

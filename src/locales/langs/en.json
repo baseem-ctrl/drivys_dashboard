@@ -188,6 +188,7 @@
   "amount_to_refund": "Amount to Refund",
   "payment_method": "Payment Method",
   "reason": "Reason",
+  "inActivereason": "Inactive Reason",
   "refund_status": "Refund Status",
   "created": "Created",
   "status": "Status",
