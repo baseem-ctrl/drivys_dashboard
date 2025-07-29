@@ -985,7 +985,11 @@ const BookingDetailsComponent = () => {
                           variant="soft"
                         />
                       </TableCell>
-                      <TableCell>{sessions[0]?.driver_comments || t('n/a')}</TableCell>
+                      <TableCell>
+                        {reschedule.requested_by === 'Trainer'
+                          ? sessions[0]?.driver_comments
+                          : t('n/a')}
+                      </TableCell>
 
                       <TableCell>{reschedule.reason || t('n/a')}</TableCell>
                       <TableCell>
