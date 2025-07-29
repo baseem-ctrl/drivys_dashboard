@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { DateRangePicker } from 'react-date-range';
-import { enUS } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
 import { format } from 'date-fns';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
