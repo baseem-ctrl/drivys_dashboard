@@ -115,7 +115,7 @@ const TrainerListPage: React.FC = () => {
       />
       <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
         <TextField
-          label={t('search_students')}
+          label={t('search_trainer')}
           variant="outlined"
           fullWidth
           value={searchTermTrainer}
