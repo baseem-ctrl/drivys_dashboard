@@ -61,7 +61,7 @@ const TrainerLiveLocation: React.FC = () => {
         `${import.meta.env.VITE_HOST_API}admin/trainers/get-live-location-trainers-list`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 500 },
+          params: { latitude: defaultLatitude, longitude: defaultLongitude, radius: 1000 },
         }
       );
       if (response?.data?.data) {
