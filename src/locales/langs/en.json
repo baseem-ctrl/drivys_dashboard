@@ -1332,7 +1332,7 @@
   "New End": "New End",
   "Requested By": "Requested By",
   "driver_comments": "Driver Comments",
-  "Offer Price": "Offer Price",
-  "Offer Valid Until": "Offer Valid Until",
+  "Discount Valid Until": "Discount Valid Until",
+  "Discount Percentage": "Discount Percentage",
   "Percentage": "Percentage"
 }

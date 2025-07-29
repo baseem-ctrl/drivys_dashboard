@@ -675,7 +675,7 @@ export default function PackageCreateForm({
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][discount_value]`}
-                        label={t('Offer Price')}
+                        label={t('Discount Price')}
                         type="number"
                         inputProps={{ min: 0 }}
                         value={cityField.discount_value}
@@ -700,7 +700,7 @@ export default function PackageCreateForm({
                     <Grid item xs={6}>
                       <RHFSelect
                         name={`cities_ids[${index}][discount_type]`}
-                        label={t('Offer Type')}
+                        label={t('Discount Type')}
                         value={cityField?.discount_type}
                         // sx={{ mt: 1, mb: 3 }}
                         onChange={(event) =>
@@ -714,7 +714,7 @@ export default function PackageCreateForm({
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][offer_valid_until]`}
-                        label={t('Offer Valid Until')}
+                        label={t('Discount Valid Until')}
                         type="date"
                         value={cityField.offer_valid_until || ''}
                         onChange={(event) =>
