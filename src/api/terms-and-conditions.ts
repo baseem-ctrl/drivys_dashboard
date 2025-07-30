@@ -3,13 +3,13 @@ import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function useGetTermsAndConditions() {
+export function useGetTermsAndConditions(locale: string = 'en') {
   const { i18n } = useTranslation();
   const currentLocale = i18n.language;
 
-  const getUrl = (withLocale: boolean) => {
+  const getUrl = () => {
     const baseUrl = endpoints.termsAndConditions.getList;
-    return withLocale ? `${baseUrl}?locale=${currentLocale}` : baseUrl;
+    return `${baseUrl}?locale=${locale}`;
   };
 
   // Primary fetch with locale

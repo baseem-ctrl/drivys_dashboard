@@ -26,8 +26,9 @@ import { useTranslation } from 'react-i18next';
 
 const TermsPageList: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const [locale, setLocale] = useState('En');
   const { termsAndConditions, termsLoading, termsError, revalidateTermsAndConditions } =
-    useGetTermsAndConditions();
+    useGetTermsAndConditions(locale.toLowerCase());
   const [open, setOpen] = useState(false);
   const [termsList, setTermsList] = useState([{ heading: '', content: '' }]);
   const [isEditing, setIsEditing] = useState(false);
@@ -39,6 +40,7 @@ const TermsPageList: React.FC = () => {
   const handleLocaleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setLocale(event.target.value as string);
   };
+  const [selectedLocale, setSelectedLocale] = useState(locale);
   const handleOpen = (edit = false) => {
     setOpen(true);
     setIsEditing(edit);
@@ -76,7 +78,7 @@ const TermsPageList: React.FC = () => {
         content: isEditing
           ? [...termsList]
           : [...(termsAndConditions[0]?.value || []), ...termsList],
-        locale: i18n.language,
+        locale: isEditing ? locale.toLowerCase() : selectedLocale.toLowerCase(),
         display_order: termsAndConditions[0]?.display_order || 1,
       };
 
@@ -129,6 +131,21 @@ const TermsPageList: React.FC = () => {
             {t('Terms & Policies')}
           </Typography>
           <Box>
+            <FormControl variant="outlined" sx={{ minWidth: 120, mr: 2 }}>
+              <InputLabel id="locale-select-label">{t('Language')}</InputLabel>
+              <Select
+                labelId="locale-select-label"
+                value={locale}
+                onChange={handleLocaleChange}
+                label={t('Language')}
+              >
+                {localeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -159,6 +176,25 @@ const TermsPageList: React.FC = () => {
             {isEditing ? t('Update Terms and Conditions') : t('Add Terms and Conditions')}
           </DialogTitle>
           <DialogContent>
+            {!isEditing && (
+              <Box sx={{ mb: 2 }}>
+                <Select
+                  fullWidth
+                  value={selectedLocale || locale}
+                  onChange={(e) => {
+                    setSelectedLocale(e.target.value);
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  {localeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+            )}
+
             {termsList.map((term, index) => (
               <Box key={index} sx={{ mb: 2 }}>
                 <TextField
