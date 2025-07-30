@@ -118,7 +118,7 @@ export default function AppSettingsListView() {
     <>
       <Container maxWidth="xl">
         <CustomBreadcrumbs
-          heading={t("List")}
+          heading={t('List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             { name: t('App Settings'), href: paths.dashboard.system.appsettings },
