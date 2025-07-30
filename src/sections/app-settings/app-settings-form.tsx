@@ -171,11 +171,20 @@ const EditableForm: React.FC = () => {
   }
 
   const renderInputField = (item: FormField) => {
-    if (item.key === 'PRIVACY POLICY') {
+    if (
+      item.key?.toUpperCase().includes('PRIVACY POLICY') ||
+      item.key?.toLowerCase().includes('PRIVACY_POLICY')
+    ) {
       return (
         <Box width="100%" display="flex" flexDirection="column">
           <Typography variant="body1" color="primary" gutterBottom>
-            {t('Privacy policy')}
+            {item.key === 'PRIVACY POLICY'
+              ? t('Privacy Policy')
+              : item.key === 'PRIVACY POLICY URDU'
+              ? t('Privacy Policy Urudu')
+              : item.key === 'PRIVACY POLICY ARABIC'
+              ? t('Privacy Policy Arabic')
+              : item.key.replace(/_/g, ' ')}
           </Typography>
           <PrivacyPolicy
             item={item}
@@ -370,13 +379,13 @@ const EditableForm: React.FC = () => {
                   formData.map((item) => (
                     <Grid
                       item
-                      xs={item.key === 'PRIVACY POLICY' || item.value === 'boolean' ? 12 : 7}
+                      xs={item.key.includes('PRIVACY POLICY') || item.value === 'boolean' ? 12 : 7}
                       key={item.id}
                       sx={{ display: 'flex', justifyContent: 'flexstart' }}
                     >
                       <Box
                         sx={{
-                          width: item.key === 'PRIVACY POLICY' ? '100%' : '65%',
+                          width: item.key.includes('PRIVACY POLICY') ? '100%' : '65%',
                           marginBottom: 2,
                         }}
                       >
