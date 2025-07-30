@@ -363,6 +363,7 @@ export default function CreateBooking() {
       </Stack>
     </Stack>
   );
+
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
@@ -484,7 +485,7 @@ export default function CreateBooking() {
             setPaymentProof={setPaymentProof}
             trainerId={selectedTrainerId}
             studentId={selectedStudentId}
-            packageId={selectedPackageId.package_id}
+            packageId={selectedPackageId?.package_id || selectedPackageId}
           />
         );
       default:

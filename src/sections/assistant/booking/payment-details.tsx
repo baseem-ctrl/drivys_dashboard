@@ -58,7 +58,8 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
     coupon_code: couponCode,
     mode_of_payment: paymentMode,
   });
-  const errorMessage = paymentSummaryError?.message?.errors?.coupon_code[0] || '';
+
+  const errorMessage = paymentSummaryError?.message?.errors?.coupon_code?.coupon_code[0] || '';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
