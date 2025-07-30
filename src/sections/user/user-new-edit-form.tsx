@@ -449,7 +449,7 @@ export default function UserNewEditForm({
         currentUser?.user_preference?.certificate_commission_in_percentage || '',
       bio: currentUser?.user_preference?.bio || '',
       bio_ar: currentUser?.user_preference?.bio_ar || '',
-
+      bio_ur: currentUser?.user_preference?.bio_ur || '',
       vehicle_number: currentUser?.vehicle_number || '',
       license_file: currentUser?.user_preference?.license_file || '',
       school_name: currentUser?.school_name || '',
@@ -756,6 +756,7 @@ export default function UserNewEditForm({
           );
         if (data?.bio) body.append('bio', data?.bio);
         if (data?.bio_ar) body.append('bio_ar', data?.bio_ar);
+        if (data?.bio_ur) body.append('bio_ur', data?.bio_ur);
       }
 
       if (data?.locale) body.append('locale', data?.locale?.language_culture);
@@ -958,7 +959,7 @@ export default function UserNewEditForm({
                   m={3}
                   // mb={3}
                 >
-                  {values.user_type === 'TRAINER' && currentLang.value === 'en' && (
+                  {values.user_type === 'TRAINER' && (
                     <RHFTextField
                       name="bio"
                       label={t('about_you')}
@@ -967,8 +968,23 @@ export default function UserNewEditForm({
                       type="text"
                     />
                   )}
-                  {values.user_type === 'TRAINER' && currentLang.value === 'ar' && (
-                    <RHFTextField name="bio_ar" label={t('about')} multiline rows={4} type="text" />
+                  {values.user_type === 'TRAINER' && (
+                    <RHFTextField
+                      name="bio_ar"
+                      label={t('about_ar')}
+                      multiline
+                      rows={2}
+                      type="text"
+                    />
+                  )}
+                  {values.user_type === 'TRAINER' && (
+                    <RHFTextField
+                      name="bio_ur"
+                      label={t('about_ur')}
+                      multiline
+                      rows={2}
+                      type="text"
+                    />
                   )}
                 </Box>
               </Card>

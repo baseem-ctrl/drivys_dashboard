@@ -405,6 +405,8 @@
   "select_school_owner": "حدد مالك المدرسة",
   "no_users_available": "لا توجد مستخدمين متاحين",
   "about": "عن",
+  "about_ar": "عن (عربي)",
+  "about_ur": "عن (أردو)",
   "select_location_on_map": "حدد الموقع على الخريطة",
   "email_not_available": "البريد الإلكتروني غير متاح",
   "phone_not_available": "رقم الهاتف غير متاح",
