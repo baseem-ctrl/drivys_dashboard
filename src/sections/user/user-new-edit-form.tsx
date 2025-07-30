@@ -482,7 +482,6 @@ export default function UserNewEditForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
-  console.log('defaultValues', defaultValues.assistant_id_proof);
   const {
     reset,
     watch,
@@ -829,7 +828,6 @@ export default function UserNewEditForm({
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     } finally {
-      revalidateDetails();
     }
   });
 
