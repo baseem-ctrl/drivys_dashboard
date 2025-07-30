@@ -598,7 +598,7 @@ export default function UserDetailsContent({
                   whiteSpace: 'pre-line',
                 }}
               >
-                {details?.user_preference?.bio_ar || t('n/a')}
+                {details?.user_preference?.bio_ur || t('n/a')}
               </Typography>
             </Box>
           </Card>
