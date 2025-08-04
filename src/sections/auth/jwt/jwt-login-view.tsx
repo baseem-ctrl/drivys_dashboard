@@ -14,7 +14,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 // routes
 import { useSearchParams, useRouter } from 'src/routes/hooks';
 // config
-import { PATH_AFTER_LOGIN, PATH_AFTER_LOGIN_COLLECTOR } from 'src/config-global';
+import {
+  PATH_AFTER_LOGIN,
+  PATH_AFTER_LOGIN_ASSISTANT,
+  PATH_AFTER_LOGIN_COLLECTOR,
+} from 'src/config-global';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // auth
