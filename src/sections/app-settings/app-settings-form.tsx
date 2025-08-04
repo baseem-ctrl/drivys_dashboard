@@ -124,6 +124,7 @@ const EditableForm: React.FC = () => {
     try {
       const editedField = formData.find((item) => item.id === id);
       if (!editedField) return;
+      console.log(editedField);
 
       const body = {
         id: editedField.id,
@@ -245,7 +246,7 @@ const EditableForm: React.FC = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Default Category"
+                  label={t('Default Category')}
                   placeholder={t('Select Category')}
                 />
               )}
@@ -317,7 +318,11 @@ const EditableForm: React.FC = () => {
               onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
               loading={schoolLoading}
               renderInput={(params) => (
-                <TextField {...params} label="Default School" placeholder={t('Select School')} />
+                <TextField
+                  {...params}
+                  label={t('Default School')}
+                  placeholder={t('Select School')}
+                />
               )}
               renderOption={(props, option) => (
                 <li {...props} key={option.value}>
@@ -352,7 +357,7 @@ const EditableForm: React.FC = () => {
         <Grid container alignItems="center" spacing={2} sx={{ ml: 2 }}>
           <Grid item xs={6}>
             <Typography variant="body1">
-              {item.key
+              {t(item.key)
                 .replace(/_/g, ' ')
                 .toLowerCase()
                 .replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -383,7 +388,7 @@ const EditableForm: React.FC = () => {
 
           <Box display="flex" alignItems="center">
             <Typography variant="body2" fontWeight="500" color="gray" mb={1}>
-              {item.key
+              {t(item.key)
                 .replace(/_/g, ' ')
                 .toLowerCase()
                 .replace(/^./, (char) => char.toUpperCase())}

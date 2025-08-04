@@ -27,7 +27,7 @@ const PrivacyPolicy = ({
       const body = {
         key: item.key,
         value: editedData,
-        locale: selectedLocale,
+        id: item?.id,
       };
       const response = await updateValue(body);
       if (response) {
