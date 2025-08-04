@@ -518,8 +518,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             const updatedCity = data.cities_ids?.[index] || city;
             const minPrice = parseFloat(updatedCity?.min_price ?? city?.min_price);
             const commission = parseFloat(details.drivys_commision);
-            console.log(minPrice);
-            console.log(commission);
 
             if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
               errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
