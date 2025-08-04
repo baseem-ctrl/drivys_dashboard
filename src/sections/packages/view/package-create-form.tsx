@@ -181,13 +181,12 @@ export default function PackageCreateForm({
     drivys_commision: Yup.number()
       .test(
         'valid-drivys-commission',
-        "Drivy's Commission cannot be more than 100% when percentage is selected",
+        "Drivy's Commission should be less than 100% when percentage is selected",
         function (value) {
           const { is_drivys_commision_percentage } = this.parent;
-
           // If percentage mode is ON, enforce max 100
           if (is_drivys_commision_percentage) {
-            return value === null || value <= 100;
+            return value === null || value < 100;
           }
 
           // If percentage mode is OFF, just ensure it's a number
