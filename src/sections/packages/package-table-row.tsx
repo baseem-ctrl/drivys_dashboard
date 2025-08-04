@@ -67,6 +67,7 @@ export default function PackageTableRow({
     category_id,
     drivys_commision,
     vendor_id,
+    is_drivys_commision_percentage,
   } = row;
   const { t, i18n } = useTranslation();
   const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
@@ -137,7 +138,23 @@ export default function PackageTableRow({
       }
     ),
     category_id: Yup.string(),
-    drivys_commision: Yup.string(),
+    drivys_commision: Yup.string()
+      .test(
+        'valid-drivys-commission',
+        "Drivy's Commission should be less than 100% when is in percentage",
+        function (value) {
+          const { is_drivys_commision_percentage } = this.parent;
+          // If percentage mode is ON, enforce max 100
+          if (is_drivys_commision_percentage) {
+            return value === null || value < 100;
+          }
+
+          // If percentage mode is OFF, just ensure it's a number
+          return true;
+        }
+      )
+      .typeError("Drivy's Commission must be a number"),
+    is_drivys_commision_percentage: Yup.boolean(),
   });
   const defaultValues = useMemo(
     () => ({
@@ -149,6 +166,7 @@ export default function PackageTableRow({
       number_of_sessions: number_of_sessions || 0,
       category_id: category_id || '',
       drivys_commision: drivys_commision || drivys_commision === 0 ? drivys_commision : '',
+      is_drivys_commision_percentage: is_drivys_commision_percentage,
     }),
     [selectedLocaleObject, row, editingRowId]
   );
@@ -199,6 +217,8 @@ export default function PackageTableRow({
         category_id: data?.category_id,
         drivys_commision: data?.drivys_commision || drivys_commision,
         package_id: row?.id,
+        is_drivys_commision_percentage:
+          data?.is_drivys_commision_percentage || is_drivys_commision_percentage,
       };
       const response = await createUpdatePackage(payload);
       if (response) {
@@ -383,7 +403,7 @@ export default function PackageTableRow({
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <span className="dirham-symbol">&#x00EA;</span>
+            {!is_drivys_commision_percentage && <span className="dirham-symbol">&#x00EA;</span>}
             {editingRowId === row.id ? (
               <Controller
                 name="drivys_commision"
@@ -391,11 +411,11 @@ export default function PackageTableRow({
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    error={!!errors.email}
-                    type={values?.is_percentage ? 'number' : 'text'}
+                    error={!!errors.drivys_commision}
+                    type={values?.is_drivys_commision_percentage ? 'number' : 'text'}
                     inputProps={{ min: 0 }}
                     value={field.value || field.value === 0 ? field.value : ''}
-                    helperText={errors.email ? errors.email.message : ''}
+                    helperText={errors.drivys_commision ? errors.drivys_commision.message : ''}
                     size="small" // optional: to better fit in a table row
                   />
                 )}
@@ -405,6 +425,7 @@ export default function PackageTableRow({
             ) : (
               t('n/a')
             )}
+            {is_drivys_commision_percentage && <span>%</span>}
           </Box>
         </TableCell>
 
