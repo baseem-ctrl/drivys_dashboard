@@ -25,6 +25,7 @@ import FormProvider, {
   RHFSelect,
   RHFAutocomplete,
   RHFEditor,
+  RHFSwitch,
 } from 'src/components/hook-form';
 import moment from 'moment';
 import { IDeliveryItem } from 'src/types/product';
@@ -116,7 +117,7 @@ export default function PackageCreateForm({
       offer_valid_until: null,
     },
   ]);
-
+  const [cityErrors, setCityErrors] = useState<string[]>([]);
   const handleAddCity = () => {
     setCityFields((prevFields) => [
       ...prevFields,
@@ -177,7 +178,23 @@ export default function PackageCreateForm({
     ),
     category_id: Yup.mixed(),
     vendor_id: Yup.mixed().nullable(),
-    drivys_commision: Yup.number(),
+    drivys_commision: Yup.number()
+      .test(
+        'valid-drivys-commission',
+        "Drivy's Commission cannot be more than 100% when percentage is selected",
+        function (value) {
+          const { is_drivys_commision_percentage } = this.parent;
+
+          // If percentage mode is ON, enforce max 100
+          if (is_drivys_commision_percentage) {
+            return value === null || value <= 100;
+          }
+
+          // If percentage mode is OFF, just ensure it's a number
+          return true;
+        }
+      )
+      .typeError("Drivy's Commission must be a number"),
     min_price: Yup.string(),
     max_price: Yup.string(),
     is_drivys_commision_percentage: Yup.boolean(),
@@ -301,6 +318,26 @@ export default function PackageCreateForm({
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
     saveCurrentLocaleTranslation();
+    setCityErrors([]);
+    const errors: string[] = [];
+    // Validate city min_price vs drivys_commision if commission is fixed amount
+    if (!data.is_drivys_commision_percentage) {
+      cityFields.forEach((city, index) => {
+        const minPrice = parseFloat(city.min_price);
+        const commission = parseFloat(data.drivys_commision);
+
+        if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
+          errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
+        } else {
+          errors[index] = ''; // no error
+        }
+      });
+    }
+    if (errors.some((err) => err)) {
+      setCityErrors(errors);
+      enqueueSnackbar('Please fix the highlighted city fields', { variant: 'error' });
+      return;
+    }
     const formData = new FormData();
     if (data?.number_of_sessions) formData.append('number_of_sessions', data?.number_of_sessions);
     formData.append('is_published', formDataState.is_published ? 1 : 0);
@@ -529,6 +566,28 @@ export default function PackageCreateForm({
               />
             </Grid>
             <Grid item xs={6}>
+              <RHFAutocompleteSearch
+                name="category_id"
+                label={t('Select Category')}
+                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
+                options={category?.map((item) => ({
+                  label:
+                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
+                      ?.name || t('Unknown'),
+                  value: item?.id,
+                }))}
+                onInputChange={(e: any) => handleSearchChange(e)}
+                loading={categoryLoading}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <RHFSwitch
+                name="is_drivys_commision_percentage"
+                label={t('Commission in Percentage ')}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
               <RHFTextField
                 name="drivys_commision"
                 label={t("Drivy's Commission")}
@@ -547,24 +606,6 @@ export default function PackageCreateForm({
                     </InputAdornment>
                   ),
                 }}
-              />
-            </Grid>
-
-            {/* <RHFSwitch name="use_percentage" label={t('Use Percentage')} /> */}
-
-            <Grid item xs={6}>
-              <RHFAutocompleteSearch
-                name="category_id"
-                label={t('Select Category')}
-                // {option?.vendor_translations.find(item => item?.locale?.toLowerCase() === "en")?.name || "Unknown"}
-                options={category?.map((item) => ({
-                  label:
-                    item?.category_translations.find((item) => item?.locale?.toLowerCase() === 'en')
-                      ?.name || t('Unknown'),
-                  value: item?.id,
-                }))}
-                onInputChange={(e: any) => handleSearchChange(e)}
-                loading={categoryLoading}
               />
             </Grid>
 
@@ -650,6 +691,8 @@ export default function PackageCreateForm({
                             </InputAdornment>
                           ),
                         }}
+                        error={Boolean(cityErrors[index])}
+                        helperText={cityErrors[index]}
                       />
                     </Grid>
 
@@ -671,6 +714,20 @@ export default function PackageCreateForm({
                           ),
                         }}
                       />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <RHFSelect
+                        name={`cities_ids[${index}][discount_type]`}
+                        label={t('Discount Type')}
+                        value={cityField?.discount_type}
+                        // sx={{ mt: 1, mb: 3 }}
+                        onChange={(event) =>
+                          handleCityFieldChange(index, 'discount_type', event.target.value)
+                        }
+                      >
+                        <MenuItem value="percentage">{t('Percentage')}</MenuItem>
+                        <MenuItem value="amount">{t('Amount')}</MenuItem>
+                      </RHFSelect>
                     </Grid>
                     <Grid item xs={6}>
                       <RHFTextField
@@ -697,20 +754,7 @@ export default function PackageCreateForm({
                         }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
-                      <RHFSelect
-                        name={`cities_ids[${index}][discount_type]`}
-                        label={t('Discount Type')}
-                        value={cityField?.discount_type}
-                        // sx={{ mt: 1, mb: 3 }}
-                        onChange={(event) =>
-                          handleCityFieldChange(index, 'discount_type', event.target.value)
-                        }
-                      >
-                        <MenuItem value="percentage">{t('Percentage')}</MenuItem>
-                        <MenuItem value="amount">{t('Amount')}</MenuItem>
-                      </RHFSelect>
-                    </Grid>
+
                     <Grid item xs={6}>
                       <RHFTextField
                         name={`cities_ids[${index}][offer_valid_until]`}
@@ -723,13 +767,6 @@ export default function PackageCreateForm({
                         InputLabelProps={{
                           shrink: true,
                         }}
-                        // InputProps={{
-                        //   endAdornment: (
-                        //     <InputAdornment position="end">
-                        //       <Iconify icon="mdi:calendar" />
-                        //     </InputAdornment>
-                        //   ),
-                        // }}
                       />
                     </Grid>
 

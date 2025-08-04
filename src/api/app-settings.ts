@@ -22,9 +22,7 @@ export function useGetAllAppSettings(page: number, limit: number) {
     sort_by: 'display_order',
   });
 
-  const urlWithLocale = `${
-    endpoints.appSettings.list
-  }?${baseParams.toString()}&locale=${currentLocale}`;
+  const urlWithLocale = `${endpoints.appSettings.list}?${baseParams.toString()}`;
   const urlWithoutLocale = `${endpoints.appSettings.list}?${baseParams.toString()}`;
 
   // Primary fetch with locale

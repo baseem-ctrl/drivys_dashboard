@@ -32,6 +32,7 @@ import { useGetSchool } from 'src/api/school';
 
 import PrivacyPolicy from './privacy-policy';
 import { useTranslation } from 'react-i18next';
+import { useGetAllCategory } from 'src/api/category';
 
 interface FormField {
   id: number;
@@ -70,6 +71,12 @@ const EditableForm: React.FC = () => {
   } = useGetAllAppSettings(0, 1000);
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,
+  });
+  const { category, categoryLoading } = useGetAllCategory({
+    limit: 1000,
+    page: 0,
+    published: '1',
+    // search: i18n.language,
   });
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
@@ -122,7 +129,7 @@ const EditableForm: React.FC = () => {
         id: editedField.id,
         key: editedField.key,
         value: editedField.value.toString(),
-        locale: selectedLocale,
+        // locale: selectedLocale,
       };
 
       const updatedData = formData.map((item) => ({
@@ -194,6 +201,80 @@ const EditableForm: React.FC = () => {
             setEditedFields={setEditedFields}
           />
         </Box>
+      );
+    }
+    if (item.key === 'DEFAULT_CATEGORY') {
+      const selectedCategory = category.find((category) => category.id === item.value);
+      return (
+        <Grid alignItems="center" spacing={2} sx={{ ml: 2 }}>
+          {/* <Grid item xs={6}> */}
+          {/* <Typography variant="body1" sx={{ mt: 2, mb: 2 }} fontWeight="500" color="gray">
+            {item.key
+              .replace(/_/g, ' ')
+              .toLowerCase()
+              .replace(/\b\w/g, (char) => char.toUpperCase())}
+          </Typography> */}
+          {/* </Grid> */}
+
+          <Grid item xs={11}>
+            <Autocomplete
+              fullWidth
+              options={
+                category?.map((category) => ({
+                  label: category?.category_translations
+                    .slice(0, 2)
+                    .map((translation) => translation.name)
+                    .join(' - '),
+                  value: category.id,
+                })) ?? []
+              }
+              getOptionLabel={(option) => option.label}
+              value={
+                selectedCategory
+                  ? {
+                      label: selectedCategory.category_translations
+                        .slice(0, 2)
+                        .map((translation) => translation.name)
+                        .join(' - '),
+                      value: selectedCategory.id,
+                    }
+                  : null
+              }
+              onChange={(event, newValue) => handleChange(item.id, newValue?.value || '')}
+              loading={categoryLoading}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Default Category"
+                  placeholder={t('Select Category')}
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props} key={option.value}>
+                  {option.label}
+                </li>
+              )}
+            />
+          </Grid>
+          <Grid item xs={11}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{
+                mt: 2,
+                textTransform: 'none',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                height: '43px',
+              }}
+              onClick={() => handleSave(item.id)}
+            >
+              Save
+            </Button>
+          </Grid>
+        </Grid>
       );
     }
     if (item.key === 'DEFAULT_SCHOOL') {
