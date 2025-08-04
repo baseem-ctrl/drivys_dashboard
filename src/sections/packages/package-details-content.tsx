@@ -152,10 +152,24 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     is_cash_pay_available: Yup.boolean(),
     background_color: Yup.mixed(),
 
-    drivys_commision: Yup.mixed(),
+    drivys_commision: Yup.mixed().test(
+      'valid-drivys-commission',
+      "Drivy's Commission should be less than 100% when is in percentage",
+      function (value) {
+        const { is_drivys_commision_percentage } = this.parent;
+        // If percentage mode is ON, enforce max 100
+        if (is_drivys_commision_percentage) {
+          return value === null || value < 100;
+        }
+
+        // If percentage mode is OFF, just ensure it's a number
+        return true;
+      }
+    ),
     is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
+    is_drivys_commision_percentage: Yup.boolean(),
   });
   const defaultVendorValues = useMemo(
     () => ({
@@ -169,6 +183,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       background_color: details?.background_color || '',
       is_pickup_fee_included: !!details?.is_pickup_fee_included,
       drivys_commision: details?.drivys_commision || '',
+      is_drivys_commision_percentage: !!details?.is_drivys_commision_percentage,
       vendor_id:
         schoolList
           .find((school) => school?.id === details?.vendor?.id)
@@ -323,6 +338,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         is_published: data?.is_published ? 1 : 0,
         background_color: data?.background_color || details?.background_color,
         drivys_commision: data?.drivys_commision || details?.drivys_commision,
+        is_drivys_commision_percentage: data?.is_drivys_commision_percentage ? 1 : 0,
         is_certificate_included: data?.is_certificate_included ? 1 : 0,
         is_cash_pay_available: data?.is_cash_pay_available ? 1 : 0,
         is_pickup_fee_included: data?.is_pickup_fee_included ? 1 : 0,
@@ -337,6 +353,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
       formData.append('is_cash_pay_available', payload.is_cash_pay_available);
       formData.append('background_color', payload.background_color);
       formData.append('drivys_commision', payload.drivys_commision);
+      formData.append('is_drivys_commision_percentage', payload.is_drivys_commision_percentage);
       formData.append('is_pickup_fee_included', payload.is_pickup_fee_included);
       formData.append('number_of_sessions', payload.number_of_sessions);
       if (data.vendor_id?.value) {
@@ -492,6 +509,28 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   const citySubmit = packageSubmit(async (data) => {
     try {
+      let errors = {}; // store validation errors
+
+      // Validate only if percentage mode is OFF
+      if (!details.is_drivys_commision_percentage) {
+        details.package_city?.forEach((city, index) => {
+          const updatedCity = data.cities_ids?.[index] || city;
+          const minPrice = parseFloat(updatedCity?.min_price);
+          const commission = parseFloat(details.drivys_commision);
+
+          if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
+            errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
+          }
+        });
+      }
+
+      // If there are errors, show them and stop submit
+      if (Object.keys(errors).length > 0) {
+        Object.values(errors).forEach((errMsg) => {
+          enqueueSnackbar(errMsg, { variant: 'error' });
+        });
+        return; // stop API call
+      }
       let formData = new FormData();
       formData.append('package_id', details.id || '');
 
@@ -633,8 +672,11 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 label: t('Drivys Commission'),
                 value: (
                   <>
-                    <span className="dirham-symbol">&#x00EA;</span>
+                    {!details?.is_drivys_commision_percentage && (
+                      <span className="dirham-symbol">&#x00EA;</span>
+                    )}
                     {details?.drivys_commision ?? '0'}
+                    {details?.is_drivys_commision_percentage && <span>%</span>}
                   </>
                 ),
               },
@@ -857,11 +899,27 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                   <Stack direction="row" alignItems="center">
                     <RHFSwitch name="is_pickup_fee_included" label={t('Is Pickup fee included')} />
                   </Stack>
+                  <Stack direction="row" alignItems="center">
+                    <RHFSwitch
+                      name="is_drivys_commision_percentage"
+                      label={t('Commission in Percentage ')}
+                    />
+                  </Stack>
                   <RHFTextField
                     name="drivys_commision"
                     label={t('Drivys Commission')}
                     InputProps={{
-                      endAdornment: <span className="dirham-symbol">&#x00EA;</span>,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <div style={{ cursor: 'pointer' }}>
+                            {values?.is_drivys_commision_percentage ? (
+                              '%'
+                            ) : (
+                              <span className="dirham-symbol">&#x00EA;</span>
+                            )}
+                          </div>
+                        </InputAdornment>
+                      ),
                     }}
                   />
 
@@ -1306,7 +1364,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             onClose={handleCloseAddCityDialog}
             handleAddCity={handleAddCity}
             currentCityData={details?.package_city || []}
-            id={details?.id}
+            details={details}
             reload={reload}
           />
           <PackageDocumentCreateUpdate

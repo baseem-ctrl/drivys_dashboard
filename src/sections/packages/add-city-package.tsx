@@ -36,7 +36,7 @@ export default function AddCityPackage({
   onClose,
   handleRemoveCity,
   currentCityData,
-  id,
+  details,
   reload,
 }: Props) {
   const { t, i18n } = useTranslation();
@@ -54,7 +54,24 @@ export default function AddCityPackage({
         cities_ids: Yup.array().of(
           Yup.object().shape({
             id: Yup.mixed(),
-            min_price: Yup.number().min(0, 'Price cannot be negative'),
+            min_price: Yup.number()
+              .min(0, 'Price cannot be negative')
+              .test(
+                'min-price-vs-commission',
+                `Min price must be greater than Drivy’s commission ${details?.drivys_commision}`,
+                function (value) {
+                  const { drivys_commision, is_drivys_commision_percentage } = details || {};
+
+                  // Only check if percentage mode is false
+                  if (!is_drivys_commision_percentage) {
+                    if (value !== undefined && drivys_commision !== undefined) {
+                      return value > drivys_commision;
+                    }
+                  }
+
+                  return true; // Pass if percentage is true or no comparison needed
+                }
+              ),
             max_price: Yup.number().min(0, 'Price cannot be negative'),
           })
         ),
@@ -65,7 +82,7 @@ export default function AddCityPackage({
   const {
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     setValue,
   } = methods;
 
@@ -76,7 +93,7 @@ export default function AddCityPackage({
       const newCity = data.cities_ids[nextIndex];
 
       let formData = new FormData();
-      formData.append('package_id', id);
+      formData.append('package_id', details?.id);
       formData.append(`cities_ids[${nextIndex}][id]`, newCity.id.value);
 
       formData.append(`cities_ids[${nextIndex}][min_price]`, newCity.min_price || '');
