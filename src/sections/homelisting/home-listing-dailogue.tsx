@@ -59,6 +59,7 @@ const displayTypeOptions = [
   { label: 'VERTICAL_SCROLL', value: 'VERTICAL_SCROLL' },
   { label: 'LIST', value: 'LIST' },
   { label: 'GRID', value: 'GRID' },
+  { label: 'FAVOURITE', value: 'FAVOURITE' },
 ];
 export default function HomeListingDialog({
   title = 'Update Home Listing',
@@ -82,7 +83,7 @@ export default function HomeListingDialog({
   const [trainers, setTrainer] = useState<any>([]);
   const [selectedCatalogue, setSelectedCatalogue] = useState(catalogueOptions[1]?.value ?? '');
   const [selectedDisplayType, setSelectedDisplayType] = useState(
-    displayTypeOptions[0]?.value ?? ''
+    updateValue?.display_type ?? displayTypeOptions[0]?.value ?? ''
   );
   const { language } = useGetAllLanguage(0, 1000);
   const [translations, setTranslations] = useState({});
@@ -459,7 +460,7 @@ export default function HomeListingDialog({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>{t('Trainers')}:</h5>
+            {selectedDisplayType !== 'FAVOURITE' && <h5>{t('Trainers')}:</h5>}
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
@@ -486,11 +487,13 @@ export default function HomeListingDialog({
                 </Grid>
               </Grid>
             ))}
-            <Grid item xs={12} sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleAddMore}>
-                {t('Add Trainer')}
-              </Button>
-            </Grid>
+            {selectedDisplayType !== 'FAVOURITE' && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Button variant="contained" onClick={handleAddMore}>
+                  {t('Add Trainer')}
+                </Button>
+              </Grid>
+            )}
 
             <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

@@ -59,6 +59,7 @@ const displayTypeOptions = [
   { label: 'VERTICAL_SCROLL', value: 'VERTICAL_SCROLL' },
   { label: 'LIST', value: 'LIST' },
   { label: 'GRID', value: 'GRID' },
+  { label: 'FAVOURITE', value: 'FAVOURITE' },
 ];
 export default function HomeListingNewEdit({
   title = 'Create Home Listing',
@@ -129,6 +130,7 @@ export default function HomeListingNewEdit({
     formState: { isSubmitting, errors },
   } = methods;
   const watchLocale = watch('locale');
+  const displaytype = watch('display_type');
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'trainers', // Field array name for addons
@@ -319,7 +321,7 @@ export default function HomeListingNewEdit({
               <RHFSwitch name="is_active" label={t('Is Active')} />
             </Box>
 
-            <h5>{t('Trainers')}:</h5>
+            {selectedDisplayType !== 'FAVOURITE' && <h5>{t('Trainers')}:</h5>}
             {fields?.map((trainerItem: any, index: number) => (
               <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
                 <Grid item xs={12} md={5}>
@@ -346,11 +348,13 @@ export default function HomeListingNewEdit({
                 </Grid>
               </Grid>
             ))}
-            <Grid item xs={12} sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleAddMore}>
-                {t('Add Trainer')}
-              </Button>
-            </Grid>
+            {selectedDisplayType !== 'FAVOURITE' && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Button variant="contained" onClick={handleAddMore}>
+                  {t('Add Trainer')}
+                </Button>
+              </Grid>
+            )}
 
             <Stack alignItems="flex-end" sx={{ mt: 3, mb: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
