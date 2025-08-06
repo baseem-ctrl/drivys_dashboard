@@ -33,7 +33,7 @@ type Props = {
 
 export default function HomeListingDetailsView({ id }: Props) {
   const settings = useSettingsContext();
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { details, detailsLoading, revalidateDetails } = useGetHomeListingById(id);
 
   const currentJob = details;
@@ -85,11 +85,11 @@ export default function HomeListingDetailsView({ id }: Props) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={t("Home Listing Details")}
+        heading={t('Home Listing Details')}
         links={[
           { name: t('Dashboard'), href: paths.dashboard.root },
           {
-            name: t("Home Page List"),
+            name: t('Home Page List'),
             href: paths.dashboard.homelisting.root,
           },
           { name: t('Details') },
@@ -100,7 +100,7 @@ export default function HomeListingDetailsView({ id }: Props) {
         action={
           currentTab === 'trainers' && (
             <Button onClick={quickCreate.onTrue} variant="contained">
-              {t("Add Trainer")}
+              {t('Add Trainer')}
             </Button>
           )
         }
@@ -113,7 +113,7 @@ export default function HomeListingDetailsView({ id }: Props) {
         onChangePublish={handleChangePublish}
         publishOptions={JOB_PUBLISH_OPTIONS}
       /> */}
-      {renderTabs}
+      {currentJob?.display_type !== 'FAVOURITE' && renderTabs}
 
       {currentTab === 'details' && (
         <HomeListingDetailsContent
