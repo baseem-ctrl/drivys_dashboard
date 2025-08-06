@@ -47,3 +47,7 @@ export function unverifyTrainerProfile(body: Record<string, any>) {
   const URL = `${endpoints.profileUpdate.unverifyTrainer}`;
   return drivysCreator([URL, body]);
 }
+export function approveTrainerProfile(body: Record<string, any>) {
+  const URL = `${endpoints.profileUpdate.approveReject}`;
+  return drivysCreator([URL, body]);
+}
