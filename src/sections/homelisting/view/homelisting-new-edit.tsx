@@ -181,14 +181,15 @@ export default function HomeListingNewEdit({
           formData.append(`translation[${index}][locale]`, locale);
           formData.append(`translation[${index}][title]`, values.title);
         });
+      if (selectedDisplayType !== 'FAVOURITE') {
+        if (data?.trainers?.length > 0) {
+          data.trainers.forEach((trainerItem, index) => {
+            const userId = trainerItem?.id?.value;
 
-      if (data?.trainers?.length > 0) {
-        data.trainers.forEach((trainerItem, index) => {
-          const userId = trainerItem?.id?.value;
-
-          formData.append(`trainers[${index}][user_id]`, trainerItem.user_id.value);
-          // Logs the appended form data
-        });
+            formData.append(`trainers[${index}][user_id]`, trainerItem.user_id.value);
+            // Logs the appended form data
+          });
+        }
       }
 
       // Send form data to API
@@ -322,32 +323,33 @@ export default function HomeListingNewEdit({
             </Box>
 
             {selectedDisplayType !== 'FAVOURITE' && <h5>{t('Trainers')}:</h5>}
-            {fields?.map((trainerItem: any, index: number) => (
-              <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
-                <Grid item xs={12} md={5}>
-                  <RHFAutocomplete
-                    name={`trainers[${index}].user_id`} // Dynamic name for react-hook-form
-                    label={`Trainer ${index + 1}`}
-                    getOptionLabel={(option) => {
-                      return option ? `${option?.label}` : '';
-                    }}
-                    options={userOptions}
-                    renderOption={(props, option: any) => (
-                      <li {...props} key={option?.value}>
-                        {option?.label ?? t('Unknown')}
-                      </li>
-                    )}
-                  />
-                </Grid>
+            {selectedDisplayType !== 'FAVOURITE' &&
+              fields?.map((trainerItem: any, index: number) => (
+                <Grid container item spacing={2} sx={{ mt: 2, mb: 2 }} key={trainerItem?.id}>
+                  <Grid item xs={12} md={5}>
+                    <RHFAutocomplete
+                      name={`trainers[${index}].user_id`} // Dynamic name for react-hook-form
+                      label={`Trainer ${index + 1}`}
+                      getOptionLabel={(option) => {
+                        return option ? `${option?.label}` : '';
+                      }}
+                      options={userOptions}
+                      renderOption={(props, option: any) => (
+                        <li {...props} key={option?.value}>
+                          {option?.label ?? t('Unknown')}
+                        </li>
+                      )}
+                    />
+                  </Grid>
 
-                {/* Delete Button */}
-                <Grid item xs={12} md={2}>
-                  <IconButton onClick={() => handleRemove(index)}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
+                  {/* Delete Button */}
+                  <Grid item xs={12} md={2}>
+                    <IconButton onClick={() => handleRemove(index)}>
+                      <Iconify icon="solar:trash-bin-trash-bold" />
+                    </IconButton>
+                  </Grid>
                 </Grid>
-              </Grid>
-            ))}
+              ))}
             {selectedDisplayType !== 'FAVOURITE' && (
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <Button variant="contained" onClick={handleAddMore}>
