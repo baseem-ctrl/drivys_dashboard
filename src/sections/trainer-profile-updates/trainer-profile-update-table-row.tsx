@@ -4,7 +4,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import { Button } from '@mui/material';
 import { Tooltip, Typography, Chip, Box } from '@mui/material';
-import { unverifyTrainerProfile } from 'src/api/trainerProfileUpdates';
+import { approveTrainerProfile, unverifyTrainerProfile } from 'src/api/trainerProfileUpdates';
 import { paths } from 'src/routes/paths';
 import { useLocales } from 'src/locales';
 
@@ -44,6 +44,62 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
   };
   const handleClickDetails = (id) => {
     router.push(paths.dashboard.user.details(id));
+  };
+  const handleApproveProfile = async (trainer_id) => {
+    const body = {
+      id: trainer_id,
+      action: 'approve',
+    };
+
+    try {
+      const response = await approveTrainerProfile(body);
+      enqueueSnackbar(response.message ?? t('trainer_status_changed_successfully'), {
+        variant: 'success',
+      });
+
+      reload();
+    } catch (error) {
+      reload();
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
+  const handleRejectProfile = async (trainer_id) => {
+    const body = {
+      id: trainer_id,
+      action: 'reject',
+    };
+
+    try {
+      const response = await approveTrainerProfile(body);
+      enqueueSnackbar(response.message ?? t('trainer_status_changed_successfully'), {
+        variant: 'success',
+      });
+
+      reload();
+    } catch (error) {
+      reload();
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
   };
   return (
     <TableRow hover selected={selected}>
@@ -161,6 +217,52 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                             >
                               {change?.new ?? t('n/a')}
                             </Typography>
+                            {field?.toLocaleUpperCase() === 'PHOTO_URL' && (
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                gap={3}
+                              >
+                                {!change?.old && (
+                                  <Button
+                                    variant="outlined"
+                                    color="success"
+                                    size="small"
+                                    onClick={() => handleApproveProfile(row?.id)}
+                                    sx={{
+                                      textTransform: 'none',
+                                      '&.Mui-disabled': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: 'error',
+                                        borderColor: 'red',
+                                        cursor: 'not-allowed',
+                                        marginLeft: '10px',
+                                      },
+                                    }}
+                                  >
+                                    {t('Approve')}{' '}
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="outlined"
+                                  color="error"
+                                  size="small"
+                                  onClick={() => handleRejectProfile(row?.id)}
+                                  sx={{
+                                    textTransform: 'none',
+                                    '&.Mui-disabled': {
+                                      backgroundColor: '#f5f5f5',
+                                      color: 'error',
+                                      borderColor: 'red',
+                                      cursor: 'not-allowed',
+                                    },
+                                  }}
+                                >
+                                  {t('Reject')}{' '}
+                                </Button>
+                              </Box>
+                            )}
                           </>
                         ) : (
                           <Typography variant="body2" component="span" sx={{ color: '#888' }}>

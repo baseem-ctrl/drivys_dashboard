@@ -384,6 +384,7 @@ export const endpoints = {
   profileUpdate: {
     list: 'admin/trainerProfileupdate/get-list',
     unverifyTrainer: 'admin/trainerProfileupdate/un-verify',
+    approveReject: 'admin/trainerProfileupdate/approve-or-reject-profile-picture',
   },
   commission: {
     listAdmin: 'admin/vendor/get-vendors-commission-list',
