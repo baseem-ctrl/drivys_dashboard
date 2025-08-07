@@ -39,6 +39,7 @@ export default function PayoutSearch({
   // Clear filter handler
   const clearFilter = (name: string) => () => {
     onFilters(name, '');
+    setSearchValue('');
   };
 
   return (

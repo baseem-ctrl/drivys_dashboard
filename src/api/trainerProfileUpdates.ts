@@ -7,12 +7,12 @@ import { endpoints, drivysFetcher, drivysCreator } from 'src/utils/axios';
 
 // Function to get the trainer profile update list
 export function useGetTrainerProfileUpdateList(filters = {}) {
-  const { trainer_id, page, limit, is_verified } = filters;
+  const { trainer_id, page, limit, action } = filters;
 
   const queryParams = new URLSearchParams();
 
   if (trainer_id !== undefined && trainer_id) queryParams.append('trainer_id', trainer_id);
-  if (is_verified !== undefined) queryParams.append('is_verified', is_verified);
+  if (action !== undefined) queryParams.append('action', action);
   if (page !== undefined) queryParams.append('page', page);
   if (limit !== undefined) queryParams.append('limit', limit);
 

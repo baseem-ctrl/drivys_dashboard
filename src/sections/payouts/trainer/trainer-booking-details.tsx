@@ -84,6 +84,7 @@ export const BookingDetailsTable: React.FC<{}> = () => {
     totalRevenueValue,
     totalTrainerEarning,
     totalVendorEarning,
+    totalReward,
   } = useGetPayoutsList({
     page: table?.page + 1,
     limit: table?.rowsPerPage,
@@ -284,6 +285,18 @@ export const BookingDetailsTable: React.FC<{}> = () => {
               &#x00EA;
             </span>
             {totalVendorEarning ?? '0'}
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Typography variant="subtitle2" sx={{ minWidth: '180px' }}>
+            {t('Total Reward Amount')}
+          </Typography>
+          <Typography variant="subtitle2">:</Typography>
+          <Typography variant="subtitle2" sx={{ minWidth: '100px', textAlign: 'right' }}>
+            <span className="dirham-symbol" style={{ marginLeft: 4 }}>
+              &#x00EA;
+            </span>
+            {totalReward ?? '0'}
           </Typography>
         </Box>
 

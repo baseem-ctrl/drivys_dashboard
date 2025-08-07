@@ -1,4 +1,4 @@
-import { Box, TextField, Autocomplete, FormControlLabel, Switch } from '@mui/material';
+import { Box, TextField, Autocomplete, FormControlLabel, Switch, MenuItem } from '@mui/material';
 import { useGetUsers } from 'src/api/users';
 import { useLocales } from 'src/locales';
 
@@ -32,7 +32,12 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
       is_verified: event.target.checked ? 1 : 0,
     }));
   };
-
+  const handleActionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFilters((prevFilters: any) => ({
+      ...prevFilters,
+      action: event.target.value,
+    }));
+  };
   return (
     <Box
       display="flex"
@@ -59,7 +64,7 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
           onChange={handleTrainerChange}
         />
       </Box>
-      <Box flex={1} display="flex" alignItems="center" gap={1}>
+      {/* <Box flex={1} display="flex" alignItems="center" gap={1}>
         <FormControlLabel
           control={
             <Switch
@@ -70,6 +75,20 @@ export default function ProfileUpdateFilter({ filters, onFilters }: any) {
           }
           label={t('verified_trainer')}
         />
+      </Box> */}
+      <Box flex={1} display="flex" alignItems="center" gap={1}>
+        <TextField
+          select
+          fullWidth
+          label={t('action')}
+          value={filters.action ?? ''}
+          onChange={handleActionChange}
+        >
+          <MenuItem value="">{t('Select Option')}</MenuItem>
+
+          <MenuItem value="approve">{t('approve')}</MenuItem>
+          <MenuItem value="reject">{t('reject')}</MenuItem>
+        </TextField>
       </Box>
     </Box>
   );

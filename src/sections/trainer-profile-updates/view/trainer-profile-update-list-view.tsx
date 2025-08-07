@@ -40,7 +40,8 @@ export default function TrainerProfileUpdatesListView() {
     trainer_id: '',
     page: table.page + 1,
     limit: table.rowsPerPage,
-    is_verified: 0,
+    action: '',
+    // only_profile_pricture: 0,
   });
 
   const {

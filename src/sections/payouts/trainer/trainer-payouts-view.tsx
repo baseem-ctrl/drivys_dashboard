@@ -215,7 +215,15 @@ export default function TrainerPayoutPage() {
           </>
         ),
       },
-
+      {
+        label: t('Total Reward Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.reward_amount ?? '0'}
+          </>
+        ),
+      },
       {
         label: t('Earnings In Cash'),
         value: (
@@ -263,7 +271,7 @@ export default function TrainerPayoutPage() {
     return (
       <Box
         display="grid"
-        gridTemplateColumns="repeat(8, 1fr)"
+        gridTemplateColumns="repeat(9, 1fr)"
         gap={2}
         sx={{ alignItems: 'center' }}
       >
@@ -327,6 +335,15 @@ export default function TrainerPayoutPage() {
           <>
             <span className="dirham-symbol">&#x00EA;</span>
             {item?.total_amount_earned_from_booking ?? '0'}
+          </>
+        ),
+      },
+      {
+        label: t('Total Reward Amount'),
+        value: (
+          <>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {item?.reward_amount ?? '0'}
           </>
         ),
       },

@@ -217,51 +217,52 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                             >
                               {change?.new ?? t('n/a')}
                             </Typography>
-                            {field?.toLocaleUpperCase() === 'PHOTO_URL' && (
-                              <Box
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="space-between"
-                                gap={3}
-                              >
-                                <Button
-                                  variant="outlined"
-                                  color="success"
-                                  size="small"
-                                  onClick={() => handleApproveProfile(row?.id)}
-                                  sx={{
-                                    textTransform: 'none',
-                                    '&.Mui-disabled': {
-                                      backgroundColor: '#f5f5f5',
-                                      color: 'error',
-                                      borderColor: 'red',
-                                      cursor: 'not-allowed',
-                                      marginLeft: '10px',
-                                    },
-                                  }}
+                            {field?.toLocaleUpperCase() === 'PHOTO_URL' &&
+                              row?.is_verified === 0 && (
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="space-between"
+                                  gap={3}
                                 >
-                                  {t('Approve')}{' '}
-                                </Button>
+                                  <Button
+                                    variant="outlined"
+                                    color="success"
+                                    size="small"
+                                    onClick={() => handleApproveProfile(row?.id)}
+                                    sx={{
+                                      textTransform: 'none',
+                                      '&.Mui-disabled': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: 'error',
+                                        borderColor: 'red',
+                                        cursor: 'not-allowed',
+                                        marginLeft: '10px',
+                                      },
+                                    }}
+                                  >
+                                    {t('Approve')}{' '}
+                                  </Button>
 
-                                <Button
-                                  variant="outlined"
-                                  color="error"
-                                  size="small"
-                                  onClick={() => handleRejectProfile(row?.id)}
-                                  sx={{
-                                    textTransform: 'none',
-                                    '&.Mui-disabled': {
-                                      backgroundColor: '#f5f5f5',
-                                      color: 'error',
-                                      borderColor: 'red',
-                                      cursor: 'not-allowed',
-                                    },
-                                  }}
-                                >
-                                  {t('Reject')}{' '}
-                                </Button>
-                              </Box>
-                            )}
+                                  <Button
+                                    variant="outlined"
+                                    color="error"
+                                    size="small"
+                                    onClick={() => handleRejectProfile(row?.id)}
+                                    sx={{
+                                      textTransform: 'none',
+                                      '&.Mui-disabled': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: 'error',
+                                        borderColor: 'red',
+                                        cursor: 'not-allowed',
+                                      },
+                                    }}
+                                  >
+                                    {t('Reject')}{' '}
+                                  </Button>
+                                </Box>
+                              )}
                           </>
                         ) : (
                           <Typography variant="body2" component="span" sx={{ color: '#888' }}>
