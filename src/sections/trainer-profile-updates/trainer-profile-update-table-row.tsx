@@ -224,26 +224,25 @@ export default function TrainerProfileUpdateRow({ row, selected, reload }) {
                                 justifyContent="space-between"
                                 gap={3}
                               >
-                                {!change?.old && (
-                                  <Button
-                                    variant="outlined"
-                                    color="success"
-                                    size="small"
-                                    onClick={() => handleApproveProfile(row?.id)}
-                                    sx={{
-                                      textTransform: 'none',
-                                      '&.Mui-disabled': {
-                                        backgroundColor: '#f5f5f5',
-                                        color: 'error',
-                                        borderColor: 'red',
-                                        cursor: 'not-allowed',
-                                        marginLeft: '10px',
-                                      },
-                                    }}
-                                  >
-                                    {t('Approve')}{' '}
-                                  </Button>
-                                )}
+                                <Button
+                                  variant="outlined"
+                                  color="success"
+                                  size="small"
+                                  onClick={() => handleApproveProfile(row?.id)}
+                                  sx={{
+                                    textTransform: 'none',
+                                    '&.Mui-disabled': {
+                                      backgroundColor: '#f5f5f5',
+                                      color: 'error',
+                                      borderColor: 'red',
+                                      cursor: 'not-allowed',
+                                      marginLeft: '10px',
+                                    },
+                                  }}
+                                >
+                                  {t('Approve')}{' '}
+                                </Button>
+
                                 <Button
                                   variant="outlined"
                                   color="error"
