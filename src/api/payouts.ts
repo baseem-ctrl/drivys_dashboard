@@ -151,7 +151,7 @@ export function useGetPayoutsList({ limit, page, vendor_id, trainer_id }: useGet
       totalTrainerEarning: data?.total_trainer_earning_from_bookings,
       totalVendorEarning: data?.total_vendor_earning_from_bookings,
       totalDrivysCommission: data?.total_drivys_commission_from_bookings,
-      totalReward: data?.total_reward,
+      totalReward: data?.total_rewards_to_trainer_from_students,
     };
   }, [
     data?.data,

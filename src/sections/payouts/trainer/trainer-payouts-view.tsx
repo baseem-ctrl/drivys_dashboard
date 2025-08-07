@@ -220,7 +220,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.reward_amount ?? '0'}
+            {item?.reward_amount_from_student ?? '0'}
           </>
         ),
       },
@@ -343,7 +343,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.reward_amount ?? '0'}
+            {item?.reward_amount_from_student ?? '0'}
           </>
         ),
       },
