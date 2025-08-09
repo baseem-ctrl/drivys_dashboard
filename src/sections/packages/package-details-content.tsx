@@ -203,6 +203,17 @@ export default function PackageDetails({ details, loading, reload }: Props) {
             category.find((category) => category?.id === details?.category_id)
               ?.category_translations?.[0]?.name
           : '',
+      cities_ids:
+        details?.package_city?.map((city) => ({
+          id: city.city_id || '',
+          min_price: city.min_price || '',
+          max_price: city.max_price || '',
+          commision: city.commision || '',
+          commision_type: city.commision_type || '',
+          discount_value: city.discount_value || '',
+          discount_type: city.discount_type || '',
+          offer_valid_until: city.offer_valid_until || '',
+        })) || [],
     }),
     [selectedLocaleObject, details, schoolList, category]
   );
@@ -220,7 +231,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   } = Schoolmethods;
   const { isSubmitting, errors } = schoolFormState;
   const values = schoolWatch();
-
   const handleChange = (event: { target: { value: any } }) => {
     const selectedLocale = event.target.value;
     setSelectedLanguage(selectedLocale);
@@ -517,20 +527,26 @@ export default function PackageDetails({ details, loading, reload }: Props) {
           if (editCityIndex === index) {
             const updatedCity = data.cities_ids?.[index] || city;
             const minPrice = parseFloat(updatedCity?.min_price ?? city?.min_price);
+            const maxPrice = parseFloat(updatedCity?.max_price ?? city?.max_price);
+
             const commission = parseFloat(details.drivys_commision);
 
             if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
               errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
+            } else if (!isNaN(minPrice) && !isNaN(maxPrice) && minPrice >= maxPrice) {
+              errors[index] = `Min Price must be less than Max Price (${maxPrice})`;
             }
           }
         });
       }
-
       // If there are errors, show them and stop submit
       if (Object.keys(errors).length > 0) {
-        Object.values(errors).forEach((errMsg) => {
-          enqueueSnackbar(errMsg, { variant: 'error' });
-        });
+        Object.values(errors)
+          .filter((msg) => msg)
+          .forEach((errMsg) => {
+            enqueueSnackbar(errMsg, { variant: 'error' });
+          });
+
         return; // stop API call
       }
       let formData = new FormData();

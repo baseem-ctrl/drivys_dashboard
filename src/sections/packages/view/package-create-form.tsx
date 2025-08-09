@@ -323,13 +323,22 @@ export default function PackageCreateForm({
     if (!data.is_drivys_commision_percentage) {
       cityFields.forEach((city, index) => {
         const minPrice = parseFloat(city.min_price);
-        const commission = parseFloat(data.drivys_commision);
+        const maxPrice = parseFloat(city.max_price);
 
-        if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
-          errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
-        } else {
-          errors[index] = ''; // no error
+        if (!data.is_drivys_commision_percentage) {
+          const commission = parseFloat(data.drivys_commision);
+          if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
+            errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
+            return;
+          }
         }
+
+        if (!isNaN(minPrice) && !isNaN(maxPrice) && minPrice >= maxPrice) {
+          errors[index] = `Min Price must be less than Max Price (${maxPrice})`;
+          return;
+        }
+
+        errors[index] = '';
       });
     }
     if (errors.some((err) => err)) {
@@ -387,7 +396,6 @@ export default function PackageCreateForm({
         });
       });
     }
-
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
         if (city?.id !== undefined && city?.id !== '' && city?.id) {
@@ -495,7 +503,7 @@ export default function PackageCreateForm({
               }}
             >
               <RHFSelect
-                name="locale (Language)"
+                name="locale"
                 label={t('Locale')}
                 value={selectedLocale}
                 onChange={(e) => handleLocaleChange(e.target.value)}
