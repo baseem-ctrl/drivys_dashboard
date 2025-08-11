@@ -2314,6 +2314,17 @@ export default function UserDetailsContent({
                   id={details?.id}
                   documents={userDocuments}
                   reload={revalidateUserDocuments}
+                  user_type={details?.user_type}
+                />
+              )}
+            </Grid>
+            <Grid xs={12} md={12}>
+              {details?.user_type === 'ASSISTANT' && currentTab === 'details' && (
+                <UserDocumentDetails
+                  id={details?.id}
+                  documents={userDocuments}
+                  reload={revalidateUserDocuments}
+                  user_type={details?.user_type}
                 />
               )}
             </Grid>

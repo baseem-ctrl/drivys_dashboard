@@ -58,7 +58,7 @@ const docSideOptions = [
   { value: 'FRONT', label: 'FRONT' },
   { value: 'BACK', label: 'BACK' },
 ];
-export default function UserDocumentDetails({ id, documents, reload }: Props) {
+export default function UserDocumentDetails({ id, documents, reload, user_type }: Props) {
   const { t } = useTranslation();
   const [editMode, setEditMode] = useState<number | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -293,14 +293,16 @@ export default function UserDocumentDetails({ id, documents, reload }: Props) {
           mb: 2,
         }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={handleOpenDialog}
-        >
-          {t('Add user document')}
-        </Button>
+        {user_type === 'TRAINER' && (
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={handleOpenDialog}
+          >
+            {t('Add user document')}
+          </Button>
+        )}
       </Box>
 
       <Stack spacing={1} sx={{ p: 3 }}>
