@@ -285,6 +285,8 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   };
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
+    setEditCityIndex(null);
+    setEditMode(false);
   };
 
   // Function to handle the edit action for a specific city
@@ -1149,7 +1151,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 </Box> */}
                 <Box sx={{ display: 'flex', mb: 1 }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {t('Dicount Price')}
+                    {t('Discount Price')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                     :
@@ -1184,7 +1186,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                 </Box>
                 <Box sx={{ display: 'flex', mb: 1 }}>
                   <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
-                    {t('Dicount Valid Until')}
+                    {t('Discount Valid Until')}
                   </Box>
                   <Box component="span" sx={{ minWidth: '100px', fontWeight: 'bold' }}>
                     :
@@ -1266,7 +1268,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                         />
                         <RHFTextField
                           name={`cities_ids[${index}][discount_value]`}
-                          label={t('Dicount Price')}
+                          label={t('Discount Price')}
                           defaultValue={cityItem?.discount_value ?? ''}
                           sx={{ mt: 1, mb: 3 }}
                           type="number"
@@ -1274,7 +1276,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                         />
                         <RHFSelect
                           name={`cities_ids[${index}][discount_type]`}
-                          label={t('Dicount Type')}
+                          label={t('Discount Type')}
                           defaultValue={
                             cityItem?.discount_type === 'percentage' ? 'percentage' : 'amount'
                           }
@@ -1286,7 +1288,7 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
                         <RHFTextField
                           name={`cities_ids[${index}][offer_valid_until]`}
-                          label={t('Dicount Valid Until')}
+                          label={t('Discount Valid Until')}
                           type="date"
                           defaultValue={
                             cityItem?.offer_valid_until
