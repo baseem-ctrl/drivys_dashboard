@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { useGetPackage } from 'src/api/package';
 import { useSnackbar } from 'src/components/snackbar';
+import { useTranslation } from 'react-i18next';
 
 const PackageCreateEditForm = ({
   open,
@@ -28,6 +29,8 @@ const PackageCreateEditForm = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
+
   const [formValues, setFormValues] = useState({
     min_price: '',
     max_price: '',
@@ -81,8 +84,19 @@ const PackageCreateEditForm = ({
 
   const validateFields = () => {
     const newErrors = {};
+
     if (!formValues.min_price) newErrors.min_price = 'Minimum Price is required.';
     if (!formValues.package_id) newErrors.package_id = 'Package ID is required.';
+
+    if (
+      formValues.min_price &&
+      formValues.max_price &&
+      Number(formValues.min_price) >= Number(formValues.max_price)
+    ) {
+      newErrors.min_price = 'Minimum price must be less than maximum price.';
+      newErrors.max_price = 'Maximum price must be greater than minimum price.';
+    }
+
     return newErrors;
   };
 
@@ -131,7 +145,7 @@ const PackageCreateEditForm = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth sx={{ padding: '16px' }}>
-      <DialogTitle>Create or Edit Package</DialogTitle>
+      <DialogTitle>{t('package')}</DialogTitle>
       <DialogContent sx={{ padding: '24px', width: '600px' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
