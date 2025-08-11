@@ -520,25 +520,27 @@ export default function PackageDetails({ details, loading, reload }: Props) {
   const citySubmit = packageSubmit(async (data) => {
     try {
       let errors = {}; // store validation errors
-
       // Validate only if percentage mode is OFF
-      if (!details.is_drivys_commision_percentage) {
-        details.package_city?.forEach((city, index) => {
-          if (editCityIndex === index) {
-            const updatedCity = data.cities_ids?.[index] || city;
-            const minPrice = parseFloat(updatedCity?.min_price ?? city?.min_price);
-            const maxPrice = parseFloat(updatedCity?.max_price ?? city?.max_price);
+      details.package_city?.forEach((city, index) => {
+        if (editCityIndex !== index) return;
 
-            const commission = parseFloat(details.drivys_commision);
+        const updatedCity = data.cities_ids?.[index] || city;
+        const minPrice = parseFloat(updatedCity?.min_price ?? city?.min_price);
+        const maxPrice = parseFloat(updatedCity?.max_price ?? city?.max_price);
 
-            if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
-              errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
-            } else if (!isNaN(minPrice) && !isNaN(maxPrice) && minPrice >= maxPrice) {
-              errors[index] = `Min Price must be less than Max Price (${maxPrice})`;
-            }
+        if (!details.is_drivys_commision_percentage) {
+          const commission = parseFloat(details.drivys_commision);
+          if (!isNaN(minPrice) && !isNaN(commission) && minPrice <= commission) {
+            errors[index] = `Min Price must be greater than Drivy's Commission (${commission})`;
+            return; // stop further checks for this index
           }
-        });
-      }
+        }
+
+        if (!isNaN(minPrice) && !isNaN(maxPrice) && minPrice >= maxPrice) {
+          errors[index] = `Min Price must be less than Max Price (${maxPrice})`;
+        }
+      });
+
       // If there are errors, show them and stop submit
       if (Object.keys(errors).length > 0) {
         Object.values(errors)
