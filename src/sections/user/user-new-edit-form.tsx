@@ -587,30 +587,33 @@ export default function UserNewEditForm({
       // reset(defaultValues);
     }
 
-    let selectedOption = null;
+    if (!defaultOption) {
+      // only set if no value yet
+      let selectedOption = null;
 
-    if (values.vendor_id?.value !== undefined && values.vendor_id?.value !== null) {
-      selectedOption = schoolList?.find((school) => school?.id === values.vendor_id.value);
-    } else if (currentUser?.vendor?.id) {
-      selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
+      if (values.vendor_id?.value !== undefined && values.vendor_id?.value !== null) {
+        selectedOption = schoolList?.find((school) => school?.id === values.vendor_id.value);
+      } else if (currentUser?.vendor?.id) {
+        selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
+      }
+
+      if (selectedOption) {
+        const schoolName =
+          selectedOption?.vendor_translations?.find(
+            (translation) => translation?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+          )?.name ??
+          selectedOption?.vendor_translations?.[0]?.name ??
+          t('name_not_available');
+
+        setDefaultOption({
+          label: `${schoolName}-${selectedOption.email}`,
+          value: selectedOption?.id,
+        });
+      } else {
+        setDefaultOption({ label: t('other'), value: null });
+      }
     }
-
-    if (selectedOption) {
-      const schoolName =
-        selectedOption?.vendor_translations?.find(
-          (translation) => translation?.locale?.toLowerCase() === i18n.language?.toLowerCase()
-        )?.name ??
-        selectedOption?.vendor_translations?.[0]?.name ??
-        t('name_not_available');
-
-      setDefaultOption({
-        label: `${schoolName}-${selectedOption.email}`,
-        value: selectedOption?.id,
-      });
-    } else {
-      setDefaultOption({ label: t('other'), value: null });
-    }
-  }, [currentUser?.id, values.vendor_id, schoolList, reset, defaultValues, i18n.language, t]);
+  }, [currentUser?.id, values.vendor_id, schoolList, i18n.language, t]);
 
   const watchedVendorId = watch('vendor_id');
 
