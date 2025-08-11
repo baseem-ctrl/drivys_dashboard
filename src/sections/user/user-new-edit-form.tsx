@@ -327,7 +327,6 @@ export default function UserNewEditForm({
       otherwise: (schema) => schema.notRequired(),
     }),
   });
-  console.log('currentUser', currentUser);
   const frontDoc = currentUser?.user_docs?.find(
     (doc) => doc.doc_type === 'ASSISTANT ID PROOF' && doc.doc_side === 'FRONT'
   );
@@ -490,7 +489,6 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
-  console.log('errors', errors);
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
   const { states, isLoading: stateLoading } = useGetStateList({
@@ -783,11 +781,14 @@ export default function UserNewEditForm({
         data?.assistant_id_proof?.front &&
         data?.assistant_id_proof?.back
       ) {
-        body.append(`assistant_id_proof[0]`, data.assistant_id_proof.front);
-        body.append(`assistant_id_side[0]`, 'FRONT');
-
-        body.append(`assistant_id_proof[1]`, data.assistant_id_proof.back);
-        body.append(`assistant_id_side[1]`, 'BACK');
+        if (data.assistant_id_proof.front instanceof File) {
+          body.append(`assistant_id_proof[0]`, data.assistant_id_proof.front);
+          body.append(`assistant_id_side[0]`, 'FRONT');
+        }
+        if (data.assistant_id_proof.back instanceof File) {
+          body.append(`assistant_id_proof[1]`, data.assistant_id_proof.back);
+          body.append(`assistant_id_side[1]`, 'BACK');
+        }
 
         if (data?.assistant_id_proof?.expiry) {
           const formattedExpiry = new Date(data.assistant_id_proof.expiry)
