@@ -89,13 +89,20 @@ export default function AddCityPackage({
   const onSubmit = async (data: any) => {
     try {
       const nextIndex = currentCityData.length;
-
       const newCity = data.cities_ids[nextIndex];
+
+      if (
+        newCity.min_price !== undefined &&
+        newCity.max_price !== undefined &&
+        Number(newCity.min_price) >= Number(newCity.max_price)
+      ) {
+        enqueueSnackbar('Minimum price must be less than maximum price', { variant: 'error' });
+        return;
+      }
 
       let formData = new FormData();
       formData.append('package_id', details?.id);
       formData.append(`cities_ids[${nextIndex}][id]`, newCity.id.value);
-
       formData.append(`cities_ids[${nextIndex}][min_price]`, newCity.min_price || '');
       formData.append(`cities_ids[${nextIndex}][max_price]`, newCity.max_price || '');
 
