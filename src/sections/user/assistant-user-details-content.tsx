@@ -857,7 +857,12 @@ export default function AssistantUserDetailsContent({
 
               {
                 label: t('vehicle_type'),
-                value: details?.user_preference?.vehicle_type,
+                value:
+                  details?.user_preference?.vehicle_type?.category_translations?.find(
+                    (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
+                  )?.name ||
+                  details?.user_preference?.vehicle_type?.category_translations?.[0]?.name ||
+                  t('unknown'),
               },
 
               ...(details?.user_type === 'STUDENT'
