@@ -186,7 +186,7 @@ interface PaymentSummaryParams {
 }
 
 export function useGetPaymentSummary(params: PaymentSummaryParams) {
-  const getPaymentSummaryUrl = () => {
+  const url = useMemo(() => {
     const queryParams: Record<string, any> = {};
 
     if (params.trainer_id) queryParams.trainer_id = params.trainer_id;
@@ -195,10 +195,20 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
     if (params.coupon_code) queryParams.coupon_code = params.coupon_code;
     if (params.mode_of_payment) queryParams.mode_of_payment = params.mode_of_payment;
 
-    return `${endpoints.assistant.paymentSummary.list}?${new URLSearchParams(queryParams)}`;
-  };
+    const qs = new URLSearchParams(queryParams).toString();
+    return qs ? `${endpoints.assistant.paymentSummary.list}?${qs}` : null;
+  }, [
+    params.trainer_id,
+    params.student_id,
+    params.package_id,
+    params.coupon_code,
+    params.mode_of_payment,
+  ]);
 
-  const { data, isLoading, error, isValidating } = useSWR(getPaymentSummaryUrl, drivysFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  });
 
   const memoizedValue = useMemo(
     () => ({
@@ -211,11 +221,12 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
   );
 
   const revalidatePaymentSummary = () => {
-    mutate(getPaymentSummaryUrl);
+    if (url) mutate(url);
   };
 
   return { ...memoizedValue, revalidatePaymentSummary };
 }
+
 interface PaymentListParams {
   page?: number;
   limit?: number;

@@ -31,7 +31,8 @@ export const PaymentSummaryBox = ({
   const [couponInput, setCouponInput] = useState(summary?.coupon_code || '');
   const [localError, setLocalError] = useState('');
 
-  const isCouponApplied = couponCode?.toLowerCase?.() === couponInput?.trim()?.toLowerCase?.();
+  const isCouponApplied =
+    !!couponCode && couponCode?.toLowerCase?.() === couponInput?.trim()?.toLowerCase?.();
 
   useEffect(() => {
     setLocalError(errorMessage || '');
@@ -55,25 +56,38 @@ export const PaymentSummaryBox = ({
     );
   }
 
-  if (paymentSummaryError) {
-    return (
-      <Box
-        sx={{
-          border: '1px solid #e5e7eb',
-          borderRadius: '16px',
-          p: 3,
-          backgroundColor: '#fff',
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="subtitle1" fontWeight={700} mb={2}>
-          {t('payment_summary')}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Typography color="text.secondary">{t('summary_not_available')}</Typography>
-      </Box>
-    );
-  }
+  // if (paymentSummaryError) {
+  //   const couponErrors = paymentSummaryError?.message?.errors?.coupon_code;
+  //   return (
+  //     <Box
+  //       sx={{
+  //         border: '1px solid #e5e7eb',
+  //         borderRadius: '16px',
+  //         p: 3,
+  //         backgroundColor: '#fff',
+  //         textAlign: 'center',
+  //       }}
+  //     >
+  //       <Typography variant="subtitle1" fontWeight={700} mb={2}>
+  //         {t('payment_summary')}
+  //       </Typography>
+  //       <Divider sx={{ mb: 2 }} />
+
+  //       {couponErrors?.length ? (
+  //         <Stack spacing={0.5}>
+  //           {couponErrors.map((err, index) => (
+  //             <Typography key={index} color="error.main" fontSize={14}>
+  //               {err}
+  //             </Typography>
+  //           ))}
+  //         </Stack>
+  //       ) : (
+  //         <Typography color="text.secondary">{t('summary_not_available')}</Typography>
+  //       )}
+  //     </Box>
+  //   );
+  // }
+
   return (
     <Box
       sx={{
@@ -170,9 +184,10 @@ export const PaymentSummaryBox = ({
             {!isCouponApplied ? (
               <Button
                 onClick={() => {
-                  if (couponInput.trim()) {
-                    setCouponCode(couponInput.trim());
+                  if (!couponInput.trim()) {
+                    setLocalError(t('please_enter_coupon_code'));
                   }
+                  setCouponCode(couponInput.trim());
                 }}
                 size="small"
                 variant="contained"
@@ -200,7 +215,7 @@ export const PaymentSummaryBox = ({
           </Grid>
         </Grid>
 
-        {isCouponApplied && (
+        {isCouponApplied && !paymentSummaryError && (
           <Stack spacing={0.5} mt={0.5}>
             <Typography variant="caption" color="success.main">
               {t('coupon_applied_successfully')} {t('you_saved')} AED {summary?.discount_amount}!
