@@ -3,6 +3,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -18,16 +19,21 @@ export default function TrainerReportsRow({ row }) {
 
   const renderStars = (rating) => {
     const maxStars = 5;
-    const filledStars = Math.round(rating);
+
     return (
       <>
-        {[...Array(maxStars)].map((_, index) =>
-          index < filledStars ? (
-            <StarIcon key={index} color="primary" />
-          ) : (
-            <StarBorderIcon key={index} color="disabled" />
-          )
-        )}
+        {Array.from({ length: maxStars }).map((_, index) => {
+          if (index + 1 <= rating) {
+            // Full star
+            return <StarIcon key={index} color="primary" />;
+          } else if (index < rating && rating < index + 1) {
+            // Half star
+            return <StarHalfIcon key={index} color="primary" />;
+          } else {
+            // Empty star
+            return <StarBorderIcon key={index} color="disabled" />;
+          }
+        })}
       </>
     );
   };

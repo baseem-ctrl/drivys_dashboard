@@ -97,6 +97,8 @@ import StudentReviewRow from '../student-review/review-table-row';
 import StudentReviewsTable from './student-review-table';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -887,19 +889,46 @@ export default function UserDetailsContent({
                       <Box component="span" sx={{ flex: 1 }}>
                         {/* Display stars based on avg_rating */}
                         <Box display="flex" alignItems="center">
-                          {Array.from({ length: 5 }).map((_, index) =>
-                            index < trainerReviews[0].avg_rating ? (
-                              <StarIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            ) : (
-                              <StarBorderIcon
-                                key={index}
-                                style={{ color: '#CF5A0D', marginRight: '4px' }}
-                              />
-                            )
-                          )}
+                          {Array.from({ length: 5 }).map((_, index) => {
+                            const rating = trainerReviews[0].avg_rating;
+
+                            if (index + 1 <= rating) {
+                              // Full star
+                              return (
+                                <StarIcon
+                                  key={index}
+                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                />
+                              );
+                            } else if (index < rating && rating < index + 1) {
+                              // Half star
+                              return (
+                                <StarHalfIcon
+                                  key={index}
+                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                />
+                              );
+                            } else {
+                              // Empty star
+                              return (
+                                <StarBorderIcon
+                                  key={index}
+                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                />
+                              );
+                            }
+                          })}
+                          <Box
+                            component="span"
+                            sx={{
+                              marginLeft: '6px',
+                              fontSize: '0.8rem',
+                              color: '#777',
+                              fontWeight: 'normal',
+                            }}
+                          >
+                            ({trainerReviews[0].avg_rating.toFixed(2)})
+                          </Box>
                         </Box>
                       </Box>
                     </Box>

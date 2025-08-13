@@ -11,6 +11,7 @@ import {
   Button,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
@@ -134,9 +135,17 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
                       <TableCell>
                         {review?.user_rating ? (
                           <Box display="flex" alignItems="center">
-                            {Array.from({ length: 5 }).map((_, index) =>
-                              index < review.user_rating ? (
+                            {Array.from({ length: 5 }).map((_, index) => {
+                              const fullStars = Math.floor(review.user_rating);
+                              const hasHalfStar = review.user_rating % 1 >= 0.3; // change to 0.5 for stricter
+
+                              return index < fullStars ? (
                                 <StarIcon
+                                  key={index}
+                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                />
+                              ) : index === fullStars && hasHalfStar ? (
+                                <StarHalfIcon
                                   key={index}
                                   style={{ color: '#CF5A0D', marginRight: '4px' }}
                                 />
@@ -145,8 +154,8 @@ const TrainerReviewsTable: React.FC<Props> = ({ trainers, user }) => {
                                   key={index}
                                   style={{ color: '#CF5A0D', marginRight: '4px' }}
                                 />
-                              )
-                            )}
+                              );
+                            })}
                           </Box>
                         ) : (
                           t('n/a')

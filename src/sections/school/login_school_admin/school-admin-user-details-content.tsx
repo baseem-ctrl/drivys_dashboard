@@ -32,6 +32,7 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -238,16 +239,47 @@ export default function UserDetailsContentAdmin({
                   </Box>
                   <Box component="span" sx={{ flex: 1 }}>
                     <Box display="flex" alignItems="center">
-                      {Array.from({ length: 5 }).map((_, index) =>
-                        index < trainerReviews[0].avg_rating ? (
-                          <StarIcon key={index} style={{ color: '#CF5A0D', marginRight: '4px' }} />
-                        ) : (
-                          <StarBorderIcon
-                            key={index}
-                            style={{ color: '#CF5A0D', marginRight: '4px' }}
-                          />
-                        )
-                      )}
+                      {Array.from({ length: 5 }).map((_, index) => {
+                        const rating = trainerReviews[0].avg_rating;
+
+                        if (index + 1 <= rating) {
+                          // Full star
+                          return (
+                            <StarIcon
+                              key={index}
+                              style={{ color: '#CF5A0D', marginRight: '4px' }}
+                            />
+                          );
+                        } else if (index < rating && rating < index + 1) {
+                          // Half star
+                          return (
+                            <StarHalfIcon
+                              key={index}
+                              style={{ color: '#CF5A0D', marginRight: '4px' }}
+                            />
+                          );
+                        } else {
+                          // Empty star
+                          return (
+                            <StarBorderIcon
+                              key={index}
+                              style={{ color: '#CF5A0D', marginRight: '4px' }}
+                            />
+                          );
+                        }
+                      })}
+                      {/* Optional: show numeric rating in brackets */}
+                      <Box
+                        component="span"
+                        sx={{
+                          marginLeft: '6px',
+                          fontSize: '0.8rem',
+                          color: '#777',
+                          fontWeight: 'normal',
+                        }}
+                      >
+                        ({rating.toFixed(2)})
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
