@@ -16,7 +16,9 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import StarIcon from '@mui/icons-material/Star'; //
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+
 import CommentIcon from '@mui/icons-material/Comment';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useRouter } from 'src/routes/hooks';
@@ -212,19 +214,36 @@ export default function TrainerReviewRow({ reload, row, userType }) {
                       <TableCell>
                         {review.user_rating ? (
                           <Box display="flex" alignItems="center">
-                            {Array.from({ length: 5 }).map((_, index) =>
-                              index < review.user_rating ? (
-                                <StarIcon
-                                  key={index}
-                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
-                                />
-                              ) : (
-                                <StarBorderIcon
-                                  key={index}
-                                  style={{ color: '#CF5A0D', marginRight: '4px' }}
-                                />
-                              )
-                            )}
+                            {Array.from({ length: 5 }).map((_, index) => {
+                              if (index + 1 <= review.user_rating) {
+                                // Full star
+                                return (
+                                  <StarIcon
+                                    key={index}
+                                    style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                  />
+                                );
+                              } else if (
+                                index < review.user_rating &&
+                                review.user_rating < index + 1
+                              ) {
+                                // Half star
+                                return (
+                                  <StarHalfIcon
+                                    key={index}
+                                    style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                  />
+                                );
+                              } else {
+                                // Empty star
+                                return (
+                                  <StarBorderIcon
+                                    key={index}
+                                    style={{ color: '#CF5A0D', marginRight: '4px' }}
+                                  />
+                                );
+                              }
+                            })}
                           </Box>
                         ) : (
                           t('n/a')

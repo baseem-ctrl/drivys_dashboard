@@ -26,6 +26,7 @@ import { varHover } from 'src/components/animate';
 //
 import NotificationItem from './notification-item';
 import { paths } from 'src/routes/paths';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +34,7 @@ import { paths } from 'src/routes/paths';
 
 export default function NotificationsPopover() {
   const drawer = useBoolean();
+  const { user } = useAuthContext();
 
   const smUp = useResponsive('up', 'sm');
   const [currentTab, setCurrentTab] = useState('all');
@@ -203,9 +205,11 @@ export default function NotificationsPopover() {
         {renderList}
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth size="large" href={paths.dashboard.notification.root}>
-            View All
-          </Button>
+          {user?.user?.user_type === 'ADMIN' && (
+            <Button fullWidth size="large" href={paths.dashboard.notification.root}>
+              View All
+            </Button>
+          )}
         </Box>
       </Drawer>
     </>
