@@ -205,11 +205,9 @@ export default function NotificationsPopover() {
         {renderList}
 
         <Box sx={{ p: 1 }}>
-          {user?.user?.user_type === 'ADMIN' && (
-            <Button fullWidth size="large" href={paths.dashboard.notification.root}>
-              View All
-            </Button>
-          )}
+          <Button fullWidth size="large" href={paths.dashboard.notification.root}>
+            View All
+          </Button>
         </Box>
       </Drawer>
     </>

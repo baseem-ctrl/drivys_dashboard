@@ -49,6 +49,7 @@ import NotificationDetails from './notifications-details';
 import SendNotificationForm from '../send-notification-form';
 import { useTranslation } from 'react-i18next';
 import NotificationFilter from '../notification-filter';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -70,7 +71,8 @@ export default function NotificationlistingListView() {
   const confirm = useBoolean();
 
   const { t } = useTranslation();
-
+  const { user } = useAuthContext();
+  const user_type = user?.user?.user_type;
   const TABLE_HEAD = [
     { id: 'user_id', label: t('User ID') },
     { id: 'title', label: t('Title') },
@@ -184,8 +186,8 @@ export default function NotificationlistingListView() {
             mb: { xs: 3, md: 5 },
           }}
         />
-        {renderFilters}
-        {viewMode === 'table' && (
+        {user_type === 'ADMIN' && renderFilters}
+        {viewMode === 'table' && user_type === 'ADMIN' && (
           <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
             <Button
               variant="contained"
@@ -221,16 +223,12 @@ export default function NotificationlistingListView() {
               sx={{ p: 2.5, pt: 0 }}
             />
           )} */}
-
           {viewMode === 'table' && (
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
               <TableSelectedAction
                 dense={table.dense}
                 numSelected={table.selected.length}
                 rowCount={tableData?.length}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(checked, tableData?.map((row) => row?.id))
-                // }
                 action={
                   <Tooltip title="Delete">
                     <IconButton color="primary" onClick={confirm.onTrue}>
@@ -248,37 +246,37 @@ export default function NotificationlistingListView() {
                     rowCount={tableData?.length}
                     numSelected={table.selected.length}
                     onSort={table.onSort}
-                    // onSelectAllRows={(checked) =>
-                    //   table.onSelectAllRows(checked, tableData?.map((row) => row.id))
-                    // }
                   />
 
                   <TableBody>
-                    {notificationsLoading
-                      ? Array.from(new Array(5)).map((_, index) => (
-                          <TableRow key={index}>
-                            <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                              <Skeleton animation="wave" height={40} />
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : tableData?.map((row) => (
-                          <NotificationTableRow
-                            key={row.id}
-                            row={row}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => handleRowClick(row)}
-                            // onDeleteRow={() => handleDeleteRow(row.id)}
-                            // onEditRow={(e: any) => handleEditRow(e, row.id)}
-                            // revalidateHomeListing={revalidateNotifications}
-                            // onViewRow={() => handleRowClick(row)}
-                          />
-                        ))}
-
-                    {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData?.length)}
-                  /> */}
+                    {notificationsLoading ? (
+                      Array.from(new Array(5)).map((_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                            <Skeleton animation="wave" height={40} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : tableData?.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={TABLE_HEAD?.length || 6}
+                          align="center"
+                          sx={{ py: 3, color: 'text.secondary' }}
+                        >
+                          {t('no_data_available')}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      tableData?.map((row) => (
+                        <NotificationTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => handleRowClick(row)}
+                        />
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </Scrollbar>

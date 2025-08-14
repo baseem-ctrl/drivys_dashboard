@@ -430,7 +430,10 @@ const schooladminRoutes = [
     ],
   },
   { path: 'trainers-location', element: <TrainerLiveLocation />, index: true },
-
+  {
+    path: 'notifications',
+    children: [{ element: <NotificationsListingListPage />, index: true }],
+  },
   {
     path: 'booking',
     children: [
@@ -521,9 +524,14 @@ const collectorRoutes = [
       { path: 'admin/:id', element: <UserDetailsAdminPage /> },
     ],
   },
+
   {
     path: 'user',
     children: [{ path: ':id', element: <UserDetailsPage /> }],
+  },
+  {
+    path: 'notifications',
+    children: [{ element: <NotificationsListingListPage />, index: true }],
   },
 ];
 const assistantRoutes = [
@@ -534,6 +542,10 @@ const assistantRoutes = [
   {
     path: 'user',
     children: [{ path: ':id', element: <AssistantDetailsPage /> }],
+  },
+  {
+    path: 'notifications',
+    children: [{ element: <NotificationsListingListPage />, index: true }],
   },
   {
     path: 'assistant',
