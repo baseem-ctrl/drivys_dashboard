@@ -30,6 +30,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Tooltip,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Star } from '@mui/icons-material';
@@ -663,7 +664,7 @@ const BookingDetailsComponent = () => {
                   {t('Payment Information')} :
                 </Typography>
 
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     color={
                       (bookingDetails.payment_status === 'PENDING' && 'info') ||
@@ -676,122 +677,194 @@ const BookingDetailsComponent = () => {
                     variant="soft"
                     endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
                     onClick={popover.onOpen}
-                    sx={{ textTransform: 'capitalize', width: '40%' }}
+                    sx={{ textTransform: 'capitalize', width: '100%' }}
                   >
                     {bookingDetails.payment_status}
                   </Button>
                 </Box>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
+                  {/* Left Column */}
                   <Grid item xs={12} md={6}>
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Payment Method')} :
-                      </Typography>
-                      <Typography>{bookingDetails?.payment_method || t('n/a')}</Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Amount')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.sub_total || t('n/a')}`}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Tax Amount')}:
-                      </Typography>
-                      <Typography>
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {bookingDetails?.tax_amount || t('n/a')}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Amount Due')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.amount_due || t('n/a')}`}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Amount Paid')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.amount_paid || t('n/a')}`}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Amount Refunded')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.amount_refunded || t('n/a')}`}
-                      </Typography>
-                    </Box>
-                    {bookingDetails?.coupon_code && (
-                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                          {t('Coupon Used')} :
-                        </Typography>
-                        <Typography>
-                          {' '}
-                          <span className="dirham-symbol">&#x00EA;</span>
-                          {`${bookingDetails?.coupon_code || t('n/a')}`}
+                    {[
+                      {
+                        label: t('payment_method'),
+                        value: bookingDetails?.payment_method || t('n_a'),
+                        tip: t('tooltip_payment_method'),
+                      },
+                      {
+                        label: t('package_price'),
+                        value: bookingDetails?.sub_total,
+                        tip: t('tooltip_package_price'),
+                      },
+                      {
+                        label: t('tax_amount'),
+                        value: bookingDetails?.tax_amount,
+                        tip: t('tooltip_tax_amount'),
+                      },
+                      {
+                        label: t('transport_fee'),
+                        value: bookingDetails?.transport_fee,
+                        tip: t('tooltip_transport_fee'),
+                      },
+                    ].map((item, idx) => (
+                      <Box
+                        key={idx}
+                        sx={{
+                          mb: 1,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          fontSize: '14px',
+                        }}
+                      >
+                        <Tooltip title={item.tip}>
+                          <Typography
+                            sx={{ fontWeight: 'bold', minWidth: '150px', fontSize: '14px' }}
+                          >
+                            {item.label}:
+                          </Typography>
+                        </Tooltip>
+                        <Typography sx={{ fontSize: '14px' }}>
+                          {item.value !== undefined && item.value !== null ? (
+                            <>
+                              {item.label !== t('payment_method') && (
+                                <span className="dirham-symbol">&#x00EA;</span>
+                              )}
+                              {item.value}
+                            </>
+                          ) : (
+                            t('n_a')
+                          )}
                         </Typography>
                       </Box>
-                    )}
-                    {bookingDetails?.wallet_amount_used !== '0.00' && (
-                      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                          {t('Wallet Amount Used')} :
-                        </Typography>
-                        <Typography>
-                          {' '}
-                          <span className="dirham-symbol">&#x00EA;</span>
-                          {`${bookingDetails?.wallet_amount_used || t('n/a')} `}
-                        </Typography>
-                      </Box>
-                    )}
+                    ))}
                   </Grid>
 
+                  {/* Right Column */}
                   <Grid item xs={12} md={6}>
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Discount')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.discount || t('n/a')}`}
-                      </Typography>
-                    </Box>
+                    {[
+                      {
+                        label: t('amount_due'),
+                        value: bookingDetails?.amount_due,
+                        tip: t('tooltip_amount_due'),
+                      },
+                      {
+                        label: t('amount_paid'),
+                        value: bookingDetails?.amount_paid,
+                        tip: t('tooltip_amount_paid'),
+                      },
+                      {
+                        label: t('amount_refunded'),
+                        value: bookingDetails?.amount_refunded,
+                        tip: t('tooltip_amount_refunded'),
+                      },
 
-                    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography sx={{ fontWeight: 'bold', minWidth: '170px' }}>
-                        {t('Total Amount')} :
-                      </Typography>
-                      <Typography>
-                        {' '}
-                        <span className="dirham-symbol">&#x00EA;</span>
-                        {`${bookingDetails?.total || t('n/a')}`}
-                      </Typography>
-                    </Box>
+                      {
+                        label: t('cash_service_fee'),
+                        value: bookingDetails?.cash_service_fee,
+                        tip: t('tooltip_cash_service_fee'),
+                      },
+                    ]
+                      .filter(Boolean)
+                      .map((item, idx) => (
+                        <Box
+                          key={idx}
+                          sx={{
+                            mb: 1,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: '14px',
+                          }}
+                        >
+                          <Tooltip title={item.tip}>
+                            <Typography
+                              sx={{ fontWeight: 'bold', minWidth: '150px', fontSize: '14px' }}
+                            >
+                              {item.label}:
+                            </Typography>
+                          </Tooltip>
+                          <Typography sx={{ fontSize: '14px' }}>
+                            {item.value !== undefined && item.value !== null ? (
+                              <>
+                                <span className="dirham-symbol">&#x00EA;</span>
+                                {item.value}
+                              </>
+                            ) : (
+                              t('n_a')
+                            )}
+                          </Typography>
+                        </Box>
+                      ))}
+                  </Grid>
+
+                  {/* Bottom Summary */}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 1 }} />
+                    {[
+                      {
+                        label: t('discount'),
+                        value: bookingDetails?.discount,
+                        tip: t('tooltip_discount'),
+                      },
+                      bookingDetails?.coupon_code
+                        ? {
+                            label: t('coupon_used'),
+                            value: bookingDetails?.coupon_code,
+                            tip: t('tooltip_coupon_used'),
+                          }
+                        : {
+                            label: t('coupon_used'),
+                            value: 'N/A',
+                            tip: t('tooltip_coupon_used'),
+                          },
+                      {
+                        label: t('total_amount'),
+                        value: bookingDetails?.total,
+                        tip: t('tooltip_total_amount'), // example: 'The total includes the package price, pickup fee, taxes, and cash service fee, along with the paid amount.'
+                      },
+                      bookingDetails?.wallet_amount_used !== '0.00' && {
+                        label: t('wallet_amount_used'),
+                        value: bookingDetails?.wallet_amount_used,
+                        tip: t('tooltip_wallet_amount_used'),
+                      },
+                      {
+                        label: t('amount_paid_net'),
+                        value: bookingDetails?.amount_paid,
+                        tip: t('tooltip_amount_paid_net'),
+                      },
+                    ]
+                      .filter(Boolean)
+                      .map((item, idx) => (
+                        <Box
+                          key={idx}
+                          sx={{
+                            mb: 0.5,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: '14px',
+                          }}
+                        >
+                          <Tooltip title={item.tip}>
+                            <Typography
+                              sx={{ fontWeight: 'bold', minWidth: '150px', fontSize: '14px' }}
+                            >
+                              {item.label}:
+                            </Typography>
+                          </Tooltip>
+                          <Typography sx={{ fontSize: '14px' }}>
+                            {item.value !== undefined && item.value !== null ? (
+                              <>
+                                {item.label !== t('coupon_used') && (
+                                  <span className="dirham-symbol">&#x00EA;</span>
+                                )}
+                                {item.value}
+                              </>
+                            ) : (
+                              t('n_a')
+                            )}
+                          </Typography>
+                        </Box>
+                      ))}
                   </Grid>
                 </Grid>
               </CardContent>

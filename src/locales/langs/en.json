@@ -1347,5 +1347,21 @@
   "Privacy Policy Arabic": "Privacy Policy (Arabic)",
   "Commission in Percentage": "Commission in Percentage",
   "Total Reward Amount": "Total Reward Amount",
-  "please_enter_coupon_code": "Please Enter Coupon Code!"
+  "please_enter_coupon_code": "Please Enter Coupon Code!",
+
+  "tooltip_payment_method": "The method used to pay for this booking.",
+  "tooltip_package_price": "Base price of the package before additional fees.",
+  "tooltip_tax_amount": "Total tax applied to this booking.",
+  "transport_fee": "Transport Fee",
+  "tooltip_transport_fee": "Fee charged for transport services.",
+  "tooltip_amount_due": "Amount remaining to be paid.",
+  "tooltip_amount_paid": "Total amount paid so far.",
+  "tooltip_amount_refunded": "Total refunded amount.",
+  "tooltip_coupon_used": "Coupon code applied to the booking.",
+  "tooltip_cash_service_fee": "Extra fee for cash handling.",
+  "tooltip_discount": "Total discount applied.",
+  "tooltip_total_amount": "The total includes the package price, pickup fee, taxes, and cash service fee, along with the paid amount.",
+  "tooltip_wallet_amount_used": "Amount deducted from wallet balance.",
+  "amount_paid_net": "Amount Paid (Net)",
+  "tooltip_amount_paid_net": "Final paid amount after discounts and wallet usage."
 }
