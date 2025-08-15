@@ -6,6 +6,7 @@ export const TRAINER_DETAILS_TABS = [
   { value: 'students', label: 'Students' },
   { value: 'user-document', label: 'User Document' },
   { value: 'booking', label: 'Booking' },
+  { value: 'bank-details', label: 'Bank Details' },
 ];
 export const ASSISTANT_DETAILS_TABS = [{ value: 'details', label: 'Trainer Details' }];
 
@@ -19,6 +20,7 @@ export const TRAINER_DETAILS_SCHOOL_ADMIN_TABS = [
   { value: 'user-document', label: 'User Document' },
   { value: 'students', label: 'Students' },
   { value: 'booking', label: 'Booking' },
+  { value: 'bank-details', label: 'Bank Details' },
 ];
 export const STATUS_OPTIONS = [
   { value: '1', label: 'Active' },

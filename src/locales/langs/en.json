@@ -1363,5 +1363,8 @@
   "tooltip_total_amount": "The total includes the package price, pickup fee, taxes, and cash service fee, along with the paid amount.",
   "tooltip_wallet_amount_used": "Amount deducted from wallet balance.",
   "amount_paid_net": "Amount Paid (Net)",
-  "tooltip_amount_paid_net": "Final paid amount after discounts and wallet usage."
+  "tooltip_amount_paid_net": "Final paid amount after discounts and wallet usage.",
+  "Bank Details": "Bank Details",
+  "no_bank_details_found": "No bank details found",
+  "add_bank_details": "Add Bank Details"
 }
