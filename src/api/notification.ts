@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { endpoints, drivysFetcher, drivysSmasher, drivysCreator } from 'src/utils/axios';
 import { INotification } from 'src/types/notification';
 import { useTranslation } from 'react-i18next';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -18,29 +19,53 @@ interface UseGetNotificationListProps {
 export function useGetNotificationList({ page, limit, user_id }: UseGetNotificationListProps) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
+  const { user } = useAuthContext();
+  const user_type = user?.user?.user_type;
+
+  // Choose endpoint based on logged-in user_type
+  const getEndpoint = () => {
+    switch (user_type) {
+      case 'ASSISTANT':
+        return endpoints.notification.getListAssistant;
+      case 'COLLECTOR':
+        return endpoints.notification.getListCollector;
+      case 'SCHOOL_ADMIN':
+        return endpoints.notification.getListSchoolAdmin;
+      default:
+        return endpoints.notification.getList;
+    }
+  };
 
   const buildQueryParams = (includeLocale: boolean) => {
     const params: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
     };
+
     if (includeLocale) {
       params.locale = locale;
     }
+
     if (user_id) {
       params.user_id = user_id;
     }
+
+    // Extra filter for school admin
+    if (user_type === 'SCHOOL_ADMIN') {
+      params.type = 'self';
+    }
+
     return params;
   };
 
   const primaryUrl = useMemo(
-    () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(true))}`,
-    [limit, page, locale, user_id]
+    () => `${getEndpoint()}?${new URLSearchParams(buildQueryParams(true))}`,
+    [limit, page, locale, user_id, user_type]
   );
 
   const fallbackUrl = useMemo(
-    () => `${endpoints.notification.getList}?${new URLSearchParams(buildQueryParams(false))}`,
-    [limit, page, user_id]
+    () => `${getEndpoint()}?${new URLSearchParams(buildQueryParams(false))}`,
+    [limit, page, user_id, user_type]
   );
 
   const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);

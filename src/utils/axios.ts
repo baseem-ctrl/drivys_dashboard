@@ -329,6 +329,9 @@ export const endpoints = {
   },
   notification: {
     getList: 'admin/notification/get-list',
+    getListAssistant: 'assistant/notification/get-list',
+    getListCollector: 'collector/notification/get-list',
+    getListSchoolAdmin: 'admin/notification/get-list-by-school-admin',
     send: 'admin/notification/send-notification',
   },
   pendingRequest: {

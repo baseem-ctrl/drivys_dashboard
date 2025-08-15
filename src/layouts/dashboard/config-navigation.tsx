@@ -519,7 +519,11 @@ export function useNavData() {
         },
       ],
     },
-
+    {
+      title: t('notifications'),
+      path: paths.dashboard.notification.root,
+      icon: ICONS.mail,
+    },
     {
       title: t('trainers'),
       path: paths.dashboard.school.trainer,
@@ -627,6 +631,11 @@ export function useNavData() {
       path: paths.dashboard.collector.cashCollectedListPerTransaction,
       icon: ICONS.cash,
     },
+    {
+      title: t('notifications'),
+      path: paths.dashboard.notification.root,
+      icon: ICONS.mail,
+    },
     // {
     //   title: t('dashboard'),
     //   path: paths.dashboard.collector.overview,
@@ -654,6 +663,11 @@ export function useNavData() {
       title: t('payout'),
       path: paths.dashboard.assistant.payout.list,
       icon: ICONS.banking,
+    },
+    {
+      title: t('notifications'),
+      path: paths.dashboard.notification.root,
+      icon: ICONS.mail,
     },
     {
       title: t('commission'),
