@@ -1397,5 +1397,21 @@
   "Privacy Policy Arabic": "سياسة الخصوصية (Ar)",
   "Commission in Percentage": "العمولة بالنسبة المئوية",
   "Total Reward Amount": "إجمالي مبلغ المكافأة",
-  "Select Option": "حدد الخيار"
+  "Select Option": "حدد الخيار",
+  "please_enter_coupon_code": "يرجى إدخال رمز القسيمة!",
+  "tooltip_payment_method": "طريقة الدفع المستخدمة لهذا الحجز.",
+  "tooltip_package_price": "السعر الأساسي للباقه قبل الرسوم الإضافية.",
+  "tooltip_tax_amount": "إجمالي الضريبة المطبقة على هذا الحجز.",
+  "transport_fee": "رسوم النقل",
+  "tooltip_transport_fee": "الرسوم المفروضة مقابل خدمات النقل.",
+  "tooltip_amount_due": "المبلغ المتبقي الواجب دفعه.",
+  "tooltip_amount_paid": "إجمالي المبلغ المدفوع حتى الآن.",
+  "tooltip_amount_refunded": "إجمالي المبلغ المسترد.",
+  "tooltip_coupon_used": "رمز القسيمة المطبق على الحجز.",
+  "tooltip_cash_service_fee": "رسوم إضافية لمعالجة الدفع النقدي.",
+  "tooltip_discount": "إجمالي الخصم المطبق.",
+  "tooltip_total_amount": "الإجمالي يشمل سعر الباقة ورسوم الاستلام والضرائب ورسوم خدمة الدفع النقدي والمبلغ المدفوع.",
+  "tooltip_wallet_amount_used": "المبلغ المخصوم من رصيد المحفظة.",
+  "amount_paid_net": "المبلغ المدفوع (الصافي)",
+  "tooltip_amount_paid_net": "المبلغ النهائي المدفوع بعد الخصومات واستخدام المحفظة."
 }
