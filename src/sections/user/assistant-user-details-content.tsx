@@ -101,6 +101,8 @@ import StudentReviewRow from '../student-review/review-table-row';
 import StudentReviewsTable from './student-review-table';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
+import BankDetailsCard from './bank-details-card';
+import { SolarPower } from '@mui/icons-material';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -121,7 +123,6 @@ export default function AssistantUserDetailsContent({
   user,
 }: Props) {
   const { reset, control } = useForm();
-  console.log('details', details);
   const { t, currentLang } = useLocales();
   const matchedLocale = details?.vendor_translations?.find(
     (t) => t?.locale?.toLowerCase() === currentLang.toLowerCase()
@@ -321,7 +322,6 @@ export default function AssistantUserDetailsContent({
       schoolReset(defaultVendorValues);
     }
   }, [details, schoolReset, selectedLocaleObject]);
-
   const handleVerify = async () => {
     try {
       const body = {
@@ -345,6 +345,7 @@ export default function AssistantUserDetailsContent({
       }
     }
   };
+
   const handleSuspend = async () => {
     try {
       const body = {
@@ -372,12 +373,33 @@ export default function AssistantUserDetailsContent({
 
   const today = new Date();
   const daysRemaining = givenExpiryDate ? differenceInDays(givenExpiryDate, today) : null;
-
   const router = useRouter();
+  const filteredTrainerTabs =
+    user === 'ASSISTANT'
+      ? TRAINER_DETAILS_TABS.filter(
+          (tab) => tab.value === 'details' || tab.value === 'bank-details'
+        )
+      : TRAINER_DETAILS_TABS;
 
   const handleClickTrainer = (id) => {
     router.push(paths.dashboard.school.details(id));
   };
+  const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    setCurrentTab(newValue);
+  }, []);
+  const renderTabs = (
+    <Tabs
+      value={currentTab}
+      onChange={handleChangeTab}
+      sx={{
+        mb: { xs: 3, md: 5 },
+      }}
+    >
+      {filteredTrainerTabs.map((tab) => (
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={t(tab.label)} />
+      ))}
+    </Tabs>
+  );
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -895,67 +917,6 @@ export default function AssistantUserDetailsContent({
           </Stack>
         </Scrollbar>
       </Grid>
-
-      {currentTab === 'details' &&
-        details?.bank_detail?.length > 0 &&
-        details?.user_type === 'TRAINER' && (
-          <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800' }}>{t('bank_details')}</Typography>
-
-            <Scrollbar>
-              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
-                {[
-                  {
-                    label: t('account_holder_name'),
-                    value: details?.bank_detail[0]?.account_holder_name ?? t('n/a'),
-                  },
-                  {
-                    label: t('account_number'),
-                    value: details?.bank_detail[0]?.account_number ?? t('n/a'),
-                  },
-                  { label: t('bank_name'), value: details?.bank_detail[0]?.bank_name ?? t('n/a') },
-                  { label: t('iban'), value: details?.bank_detail[0]?.iban_number ?? t('n/a') },
-                  {
-                    label: t('active'),
-                    value: (
-                      <Chip
-                        label={details?.bank_detail[0]?.is_active ? t('yes') : t('no')}
-                        color={details?.bank_detail[0]?.is_active ? 'success' : 'error'}
-                        variant="soft"
-                      />
-                    ),
-                  },
-                  ...(details?.user_type === 'STUDENT'
-                    ? [
-                        {
-                          label: t('trainer_language'),
-                          value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
-                        },
-                      ]
-                    : []),
-                ].map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '10px' }}
-                    >
-                      {item.label}
-                    </Box>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '10px' }}
-                    >
-                      :
-                    </Box>
-                    <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                      {item.value ?? t('n/a')}
-                    </Box>
-                  </Box>
-                ))}
-              </Stack>
-            </Scrollbar>
-          </Grid>
-        )}
     </Stack>
   );
 
@@ -974,11 +935,15 @@ export default function AssistantUserDetailsContent({
         </Box>
       ) : (
         <>
+          {details?.user_type === 'TRAINER' && renderTabs}
           <Grid xs={12} md={12}>
-            {details && renderContent}
+            {details && currentTab === 'details' && renderContent}
           </Grid>
 
-          {details.user_type !== 'TRAINER' && renderUserPreferences}
+          {details.user_type !== 'TRAINER' && currentTab === 'details' && renderUserPreferences}
+          {details?.user_type === 'TRAINER' && currentTab === 'bank-details' && (
+            <BankDetailsCard details={details} t={t} reload={reload} />
+          )}
         </>
         // <Grid container spacing={1} rowGap={1}>
         //   <Grid xs={12} md={12}>

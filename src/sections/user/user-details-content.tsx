@@ -25,7 +25,10 @@ import {
   InputAdornment,
   Tooltip,
   Popover,
+  CardHeader,
 } from '@mui/material';
+
+import EditIcon from '@mui/icons-material/Edit';
 // utils
 // import { fDate } from 'src/utils/format-time';
 // import { fCurrency } from 'src/utils/format-number';
@@ -98,6 +101,7 @@ import StudentReviewsTable from './student-review-table';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
+import BankDetailsCard from './bank-details-card';
 
 // ----------------------------------------------------------------------
 
@@ -1184,6 +1188,7 @@ export default function UserDetailsContent({
   const handleBookingClick = (booking) => {
     router.push(paths.dashboard.booking.details(booking));
   };
+
   const renderUserPreferences = (
     <Stack
       component={Card}
@@ -1194,7 +1199,7 @@ export default function UserDetailsContent({
         md: 'row',
       }}
     >
-      <Grid item xs={12} sm={12} md={6}>
+      <Grid item xs={12} sm={12} md={12}>
         <Typography sx={{ fontWeight: '800' }}>{t('user_preferences')}</Typography>
 
         <Scrollbar>
@@ -1256,67 +1261,6 @@ export default function UserDetailsContent({
           </Stack>
         </Scrollbar>
       </Grid>
-
-      {currentTab === 'details' &&
-        details?.bank_detail?.length > 0 &&
-        details?.user_type === 'TRAINER' && (
-          <Grid item xs={12} sm={12} md={6}>
-            <Typography sx={{ fontWeight: '800' }}>{t('bank_details')}</Typography>
-
-            <Scrollbar>
-              <Stack spacing={1} alignItems="flex-start" sx={{ typography: 'body2', pb: 1 }}>
-                {[
-                  {
-                    label: t('account_holder_name'),
-                    value: details?.bank_detail[0]?.account_holder_name ?? t('n/a'),
-                  },
-                  {
-                    label: t('account_number'),
-                    value: details?.bank_detail[0]?.account_number ?? t('n/a'),
-                  },
-                  { label: t('bank_name'), value: details?.bank_detail[0]?.bank_name ?? t('n/a') },
-                  { label: t('iban'), value: details?.bank_detail[0]?.iban_number ?? t('n/a') },
-                  {
-                    label: t('active'),
-                    value: (
-                      <Chip
-                        label={details?.bank_detail[0]?.is_active ? t('yes') : t('no')}
-                        color={details?.bank_detail[0]?.is_active ? 'success' : 'error'}
-                        variant="soft"
-                      />
-                    ),
-                  },
-                  ...(details?.user_type === 'STUDENT'
-                    ? [
-                        {
-                          label: t('trainer_language'),
-                          value: details?.preferred_trainer_lang?.language_name ?? t('n/a'),
-                        },
-                      ]
-                    : []),
-                ].map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', width: '100%' }}>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '200px', fontWeight: 'bold', marginTop: '10px' }}
-                    >
-                      {item.label}
-                    </Box>
-                    <Box
-                      component="span"
-                      sx={{ minWidth: '30px', fontWeight: 'bold', marginTop: '10px' }}
-                    >
-                      :
-                    </Box>
-                    <Box component="span" sx={{ flex: 1, marginTop: '10px' }}>
-                      {item.value ?? t('n/a')}
-                    </Box>
-                  </Box>
-                ))}
-              </Stack>
-            </Scrollbar>
-          </Grid>
-        )}
     </Stack>
   );
   const filteredTrainerTabs =
@@ -2228,7 +2172,7 @@ export default function UserDetailsContent({
       ) : (
         <>
           {details?.user_type === 'TRAINER' && renderTabs}
-          {details?.user_type === 'TRAINER' && givenExpiryDate && (
+          {details?.user_type === 'TRAINER' && givenExpiryDate && currentTab !== 'bank-details' && (
             <Card
               sx={{
                 mt: 3,
@@ -2282,6 +2226,9 @@ export default function UserDetailsContent({
             <Grid xs={12} md={12}>
               {/* For all other user types */}
               {details?.user_type !== 'TRAINER' && studentTab === 'details' && renderContent}
+              {details?.user_type === 'TRAINER' && currentTab === 'bank-details' && (
+                <BankDetailsCard details={details} t={t} reload={reload} />
+              )}
 
               {/* <----- For trainer user type with 3 tabs ----> */}
               {currentTab === 'details' && details?.user_type === 'TRAINER' && renderContent}
