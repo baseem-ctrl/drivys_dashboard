@@ -9,7 +9,10 @@ export function useGetRoles(page: number, limit: number) {
 
   const endpoint = `${endpoints.rolesAndPermission.getRoles}?${new URLSearchParams(queryParams)}`;
 
-  const { data, isLoading, error, isValidating } = useSWR(endpoint, drivysFetcher);
+  const { data, isLoading, error, isValidating } = useSWR(endpoint, drivysFetcher, {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+  });
 
   const memoizedValue = useMemo(
     () => ({
