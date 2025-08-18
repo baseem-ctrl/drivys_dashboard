@@ -250,7 +250,7 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
       </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
-      <TableCell>{row.reason ? row?.booking?.refund_reason : 'N/A'}</TableCell>
+      <TableCell>{row.reason ? row?.reason : 'N/A'}</TableCell>
       <TableCell>
         <Tooltip
           title={refundStatus === 'approved' ? t('You can process the refund now') : ''}
