@@ -137,6 +137,7 @@ export default function RefundListView() {
     ...(filters?.city_id && { city_id: filters.city_id }),
     ...(filters?.driver_id && { driver_id: filters.driver_id }),
   });
+  const router = useRouter();
 
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState([]);
@@ -203,7 +204,10 @@ export default function RefundListView() {
     }
   })();
   const handleRowClick = (row: any) => {
-    // router.push(paths.dashboard.booking.refundDetails(row?.id));
+    router.push(paths.dashboard.booking.refundDetails(row?.booking_id));
+  };
+  const handleRowRefunded = (row: any) => {
+    router.push(paths.dashboard.booking.refundDetails(row?.sessions?.[0]?.booking_id));
   };
   const tabStyles = {
     fontWeight: 'bold',
@@ -435,7 +439,7 @@ export default function RefundListView() {
                           key={row.id}
                           row={row}
                           selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
+                          onSelectRow={() => handleRowRefunded(row)}
                           reload={revalidateRefundedRequestsList}
                           // onDeleteRow={() => handleDeleteRow(row.id)}
                           // onEditRow={() => handleEditRow(row.id)}

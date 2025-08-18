@@ -1366,5 +1366,15 @@
   "tooltip_amount_paid_net": "Final paid amount after discounts and wallet usage.",
   "Bank Details": "Bank Details",
   "no_bank_details_found": "No bank details found",
-  "add_bank_details": "Add Bank Details"
+  "add_bank_details": "Add Bank Details",
+  "refund_summary": "Refund Summary",
+  "total_paid_amount_by_student": "Total Paid Amount by Student",
+  "refundable_amount": "Refundable Amount",
+  "cancellation_fee": "Cancellation Fee",
+  "vendor_commission": "Vendor Commission",
+  "total_commissions": "Total Commissions",
+  "cancelled_sessions": "Cancelled Sessions",
+  "refund_failed_to_load": "Failed to load refund details.",
+  "no_refund_details_available": "No refund details available.",
+  "total_paid_amount": "Total Paid Amount"
 }

@@ -26,12 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
-export default function RefundedTableRow({
-  row,
-  selected,
-
-  reload,
-}: Props) {
+export default function RefundedTableRow({ row, selected, onSelectRow, reload }: Props) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { user, driver, driver_id } = row;
@@ -89,15 +84,16 @@ export default function RefundedTableRow({
   };
 
   const handleClickDetails = (id) => {
-    console.log('heyyy');
     router.push(paths.dashboard.user.details(id));
   };
   const handleClickPackageDetails = (id) => {
     router.push(paths.dashboard.package.details(id));
   };
-
+  const handleRowClick = () => {
+    onSelectRow();
+  };
   return (
-    <TableRow hover selected={selected}>
+    <TableRow hover selected={selected} onClick={() => handleRowClick()}>
       <TableCell
         sx={{
           cursor: 'pointer',
