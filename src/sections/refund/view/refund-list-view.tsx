@@ -1,6 +1,18 @@
 import { useState, useCallback, useEffect } from 'react';
 import isEqual from 'lodash/isEqual';
-import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from '@mui/material';
 
 import {
   Container,
@@ -35,7 +47,7 @@ import { useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { useGetUsers } from 'src/api/users';
-import { useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
+import { createRefundRequest, useGetRefundedList, useGetRefundRequestList } from 'src/api/refund';
 import RefundTableRow from '../refund-table-row';
 import RefundFilters from '../refund-filter';
 import RefundedTableRow from '../refunded-table-row';
@@ -180,6 +192,50 @@ export default function RefundListView() {
       setRefundedTableData([]);
     }
   }, [refundedRequestsList]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [bookingId, setBookingId] = useState('');
+  const [reason, setReason] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleCreateRefundRequest = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setBookingId('');
+    setReason('');
+  };
+
+  const handleSubmitRefundRequest = async () => {
+    const payload = {
+      booking_id: bookingId,
+      reason,
+    };
+
+    try {
+      const response = await createRefundRequest(payload);
+      if (response) {
+        enqueueSnackbar(response.message, { variant: 'success' });
+        handleCloseDialog();
+        revalidateRefundRequests();
+      } else {
+        enqueueSnackbar(response.message, { variant: 'error' });
+      }
+    } catch (error) {
+      if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
+        Object.values(error?.errors).forEach((errorMessage) => {
+          if (typeof errorMessage === 'object') {
+            enqueueSnackbar(errorMessage[0], { variant: 'error' });
+          } else {
+            enqueueSnackbar(errorMessage, { variant: 'error' });
+          }
+        });
+      } else {
+        enqueueSnackbar(error.message, { variant: 'error' });
+      }
+    }
+  };
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -257,6 +313,17 @@ export default function RefundListView() {
         ]}
         sx={{ mb: 3 }}
       />
+      <Box display="flex" justifyContent="flex-end" mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          endIcon={<Iconify icon="solar:add-circle-bold" />}
+          onClick={handleCreateRefundRequest}
+        >
+          {t('create_refund_request')}
+        </Button>
+      </Box>
+
       {renderFilters}
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Tabs
@@ -450,7 +517,7 @@ export default function RefundListView() {
                     <TableRow>
                       <TableCell colSpan={currentTableHeaders.length} align="center">
                         <Typography variant="h6" color="textSecondary">
-                          No data available
+                          {t('no_data_available')}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -549,6 +616,33 @@ export default function RefundListView() {
           </TableContainer>
         </Card>
       )}
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+        <DialogTitle>{t('create_refund_request')}</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            fullWidth
+            label={t('booking_id')}
+            value={bookingId}
+            onChange={(e) => setBookingId(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label={t('reason')}
+            multiline
+            rows={3}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>{t('cancel')}</Button>
+          <Button variant="contained" onClick={handleSubmitRefundRequest}>
+            {t('submit')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
