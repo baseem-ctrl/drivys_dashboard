@@ -144,7 +144,6 @@ export default function RefundTableRow({
   const handleClickPackageDetails = (id) => {
     router.push(paths.dashboard.booking.details(id));
   };
-  console.log('row', row);
   return (
     <TableRow hover selected={selected}>
       <TableCell
