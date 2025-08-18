@@ -400,3 +400,28 @@ export function useGetTrainers({ page, limit, search }: UseGetTrainersProps) {
 
   return memoizedValue;
 }
+export function useGetDialects(page = 1, limit = 10) {
+  const URL = `${endpoints.users.listDialect}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      dialects: data?.data || [],
+      dialectsLoading: isLoading,
+      dialectsError: error,
+      dialectsValidating: isValidating,
+      dialectsTotalPages: data?.total || 0,
+    }),
+    [data?.data, isLoading, error, isValidating, data?.total]
+  );
+
+  const revalidateDialects = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateDialects };
+}

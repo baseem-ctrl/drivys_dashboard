@@ -415,6 +415,7 @@ const schooladminRoutes = [
         path: 'trainers-list',
         element: <SchoolTrainersListView />,
       },
+      { path: 'new-trainer', element: <UserCreatePage /> },
       // { path: 'package-list', element: <SchoolPackageListView /> },
       {
         path: 'package-list',

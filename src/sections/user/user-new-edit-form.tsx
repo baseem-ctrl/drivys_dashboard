@@ -34,6 +34,7 @@ import FormProvider, {
   RHFSelect,
 } from 'src/components/hook-form';
 import {
+  createTrainer,
   createUser,
   deleteUser,
   updateUser,
@@ -74,6 +75,13 @@ import { useGetRoles } from 'src/api/roles-and-permission';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@mui/x-date-pickers';
 import RHFDatePicker from 'src/components/hook-form/rhf-date-picker';
+import {
+  useGetAreas,
+  useGetCategories,
+  useGetCities,
+  useGetDialects,
+  useGetLanguages,
+} from 'src/api/enum';
 
 // ----------------------------------------------------------------------
 
@@ -105,8 +113,9 @@ export default function UserNewEditForm({
   const router = useRouter();
   const { user } = useAuthContext();
   const { t, currentLang } = useLocales();
-  const { language, languageLoading, totalpages, revalidateLanguage, languageError } =
-    useGetAllLanguage(0, 1000);
+
+  const { languages, languagesLoading } = useGetLanguages(0, 1000);
+
   const { roles, rolesLoading, rolesError, rolesTotalPages, revalidateRoles } = useGetRoles(
     0,
     1000
@@ -115,47 +124,43 @@ export default function UserNewEditForm({
   const { genderData, genderLoading } = useGetGenderEnum();
   const { gearData, gearLoading } = useGetGearEnum();
   const [searchCategory, setSearchCategory] = useState('');
-  const [filteredValues, setFilteredValues] = useState(enumData);
+  const [filteredValues, setFilteredValues] = useState(
+    user?.user?.user_type === 'SCHOOL_ADMIN' ? [{ value: 'TRAINER', label: 'Trainer' }] : enumData
+  );
   const { enqueueSnackbar } = useSnackbar();
   const { i18n } = useTranslation();
+  const { cities } = useGetCities(0, 1000);
+  const { categories, categoriesLoading } = useGetCategories(0, 1000);
 
-  const { category, categoryLoading } = useGetAllCategory({
-    limit: 1000,
-    page: 0,
-    published: '1',
-    search: searchCategory,
-    locale: i18n.language,
-  });
   const [searchValue, setSearchValue] = useState('');
   const { schoolList, schoolLoading, revalidateSchool } = useGetSchool({
     limit: 1000,
     search: searchValue ?? '',
   });
 
-  const { city } = useGetAllCity({
-    limit: 1000,
-    page: 0,
-    is_published: '1',
-  });
+  const { dialects, dialectsLoading, dialectsError } = useGetDialects(1, 1000);
 
-  const { dialect } = useGetAllDialect({
-    limit: 1000,
-    page: 0,
-    is_published: 'published',
-  });
   const [selectedSchool, setSelectedSchool] = useState(null);
-
   useEffect(() => {
     if (enumData?.length > 0) {
-      const updatedValues =
-        user?.user?.user_type === 'SYSTEM_ADMIN'
-          ? enumData
-          : enumData?.filter((item) => item.value !== 'SYSTEM_ADMIN');
+      let updatedValues = [];
+
+      if (user?.user?.user_type === 'SYSTEM_ADMIN') {
+        // SYSTEM_ADMIN sees everything
+        updatedValues = enumData;
+      } else if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+        // SCHOOL_ADMIN gets only TRAINER option
+        updatedValues = enumData.filter((item) => item.value === 'TRAINER');
+      } else {
+        // Everyone else → hide SYSTEM_ADMIN
+        updatedValues = enumData.filter((item) => item.value !== 'SYSTEM_ADMIN');
+      }
 
       // Update state with the filtered list
       setFilteredValues(updatedValues);
     }
-  }, [enumData]);
+  }, [enumData, user?.user?.user_type]);
+
   const [defaultOption, setDefaultOption] = useState<any>(null);
   // const [schoolOptions, setSchoolOptions] = useState();
   const NewUserSchema = Yup.object().shape({
@@ -346,7 +351,8 @@ export default function UserNewEditForm({
           label: r.role?.name || t('n/a'),
         })) || [],
 
-      user_type: currentUser?.user_type || '',
+      user_type:
+        user?.user?.user_type === 'SCHOOL_ADMIN' ? 'TRAINER' : currentUser?.user_type || '',
       email: currentUser?.email || '',
       name_ar: currentUser?.name_ar || '',
       certificate_expiry_date: currentUser?.certificate_expiry_date || '',
@@ -374,19 +380,19 @@ export default function UserNewEditForm({
         })) || [],
 
       dob: currentUser?.dob?.split('T')[0] || '',
-      locale: language
-        ? language?.find(
+      locale: languages
+        ? languages?.find(
             (option) =>
               option?.language_culture?.toLowerCase() === currentUser?.locale?.toLowerCase()
           )
         : '',
       photo_url: currentUser?.photo_url || '',
       is_active: currentUser?.id ? (currentUser?.is_active ? 1 : 0) : 1,
-      languages: dialect
+      languages: dialects
         ? currentUser?.languages?.map((lang) => ({
             id:
-              dialect?.length > 0
-                ? dialect?.find((option) => option?.id === lang?.dialect?.id)
+              dialects?.length > 0
+                ? dialects?.find((option) => option?.id === lang?.dialect?.id)
                 : '',
             fluency_level: lang?.fluency_level || '',
           }))
@@ -399,7 +405,7 @@ export default function UserNewEditForm({
             )?.value
           : '',
       vehicle_type_id:
-        category
+        categories
           ?.find((item) => item?.id === currentUser?.user_preference?.vehicle_type_id)
           ?.category_translations?.find(
             (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
@@ -467,8 +473,8 @@ export default function UserNewEditForm({
     }),
     [
       currentUser?.locale,
-      dialect,
-      language,
+      dialects,
+      languages,
       schoolList,
       currentUser?.user_preference,
       genderData,
@@ -476,7 +482,7 @@ export default function UserNewEditForm({
       i18n.language,
     ]
   );
-
+  console.log('user?.user?.user_type ', user?.user?.user_type);
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
@@ -491,11 +497,8 @@ export default function UserNewEditForm({
   } = methods;
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
-  const { states, isLoading: stateLoading } = useGetStateList({
-    city_id: selectedCity?.value ?? null,
-    limit: 1000,
-    page: 0,
-  });
+
+  const { areas } = useGetAreas(0, 1000, selectedCity?.value);
 
   const { fields, remove, append } = useFieldArray({
     control,
@@ -510,6 +513,8 @@ export default function UserNewEditForm({
     name: 'license',
   });
   const values = watch();
+  console.log('value', values);
+
   useEffect(() => {
     if (initialCity.current?.value !== selectedCity?.value) {
       setValue('area_id', ''); // Clear the area_id field
@@ -536,8 +541,8 @@ export default function UserNewEditForm({
     }
 
     // Set vehicle_type_id (category)
-    if (category?.length > 0 && currentUser?.user_preference?.vehicle_type_id) {
-      const vehicleType = category.find(
+    if (categories?.length > 0 && currentUser?.user_preference?.vehicle_type_id) {
+      const vehicleType = categories.find(
         (item) => item?.id === currentUser?.user_preference?.vehicle_type_id
       );
       const vehicleTypeLabel = vehicleType?.category_translations
@@ -551,7 +556,7 @@ export default function UserNewEditForm({
   }, [
     genderData,
     gearData,
-    category,
+    categories,
     currentUser?.gender,
     currentUser?.user_preference?.gear,
     currentUser?.user_preference?.vehicle_type_id,
@@ -572,42 +577,40 @@ export default function UserNewEditForm({
     }
 
     // Handle Languages
-    if (dialect?.length > 0 && currentUser?.languages?.length > 0) {
+    if (dialects?.length > 0 && currentUser?.languages?.length > 0) {
       const mappedLanguages = currentUser.languages.map((lang) => ({
-        id: dialect.find((option) => option?.id === lang?.dialect?.id) || '',
+        id: dialects.find((option) => option?.id === lang?.dialect?.id) || '',
         fluency_level: lang?.fluency_level || '',
       }));
 
       setValue('languages', mappedLanguages);
     }
-  }, [gearData, currentUser?.user_preference?.gear, dialect, currentUser?.languages]);
+  }, [gearData, currentUser?.user_preference?.gear, dialects, currentUser?.languages]);
 
   useEffect(() => {
-    if (currentUser?.id) {
-      // reset(defaultValues);
-    }
-
-    if (!defaultOption) {
-      // only set if no value yet
+    if (!defaultOption && schoolList?.length > 0) {
       let selectedOption = null;
 
-      if (values.vendor_id?.value !== undefined && values.vendor_id?.value !== null) {
-        selectedOption = schoolList?.find((school) => school?.id === values.vendor_id.value);
-      } else if (currentUser?.vendor?.id) {
-        selectedOption = schoolList?.find((school) => school?.id === currentUser?.vendor?.id);
+      // Case 1: From form value
+      if (values.vendor_id?.value) {
+        selectedOption = schoolList.find((school) => school.id === values.vendor_id.value);
+      }
+      // Case 2: From currentUser
+      else if (currentUser?.vendor?.id) {
+        selectedOption = schoolList.find((school) => school.id === currentUser.vendor.id);
       }
 
       if (selectedOption) {
-        const schoolName =
-          selectedOption?.vendor_translations?.find(
-            (translation) => translation?.locale?.toLowerCase() === i18n.language?.toLowerCase()
-          )?.name ??
-          selectedOption?.vendor_translations?.[0]?.name ??
-          t('name_not_available');
+        const translation =
+          selectedOption.vendor_translations?.find(
+            (tr) => tr.locale?.toLowerCase() === i18n.language?.toLowerCase()
+          ) ?? selectedOption.vendor_translations?.[0];
 
         setDefaultOption({
-          label: `${schoolName}-${selectedOption.email}`,
-          value: selectedOption?.id,
+          label: `${translation?.name ?? t('unknown')}${
+            selectedOption.email ? ` - ${selectedOption.email}` : ''
+          }`,
+          value: selectedOption.id,
         });
       } else {
         setDefaultOption({ label: t('other'), value: null });
@@ -813,7 +816,11 @@ export default function UserNewEditForm({
         body.append('user_id', currentUser?.id);
         response = await updateUser(body);
       } else {
-        response = await createUser(body);
+        if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+          response = await createTrainer(body);
+        } else {
+          response = await createUser(body);
+        }
       }
 
       if (response) {
@@ -822,7 +829,11 @@ export default function UserNewEditForm({
           revalidateDetails();
         }
         reset();
-        router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
+        if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+          router.push(paths.dashboard.school.trainer);
+        } else {
+          router.push(paths.dashboard.user.details(currentUser?.id ?? response?.data?.user?.id));
+        }
       }
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
@@ -879,11 +890,11 @@ export default function UserNewEditForm({
   if (
     (id && detailsLoading) ||
     // loading ||
-    languageLoading ||
+    languagesLoading ||
     enumLoading ||
     genderLoading ||
     gearLoading ||
-    categoryLoading
+    categoriesLoading
   ) {
     return (
       <Box
@@ -1008,14 +1019,24 @@ export default function UserNewEditForm({
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFSelect name="user_type" label={t('user_type')}>
-                {filteredValues?.length > 0 &&
-                  filteredValues?.map((option: any) => (
+              <RHFSelect
+                name="user_type"
+                label={t('user_type')}
+                // disabled={user?.user?.user_type === 'SCHOOL_ADMIN'}
+                // value={user?.user?.user_type === 'SCHOOL_ADMIN' ? 'TRAINER' : undefined}
+              >
+                {user?.user?.user_type === 'SCHOOL_ADMIN' ? (
+                  <MenuItem value="TRAINER">{t('TRAINER')}</MenuItem>
+                ) : (
+                  filteredValues?.length > 0 &&
+                  filteredValues.map((option: any) => (
                     <MenuItem key={option?.value} value={option?.value}>
                       {t(option?.name)}
                     </MenuItem>
-                  ))}
+                  ))
+                )}
               </RHFSelect>
+
               {values.user_type === 'ADMIN' && (
                 <RHFAutocompleteSearch
                   name="roles"
@@ -1051,7 +1072,7 @@ export default function UserNewEditForm({
                   multiple
                   // disabled={currentUser?.id}
                   options={
-                    city?.map((c) => {
+                    cities?.map((c) => {
                       const translation =
                         c.city_translations?.find(
                           (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
@@ -1071,7 +1092,7 @@ export default function UserNewEditForm({
                   label={t('city_assigned')}
                   multiple
                   options={
-                    city?.map((c) => {
+                    cities?.map((c) => {
                       const translation =
                         c.city_translations?.find(
                           (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
@@ -1306,10 +1327,10 @@ export default function UserNewEditForm({
                           ]
                         : [{ label: t('other'), value: null }]
                     }
+                    defaultValue={defaultOption}
                     setSearchOwner={(searchTerm) => setSearchValue(searchTerm)}
                     disableClearable={false}
                     loading={schoolLoading}
-                    value={defaultOption}
                   />
 
                   {typeof values.vendor_id === 'object' &&
@@ -1441,7 +1462,7 @@ export default function UserNewEditForm({
                       name="city_id"
                       label={t('city')}
                       options={
-                        city?.map((option: any) => {
+                        cities?.map((option: any) => {
                           const translation =
                             option?.city_translations?.find(
                               (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
@@ -1465,7 +1486,7 @@ export default function UserNewEditForm({
                       name="area_id"
                       label={t('area')}
                       options={
-                        states?.map((option: any) => {
+                        areas?.map((option: any) => {
                           const translation =
                             option?.translations?.find(
                               (tr) => tr?.locale?.toLowerCase() === i18n.language?.toLowerCase()
@@ -1520,7 +1541,7 @@ export default function UserNewEditForm({
                       label={t('select_category')}
                       placeholder={t('search_category')}
                       options={
-                        category?.map((item: any) => ({
+                        categories?.map((item: any) => ({
                           label: item?.category_translations
                             ?.map((translation: any) => translation?.name ?? t('unknown')) // Extract all names
                             .join(' - '), // Display full name
@@ -1529,7 +1550,7 @@ export default function UserNewEditForm({
                       }
                       setSearchOwner={(searchTerm: any) => setSearchCategory(searchTerm)}
                       disableClearable={true}
-                      loading={categoryLoading}
+                      loading={categoriesLoading}
                     />
                   </Box>
                   {values.user_type === 'TRAINER' && (
@@ -1547,13 +1568,13 @@ export default function UserNewEditForm({
                               name={`languages[${index}].id`}
                               label={`${t('language')} ${index + 1}`}
                               getOptionLabel={(option) => (option ? `${option?.dialect_name}` : '')}
-                              options={dialect ?? []}
+                              options={dialects ?? []}
                               renderOption={(props, option: any) => (
                                 <li {...props} key={option?.id}>
                                   {option?.dialect_name ?? t('unknown')}
                                 </li>
                               )}
-                              defaultValue={dialect.find((d) => d.id === languageItem.id) || null}
+                              defaultValue={dialects.find((d) => d.id === languageItem.id) || null}
                             />
                           </Grid>
 

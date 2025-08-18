@@ -226,6 +226,8 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/schools/${id}/edit`,
       account: `${ROOTS.DASHBOARD}/school/account`,
       trainer: `${ROOTS.DASHBOARD}/school/trainers-list`,
+      newTrainer: `${ROOTS.DASHBOARD}/school/new-trainer`,
+
       trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
       trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
       package: `${ROOTS.DASHBOARD}/school/package-list`,

@@ -62,6 +62,7 @@ import TrainerCreateEditForm from './trainer-create-update';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import TrainerSearch from 'src/sections/user/trainer-search';
 import { useTranslation } from 'react-i18next';
+import UserCreatePage from 'src/pages/dashboard/user/new';
 
 // ----------------------------------------------------------------------
 
@@ -217,7 +218,7 @@ export default function SchoolTrainersListView() {
           action={
             <Button
               onClick={() => {
-                createTrainer.onTrue();
+                router.push(paths.dashboard.school.newTrainer);
               }}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
@@ -367,18 +368,19 @@ export default function SchoolTrainersListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
-        <TrainerCreateEditForm
+
+        {/* <TrainerCreateEditForm
           open={createTrainer.value}
           onClose={handleClose}
           reload={revalidateTrainers}
           // currentUser={''}
-        />
-        <TrainerCreateEditForm
+        /> */}
+        {/* <UserCreatePage
           open={editTrainer.value}
           onClose={handleClose}
           reload={revalidateTrainers}
           currentUser={trainerDetails}
-        />
+        /> */}
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
