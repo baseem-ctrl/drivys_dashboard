@@ -95,3 +95,7 @@ export function useGetRefundedList(filters = {}) {
 
   return { ...memoizedValue, revalidateRefundedRequests };
 }
+export function createRefundRequest(body: Record<string, any>) {
+  const URL = `${endpoints.booking.refund.createRefund}`;
+  return drivysCreator([URL, body]);
+}

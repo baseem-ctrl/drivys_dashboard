@@ -1366,5 +1366,5 @@
   "tooltip_amount_paid_net": "Final paid amount after discounts and wallet usage.",
   "Bank Details": "Bank Details",
   "no_bank_details_found": "No bank details found",
-  "add_bank_details": "Add Bank Details"
+  "create_refund_request": "Create Refund Request"
 }
