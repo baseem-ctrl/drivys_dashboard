@@ -40,6 +40,7 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
   // );
 
   const handleRefundAmountClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
@@ -265,6 +266,7 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
               <Select
                 value={refundStatus || ''}
                 onChange={handleRefundStatusChange}
+                onClick={(e) => e.stopPropagation()}
                 displayEmpty
                 size="small"
                 disabled={refundStatus === 'approved'}
@@ -302,7 +304,11 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
             <TextField
               label={t('Refund Amount')}
               value={refundAmount}
-              onChange={handleRefundAmountChange}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleRefundAmountChange(e);
+              }}
+              onClick={(e) => e.stopPropagation()}
               type="number"
               fullWidth
               variant="outlined"
@@ -311,7 +317,10 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
             <Button
               variant="contained"
               color="primary"
-              onClick={handleRefundSubmit}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRefundSubmit();
+              }}
               disabled={!refundAmount || Number(refundAmount) <= 0}
             >
               {t('Submit Refund')}
