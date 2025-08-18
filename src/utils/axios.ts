@@ -308,6 +308,7 @@ export const endpoints = {
       update: 'admin/booking/refund/update-status-by-booking-id',
       updateStatus: 'admin/booking/refund/update-refund-request',
       refundedList: 'admin/booking/refund/get-refunded-list',
+      getById: `admin/booking/refund/get-refund-details-by-booking-id`,
       createRefund: 'admin/booking/refund/create-refund-request-by-booking-id',
     },
   },

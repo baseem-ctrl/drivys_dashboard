@@ -95,6 +95,29 @@ export function useGetRefundedList(filters = {}) {
 
   return { ...memoizedValue, revalidateRefundedRequests };
 }
+export function useGetRefundById(id: string | number) {
+  const URL = `${endpoints.booking.refund.getById}?booking_id=${id}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      refundDetails: (data?.data as any) || {},
+      refundError: error,
+      refundLoading: isLoading,
+      refundValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  const revalidateRefund = () => {
+    mutate(URL);
+  };
+
+  return { ...memoizedValue, revalidateRefund };
+}
 export function createRefundRequest(body: Record<string, any>) {
   const URL = `${endpoints.booking.refund.createRefund}`;
   return drivysCreator([URL, body]);

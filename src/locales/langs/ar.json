@@ -1414,5 +1414,16 @@
   "tooltip_wallet_amount_used": "المبلغ المخصوم من رصيد المحفظة.",
   "amount_paid_net": "المبلغ المدفوع (الصافي)",
   "tooltip_amount_paid_net": "المبلغ النهائي المدفوع بعد الخصومات واستخدام المحفظة.",
-  "Bank Details": "تفاصيل البنك"
+  "Bank Details": "تفاصيل البنك",
+  "create_refund_request": "إنشاء طلب استرداد",
+  "refund_summary": "ملخص الاسترداد",
+  "total_paid_amount_by_student": "إجمالي المبلغ المدفوع من الطالب",
+  "refundable_amount": "المبلغ القابل للاسترداد",
+  "cancellation_fee": "رسوم الإلغاء",
+  "vendor_commission": "عمولة المورّد",
+  "total_commissions": "إجمالي العمولات",
+  "cancelled_sessions": "الجلسات الملغاة",
+  "refund_failed_to_load": "فشل تحميل تفاصيل الاسترداد.",
+  "no_refund_details_available": "لا توجد تفاصيل استرداد متاحة.",
+  "total_paid_amount": "إجمالي المبلغ المدفوع"
 }
