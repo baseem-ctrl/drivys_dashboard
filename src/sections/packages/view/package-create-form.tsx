@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TimePicker } from '@mui/x-date-pickers';
 import { useSnackbar } from 'src/components/snackbar';
@@ -141,6 +141,7 @@ export default function PackageCreateForm({
     };
     setCityFields(updatedCities);
   };
+
   const handleRemoveCity = (index) => {
     const updatedCityFields = cityFields.filter((_, i) => i !== index);
     setCityFields(updatedCityFields);
@@ -216,6 +217,7 @@ export default function PackageCreateForm({
       min_price: '',
       max_price: '',
       is_drivys_commision_percentage: false,
+      session_titles: [],
     }),
     []
   );
@@ -223,6 +225,7 @@ export default function PackageCreateForm({
   const methods = useForm({
     resolver: yupResolver(DeliverySchema) as any,
     defaultValues,
+    shouldUnregister: true,
   });
   const packages = [
     {
@@ -257,15 +260,16 @@ export default function PackageCreateForm({
     control,
     setValue,
     watch,
+    resetField,
+    unregister,
     formState: { isSubmitting, errors },
   } = methods;
-  const numOfSession = watch('number_of_sessions');
+  const numOfSession = Number(watch('number_of_sessions') || 0);
 
   useEffect(() => {
-    if (numOfSession) {
-      setNumberOfSlots(Math.floor(numOfSession / 2));
-    }
+    setNumberOfSlots(Math.max(0, Math.floor(numOfSession / 2)));
   }, [numOfSession]);
+
   const currentName = watch('name');
   const currentSessionInclusions = watch('session_inclusions');
   const values = watch();
@@ -301,18 +305,18 @@ export default function PackageCreateForm({
 
   // ** 3. Load translation when locale changes **
   useEffect(() => {
+    console.log('selectedLocale', selectedLocale);
     if (selectedLocale) {
-      // Load the translation data for the newly selected locale
       const translation = translations[selectedLocale] || {};
+      console.log('translation', translation);
       setValue('name', translation.name || '');
       setValue('locale', selectedLocale);
-      setValue('session_inclusions', translation?.session_inclusions);
-      setValue('session_inclusions', translation?.session_inclusions);
+      setValue('session_inclusions', translation?.session_inclusions || '');
 
-      // Update the previous locale
       previousLocaleRef.current = selectedLocale;
     }
   }, [selectedLocale, setValue, translations]);
+
   // ** 4. Form Submission Logic **
   const onSubmit = async (data: any) => {
     // Save current locale's data before submission
@@ -437,8 +441,17 @@ export default function PackageCreateForm({
     try {
       const response = await createUpdatePackage(formData);
       if (response) {
-        reset();
+        unregister('session_titles');
+        setNumberOfSlots(0);
+        reset({
+          ...defaultValues,
+          session_titles: [],
+          number_of_sessions: '',
+        });
+        setTranslations({});
+
         handleClose();
+
         setCityFields([
           {
             id: null,
@@ -540,13 +553,14 @@ export default function PackageCreateForm({
             </Grid>
 
             <Grid item xs={10}>
-              <Grid container spacing={2}>
+              <Grid container spacing={2} key={`slots-${numberOfSlots}`}>
                 {Array.from({ length: numberOfSlots }).map((_, index) => (
                   <Grid item xs={12} key={index}>
                     <RHFTextField
                       fullWidth
                       name={`session_titles[${index}]`}
                       label={`session_titles ${index + 1}`}
+                      defaultValue="" // <- important for fresh mount
                     />
                   </Grid>
                 ))}
