@@ -63,6 +63,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import TrainerSearch from 'src/sections/user/trainer-search';
 import { useTranslation } from 'react-i18next';
 import UserCreatePage from 'src/pages/dashboard/user/new';
+import i18n from 'src/locales/i18n';
 
 // ----------------------------------------------------------------------
 
@@ -82,10 +83,10 @@ export default function SchoolTrainersListView() {
   const TABLE_HEAD = [
     { id: 'name', label: '' },
     { id: 'name', label: t('name') },
-    { id: 'vehicle_number', label: t('category') },
-    { id: 'dob', label: t('DOB') },
+    { id: 'vehicle_number', label: t('vehicle_number') },
+    // { id: 'school', label: t('school') },
     { id: 'status', label: t('Status') },
-    { id: 'verification_status', label: t('Date') },
+    { id: 'verification_status', label: t('verified') },
     { id: '', label: '' },
   ];
 
@@ -311,9 +312,6 @@ export default function SchoolTrainersListView() {
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
                             {row?.vehicle_number ?? t('n/a')}
-                          </TableCell>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            {row?.user?.dob?.split('T')[0] ?? t('n/a')}
                           </TableCell>
 
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
