@@ -1425,5 +1425,6 @@
   "cancelled_sessions": "الجلسات الملغاة",
   "refund_failed_to_load": "فشل تحميل تفاصيل الاسترداد.",
   "no_refund_details_available": "لا توجد تفاصيل استرداد متاحة.",
-  "total_paid_amount": "إجمالي المبلغ المدفوع"
+  "total_paid_amount": "إجمالي المبلغ المدفوع",
+  "valid_until": "صالح حتى"
 }

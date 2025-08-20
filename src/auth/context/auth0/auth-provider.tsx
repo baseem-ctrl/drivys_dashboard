@@ -35,6 +35,7 @@ function AuthProviderWrapper({ children }: Props) {
   // LOGOUT
   const handleLogout = useCallback(
     async (options?: LogoutOptions) => {
+      localStorage.clear();
       logout?.(options);
     },
     [logout]

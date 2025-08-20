@@ -84,7 +84,6 @@ export default function CreateBooking() {
   );
   const [paymentMode, setPaymentMode] = useState<'CASH' | 'ONLINE' | null>('ONLINE');
   const [couponCode, setCouponCode] = useState(false);
-
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
     Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
   );
@@ -126,6 +125,7 @@ export default function CreateBooking() {
     limit: 10,
     trainer_id: selectedTrainerId,
   });
+  console.log('trainerPackages', trainerPackages);
 
   const handleSessionChange = (index: number, key: string, value: string | number[]) => {
     const updatedSessions = [...sessions];
@@ -278,7 +278,7 @@ export default function CreateBooking() {
       formData.append('student_id', selectedStudentId.toString());
       formData.append('trainer_id', selectedTrainerId.toString());
       formData.append('mode_of_payment', paymentMode);
-      formData.append('coupon_code', couponCode);
+      if (couponCode) formData.append('coupon_code', couponCode);
 
       formData.append(
         'package_id',
@@ -415,6 +415,7 @@ export default function CreateBooking() {
                       title={translation?.name || t('n/a')}
                       sessions={pkg.package?.number_of_sessions}
                       price={pkg.price}
+                      offerDetails={pkg.package_offer_detail}
                       features={[
                         pkg.package?.number_of_sessions === -1
                           ? t('unlimited_driving_sessions')

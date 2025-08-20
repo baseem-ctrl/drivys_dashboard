@@ -103,7 +103,6 @@ export function AuthProvider({ children }: Props) {
   const login = useCallback(async (email: string, password: string) => {
     const currentUser = await Auth.signIn(email, password);
 
-
     dispatch({
       type: Types.INITIAL,
       payload: {
@@ -145,7 +144,7 @@ export function AuthProvider({ children }: Props) {
 
   // LOGOUT
   const logout = useCallback(async () => {
-
+    localStorage.clear();
     await Auth.signOut();
     dispatch({
       type: Types.LOGOUT,

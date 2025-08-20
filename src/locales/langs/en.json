@@ -1377,5 +1377,6 @@
   "refund_failed_to_load": "Failed to load refund details.",
   "no_refund_details_available": "No refund details available.",
   "total_paid_amount": "Total Paid Amount",
-  "create_refund_request": "Create Refund Request"
+  "create_refund_request": "Create Refund Request",
+  "valid_until": "Valid until"
 }

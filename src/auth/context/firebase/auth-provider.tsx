@@ -169,6 +169,7 @@ export function AuthProvider({ children }: Props) {
 
   // LOGOUT
   const logout = useCallback(async () => {
+    localStorage.clear();
     await signOut(AUTH);
   }, []);
 

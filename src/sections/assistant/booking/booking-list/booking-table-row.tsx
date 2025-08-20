@@ -141,7 +141,7 @@ export default function BookingTableRow({
       </TableCell>
       <TableCell>
         <span className="dirham-symbol">&#x00EA;</span>
-        {row?.sub_total}
+        {row?.total}
       </TableCell>
       <TableCell>{row?.payment_method}</TableCell>
       <TableCell>{row.coupon_code ? row.coupon_code : t('No Coupon')}</TableCell>
