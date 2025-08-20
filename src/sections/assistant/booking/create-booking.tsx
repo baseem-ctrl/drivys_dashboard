@@ -83,6 +83,8 @@ export default function CreateBooking() {
     Number.isNaN(preselectedTrainerId) ? null : preselectedTrainerId
   );
   const [paymentMode, setPaymentMode] = useState<'CASH' | 'ONLINE' | null>('ONLINE');
+  const [couponCode, setCouponCode] = useState(false);
+
   const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
     Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
   );
@@ -276,6 +278,7 @@ export default function CreateBooking() {
       formData.append('student_id', selectedStudentId.toString());
       formData.append('trainer_id', selectedTrainerId.toString());
       formData.append('mode_of_payment', paymentMode);
+      formData.append('coupon_code', couponCode);
 
       formData.append(
         'package_id',
@@ -486,6 +489,8 @@ export default function CreateBooking() {
             trainerId={selectedTrainerId}
             studentId={selectedStudentId}
             packageId={selectedPackageId?.package_id || selectedPackageId}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
           />
         );
       default:

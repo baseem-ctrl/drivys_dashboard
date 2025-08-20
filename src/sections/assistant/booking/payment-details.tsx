@@ -26,6 +26,8 @@ interface TrainerPaymentDetailsProps {
   studentId: any;
   packageId: any;
   paymentMode: any;
+  couponCode: any;
+  setCouponCode: any;
 }
 
 const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
@@ -39,10 +41,11 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   studentId,
   packageId,
   paymentMode,
+  couponCode,
+  setCouponCode,
 }) => {
   const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
-  const [couponCode, setCouponCode] = useState(false);
   const [cachedSummary, setCachedSummary] = useState<any>(null);
 
   const {
