@@ -1,7 +1,14 @@
 import React from 'react';
-import { Card, CardContent, Typography, Button, Box, Stack } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Stack, Chip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useTranslation } from 'react-i18next';
+
+interface OfferDetails {
+  offer_price: number;
+  discount_type: 'percentage' | 'flat';
+  discount_value: number;
+  offer_valid_until: string;
+}
 
 interface PackageCardProps {
   title: string;
@@ -13,6 +20,7 @@ interface PackageCardProps {
   onSelect: () => void;
   background?: string;
   selected?: boolean;
+  offerDetails?: OfferDetails | null;
 }
 
 const PackageCard: React.FC<PackageCardProps> = ({
@@ -21,12 +29,17 @@ const PackageCard: React.FC<PackageCardProps> = ({
   price,
   currency = 'AED',
   features,
-  flagUrl,
   onSelect,
   background,
   selected = false,
+  offerDetails,
 }) => {
   const { t } = useTranslation();
+
+  const hasOffer =
+    offerDetails &&
+    offerDetails.offer_price &&
+    new Date(offerDetails.offer_valid_until) > new Date();
 
   return (
     <Card
@@ -43,23 +56,55 @@ const PackageCard: React.FC<PackageCardProps> = ({
       }}
     >
       <CardContent>
+        {/* Title + Sessions */}
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h6" fontWeight={600}>
-            {title}
+            {title}{' '}
             <Typography component="span" fontWeight={400}>
-              {' '}
               ({sessions === -1 ? t('unlimited_sessions') : `${sessions} ${t('sessions')}`})
             </Typography>
           </Typography>
         </Box>
 
+        {/* Price Section */}
         <Box mt={2} mb={1} display="flex" gap="8px" alignItems="center">
-          <Typography variant="h4" fontWeight={700}>
-            {price}
-          </Typography>
-          <Typography fontSize="14px">{currency}</Typography>
+          {hasOffer ? (
+            <>
+              <Typography variant="body1" sx={{ textDecoration: 'line-through', opacity: 0.7 }}>
+                {price} {currency}
+              </Typography>
+              <Typography variant="h4" fontWeight={700} color="secondary">
+                {offerDetails.offer_price} {currency}
+              </Typography>
+              <Chip
+                label={
+                  offerDetails.discount_type === 'percentage'
+                    ? `${offerDetails.discount_value}% OFF`
+                    : `${currency} ${offerDetails.discount_value} OFF`
+                }
+                color="success"
+                size="small"
+                sx={{ fontWeight: 600 }}
+              />
+            </>
+          ) : (
+            <>
+              <Typography variant="h4" fontWeight={700}>
+                {price}
+              </Typography>
+              <Typography fontSize="14px">{currency}</Typography>
+            </>
+          )}
         </Box>
 
+        {/* Offer Validity */}
+        {hasOffer && (
+          <Typography variant="caption" sx={{ color: '#ffeb3b' }}>
+            {t('valid_until')}: {new Date(offerDetails.offer_valid_until).toLocaleDateString()}
+          </Typography>
+        )}
+
+        {/* Features */}
         <Typography mt={2} fontWeight={500}>
           {t('whats_included')}
         </Typography>
@@ -73,6 +118,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
           ))}
         </Stack>
 
+        {/* Action Button */}
         <Box mt={3} textAlign="center">
           {selected ? (
             <Button

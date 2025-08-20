@@ -200,7 +200,7 @@ export function AuthProvider({ children }: Props) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
-
+    localStorage.clear();
     dispatch({
       type: Types.LOGOUT,
     });

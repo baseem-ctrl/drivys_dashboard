@@ -90,6 +90,7 @@ export default function AccountGeneral() {
 
       // Navigate to home
       router.replace('/');
+
       await logout();
     } catch (error) {
       if (error?.errors && typeof error?.errors === 'object' && !Array.isArray(error?.errors)) {
