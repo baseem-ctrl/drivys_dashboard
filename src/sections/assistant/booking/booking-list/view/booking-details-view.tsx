@@ -885,17 +885,13 @@ const BookingDetailsComponent = () => {
 
                           <TableCell>
                             {session.start_time
-                              ? moment(session.start_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                              ? moment(session.start_time).local().format('DD/MM/YY h:mm A')
                               : t('n/a')}
                           </TableCell>
 
                           <TableCell>
                             {session.end_time
-                              ? moment(session.end_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                              ? moment(session.end_time).local().format('DD/MM/YY h:mm A')
                               : t('n/a')}
                           </TableCell>
 
