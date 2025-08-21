@@ -109,7 +109,7 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary?.package_price || '0'}
+              {(summary?.package_price || 0).toFixed(2)}
             </>
           }
           originalValue={
@@ -117,7 +117,7 @@ export const PaymentSummaryBox = ({
             summary?.package_price_before_discount !== summary.package_price ? (
               <>
                 <span className="dirham-symbol">&#x00EA;</span>
-                {summary?.package_price_before_discount}
+                {summary?.package_price_before_discount.toFixed(2)}
               </>
             ) : undefined
           }
@@ -127,7 +127,7 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary?.transport_fee}
+              {summary?.transport_fee.toFixed(2)}
             </>
           }
           originalValue={
@@ -135,7 +135,7 @@ export const PaymentSummaryBox = ({
             summary?.transport_fee_before_discount !== summary?.transport_fee ? (
               <>
                 <span className="dirham-symbol">&#x00EA;</span>
-                {summary?.transport_fee_before_discount}
+                {summary?.transport_fee_before_discount.toFixed(2)}
               </>
             ) : undefined
           }
@@ -146,7 +146,7 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary?.tax_amount}
+              {summary?.tax_amount.toFixed(2)}
             </>
           }
         />
@@ -155,7 +155,7 @@ export const PaymentSummaryBox = ({
           value={
             <>
               <span className="dirham-symbol">&#x00EA;</span>
-              {summary?.cash_service_charge}
+              {summary?.cash_service_charge.toFixed(2)}
             </>
           }
         />
@@ -218,7 +218,8 @@ export const PaymentSummaryBox = ({
         {isCouponApplied && !paymentSummaryError && (
           <Stack spacing={0.5} mt={0.5}>
             <Typography variant="caption" color="success.main">
-              {t('coupon_applied_successfully')} {t('you_saved')} AED {summary?.discount_amount}!
+              {t('coupon_applied_successfully')} {t('you_saved')} AED{' '}
+              {summary?.discount_amount.toFixed(2)}!
             </Typography>
           </Stack>
         )}
@@ -229,7 +230,7 @@ export const PaymentSummaryBox = ({
           </Typography>
           <Typography fontSize={14} fontWeight={700} color="primary">
             <span className="dirham-symbol">&#x00EA;</span>
-            {summary?.total}
+            {summary?.total.toFixed(2)}
           </Typography>
         </Stack>
       </Stack>
