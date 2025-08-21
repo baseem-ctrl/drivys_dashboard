@@ -253,8 +253,6 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
                     ? t('unlimited_sessions')
                     : `${pkg.number_of_sessions} ${t('driving_sessions')}`
                 }`,
-                t('booking_management'),
-                t('rescheduling_flexibility'),
               ];
 
               return (

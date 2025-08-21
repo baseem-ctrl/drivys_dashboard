@@ -35,7 +35,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
   offerDetails,
 }) => {
   const { t } = useTranslation();
-
+  console.log('features', features);
   const hasOffer =
     offerDetails &&
     offerDetails.offer_price &&
@@ -108,15 +108,23 @@ const PackageCard: React.FC<PackageCardProps> = ({
         <Typography mt={2} fontWeight={500}>
           {t('whats_included')}
         </Typography>
-
-        <Stack spacing={1} mt={1}>
+        <Box
+          mt={1}
+          sx={{
+            '& p': { margin: 0, fontSize: '0.9rem', color: '#fff' },
+            '& ol': { paddingLeft: '20px' },
+            '& li': { marginBottom: '4px' },
+          }}
+          dangerouslySetInnerHTML={{ __html: features }}
+        />
+        {/* <Stack spacing={1} mt={1}>
           {features.map((feature, idx) => (
             <Box key={idx} display="flex" alignItems="center" gap={1}>
               <CheckCircleIcon sx={{ color: '#00e676', fontSize: 20 }} />
               <Typography variant="body2">{feature}</Typography>
             </Box>
           ))}
-        </Stack>
+        </Stack> */}
 
         {/* Action Button */}
         <Box mt={3} textAlign="center">

@@ -409,6 +409,12 @@ export default function CreateBooking() {
                     (t: any) => t.locale.toLowerCase() === i18n.language.toLowerCase()
                   );
 
+                  // first feature: number of sessions
+                  const sessionFeature =
+                    pkg.package?.number_of_sessions === -1
+                      ? t('unlimited_driving_sessions')
+                      : `${pkg.package?.number_of_sessions} ${t('driving_sessions')}`;
+
                   return (
                     <PackageCard
                       key={pkg.id}
@@ -416,13 +422,7 @@ export default function CreateBooking() {
                       sessions={pkg.package?.number_of_sessions}
                       price={pkg.price}
                       offerDetails={pkg.package_offer_detail}
-                      features={[
-                        pkg.package?.number_of_sessions === -1
-                          ? t('unlimited_driving_sessions')
-                          : `${pkg.package?.number_of_sessions} ${t('driving_sessions')}`,
-                        t('booking_management'),
-                        t('rescheduling_flexibility'),
-                      ]}
+                      features={translation?.session_inclusions}
                       flagUrl={pkg.flag?.virtual_path}
                       onSelect={() => handlePackageSelect(pkg)}
                       background={getCardBackground(index)}
