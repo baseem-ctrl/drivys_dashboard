@@ -851,18 +851,16 @@ const BookingDetailsComponent = () => {
                           </TableCell>
                           <TableCell>
                             {session.start_time
-                              ? moment(session.start_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                              ? moment(session.start_time).local().format('DD/MM/YY h:mm A')
                               : t('n/a')}
                           </TableCell>
+
                           <TableCell>
                             {session.end_time
-                              ? moment(session.end_time)
-                                  .utcOffset('+04:00')
-                                  .format('DD/MM/YY h:mm A')
+                              ? moment(session.end_time).local().format('DD/MM/YY h:mm A')
                               : t('n/a')}
                           </TableCell>
+
                           <TableCell>{session?.session_type || t('n/a')}</TableCell>
                         </TableRow>
                       ))}
@@ -912,10 +910,10 @@ const BookingDetailsComponent = () => {
                           .format('DD/MM/YY h:mm A')}
                       </TableCell>
                       <TableCell>
-                        {moment(reschedule.new_start).utcOffset('+04:00').format('DD/MM/YY h:mm A')}
+                        {moment(reschedule.new_start).utc().format('DD/MM/YY h:mm A')}
                       </TableCell>
                       <TableCell>
-                        {moment(reschedule.new_end).utcOffset('+04:00').format('DD/MM/YY h:mm A')}
+                        {moment(reschedule.new_end).utc().format('DD/MM/YY h:mm A')}
                       </TableCell>
                       <TableCell>{reschedule.requested_by || t('n/a')}</TableCell>
                       <TableCell>
