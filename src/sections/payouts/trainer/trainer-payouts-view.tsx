@@ -182,10 +182,13 @@ export default function TrainerPayoutPage() {
   );
 
   const renderLargeScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+    const isPayoutAvailable = Number(item?.amount_required_from_admin) > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : t('n/a');
+
+    const formatNumber = (val: any) => (isNaN(Number(val)) ? t('n/a') : Number(val).toFixed(2));
+
     const fields = [
       { label: t('Trainer Name'), value: item?.trainer_name ?? t('n/a') },
       { label: t('School Name'), value: item?.vendor_name ?? t('n/a') },
@@ -194,7 +197,7 @@ export default function TrainerPayoutPage() {
         label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Typography variant="body2">{formatNumber(item?.last_paid_amount ?? 0)}</Typography>
             <Chip
               label={`${t('Time')}: ${lastPaidDate}`}
               size="small"
@@ -205,13 +208,12 @@ export default function TrainerPayoutPage() {
           </Box>
         ),
       },
-
       {
         label: t('Total Earnings'),
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_amount_earned_from_booking ?? '0'}
+            {formatNumber(item?.total_amount_earned_from_booking ?? 0)}
           </>
         ),
       },
@@ -220,7 +222,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.reward_amount_from_student ?? '0'}
+            {formatNumber(item?.reward_amount_from_student ?? 0)}
           </>
         ),
       },
@@ -229,7 +231,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_cash_amount_received ?? t('n/a')}
+            {formatNumber(item?.total_cash_amount_received ?? 0)}
           </>
         ),
       },
@@ -238,17 +240,15 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_admin ?? 0)}
           </>
         ),
       },
-
       {
         label: t('Action'),
         value: (
           <Tooltip title={!isPayoutAvailable ? t('No payout remaining') : ''} arrow>
             <span>
-              {' '}
               <Button
                 variant="contained"
                 color="primary"
@@ -295,9 +295,7 @@ export default function TrainerPayoutPage() {
           <Typography
             key={`value-${index}`}
             variant="body2"
-            sx={{
-              textAlign: index === 0 ? 'left' : 'center',
-            }}
+            sx={{ textAlign: index === 0 ? 'left' : 'center' }}
           >
             {field.value}
           </Typography>
@@ -305,11 +303,15 @@ export default function TrainerPayoutPage() {
       </Box>
     );
   };
+
   const renderSmallScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+    const isPayoutAvailable = Number(item?.amount_required_from_admin) > 0;
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : t('n/a');
+
+    const formatNumber = (val: any) => (isNaN(Number(val)) ? t('n/a') : Number(val).toFixed(2));
+
     const fields = [
       { label: t('Trainer'), value: item?.trainer_name ?? t('n/a') },
       { label: t('School'), value: item?.vendor_name ?? t('n/a') },
@@ -318,7 +320,7 @@ export default function TrainerPayoutPage() {
         label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Typography variant="body2">{formatNumber(item?.last_paid_amount ?? 0)}</Typography>
             <Chip
               label={`Time: ${lastPaidDate}`}
               size="small"
@@ -334,7 +336,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_amount_earned_from_booking ?? '0'}
+            {formatNumber(item?.total_amount_earned_from_booking ?? 0)}
           </>
         ),
       },
@@ -343,7 +345,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.reward_amount_from_student ?? '0'}
+            {formatNumber(item?.reward_amount_from_student ?? 0)}
           </>
         ),
       },
@@ -352,7 +354,7 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_cash_amount_received ?? t('n/a')}
+            {formatNumber(item?.total_cash_amount_received ?? 0)}
           </>
         ),
       },
@@ -361,21 +363,19 @@ export default function TrainerPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_admin ?? 0)}
           </>
         ),
       },
-
       {
         label: t('Action'),
         value: (
           <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
             <span>
-              {' '}
               <Button
                 variant="contained"
                 color="primary"
-                disabled={!isPayoutAvailable} // Disable button if no payout
+                disabled={!isPayoutAvailable}
                 onClick={(e) => {
                   e.stopPropagation();
                   quickCreate.onTrue();

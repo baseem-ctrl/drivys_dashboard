@@ -186,12 +186,16 @@ export default function AssistantPayoutPage() {
   //     results={dataFiltered.length}
   //   />
   // );
+
   const renderLargeScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+    const isPayoutAvailable = Number(item?.amount_required_from_admin) > 0;
 
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : t('n/a');
+
+    const formatNumber = (val: any) => (isNaN(Number(val)) ? t('n/a') : Number(val).toFixed(2));
+
     const fields = [
       { label: t('assistant'), value: item?.assistant_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
@@ -200,7 +204,7 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_earning_from_booking ?? 0}
+            {formatNumber(item?.total_earning_from_booking ?? 0)}
           </>
         ),
       },
@@ -208,7 +212,7 @@ export default function AssistantPayoutPage() {
         label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Typography variant="body2">{formatNumber(item?.last_paid_amount ?? 0)}</Typography>
             <Chip
               label={`Time: ${lastPaidDate}`}
               size="small"
@@ -224,7 +228,7 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_admin ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_admin ?? 0)}
           </>
         ),
       },
@@ -233,7 +237,7 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.amount_required_from_assistant ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_assistant ?? 0)}
           </>
         ),
       },
@@ -242,7 +246,6 @@ export default function AssistantPayoutPage() {
         value: (
           <Tooltip title={!isPayoutAvailable ? t('No payout remaining') : ''} arrow>
             <span>
-              {' '}
               <Button
                 variant="contained"
                 color="primary"
@@ -276,7 +279,7 @@ export default function AssistantPayoutPage() {
             variant="subtitle2"
             sx={{
               fontWeight: 'bold',
-              textAlign: index === 0 ? 'left' : 'center', // Align the first label to the left
+              textAlign: index === 0 ? 'left' : 'center',
               color: 'text.secondary',
             }}
           >
@@ -289,9 +292,7 @@ export default function AssistantPayoutPage() {
           <Typography
             key={`value-${index}`}
             variant="body2"
-            sx={{
-              textAlign: index === 0 ? 'left' : 'center', // Align the first value to the left
-            }}
+            sx={{ textAlign: index === 0 ? 'left' : 'center' }}
           >
             {field.value}
           </Typography>
@@ -301,11 +302,14 @@ export default function AssistantPayoutPage() {
   };
 
   const renderSmallScreenContent = (item: any) => {
-    const isPayoutAvailable = item?.amount_required_from_admin > 0;
+    const isPayoutAvailable = Number(item?.amount_required_from_admin) > 0;
 
     const lastPaidDate = item?.last_paid_at
       ? moment(item.last_paid_at, 'HH:mm:ss dddd YYYY-MM-DD').format('DD/MM/YY, hh:mm A')
       : t('n/a');
+
+    const formatNumber = (val: any) => (isNaN(Number(val)) ? t('n/a') : Number(val).toFixed(2));
+
     const fields = [
       { label: t('assistant'), value: item?.assistant_name ?? t('n/a') },
       { label: t('Total Bookings'), value: item?.total_paid_and_completed_booking ?? 0 },
@@ -314,16 +318,15 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-            {item?.total_earning_from_booking ?? '0'}
+            {formatNumber(item?.total_earning_from_booking ?? 0)}
           </>
         ),
       },
-
       {
         label: t('Last Paid'),
         value: (
           <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="body2">{item?.last_paid_amount ?? 0}</Typography>
+            <Typography variant="body2">{formatNumber(item?.last_paid_amount ?? 0)}</Typography>
             <Chip
               label={`Time: ${lastPaidDate}`}
               size="small"
@@ -339,8 +342,7 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-
-            {item?.amount_required_from_admin ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_admin ?? 0)}
           </>
         ),
       },
@@ -349,8 +351,7 @@ export default function AssistantPayoutPage() {
         value: (
           <>
             <span className="dirham-symbol">&#x00EA;</span>
-
-            {item?.amount_required_from_assistant ?? t('n/a')}
+            {formatNumber(item?.amount_required_from_assistant ?? 0)}
           </>
         ),
       },
@@ -359,11 +360,10 @@ export default function AssistantPayoutPage() {
         value: (
           <Tooltip title={!isPayoutAvailable ? 'No payout remaining' : ''} arrow>
             <span>
-              {' '}
               <Button
                 variant="contained"
                 color="primary"
-                disabled={!isPayoutAvailable} // Disable button if no payout
+                disabled={!isPayoutAvailable}
                 onClick={(e) => {
                   e.stopPropagation();
                   quickCreate.onTrue();
@@ -371,7 +371,7 @@ export default function AssistantPayoutPage() {
                   setAmount(item?.amount_required_from_admin);
                 }}
               >
-                ${t('Payouts')}
+                {t('Payouts')}
               </Button>
             </span>
           </Tooltip>
@@ -397,6 +397,7 @@ export default function AssistantPayoutPage() {
       </Box>
     );
   };
+
   const handleCardClick = (id, isPayoutDisabled, amount) => {
     setAmount(amount);
     router.push(paths.dashboard.payouts.schoolDetails(id), {
