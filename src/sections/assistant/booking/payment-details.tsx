@@ -45,6 +45,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   couponCode,
   setCouponCode,
   pickupLocationSelected,
+  setActiveStep,
 }) => {
   const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
@@ -85,6 +86,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
       errorMessage={errorMessage}
       paymentSummaryError={paymentSummaryError}
       paymentSummaryLoading={paymentSummaryLoading}
+      setActiveStep={setActiveStep}
     />
   );
 };
