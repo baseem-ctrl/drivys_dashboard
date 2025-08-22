@@ -125,7 +125,6 @@ export default function CreateBooking() {
     limit: 10,
     trainer_id: selectedTrainerId,
   });
-  console.log('trainerPackages', trainerPackages);
 
   const handleSessionChange = (index: number, key: string, value: string | number[]) => {
     const updatedSessions = [...sessions];
@@ -213,7 +212,6 @@ export default function CreateBooking() {
     setActiveStep((prev) => prev - 1);
     setPickupLocationSelected(null);
   };
-  console.log('pick up locstion', pickupLocationSelected);
 
   const handleSelectStudent = (id: number) => {
     setSelectedStudentId(id);
@@ -274,7 +272,6 @@ export default function CreateBooking() {
 
     try {
       const formData = new FormData();
-      console.log('pickupLocationSelected', pickupLocationSelected);
       formData.append('student_id', selectedStudentId.toString());
       formData.append('trainer_id', selectedTrainerId.toString());
       formData.append('mode_of_payment', paymentMode);
@@ -492,6 +489,7 @@ export default function CreateBooking() {
             packageId={selectedPackageId?.package_id || selectedPackageId}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
+            pickupLocationSelected={pickupLocationSelected}
           />
         );
       default:
