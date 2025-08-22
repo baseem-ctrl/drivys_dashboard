@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
+import { useSnackbar } from 'notistack';
 
 export const PaymentSummaryBox = ({
   summary,
@@ -21,22 +22,36 @@ export const PaymentSummaryBox = ({
   errorMessage,
   paymentSummaryError,
   paymentSummaryLoading,
+  setActiveStep,
 }: {
   summary: any;
   couponCode: any;
   setCouponCode: any;
   errorMessage: any;
+  setActiveStep: any;
 }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [couponInput, setCouponInput] = useState(summary?.coupon_code || '');
   const [localError, setLocalError] = useState('');
-
+  console.log('paymentSummaryError', paymentSummaryError);
   const isCouponApplied =
     !!couponCode && couponCode?.toLowerCase?.() === couponInput?.trim()?.toLowerCase?.();
 
   useEffect(() => {
     setLocalError(errorMessage || '');
   }, [errorMessage]);
+  useEffect(() => {
+    if (paymentSummaryError?.message) {
+      setActiveStep(4);
+
+      enqueueSnackbar(paymentSummaryError.message, {
+        variant: 'error',
+      });
+    }
+  }, [paymentSummaryError]);
+
   if (paymentSummaryLoading) {
     return (
       <Box

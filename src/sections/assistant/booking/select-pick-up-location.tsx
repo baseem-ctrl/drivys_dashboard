@@ -63,10 +63,13 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
     (addr: any) => addr.is_default
   );
   useEffect(() => {
-    if (!pickupLocationSelected && locations?.length > 0) {
+    if (!pickupLocationSelected && locations?.length > 0 && pickupMode === 'pickup') {
       setPickupLocationSelected(locations[0].id);
     }
-  }, [locations, pickupLocationSelected, setPickupLocationSelected]);
+    if (pickupMode === 'driver') {
+      setPickupLocationSelected(null);
+    }
+  }, [locations, pickupLocationSelected, setPickupLocationSelected, pickupMode]);
   return (
     <>
       <Box mt={4} mb={4}>

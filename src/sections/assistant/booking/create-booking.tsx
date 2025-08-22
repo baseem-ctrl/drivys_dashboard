@@ -490,6 +490,7 @@ export default function CreateBooking() {
             couponCode={couponCode}
             setCouponCode={setCouponCode}
             pickupLocationSelected={pickupLocationSelected}
+            setActiveStep={setActiveStep}
           />
         );
       default:
