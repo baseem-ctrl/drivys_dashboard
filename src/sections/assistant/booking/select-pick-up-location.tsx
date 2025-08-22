@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import RoomIcon from '@mui/icons-material/Room';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
@@ -62,6 +62,11 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({
   const defaultAddress = selectedTrainer?.user?.user_addresses?.find(
     (addr: any) => addr.is_default
   );
+  useEffect(() => {
+    if (!pickupLocationSelected && locations?.length > 0) {
+      setPickupLocationSelected(locations[0].id);
+    }
+  }, [locations, pickupLocationSelected, setPickupLocationSelected]);
   return (
     <>
       <Box mt={4} mb={4}>

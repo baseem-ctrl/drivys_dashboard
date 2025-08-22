@@ -183,6 +183,7 @@ interface PaymentSummaryParams {
   package_id?: string;
   coupon_code?: string;
   mode_of_payment?: 'CASH' | 'ONLINE';
+  pickup_location?: any;
 }
 
 export function useGetPaymentSummary(params: PaymentSummaryParams) {
@@ -194,6 +195,7 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
     if (params.package_id) queryParams.package_id = params.package_id;
     if (params.coupon_code) queryParams.coupon_code = params.coupon_code;
     if (params.mode_of_payment) queryParams.mode_of_payment = params.mode_of_payment;
+    if (params.pickup_location) queryParams.pickup_location = params.pickup_location; // Added pickup_location filter
 
     const qs = new URLSearchParams(queryParams).toString();
     return qs ? `${endpoints.assistant.paymentSummary.list}?${qs}` : null;
@@ -203,6 +205,7 @@ export function useGetPaymentSummary(params: PaymentSummaryParams) {
     params.package_id,
     params.coupon_code,
     params.mode_of_payment,
+    params.pickup_location,
   ]);
 
   const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher, {

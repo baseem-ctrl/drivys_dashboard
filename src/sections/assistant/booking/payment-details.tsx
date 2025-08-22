@@ -28,6 +28,7 @@ interface TrainerPaymentDetailsProps {
   paymentMode: any;
   couponCode: any;
   setCouponCode: any;
+  pickupLocationSelected: any;
 }
 
 const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
@@ -43,6 +44,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
   paymentMode,
   couponCode,
   setCouponCode,
+  pickupLocationSelected,
 }) => {
   const { t } = useTranslation();
   const [paymentDone, setPaymentDone] = useState(false);
@@ -60,6 +62,7 @@ const TrainerPaymentDetails: React.FC<TrainerPaymentDetailsProps> = ({
     package_id: packageId,
     coupon_code: couponCode,
     mode_of_payment: paymentMode,
+    pickup_location: pickupLocationSelected,
   });
 
   const errorMessage = paymentSummaryError?.message?.errors?.coupon_code?.join(' ') || '';
