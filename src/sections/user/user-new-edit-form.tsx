@@ -320,37 +320,11 @@ export default function UserNewEditForm({
       otherwise: (schema) => schema.notRequired(),
     }),
 
-    bio: Yup.string()
-      .nullable()
-      .when('user_type', {
-        is: (val) => val?.toUpperCase() === 'TRAINER',
-        then: (schema) =>
-          schema
-            .transform((value) => sanitizeText(value))
-            .required(t('bio_is_required'))
-            .min(10, t('bio_min_length'))
-            .max(MAX_BIO_LENGTH, t('bio_max_length')),
-      }),
+    bio: Yup.string().nullable(),
 
-    bio_ar: Yup.string()
-      .nullable()
-      .when('user_type', {
-        is: (val) => val?.toUpperCase() === 'TRAINER',
-        then: (schema) =>
-          schema
-            .transform((value) => sanitizeText(value))
-            .max(MAX_BIO_AR_LENGTH, t('bio_ar_max_length')),
-      }),
+    bio_ar: Yup.string().nullable(),
 
-    bio_ur: Yup.string()
-      .nullable()
-      .when('user_type', {
-        is: (val) => val?.toUpperCase() === 'TRAINER',
-        then: (schema) =>
-          schema
-            .transform((value) => sanitizeText(value))
-            .max(MAX_BIO_UR_LENGTH, t('bio_ur_max_length')),
-      }),
+    bio_ur: Yup.string().nullable(),
   });
   const frontDoc = currentUser?.user_docs?.find(
     (doc) => doc.doc_type === 'ASSISTANT ID PROOF' && doc.doc_side === 'FRONT'
@@ -515,6 +489,7 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
+  console.log('errorserrors', errors);
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
 
