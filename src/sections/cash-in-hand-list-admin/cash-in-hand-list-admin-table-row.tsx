@@ -125,7 +125,10 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={(e) => handleOpen(e, row.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpen(e, row.id);
+          }}
           style={{ fontWeight: '600', fontSize: '0.9rem' }}
           disabled={row?.collected_cash_in_hand <= 0}
         >
@@ -146,7 +149,14 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
               onChange={(e) => setAmount(e.target.value)}
               fullWidth
             />
-            <Button variant="contained" color="primary" onClick={handleCollectClick}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCollectClick();
+              }}
+            >
               {t('submit')}
             </Button>
           </div>

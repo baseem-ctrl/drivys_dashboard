@@ -89,13 +89,13 @@ export default function SchoolAdminDetailsView({ id }: Props) {
         sx={{
           mb: { xs: 3, md: 5 },
         }}
-        action={
-          currentTab === 'trainers' && (
-            <Button onClick={quickCreate.onTrue} variant="contained">
-              {t('create_new_trainer')}
-            </Button>
-          )
-        }
+        // action={
+        //   currentTab === 'trainers' && (
+        //     <Button onClick={quickCreate.onTrue} variant="contained">
+        //       {t('create_new_trainer')}
+        //     </Button>
+        //   )
+        // }
       />
       {!detailsLoading ? (
         <>

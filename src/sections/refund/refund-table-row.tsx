@@ -49,10 +49,36 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
   };
 
   const handleRefundAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRefundAmount(event.target.value);
+    const value = event.target.value.trim();
+
+    // Allow only digits & decimals
+    if (!/^\d*\.?\d*$/.test(value)) {
+      return;
+    }
+
+    // Convert to number safely
+    let numValue = value === '' ? '' : Number(value);
+
+    // Ensure non-negative
+    if (numValue !== '' && numValue < 0) {
+      numValue = 0;
+    }
+
+    // Ensure it doesn’t exceed remaining refund
+    if (numValue !== '' && numValue > (row?.remaining_amount_to_refund || 0)) {
+      numValue = row?.remaining_amount_to_refund || 0;
+    }
+
+    setRefundAmount(numValue);
   };
 
   const handleRefundSubmit = async () => {
+    const cleanedAmount = Number(refundAmount);
+
+    if (isNaN(cleanedAmount) || cleanedAmount <= 0) {
+      enqueueSnackbar('Invalid refund amount!', { variant: 'error' });
+      return;
+    }
     const payload = {
       booking_id: row?.booking_id,
       amount_refunded: refundAmount,
@@ -80,6 +106,7 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
       }
     } finally {
       handlePopoverClose();
+      reload();
     }
   };
   const open = Boolean(anchorEl);
@@ -240,14 +267,12 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
         </Label>
       </TableCell>
       <TableCell>
-        {' '}
         <span className="dirham-symbol">&#x00EA;</span>
-        {row?.refund_amount_sanctioned}
+        {Number(row?.refund_amount_sanctioned).toFixed(2) || '0'}
       </TableCell>
       <TableCell>
-        {' '}
         <span className="dirham-symbol">&#x00EA;</span>
-        {row?.remaining_amount_to_refund}
+        {Number(row?.remaining_amount_to_refund).toFixed(2) || '0'}
       </TableCell>
 
       <TableCell>{row?.booking?.payment_method}</TableCell>
@@ -321,7 +346,7 @@ export default function RefundTableRow({ row, selected, onSelectRow, reload }: P
                 e.stopPropagation();
                 handleRefundSubmit();
               }}
-              disabled={!refundAmount || Number(refundAmount) <= 0}
+              disabled={refundAmount === '' || Number(refundAmount) <= 0}
             >
               {t('Submit Refund')}
             </Button>

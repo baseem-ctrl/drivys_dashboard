@@ -143,34 +143,35 @@ export default function PackageDetails({ details, loading, reload }: Props) {
 
   const VendorSchema = Yup.object().shape({
     locale: Yup.mixed(),
-    name: Yup.string(),
+    name: Yup.string().required(t('name_required')),
     session_inclusions: Yup.string(),
-    number_of_sessions: Yup.string(),
+    number_of_sessions: Yup.number()
+      .nullable()
+      .typeError(t('number_of_sessions_invalid'))
+      .min(0, t('number_of_sessions_invalid')),
     status: Yup.string(),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
     is_cash_pay_available: Yup.boolean(),
     background_color: Yup.mixed(),
 
-    drivys_commision: Yup.mixed().test(
-      'valid-drivys-commission',
-      "Drivy's Commission should be less than 100% when is in percentage",
-      function (value) {
+    drivys_commision: Yup.number()
+      .nullable()
+      .typeError(t('drivys_commission_invalid'))
+      .min(0, t('drivys_commission_invalid'))
+      .test('valid-drivys-commission', t('drivys_commission_max'), function (value) {
         const { is_drivys_commision_percentage } = this.parent;
-        // If percentage mode is ON, enforce max 100
-        if (is_drivys_commision_percentage) {
-          return value === null || value < 100;
+        if (is_drivys_commision_percentage && value != null) {
+          return Number(value) < 100;
         }
-
-        // If percentage mode is OFF, just ensure it's a number
         return true;
-      }
-    ),
+      }),
     is_pickup_fee_included: Yup.boolean(),
     vendor_id: Yup.mixed(),
     category_id: Yup.mixed(),
     is_drivys_commision_percentage: Yup.boolean(),
   });
+
   const defaultVendorValues = useMemo(
     () => ({
       locale: selectedLocaleObject?.locale || '',

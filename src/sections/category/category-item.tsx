@@ -265,8 +265,11 @@ export default function JobItem({
   };
 
   const NewSchema = Yup.object().shape({
-    name: Yup.string(),
-    locale: Yup.mixed(),
+    name: Yup.string()
+      .trim()
+      .required(t('name_required'))
+      .min(2, t('name_min_length'))
+      .max(100, t('name_max_length')),
     parent_id: Yup.mixed().nullable(),
   });
   const defaultValues = useMemo(

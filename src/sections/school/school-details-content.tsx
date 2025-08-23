@@ -158,7 +158,18 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
         }
         return true; // No validation if the phone number is empty or null
       }),
-    license_expiry: Yup.string(),
+    license_expiry: Yup.string()
+      .nullable()
+      .test('is-valid-date', t('license_expiry_invalid'), function (value) {
+        if (!value) return true;
+        return !isNaN(Date.parse(value));
+      })
+      .test('is-future-date', t('license_expiry_must_be_future'), function (value) {
+        if (!value) return true;
+        const today = new Date();
+        const expiryDate = new Date(value);
+        return expiryDate > today;
+      }),
     website: Yup.string().url(t('validation.invalid_url')),
     status: Yup.string(),
     license_file: Yup.mixed().nullable(),

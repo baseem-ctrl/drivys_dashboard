@@ -146,8 +146,21 @@ export default function SchoolCreateForm({
     }),
 
     country_code: Yup.string(),
-    certificate_min_commision: Yup.string(),
-    certificate_max_commision: Yup.string(),
+    certificate_min_commision: Yup.number()
+      .typeError(t('min_commission_must_be_number'))
+      .min(0, t('min_commission_min'))
+      .max(100, t('min_commission_max'))
+      .required(t('min_commission_required')),
+
+    certificate_max_commision: Yup.number()
+      .typeError(t('max_commission_must_be_number'))
+      .min(0, t('max_commission_min'))
+      .max(100, t('max_commission_max'))
+      .required(t('max_commission_required'))
+      .test('max-greater-than-min', t('max_must_be_greater_than_min'), function (value) {
+        const { certificate_min_commision } = this.parent;
+        return value >= certificate_min_commision;
+      }),
   });
 
   const defaultValues = useMemo(
