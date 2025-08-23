@@ -49,13 +49,13 @@ export default function HomeSliderForm({ updateValue }: Props) {
   const today = moment().format('YYYY-MM-DD');
 
   const NewProductSchema = Yup.object().shape({
-    name: Yup.string().required(t('Name is required')),
-    display_order: Yup.string().required(t('Display order is required')),
-    // type: Yup.string(),
+    name: Yup.string().trim().required(t('name_required')),
+    display_order: Yup.string().trim().required(t('display_order_required')),
+    // type: Yup.string(), // Uncomment if needed
     published: Yup.boolean(),
     Product: Yup.array().nullable(),
     picture_ids: Yup.array().nullable(),
-    position: Yup.string(),
+    position: Yup.string().trim(),
   });
 
   const defaultValues = useMemo(

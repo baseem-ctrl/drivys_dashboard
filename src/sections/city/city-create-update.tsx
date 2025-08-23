@@ -41,17 +41,19 @@ export default function CityCreateEditForm({ title, currentCity, open, onClose, 
     locale: Yup.string().required('Locale is required'),
     published: Yup.boolean(),
     is_certificate_available: Yup.boolean(),
-    certificate_price: Yup.string(),
-    certificate_link: Yup.string(),
-    price_per_km: Yup.string(),
+    certificate_price: Yup.number().typeError(t('certificate_price_must_be_number')).nullable(),
+    certificate_link: Yup.string().url(t('certificate_link_invalid')).nullable(),
+    price_per_km: Yup.number().typeError(t('price_per_km_must_be_number')).nullable(),
 
-    min_price: Yup.string(),
+    min_price: Yup.number().typeError(t('min_price_must_be_number')).nullable(),
 
-    reschedule_fee: Yup.mixed(),
-    max_slot: Yup.mixed(),
+    reschedule_fee: Yup.number().typeError(t('reschedule_fee_must_be_number')).nullable(),
+    max_slot: Yup.number().typeError(t('max_slot_must_be_number')).nullable(),
 
-    free_reschedule_before: Yup.mixed(),
-    free_reschedule_before_type: Yup.mixed(),
+    free_reschedule_before: Yup.number()
+      .typeError(t('free_reschedule_before_must_be_number'))
+      .nullable(),
+    free_reschedule_before_type: Yup.string().nullable(),
   });
   const { language } = useGetAllLanguage(0, 1000);
 

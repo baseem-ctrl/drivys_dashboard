@@ -345,7 +345,7 @@ export default function StateListView() {
       </Container>
 
       <StateCreateEditForm
-        title="Create Area"
+        title={t('Create Area')}
         open={createState.value}
         onClose={createState.onFalse}
         reload={revalidateStates}

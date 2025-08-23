@@ -162,33 +162,44 @@ export default function UserNewEditForm({
   }, [enumData, user?.user?.user_type]);
 
   const [defaultOption, setDefaultOption] = useState<any>(null);
+  const sanitizeText = (value: string | undefined | null) =>
+    value
+      ?.toString()
+      .trim()
+      .replace(/<[^>]+>/g, '') || '';
+
+  const MAX_BIO_LENGTH = 500;
+  const MAX_BIO_AR_LENGTH = 300;
+  const MAX_BIO_UR_LENGTH = 300;
   // const [schoolOptions, setSchoolOptions] = useState();
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required(t('name_required')),
-    name_ar: Yup.string(),
+    name: Yup.string()
+      .transform((value) => sanitizeText(value))
+      .required(t('name_required')),
+    name_ar: Yup.string().transform((value) => sanitizeText(value)),
     certificate_expiry_date: Yup.mixed().test(
       'is-future-date',
       'Expiry date must be in future',
-      function (value) {
+      (value) => {
         if (!value) return true;
         const date = new Date(value);
-        const now = new Date();
-        return date > now;
+        return date > new Date();
       }
     ),
-
     cash_clearance_date: Yup.mixed(),
 
     email: Yup.string()
+      .transform((value) => sanitizeText(value))
       .required(t('email_required'))
       .matches(/^[^@]+@[^@]+\.[^@]+$/, t('email_invalid')),
+
     password: Yup.lazy(() => {
-      // If `currentUser?.id` is not present, make the password required
-      return currentUser?.id
-        ? Yup.string() // No requirements if `currentUser.id` exists
-        : Yup.string(); // Required if `currentUser.id` is not present
+      return currentUser?.id ? Yup.string() : Yup.string(); // adjust required logic if needed
     }),
-    phone: Yup.string().matches(/^5\d{0,8}$/, t('phone_invalid')),
+
+    phone: Yup.string()
+      .transform((value) => sanitizeText(value))
+      .matches(/^5\d{0,8}$/, t('phone_invalid')),
 
     city_assigned: Yup.array()
       .of(
@@ -202,57 +213,51 @@ export default function UserNewEditForm({
         then: (schema) => schema.min(1, t('city_required')).required(t('city_required')),
         otherwise: (schema) => schema.notRequired(),
       }),
+
     dob: Yup.string()
       .nullable()
       .when('user_type', {
         is: (value) => ['STUDENT', 'TRAINER'].includes(value?.toUpperCase()),
         then: (schema) => schema.required(t('dob_required')),
-        otherwise: (schema) => schema,
       })
-      .test('is-valid-date', t('dob_invalid'), function (value) {
-        if (!value) return true;
-        const isValidDate = !isNaN(Date.parse(value));
-        return isValidDate;
-      })
-      .test('is-before-today', t('dob_before_today'), function (value) {
+      .test('is-valid-date', t('dob_invalid'), (value) => !value || !isNaN(Date.parse(value)))
+      .test(
+        'is-before-today',
+        t('dob_before_today'),
+        (value) => !value || new Date(value) < new Date()
+      )
+      .test('is-18-or-older', t('dob_age_requirement'), (value) => {
         if (!value) return true;
         const today = new Date();
         const dob = new Date(value);
-        return dob < today;
-      })
-      .test('is-18-or-older', t('dob_age_requirement'), function (value) {
-        if (!value) return true;
-        const today = new Date();
-        const birthDate = new Date(value);
-        const age = today.getFullYear() - birthDate.getFullYear();
-        const monthDifference = today.getMonth() - birthDate.getMonth();
+        const age = today.getFullYear() - dob.getFullYear();
+        const monthDifference = today.getMonth() - dob.getMonth();
         return (
           age > 18 ||
           (age === 18 &&
-            (monthDifference > 0 ||
-              (monthDifference === 0 && today.getDate() >= birthDate.getDate())))
+            (monthDifference > 0 || (monthDifference === 0 && today.getDate() >= dob.getDate())))
         );
       }),
-    locale: Yup.mixed().nullable(), // not required
+
+    locale: Yup.mixed().nullable(),
     school_ids: Yup.array().of(Yup.mixed().nullable()),
     user_type: Yup.string().required(t('user_type_required')),
     photo_url: Yup.mixed(),
     is_active: Yup.boolean(),
+
     gear: Yup.mixed()
       .nullable()
       .test('gear-required-for-trainer', t('gear_required'), function (value) {
-        const { user_type } = this.parent; // Access other fields in the form
-        if (user_type === 'TRAINER') {
-          return value != null && value !== ''; // `gear` must have a value if `user_type` is 'TRAINER'
-        }
-        return true; // Otherwise, `gear` is not required
+        return this.parent.user_type === 'TRAINER' ? value != null && value !== '' : true;
       }),
+
     vehicle_type_id: Yup.mixed().nullable(),
     vendor_id: Yup.mixed().nullable(),
     gender: Yup.mixed().nullable(),
     user_gender: Yup.mixed().nullable(),
     city_id: Yup.mixed().nullable(),
     area_id: Yup.mixed().nullable(),
+
     languages: Yup.array().when('user_type', {
       is: (val) => val?.toUpperCase() === 'ASSISTANT',
       then: () => Yup.array().notRequired(),
@@ -269,52 +274,34 @@ export default function UserNewEditForm({
 
     school_name: Yup.string()
       .nullable()
+      .transform((value) => sanitizeText(value))
       .test('school-name-required', t('school_name_required'), function (value) {
-        const { user_type, vendor_id } = this.parent; // Access other fields in the form
-        if (
-          user_type === 'TRAINER' &&
-          typeof values.vendor_id === 'object' &&
-          (vendor_id?.value === undefined || vendor_id?.value === null)
-        ) {
-          return value != null; // `gear` must have a value if `user_type` is 'TRAINER'
+        const { user_type, vendor_id } = this.parent;
+        if (user_type === 'TRAINER' && typeof vendor_id === 'object' && !vendor_id?.value) {
+          return value != null && value !== '';
         }
-        return true; // Otherwise, `gear` is not required
+        return true;
       }),
-    vehicle_number: Yup.string(),
+
+    vehicle_number: Yup.string().transform((value) => sanitizeText(value)),
+
     license: Yup.array().of(
       Yup.object().shape({
-        license_file: Yup.mixed(), // Validate court add-on
-        doc_side: Yup.mixed(), // Validate the number of add-ons
+        license_file: Yup.mixed(),
+        doc_side: Yup.mixed(),
       })
     ),
-    cash_in_hand: Yup.string(),
-    max_cash_in_hand_allowed: Yup.string(),
+
+    cash_in_hand: Yup.string().transform((value) => sanitizeText(value)),
+    max_cash_in_hand_allowed: Yup.string().transform((value) => sanitizeText(value)),
     collected_max_cash_in_hand_allowed: Yup.mixed(),
+
     vendor_commission_in_percentage: Yup.number().when('user_type', {
       is: 'TRAINER',
-      then: (schema) =>
-        schema.required(t('school_commission_required')).when([], {
-          is: () =>
-            selectedSchool?.min_commision >= 0 &&
-            selectedSchool?.max_commision >= 0 &&
-            selectedSchool?.max_commision &&
-            selectedSchool?.max_commision,
-          then: (schema) =>
-            schema
-              .min(
-                selectedSchool?.min_commision || 0,
-                t('school_commission_min', { min: selectedSchool?.min_commision })
-              )
-
-              .max(
-                selectedSchool?.max_commision || 100,
-                t('school_commission_max', { max: selectedSchool?.max_commision })
-              ),
-
-          otherwise: (schema) => schema,
-        }),
+      then: (schema) => schema.required(t('school_commission_required')).min(0).max(100),
       otherwise: (schema) => schema.notRequired(),
     }),
+
     assistant_id_proof: Yup.object().when('user_type', {
       is: (val) => val?.toUpperCase() === 'ASSISTANT',
       then: (schema) =>
@@ -324,13 +311,46 @@ export default function UserNewEditForm({
           expiry: Yup.date()
             .nullable()
             .required(t('expiry_required'))
-            .test('is-future-date', t('expiry_must_be_future'), function (value) {
-              if (!value) return true;
-              return new Date(value) > new Date();
-            }),
+            .test(
+              'is-future-date',
+              t('expiry_must_be_future'),
+              (value) => !value || new Date(value) > new Date()
+            ),
         }),
       otherwise: (schema) => schema.notRequired(),
     }),
+
+    bio: Yup.string()
+      .nullable()
+      .when('user_type', {
+        is: (val) => val?.toUpperCase() === 'TRAINER',
+        then: (schema) =>
+          schema
+            .transform((value) => sanitizeText(value))
+            .required(t('bio_is_required'))
+            .min(10, t('bio_min_length'))
+            .max(MAX_BIO_LENGTH, t('bio_max_length')),
+      }),
+
+    bio_ar: Yup.string()
+      .nullable()
+      .when('user_type', {
+        is: (val) => val?.toUpperCase() === 'TRAINER',
+        then: (schema) =>
+          schema
+            .transform((value) => sanitizeText(value))
+            .max(MAX_BIO_AR_LENGTH, t('bio_ar_max_length')),
+      }),
+
+    bio_ur: Yup.string()
+      .nullable()
+      .when('user_type', {
+        is: (val) => val?.toUpperCase() === 'TRAINER',
+        then: (schema) =>
+          schema
+            .transform((value) => sanitizeText(value))
+            .max(MAX_BIO_UR_LENGTH, t('bio_ur_max_length')),
+      }),
   });
   const frontDoc = currentUser?.user_docs?.find(
     (doc) => doc.doc_type === 'ASSISTANT ID PROOF' && doc.doc_side === 'FRONT'

@@ -43,11 +43,11 @@ export default function DialectCreateEditForm({
   const methods = useForm({
     resolver: yupResolver(
       Yup.object().shape({
-        language_name: Yup.string().required('Language Name is required'),
+        language_name: Yup.string().required(t('language_name_required')),
         dialect_name: Yup.string(),
         keywords: Yup.string(),
         description: Yup.string(),
-        order: Yup.number(),
+        order: Yup.number().typeError(t('order_must_be_number')).nullable(),
         is_published: Yup.boolean(),
       })
     ),
@@ -116,29 +116,29 @@ export default function DialectCreateEditForm({
           <Box sx={{ mt: 2 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="language_name" label={t("Language Name")} />
+                <RHFTextField name="language_name" label={t('Language Name')} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="dialect_name" label={t("Dialect Name")} />
+                <RHFTextField name="dialect_name" label={t('Dialect Name')} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="keywords" label={t("Keywords")} />
+                <RHFTextField name="keywords" label={t('Keywords')} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="description" label={t("Description")} multiline rows={2} />
+                <RHFTextField name="description" label={t('Description')} multiline rows={2} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="order" label={t("Order")} type="number" />
+                <RHFTextField name="order" label={t('Order')} type="number" />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <RHFSwitch name="is_published" label={t("Published")} />
+                <RHFSwitch name="is_published" label={t('Published')} />
               </Grid>
             </Grid>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            {t("Cancel")}
+            {t('Cancel')}
           </Button>
           <LoadingButton
             type="submit"

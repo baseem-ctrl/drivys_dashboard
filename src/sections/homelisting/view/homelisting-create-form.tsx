@@ -18,6 +18,7 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/system/Unstable_Grid/Grid';
 import FormProvider, { RHFTextField, RHFCheckbox, RHFSelect } from 'src/components/hook-form';
 import { createHomeListing } from 'src/api/homelisting';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -28,6 +29,8 @@ type Props = {
 export default function SchoolCreateForm({ open, onClose, revalidateHomeListing }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const { language } = useGetAllLanguage(0, 1000);
+  const { t } = useTranslation();
+
   const { schoolAdminList, schoolAdminLoading, revalidateSearch } = useGetSchoolAdmin(1000, 1);
 
   // State to track translations for each locale
@@ -40,11 +43,11 @@ export default function SchoolCreateForm({ open, onClose, revalidateHomeListing 
   }));
 
   const FormSchema = Yup.object().shape({
-    catalogue_type: Yup.string(),
-    title: Yup.string().required('Name is required'),
-    locale: Yup.string().required('Locale is required'),
-    description: Yup.string(),
-    display_order: Yup.string(),
+    catalogue_type: Yup.string().trim().nullable(),
+    title: Yup.string().trim().required(t('name_required')).max(255, t('name_max_length')),
+    locale: Yup.string().trim().required(t('locale_required')).max(10, t('locale_max_length')),
+    description: Yup.string().trim().nullable().max(1000, t('description_max_length')),
+    display_order: Yup.string().trim().nullable().matches(/^\d*$/, t('display_order_numeric')),
     is_active: Yup.boolean(),
   });
 

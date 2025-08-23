@@ -269,6 +269,8 @@ export default function LoyalityProgramItem({
       <RHFTextField
         name="no_of_sessions_required"
         label={t('Number of Sessions Required')}
+        type="number"
+        inputProps={{ min: 0, step: 1 }}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{
@@ -346,6 +348,8 @@ export default function LoyalityProgramItem({
       <RHFTextField
         name="reward_amount"
         label={t('Reward Amount')}
+        type="number"
+        inputProps={{ min: 0, step: 1 }}
         borderRadius="0px"
         sx={{ mb: 2 }}
         InputLabelProps={{

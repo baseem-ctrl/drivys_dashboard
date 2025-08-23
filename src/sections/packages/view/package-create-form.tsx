@@ -195,8 +195,26 @@ export default function PackageCreateForm({
         }
       )
       .typeError("Drivy's Commission must be a number"),
-    min_price: Yup.string(),
-    max_price: Yup.string(),
+    cities_ids: Yup.array().of(
+      Yup.object().shape({
+        id: Yup.mixed().required(t('city_required')),
+        min_price: Yup.number()
+          .nullable()
+          .typeError(t('min_price_invalid'))
+          .min(0, t('min_price_invalid')),
+        max_price: Yup.number()
+          .nullable()
+          .typeError(t('max_price_invalid'))
+          .min(0, t('max_price_invalid'))
+          .test('min-less-than-max', t('min_price_must_be_less_than_max'), function (value) {
+            const { min_price } = this.parent;
+            if (min_price != null && value != null) {
+              return Number(min_price) <= Number(value);
+            }
+            return true;
+          }),
+      })
+    ),
     is_drivys_commision_percentage: Yup.boolean(),
   });
 

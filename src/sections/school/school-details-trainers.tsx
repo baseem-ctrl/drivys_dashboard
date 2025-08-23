@@ -77,7 +77,19 @@ export default function SchoolTrainers({ candidates, create, onCreate, t }: Prop
   const popover = usePopover();
   const confirm = useBoolean();
   const NewUserSchema = Yup.object().shape({
-    cash_clearance_date: Yup.string(),
+    cash_clearance_date: Yup.string()
+      .nullable()
+      .trim()
+      .test('is-valid-date', t('cash_clearance_date_invalid'), function (value) {
+        if (!value) return true;
+        return !isNaN(Date.parse(value));
+      })
+      .test('is-not-future-date', t('cash_clearance_date_not_future'), function (value) {
+        if (!value) return true;
+        const today = new Date();
+        const clearanceDate = new Date(value);
+        return clearanceDate <= today;
+      }),
     cash_in_hand: Yup.string().nullable(),
 
     vendor_commission_in_percentage: Yup.number()

@@ -59,8 +59,7 @@ const defaultFilters: IUserTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function LanguageListView() {
-
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const TABLE_HEAD = [
     { id: 'name', label: t('Name') },
@@ -177,7 +176,7 @@ export default function LanguageListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading={t("List")}
+          heading={t('List')}
           links={[
             { name: t('Dashboard'), href: paths.dashboard.root },
             { name: t('Language'), href: paths.dashboard.system.language },
@@ -192,7 +191,7 @@ export default function LanguageListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              {t("New Language")}
+              {t('New Language')}
             </Button>
           }
           sx={{
@@ -232,7 +231,7 @@ export default function LanguageListView() {
                 )
               }
               action={
-                <Tooltip title={t("Delete")}>
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -249,12 +248,12 @@ export default function LanguageListView() {
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                // onSelectAllRows={(checked) =>
-                //   table.onSelectAllRows(
-                //     checked,
-                //     tableData.map((row) => row.id)
-                //   )
-                // }
+                  // onSelectAllRows={(checked) =>
+                  //   table.onSelectAllRows(
+                  //     checked,
+                  //     tableData.map((row) => row.id)
+                  //   )
+                  // }
                 />
 
                 <TableBody>
@@ -299,7 +298,7 @@ export default function LanguageListView() {
         </Card>
       </Container>
       <LanguageCreateEditForm
-        title="Create Language"
+        title={t('Create Language')}
         open={createLanguage.value}
         onClose={createLanguage.onFalse}
         reload={revalidateLanguage}
