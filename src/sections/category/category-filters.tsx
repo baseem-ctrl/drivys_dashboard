@@ -75,7 +75,6 @@ export default function CategoryFilters({
     limit: 1000,
     page: 1,
     has_child: 1,
-    locale: i18n.language,
   });
 
   let parentCategoryOptions = category?.map((item) => {

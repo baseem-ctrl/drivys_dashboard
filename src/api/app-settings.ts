@@ -20,48 +20,26 @@ export function useGetAllAppSettings(page: number, limit: number) {
     limit: String(limit || 10),
     sort_order: 'asc',
     sort_by: 'display_order',
+    locale: currentLocale, // always required
   });
 
-  const urlWithLocale = `${endpoints.appSettings.list}?${baseParams.toString()}`;
-  const urlWithoutLocale = `${endpoints.appSettings.list}?${baseParams.toString()}`;
+  const url = `${endpoints.appSettings.list}?${baseParams.toString()}`;
 
-  // Primary fetch with locale
-  const {
-    data: primaryData,
-    isLoading: loadingPrimary,
-    error: errorPrimary,
-    mutate: revalidatePrimary,
-  } = useSWR(urlWithLocale, drivysFetcher);
+  const { data, isLoading, error, mutate } = useSWR(url, drivysFetcher);
 
-  // Fallback fetch without locale (only if no primaryData)
-  const {
-    data: fallbackData,
-    isLoading: loadingFallback,
-    error: errorFallback,
-    mutate: revalidateFallback,
-  } = useSWR(() => (!primaryData?.data?.length ? urlWithoutLocale : null), drivysFetcher);
+  const appSettings = data?.data || [];
+  const totalPages = data?.total || 0;
 
-  const hasPrimary = primaryData?.data?.length > 0;
-  const hasFallback = fallbackData?.data?.length > 0;
-
-  const finalData = hasPrimary ? primaryData : hasFallback ? fallbackData : null;
-  const usedFallback = !hasPrimary && hasFallback;
-
-  // Unified revalidate function
-  const revalidateAppSettings = async () => {
-    await revalidatePrimary();
-    if (!primaryData?.data?.length) {
-      await revalidateFallback();
-    }
+  const revalidateAppSettings = () => {
+    mutate();
   };
 
   return {
-    appSettings: finalData?.data || [],
-    appSettingsLoading: loadingPrimary || loadingFallback,
-    appSettingsError: errorPrimary || errorFallback,
-    appSettingsValidating: !finalData,
-    totalpages: finalData?.total || 0,
-    usedFallback,
+    appSettings,
+    appSettingsLoading: isLoading,
+    appSettingsError: error,
+    appSettingsValidating: isLoading, // SWR handles validation
+    totalPages,
     revalidateAppSettings,
   };
 }

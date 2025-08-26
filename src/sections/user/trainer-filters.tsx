@@ -71,7 +71,6 @@ export default function TrainerFilters({
     page: 0,
     published: '1',
     search: searchCategory,
-    locale: i18n.language,
   });
   const { city, cityLoading } = useGetAllCity({
     limit: 1000,

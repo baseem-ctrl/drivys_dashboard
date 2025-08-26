@@ -13,12 +13,10 @@ export function useGetBookingReports(
   category_id?: any
 ) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
+  const locale = i18n.language; // always required
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-
-    if (locale) queryParams.locale = locale;
+    const queryParams: Record<string, any> = { locale }; // locale always included
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -55,12 +53,10 @@ export function useGetRevenueReports(
   limit?: number
 ) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
+  const locale = i18n.language; // always required
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-
-    if (locale) queryParams.locale = locale;
+    const queryParams: Record<string, any> = { locale }; // locale always included
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (category_id) queryParams.category_id = category_id;
@@ -96,12 +92,10 @@ export function useGetTrainerReports(
   category_id?: number
 ) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
+  const locale = i18n.language; // always included
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-
-    if (locale) queryParams.locale = locale;
+    const queryParams: Record<string, any> = { locale };
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -142,9 +136,7 @@ export function useGetStudentReports(
   const { user } = useAuthContext();
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-
-    if (locale) queryParams.locale = locale;
+    const queryParams: Record<string, any> = { locale };
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -156,6 +148,7 @@ export function useGetStudentReports(
       user?.user?.user_type === 'SCHOOL_ADMIN'
         ? endpoints.schoolReportSessionPreview.student
         : endpoints.reportSessionPreview.student;
+
     return `${endpoint}?${new URLSearchParams(queryParams)}`;
   };
 
@@ -187,9 +180,7 @@ export function useGetSchoolReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
-
-    if (locale) queryParams.locale = locale;
+    const queryParams: Record<string, any> = { locale };
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (school_id) queryParams.school_id = school_id;

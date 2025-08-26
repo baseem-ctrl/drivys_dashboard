@@ -42,55 +42,35 @@ export function useGetAllVendorCommissionList(page: number, limit: number) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const buildQueryParams = (includeLocale: boolean) => {
-    const params: Record<string, any> = {
-      page: page ? page + 1 : 1,
-      limit: limit || 10,
-    };
-    if (includeLocale) {
-      params.locale = locale;
-    }
-    return params;
-  };
+  const buildQueryParams = () => ({
+    page: page ? page + 1 : 1,
+    limit: limit || 10,
+    locale, // always required
+  });
 
-  const primaryUrl = useMemo(
+  const url = useMemo(
     () =>
       `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(
-        buildQueryParams(true)
-      )}`,
+        buildQueryParams()
+      ).toString()}`,
     [page, limit, locale]
   );
 
-  const fallbackUrl = useMemo(
-    () =>
-      `${endpoints.commission.listAdminTrainerCommission}?${new URLSearchParams(
-        buildQueryParams(false)
-      )}`,
-    [page, limit]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      vendorCommissions: dataToUse?.data || [],
+      vendorCommissions: data?.data || [],
       commissionsLoading: isLoading,
       commissionsError: error,
       commissionsValidating: isValidating,
-      totalPages: dataToUse?.total || 0,
+      totalPages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, error, isLoading, isValidating, data?.total]
   );
 
   const revalidateVendorCommissions = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateVendorCommissions };

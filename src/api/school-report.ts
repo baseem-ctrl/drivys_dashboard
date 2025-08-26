@@ -15,9 +15,8 @@ export function useGetBookingReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+    const queryParams: Record<string, any> = { locale };
 
-    if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -40,7 +39,7 @@ export function useGetBookingReports(
   };
 
   const revalidateBookingReports = () => {
-    mutate(getTheFullUrl);
+    mutate(getTheFullUrl());
   };
 
   return { ...memoizedValue, revalidateBookingReports };
@@ -57,9 +56,8 @@ export function useGetRevenueReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+    const queryParams: Record<string, any> = { locale };
 
-    if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (category_id) queryParams.category_id = category_id;
@@ -80,7 +78,7 @@ export function useGetRevenueReports(
   };
 
   const revalidateRevenueReports = () => {
-    mutate(getTheFullUrl);
+    mutate(getTheFullUrl());
   };
 
   return { ...memoizedValue, revalidateRevenueReports };
@@ -98,9 +96,8 @@ export function useGetTrainerReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+    const queryParams: Record<string, any> = { locale };
 
-    if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -122,7 +119,7 @@ export function useGetTrainerReports(
   };
 
   const revalidateTrainerReports = () => {
-    mutate(getTheFullUrl);
+    mutate(getTheFullUrl());
   };
 
   return { ...memoizedValue, revalidateTrainerReports };
@@ -140,9 +137,8 @@ export function useGetStudentReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+    const queryParams: Record<string, any> = { locale };
 
-    if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (limit) queryParams.limit = limit;
@@ -181,9 +177,8 @@ export function useGetSchoolReports(
   const locale = i18n.language;
 
   const getTheFullUrl = () => {
-    let queryParams: Record<string, any> = {};
+    const queryParams: Record<string, any> = { locale };
 
-    if (locale) queryParams.locale = locale;
     if (start_date) queryParams.start_date = start_date;
     if (end_date) queryParams.end_date = end_date;
     if (school_id) queryParams.school_id = school_id;

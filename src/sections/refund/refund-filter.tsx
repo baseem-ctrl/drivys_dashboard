@@ -53,7 +53,6 @@ export default function RefundFilters({
     limit: 1000,
     page: 0,
     published: '1',
-    locale: i18n.language,
   });
   const { city } = useGetAllCity({
     limit: 1000,

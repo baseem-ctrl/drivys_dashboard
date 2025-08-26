@@ -25,7 +25,6 @@ interface useGetProductsParams {
   weight_min?: any;
   in_stock?: any;
 }
-
 export function useGetProducts({
   limit,
   page,
@@ -42,13 +41,13 @@ export function useGetProducts({
   in_stock,
 }: useGetProductsParams = {}) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
+  const locale = i18n.language; // always required
+
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {};
+    const params: Record<string, any> = { locale }; // locale always included
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
     if (search) params.search = search;
     if (weight) params.weight = weight;
     if (price_max) params.price_max = price_max;
@@ -78,20 +77,19 @@ export function useGetProducts({
     in_stock,
   ]);
 
-  const fullUrl = useMemo(
+  const url = useMemo(
     () => `${endpoints.product.list}?${new URLSearchParams(queryParams)}`,
     [queryParams]
   );
 
-  const { data, error, isLoading, isValidating } = useSWR(fullUrl, drivysFetcher, {
+  const { data, error, isLoading, isValidating } = useSWR(url, drivysFetcher, {
     revalidateOnFocus: false,
   });
 
   const revalidateProducts = () => {
-    mutate(fullUrl);
+    mutate(url);
   };
 
-  // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
     const productsData = data?.data || [];
     return {

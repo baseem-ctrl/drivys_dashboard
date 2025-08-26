@@ -18,47 +18,38 @@ export function useGetLoyaltyProgramList({
   searchQuery,
 }: UseGetLoyaltyProgramListProps) {
   const { i18n } = useTranslation();
-  const currentLocale = i18n.language;
+  const locale = i18n.language;
 
-  const getQueryParams = (withLocale: boolean) => {
+  const buildQueryParams = () => {
     const params: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
     };
-    if (searchQuery) {
-      params.search = searchQuery;
-    }
-    if (withLocale) {
-      params.locale = currentLocale;
-    }
+    if (searchQuery) params.search = searchQuery;
+    params.locale = locale; // always include locale
     return params;
   };
 
-  const getUrl = (withLocale: boolean) =>
-    `${endpoints.loyalityProgram.list}?${new URLSearchParams(getQueryParams(withLocale))}`;
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(getUrl(true), drivysFetcher); // with locale
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? getUrl(false) : null), // fallback without locale
-    drivysFetcher
+  const url = useMemo(
+    () => `${endpoints.loyalityProgram.list}?${new URLSearchParams(buildQueryParams()).toString()}`,
+    [page, limit, searchQuery, locale]
   );
 
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      loyaltyPrograms: dataToUse?.data || [],
+      loyaltyPrograms: data?.data || [],
       loyaltyProgramsError: error,
       loyaltyProgramsLoading: isLoading,
       loyaltyProgramsValidating: isValidating,
-      totalpages: dataToUse?.total || 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, data?.total, error, isLoading, isValidating]
   );
 
   const revalidateLoyaltyPrograms = () => {
-    mutate(getUrl(true));
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateLoyaltyPrograms };

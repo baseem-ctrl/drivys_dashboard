@@ -38,11 +38,12 @@ export function useGetPackage({
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const buildQueryParams = (includeLocale: boolean) => {
-    const params: Record<string, any> = {};
+  const buildQueryParams = () => {
+    const params: Record<string, any> = {
+      locale, // always include locale
+    };
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (includeLocale) params.locale = locale;
     if (search) params.search = search;
     if (status) params.status = status;
     if (is_published) params.is_published = is_published;
@@ -56,8 +57,8 @@ export function useGetPackage({
     return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.package.list}?${new URLSearchParams(buildQueryParams(true))}`,
+  const url = useMemo(
+    () => `${endpoints.package.list}?${new URLSearchParams(buildQueryParams()).toString()}`,
     [
       limit,
       page,
@@ -74,52 +75,25 @@ export function useGetPackage({
     ]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.package.list}?${new URLSearchParams(buildQueryParams(false))}`,
-    [
-      limit,
-      page,
-      search,
-      status,
-      is_published,
-      min_price,
-      max_price,
-      number_of_sessions,
-      vendor_id,
-      city_id,
-      is_public,
-    ]
-  );
-
-  const {
-    data: primaryData,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR(primaryUrl, drivysFetcher, { revalidateOnFocus: false });
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
-
-  const revalidatePackage = () => {
-    mutate(primaryUrl);
-  };
+  const { data, error, isLoading, isValidating } = useSWR(url, drivysFetcher, {
+    revalidateOnFocus: false,
+  });
 
   const memoizedValue = useMemo(() => {
-    const DelivereyData = dataToUse?.data || [];
+    const packageData = data?.data || [];
     return {
-      packageList: DelivereyData,
+      packageList: packageData,
       packageLoading: isLoading,
       packageError: error,
       packageValidating: isValidating,
-      packageEmpty: !isLoading && DelivereyData.length === 0,
-      totalPages: dataToUse?.total || 0,
+      packageEmpty: !isLoading && packageData.length === 0,
+      totalPages: data?.total || 0,
     };
-  }, [dataToUse?.data, dataToUse?.total, error, isLoading, isValidating]);
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
+
+  const revalidatePackage = () => {
+    mutate(url);
+  };
 
   return {
     ...memoizedValue,
@@ -163,7 +137,6 @@ export function useGetPackageById(packageId: string) {
 export function useGetPublicPackage({
   limit,
   page,
-  locale,
   search,
   status,
   is_published,
@@ -175,12 +148,14 @@ export function useGetPublicPackage({
   is_public,
   category_id,
 }: useGetDelivereyParams = {}) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language; // always required
+
   // Construct query parameters dynamically
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {};
+    const params: Record<string, any> = { locale }; // always include locale
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
     if (search) params.search = search;
     if (status) params.status = status;
     if (is_published) params.is_published = is_published;
@@ -196,7 +171,6 @@ export function useGetPublicPackage({
   }, [
     limit,
     page,
-    locale,
     search,
     status,
     is_published,
@@ -206,6 +180,8 @@ export function useGetPublicPackage({
     vendor_id,
     city_id,
     is_public,
+    category_id,
+    locale,
   ]);
 
   const fullUrl = useMemo(
@@ -221,15 +197,14 @@ export function useGetPublicPackage({
     mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
   const memoizedValue = useMemo(() => {
-    const DelivereyData = data?.data || [];
+    const packageData = data?.data || [];
     return {
-      packageList: DelivereyData,
+      packageList: packageData,
       packageLoading: isLoading,
       packageError: error,
       packageValidating: isValidating,
-      packageEmpty: DelivereyData.length === 0,
+      packageEmpty: packageData.length === 0,
       totalPages: data?.total || 0,
     };
   }, [data?.data, data?.total, error, isLoading, isValidating]);

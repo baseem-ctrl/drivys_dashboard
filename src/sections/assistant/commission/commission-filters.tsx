@@ -28,7 +28,6 @@ export default function CommissionFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
     published: '1',
-    locale: i18n.language,
   });
 
   const handleFilterCategory = (newValue: string) => {

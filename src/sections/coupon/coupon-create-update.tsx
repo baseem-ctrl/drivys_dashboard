@@ -59,7 +59,6 @@ export default function CouponDialog({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
-    locale: i18n.language,
   });
   const { products } = useGetProducts({ page: 0, limit: 1000 });
   const { packageList, packageLoading } = useGetPackage();

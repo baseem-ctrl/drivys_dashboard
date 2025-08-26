@@ -100,7 +100,6 @@ export default function ProductCard({
   const { category } = useGetAllCategory({
     limit: 1000,
     page: 1,
-    locale: i18n.language,
   });
 
   useEffect(() => {

@@ -32,12 +32,13 @@ export function useGetSchool({
 }: useGetDelivereyParams = {}) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
-  // Construct query parameters dynamically
+
+  // Build query parameters dynamically
   const queryParams = useMemo(() => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (locale) params.locale = locale;
+    params.locale = locale;
     if (search) params.search = search;
     if (status) params.status = status;
     if (is_active) params.is_active = is_active;
@@ -73,15 +74,15 @@ export function useGetSchool({
     mutate(fullUrl);
   };
 
-  // Memoize the return value for performance
+  // Memoize the return value
   const memoizedValue = useMemo(() => {
-    const DelivereyData = data?.data || [];
+    const schoolData = data?.data || [];
     return {
-      schoolList: DelivereyData,
+      schoolList: schoolData,
       schoolLoading: isLoading,
       schoolError: error,
       schoolValidating: isValidating,
-      schoolEmpty: DelivereyData.length === 0,
+      schoolEmpty: !isLoading && schoolData.length === 0,
       totalPages: data?.total || 0,
     };
   }, [data?.data, data?.total, error, isLoading, isValidating]);
@@ -91,6 +92,7 @@ export function useGetSchool({
     revalidateSchool,
   };
 }
+
 export function useGetSchoolAdmin(limit: number, page: number) {
   // Construct query parameters dynamically
   const [searchValue, setSearchValue] = useState('');
@@ -361,15 +363,15 @@ export function useGetPackageBySchool(schoolId: string) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const URL = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}&locale=${locale}`;
+  const url = `${endpoints.school.package.getPackageBySchool}?school_id=${schoolId}&locale=${locale}`;
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, drivysFetcher, {
+  const { data, error, isLoading, isValidating } = useSWR(url, drivysFetcher, {
     revalidateOnFocus: false,
   });
 
   const memoizedValue = useMemo(
     () => ({
-      packageDetails: (data?.data as any) || {},
+      packageDetails: data?.data || {},
       packageError: error,
       packageLoading: isLoading,
       packageValidating: isValidating,
@@ -378,11 +380,12 @@ export function useGetPackageBySchool(schoolId: string) {
   );
 
   const revalidatePackageDetails = () => {
-    mutate(URL);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidatePackageDetails };
 }
+
 export function AddBulkSchoolCommision(body: any) {
   const URL = endpoints.school.bulk.addCommision;
   const response = drivysCreator([URL, body]);
@@ -447,17 +450,15 @@ export function useGetSchoolPackageList({ limit, page, search }: any) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(search || '');
 
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {
-      locale,
-    };
+    const params: Record<string, any> = { locale };
     if (limit) params.limit = limit;
     if (page) params.page = page;
-    if (search) params.search = search;
+    if (searchValue) params.search = searchValue;
     return params;
-  }, [limit, page, search, locale]);
+  }, [limit, page, searchValue, locale]);
 
   const fullUrl = useMemo(() => {
     const urlSearchParams = new URLSearchParams();
@@ -465,7 +466,7 @@ export function useGetSchoolPackageList({ limit, page, search }: any) {
       if (Array.isArray(value)) {
         value.forEach((item) => urlSearchParams.append(`${key}[]`, item));
       } else {
-        urlSearchParams.append(key, value as string);
+        urlSearchParams.append(key, String(value));
       }
     });
     return `${endpoints.school.package.getPackageBySchool}?${urlSearchParams}`;
@@ -475,25 +476,21 @@ export function useGetSchoolPackageList({ limit, page, search }: any) {
     revalidateOnFocus: false,
   });
 
-  const revalidatePackage = () => {
+  const revalidatePackage = () => mutate(fullUrl);
+
+  const revalidateSearch = (newSearch: string) => {
+    setSearchValue(newSearch);
     mutate(fullUrl);
   };
 
-  const revalidateSearch = (search: any) => {
-    if (search) {
-      setSearchValue(search);
-      mutate(fullUrl);
-    }
-  };
-
   const memoizedValue = useMemo(() => {
-    const DelivereyData = data?.data || [];
+    const packages = data?.data || [];
     return {
-      schoolPackageList: DelivereyData,
+      schoolPackageList: packages,
       schoolPackageLoading: isLoading,
       schoolPackageError: error,
       schoolPackageValidating: isValidating,
-      schoolPackageEmpty: DelivereyData.length === 0,
+      schoolPackageEmpty: packages.length === 0,
       totalPages: data?.total || 0,
     };
   }, [data?.data, data?.total, error, isLoading, isValidating]);

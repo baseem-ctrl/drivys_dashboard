@@ -53,7 +53,6 @@ export default function PermissionFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
     published: '1',
-    locale: i18n.language,
   });
   const handleFilterPaymentStatus = (newValue: string) => {
     onFilters({ ...filters, booking_status: newValue });

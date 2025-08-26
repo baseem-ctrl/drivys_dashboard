@@ -76,7 +76,6 @@ export default function PackageTableRow({
     limit: 1000,
     page: 1,
     published: 1,
-    locale: i18n.language,
   });
   const [editingRowId, setEditingRowId] = useState(null);
   const matchedLocale = package_translations?.find(

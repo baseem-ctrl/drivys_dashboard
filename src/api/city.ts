@@ -29,109 +29,77 @@ export function useGetAllCity({
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const buildParams = (includeLocale: boolean) => {
+  const buildParams = () => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
     if (search) params.search = search;
     if (parent_id) params.parent_id = parent_id;
     if (is_published || is_published === '0') params.is_published = is_published;
-    if (includeLocale) params.locale = locale;
+    params.locale = locale; // always required
     return params;
   };
 
-  const primaryParams = useMemo(
-    () => buildParams(true),
+  const url = useMemo(
+    () => `${endpoints.city.list}?${new URLSearchParams(buildParams()).toString()}`,
     [limit, page, search, parent_id, is_published, locale]
   );
-  const fallbackParams = useMemo(
-    () => buildParams(false),
-    [limit, page, search, parent_id, is_published]
-  );
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.city.list}?${new URLSearchParams(primaryParams)}`,
-    [primaryParams]
-  );
-
-  const fallbackUrl = useMemo(
-    () => `${endpoints.city.list}?${new URLSearchParams(fallbackParams)}`,
-    [fallbackParams]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      city: dataToUse?.data || [],
+      city: data?.data || [],
       cityLoading: isLoading,
       cityError: error,
       cityValidating: isValidating,
-      cityEmpty: !isLoading && dataToUse?.data?.length === 0,
-      totalpages: dataToUse?.total || 0,
+      cityEmpty: !isLoading && data?.data?.length === 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, error, isLoading, isValidating, data?.total]
   );
 
   const revalidateCategory = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateCategory };
 }
+
 export function useGetAllCities(page: number, limit: number, searchQuery: string) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const buildParams = (includeLocale: boolean) => {
+  const buildParams = () => {
     const params: Record<string, any> = {
       limit: limit || 100,
       page: page ? page + 1 : 1,
     };
     if (searchQuery) params.search = searchQuery;
-    if (includeLocale) params.locale = locale;
+    params.locale = locale; // always required
     return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.city.getByList}?${new URLSearchParams(buildParams(true))}`,
+  const url = useMemo(
+    () => `${endpoints.city.getByList}?${new URLSearchParams(buildParams()).toString()}`,
     [page, limit, searchQuery, locale]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.city.getByList}?${new URLSearchParams(buildParams(false))}`,
-    [page, limit, searchQuery]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      cities: dataToUse?.data || [],
+      cities: data?.data || [],
       cityLoading: isLoading,
       cityError: error,
       cityValidating: isValidating,
-      totalpages: dataToUse?.total || 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, error, isLoading, isValidating, data?.total]
   );
 
   const revalidateCities = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateCities };
@@ -212,55 +180,40 @@ export function useGetPackageCityList({ city_id, page, limit }: UseGetPackageCit
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const buildParams = (withLocale: boolean) => {
+  const buildParams = () => {
     const params: Record<string, any> = {};
     if (city_id) params.city_id = city_id;
     if (page) params.page = page + 1;
     if (limit) params.limit = limit;
-    if (withLocale) params.locale = locale;
+    params.locale = locale; // always required
     return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.city.getPackageList}?${new URLSearchParams(buildParams(true))}`,
+  const url = useMemo(
+    () => `${endpoints.city.getPackageList}?${new URLSearchParams(buildParams()).toString()}`,
     [city_id, page, limit, locale]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.city.getPackageList}?${new URLSearchParams(buildParams(false))}`,
-    [city_id, page, limit]
-  );
-
-  const {
-    data: primaryData,
-    error,
-    isLoading,
-    isValidating,
-  } = useSWR(primaryUrl, drivysFetcher, {
+  const { data, error, isLoading, isValidating } = useSWR(url, drivysFetcher, {
     revalidateOnFocus: false,
   });
 
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
+  const packageCityList = data?.data || [];
 
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
-
-  const memoizedValue = useMemo(() => {
-    const packageCityList = dataToUse?.data || [];
-    return {
+  const memoizedValue = useMemo(
+    () => ({
       packageCityList,
       packageCityListLoading: isLoading,
       packageCityListError: error,
       packageCityListValidating: isValidating,
       packageCityListEmpty: !isLoading && packageCityList.length === 0,
-      totalPages: dataToUse?.total || 0,
-    };
-  }, [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]);
+      totalPages: data?.total || 0,
+    }),
+    [packageCityList, error, isLoading, isValidating, data?.total]
+  );
 
   const revalidatePackage = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return {
