@@ -36,15 +36,12 @@ export function useGetNotificationList({ page, limit, user_id }: UseGetNotificat
     }
   };
 
-  const buildQueryParams = (includeLocale: boolean) => {
+  const buildQueryParams = () => {
     const params: Record<string, any> = {
       limit: limit || 10,
       page: page ? page + 1 : 1,
+      locale, // always include locale
     };
-
-    if (includeLocale) {
-      params.locale = locale;
-    }
 
     if (user_id) {
       params.user_id = user_id;
@@ -58,38 +55,26 @@ export function useGetNotificationList({ page, limit, user_id }: UseGetNotificat
     return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${getEndpoint()}?${new URLSearchParams(buildQueryParams(true))}`,
+  const url = useMemo(
+    () => `${getEndpoint()}?${new URLSearchParams(buildQueryParams()).toString()}`,
     [limit, page, locale, user_id, user_type]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${getEndpoint()}?${new URLSearchParams(buildQueryParams(false))}`,
-    [limit, page, user_id, user_type]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      notifications: (dataToUse?.data as INotification[]) || [],
+      notifications: (data?.data as INotification[]) || [],
       notificationsError: error,
       notificationsLoading: isLoading,
       notificationsValidating: isValidating,
-      totalpages: dataToUse?.total || 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, data?.total, error, isLoading, isValidating]
   );
 
   const revalidateNotifications = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateNotifications };

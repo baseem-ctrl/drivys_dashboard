@@ -3,38 +3,29 @@ import useSWR, { mutate } from 'swr';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function useGetTermsAndConditions(locale: string = 'en') {
+export function useGetTermsAndConditions(locale?: string) {
   const { i18n } = useTranslation();
-  const currentLocale = i18n.language;
+  const currentLocale = locale || i18n.language; // always use a locale
 
-  const getUrl = () => {
-    const baseUrl = endpoints.termsAndConditions.getList;
-    return `${baseUrl}?locale=${locale}`;
-  };
-
-  // Primary fetch with locale
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(getUrl(true), drivysFetcher);
-
-  // Fallback fetch without locale if primary data is empty
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? getUrl(false) : null),
-    drivysFetcher
+  const fullUrl = useMemo(
+    () => `${endpoints.termsAndConditions.getList}?locale=${currentLocale}`,
+    [currentLocale]
   );
 
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(fullUrl, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      termsAndConditions: dataToUse?.data || [],
+      termsAndConditions: data?.data || [],
       termsLoading: isLoading,
       termsError: error,
       termsValidating: isValidating,
     }),
-    [dataToUse?.data, isLoading, error, isValidating]
+    [data?.data, isLoading, error, isValidating]
   );
 
   const revalidateTermsAndConditions = () => {
-    mutate(getUrl(true));
+    mutate(fullUrl);
   };
 
   return { ...memoizedValue, revalidateTermsAndConditions };

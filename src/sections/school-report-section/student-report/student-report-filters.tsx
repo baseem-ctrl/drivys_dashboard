@@ -32,7 +32,6 @@ export default function StudentReportFilter({ filters, onFilters }: any) {
     limit: 1000,
     page: 0,
     published: '1',
-    locale: i18n.language,
   });
   const { users } = useGetUsers({
     page: 0,

@@ -107,7 +107,6 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     limit: 1000,
     page: 1,
     search: searchCategory,
-    locale: i18n.language,
   });
   const { cities } = useGetCities(0, 1000);
 

@@ -27,12 +27,11 @@ export function useGetAllCategory({
   published,
   parent_id,
   has_child,
-  locale,
-}: useGetCategoryParams & { locale?: string } = {}) {
+}: useGetCategoryParams & {} = {}) {
   const { i18n } = useTranslation();
-  const currentLocale = locale || i18n.language;
+  const currentLocale = i18n.language;
 
-  const buildParams = (includeLocale: boolean) => {
+  const buildParams = () => {
     const params: Record<string, any> = {};
     if (limit) params.limit = limit;
     if (page) params.page = page;
@@ -40,44 +39,32 @@ export function useGetAllCategory({
     if (parent_id) params.parent_id = parent_id;
     if (published || published === '0') params.published = published;
     if (has_child || has_child === '0') params.has_child = has_child;
-    if (includeLocale) params.locale = currentLocale;
+    params.locale = currentLocale; // always required
 
     return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.category.list}?${new URLSearchParams(buildParams(true))}`,
+  const url = useMemo(
+    () => `${endpoints.category.list}?${new URLSearchParams(buildParams()).toString()}`,
     [limit, page, search, parent_id, published, has_child, currentLocale]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.category.list}?${new URLSearchParams(buildParams(false))}`,
-    [limit, page, search, parent_id, published, has_child]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      category: dataToUse?.data || [],
+      category: data?.data || [],
       categoryLoading: isLoading,
       categoryError: error,
       categoryValidating: isValidating,
-      categoryEmpty: !isLoading && dataToUse?.data?.length === 0,
-      totalpages: dataToUse?.total || 0,
+      categoryEmpty: !isLoading && data?.data?.length === 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, error, isLoading, isValidating, data?.total]
   );
 
   const revalidateCategory = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateCategory };

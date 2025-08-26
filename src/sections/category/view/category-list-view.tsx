@@ -87,7 +87,6 @@ export default function CategoryListView() {
       search: filters.name,
       published: is_published_value,
       parent_id: filters?.parent_id?.value,
-      locale: i18n.language,
     });
 
   const [tableData, setTableData] = useState<any>([]);

@@ -76,7 +76,6 @@ export default function PackageCreateForm({
     page: 1,
     search: searchValueCat,
     published: 1,
-    locale: i18n.language,
   });
   const { schoolList, schoolLoading } = useGetSchool({
     limit: 1000,

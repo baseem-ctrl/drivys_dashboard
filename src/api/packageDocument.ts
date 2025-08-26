@@ -39,10 +39,10 @@ export function useGetPackageDocuments({
   page,
 }: useGetPackageDocumentsParams = {}) {
   const { i18n } = useTranslation();
-  const locale = i18n.language;
+  const locale = i18n.language; // always include locale
 
-  const buildParams = (includeLocale: boolean) => {
-    const queryParams: Record<string, any> = {};
+  const buildParams = useMemo(() => {
+    const queryParams: Record<string, any> = { locale }; // locale is required
     if (packageId !== undefined) queryParams.package_id = packageId;
     if (sessionNo !== undefined) queryParams.session_no = sessionNo;
     if (status !== undefined) queryParams.status = status;
@@ -53,43 +53,29 @@ export function useGetPackageDocuments({
     if (sort_dir !== undefined) queryParams.sort_dir = sort_dir;
     if (limit !== undefined) queryParams.limit = limit;
     if (page !== undefined) queryParams.page = page + 1;
-    if (includeLocale) queryParams.locale = locale;
-
     return queryParams;
-  };
+  }, [packageId, sessionNo, status, type, title, search, sort, sort_dir, limit, page, locale]);
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.packageDocument.getList}?${new URLSearchParams(buildParams(true))}`,
-    [packageId, sessionNo, status, type, title, search, sort, sort_dir, limit, page, locale]
+  const url = useMemo(
+    () => `${endpoints.packageDocument.getList}?${new URLSearchParams(buildParams)}`,
+    [buildParams]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.packageDocument.getList}?${new URLSearchParams(buildParams(false))}`,
-    [packageId, sessionNo, status, type, title, search, sort, sort_dir, limit, page]
-  );
+  const { data, error, isLoading, isValidating } = useSWR(url, drivysFetcher);
 
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
-
-  const memoizedValue = useMemo(
-    () => ({
-      documents: dataToUse?.data || [],
+  const memoizedValue = useMemo(() => {
+    const documents = data?.data || [];
+    return {
+      documents,
       docLoading: isLoading,
       docError: error,
       docValidating: isValidating,
-      totalpages: dataToUse?.total || 0,
-    }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
-  );
+      totalpages: data?.total || 0,
+    };
+  }, [data?.data, data?.total, error, isLoading, isValidating]);
 
   const revalidateDocuments = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateDocuments };

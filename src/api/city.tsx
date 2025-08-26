@@ -16,49 +16,34 @@ export function useGetAllCities(page: number, limit: number) {
   const { i18n } = useTranslation();
   const locale = i18n.language;
 
-  const getQueryParams = (withLocale: boolean) => {
-    const params: Record<string, any> = {
+  const getQueryParams = () => {
+    return {
       page: page ? page + 1 : 1,
       limit: limit || 10,
+      locale, // always required
     };
-    if (withLocale) {
-      params.locale = locale;
-    }
-    return params;
   };
 
-  const primaryUrl = useMemo(
-    () => `${endpoints.city.getByList}?${new URLSearchParams(getQueryParams(true))}`,
+  const url = useMemo(
+    () => `${endpoints.city.getByList}?${new URLSearchParams(getQueryParams()).toString()}`,
     [page, limit, locale]
   );
 
-  const fallbackUrl = useMemo(
-    () => `${endpoints.city.getByList}?${new URLSearchParams(getQueryParams(false))}`,
-    [page, limit]
-  );
-
-  const { data: primaryData, isLoading, error, isValidating } = useSWR(primaryUrl, drivysFetcher);
-
-  const { data: fallbackData } = useSWR(
-    () => (!primaryData?.data?.length ? fallbackUrl : null),
-    drivysFetcher
-  );
-
-  const dataToUse = primaryData?.data?.length ? primaryData : fallbackData;
+  const { data, isLoading, error, isValidating } = useSWR(url, drivysFetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      cities: dataToUse?.data || [],
+      cities: data?.data || [],
       cityLoading: isLoading,
       cityError: error,
       cityValidating: isValidating,
-      totalpages: dataToUse?.total || 0,
+      totalpages: data?.total || 0,
     }),
-    [dataToUse?.data, error, isLoading, isValidating, dataToUse?.total]
+    [data?.data, error, isLoading, isValidating, data?.total]
   );
 
   const revalidateCities = () => {
-    mutate(primaryUrl);
+    mutate(url);
   };
 
   return { ...memoizedValue, revalidateCities };

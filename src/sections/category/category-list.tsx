@@ -40,7 +40,6 @@ export default function CategoryList({
       page: 1,
       search: searchValue ?? '',
       has_child: 1,
-      locale: i18n.language,
     });
 
   const handleView = useCallback(
