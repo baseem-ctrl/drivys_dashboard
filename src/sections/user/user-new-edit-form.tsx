@@ -474,13 +474,16 @@ export default function UserNewEditForm({
       genderData,
       gearData,
       i18n.language,
+      currentUser?.phone,
+      currentUser,
     ]
   );
-  console.log('user?.user?.user_type ', user?.user?.user_type);
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema) as any,
     defaultValues,
   });
+  console.log('defaultValues', defaultValues);
   const {
     reset,
     watch,
@@ -489,7 +492,11 @@ export default function UserNewEditForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = methods;
-  console.log('errorserrors', errors);
+  useEffect(() => {
+    if (currentUser) {
+      reset(defaultValues);
+    }
+  }, [currentUser, reset, defaultValues]);
   const selectedCity = watch('city_id');
   const initialCity = useRef(selectedCity);
 
