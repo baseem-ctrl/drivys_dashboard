@@ -206,6 +206,10 @@ export default function SchoolTrainersListView() {
       <TrainerSearch query={filters.name} results={filters} onSearch={handleFilters} />
     </Stack>
   );
+  const handleEditRow = () => {
+    router.push(paths.dashboard.school.trainerEdit(trainerDetails?.user_id));
+  };
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -396,12 +400,7 @@ export default function SchoolTrainersListView() {
             {t('remove')}
           </MenuItem>
 
-          <MenuItem
-            onClick={() => {
-              editTrainer.onTrue();
-              popover.onClose();
-            }}
-          >
+          <MenuItem onClick={handleEditRow}>
             <Iconify icon="solar:pen-bold" />
             {t('edit')}
           </MenuItem>
