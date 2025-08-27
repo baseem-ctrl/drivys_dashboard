@@ -659,7 +659,6 @@ export default function UserNewEditForm({
   const handleCancel = () => {
     router.back();
   };
-
   const onSubmit = handleSubmit(async (data) => {
     try {
       let response;
@@ -773,10 +772,14 @@ export default function UserNewEditForm({
       }
       if (data?.license?.length > 0) {
         data?.license.forEach((docItem, index) => {
-          body.append(`license_file[${index}]`, docItem?.license_file);
-          body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
+          // Only append if it's a File/Blob (not a string URL)
+          if (docItem?.license_file && typeof docItem.license_file !== 'string') {
+            body.append(`license_file[${index}]`, docItem.license_file);
+            body.append(`doc_side[${index}]`, docItem?.doc_side ?? '');
+          }
         });
       }
+
       if (
         data?.user_type === 'ASSISTANT' &&
         data?.assistant_id_proof?.front &&
@@ -808,10 +811,19 @@ export default function UserNewEditForm({
 
       if (currentUser?.id) {
         body.append('is_active', data?.is_active ? '1' : '0');
-        body.append('user_id', currentUser?.id);
-        response = await updateUser(body);
+        if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+          body.append('trainer_id', currentUser?.id);
+
+          response = await createTrainer(body);
+        } else {
+          body.append('user_id', currentUser?.id);
+
+          response = await updateUser(body);
+        }
       } else {
         if (user?.user?.user_type === 'SCHOOL_ADMIN') {
+          body.append('vendor_id', user?.user?.school?.vendor_translations[0]?.vendor_id);
+
           response = await createTrainer(body);
         } else {
           response = await createUser(body);
@@ -838,7 +850,6 @@ export default function UserNewEditForm({
       } else {
         enqueueSnackbar(error.message, { variant: 'error' });
       }
-    } finally {
     }
   });
 

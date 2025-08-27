@@ -227,6 +227,7 @@ export const paths = {
       account: `${ROOTS.DASHBOARD}/school/account`,
       trainer: `${ROOTS.DASHBOARD}/school/trainers-list`,
       newTrainer: `${ROOTS.DASHBOARD}/school/new-trainer`,
+      trainerEdit: (id: string) => `${ROOTS.DASHBOARD}/school/trainer/${id}/edit`,
 
       trainerRewards: `${ROOTS.DASHBOARD}/school/rewards`,
       trainerNotifications: `${ROOTS.DASHBOARD}/school/notifications`,
