@@ -516,13 +516,13 @@ export default function AssistantUserDetailsContent({
                   : []),
 
                 { label: t('date_of_birth'), value: details?.dob?.split('T')[0] ?? t('n/a') },
-                {
-                  label: t('document_expiry'),
-                  value:
-                    Array.isArray(details?.user_docs) && details.user_docs[0]?.expiry
-                      ? details.user_docs[0].expiry.split('T')[0]
-                      : t('n/a'),
-                },
+                // {
+                //   label: t('document_expiry'),
+                //   value:
+                //     Array.isArray(details?.user_docs) && details.user_docs[0]?.expiry
+                //       ? details.user_docs[0].expiry.split('T')[0]
+                //       : t('n/a'),
+                // },
 
                 ...(details?.user_type !== 'ASSISTANT'
                   ? [
