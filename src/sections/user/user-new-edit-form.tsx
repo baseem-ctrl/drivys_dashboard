@@ -710,12 +710,15 @@ export default function UserNewEditForm({
         }
       }
       if (data?.user_type === 'COLLECTOR' || data?.user_type === 'ASSISTANT') {
-        data.city_assigned?.forEach((c) => {
-          if (c?.value) {
-            body.append('city_assigned[]', c.value);
-          }
-        });
+        if (Array.isArray(data.city_assigned) && data.city_assigned.length > 0) {
+          data.city_assigned.forEach((c) => {
+            if (c?.value) {
+              body.append('city_assigned[]', c.value);
+            }
+          });
+        }
       }
+
       if (data?.user_type === 'ASSISTANT') {
         data.school_ids?.forEach((c) => {
           if (c?.value) {
