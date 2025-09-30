@@ -123,6 +123,7 @@ export default function AssistantUserDetailsContent({
   user,
 }: Props) {
   const { reset, control } = useForm();
+  console.log('details', details);
   const { t, currentLang } = useLocales();
   const matchedLocale = details?.vendor_translations?.find(
     (t) => t?.locale?.toLowerCase() === currentLang.toLowerCase()
@@ -867,11 +868,29 @@ export default function AssistantUserDetailsContent({
             {[
               {
                 label: t('city'),
-                value: details?.user_preference?.city,
+                value: (() => {
+                  const translations = details?.user_preference?.city?.city_translations;
+                  if (Array.isArray(translations) && translations.length > 0) {
+                    const matched = translations.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    );
+                    return matched?.name || translations[0]?.name || t('unknown');
+                  }
+                  return t('unknown');
+                })(),
               },
               {
                 label: t('area'),
-                value: details?.user_preference?.state_province,
+                value: (() => {
+                  const translations = details?.user_preference?.state_province?.translations;
+                  if (Array.isArray(translations) && translations.length > 0) {
+                    const matched = translations.find(
+                      (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    );
+                    return matched?.name || translations[0]?.name || t('unknown');
+                  }
+                  return t('unknown');
+                })(),
               },
 
               { label: t('gear'), value: details?.user_preference?.gear ?? t('n/a') },
