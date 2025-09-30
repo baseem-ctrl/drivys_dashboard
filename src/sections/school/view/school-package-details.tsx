@@ -1,6 +1,7 @@
 import { Card, Typography, Box, Grid, Stack } from '@mui/material';
 import { useGetPackage } from 'src/api/package';
 import Iconify from 'src/components/iconify';
+import i18n from 'src/locales/i18n';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 
@@ -83,8 +84,9 @@ export default function SchoolPackageDetails({ id, t }) {
                       component="span"
                       dangerouslySetInnerHTML={{
                         __html:
-                          packageItem.package_translations.find((trans) => trans.locale === 'en')
-                            ?.session_inclusions || t('no_inclusions_available'),
+                          packageItem.package_translations.find(
+                            (trans) => trans.locale?.toLowerCase() === i18n.language.toLowerCase()
+                          )?.session_inclusions || t('no_inclusions_available'),
                       }}
                     />
                   </Stack>
