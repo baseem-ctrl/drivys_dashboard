@@ -50,7 +50,7 @@ export default function CashInHandAssistantList() {
 
   const TABLE_HEAD = [
     { id: 'name', label: t('assistant'), width: 180 },
-    { id: 'collected_cash_in_hand', label: t('collected_cash'), width: 180 },
+    { id: 'amount_required_from_assistant', label: t('amount'), width: 180 },
     { id: 'collected_cash_clearance_date', label: t('cash_clearance_date'), width: 180 },
     { id: 'action', label: '', width: 180 },
   ];
