@@ -441,7 +441,7 @@ export default function SchoolDetailsContent({ details, loading, reload, t, user
                 },
                 {
                   label: t(`about_locale`, { locale: itm?.locale ?? t('unknown') }),
-                  value: itm?.about?.trim() || t('n/a'),
+                  value: itm?.about ? itm.about.replace(/<[^>]+>/g, '').trim() : t('n/a'),
                 },
               ]) ?? []),
 
