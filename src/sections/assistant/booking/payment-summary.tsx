@@ -43,12 +43,20 @@ export const PaymentSummaryBox = ({
     setLocalError(errorMessage || '');
   }, [errorMessage]);
   useEffect(() => {
-    if (paymentSummaryError?.message) {
+    if (paymentSummaryError?.message?.errors) {
       setActiveStep(4);
 
-      enqueueSnackbar(paymentSummaryError.message, {
+      const couponErrors = paymentSummaryError.message.errors.coupon_code;
+
+      const errorMessage = Array.isArray(couponErrors)
+        ? couponErrors.join('\n')
+        : 'Something went wrong.';
+
+      enqueueSnackbar(errorMessage, {
         variant: 'error',
       });
+      setCouponInput('');
+      setCouponCode(null);
     }
   }, [paymentSummaryError]);
 
