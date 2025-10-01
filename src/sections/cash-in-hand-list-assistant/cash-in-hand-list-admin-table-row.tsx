@@ -23,7 +23,7 @@ import { collectCashFromAssistant } from 'src/api/booking-assistant';
 
 interface RowProps {
   name: any;
-  collected_cash_in_hand: any;
+  amount_required_from_assistant: any;
   collected_cash_clearance_date: any;
   id: any;
 }
@@ -98,7 +98,11 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
     <TableRow
       hover
       onClick={() =>
-        handleClickRow(row?.id, row?.collected_cash_in_hand > 0, row?.collected_cash_in_hand)
+        handleClickRow(
+          row?.id,
+          row?.amount_required_from_assistant > 0,
+          row?.amount_required_from_assistant
+        )
       }
     >
       <TableCell
@@ -117,7 +121,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
         <Typography variant="body2">
           {' '}
           <span className="dirham-symbol">&#x00EA;</span>
-          {row?.collected_cash_in_hand ?? '0'}{' '}
+          {Number(row?.amount_required_from_assistant ?? 0).toFixed(2) ?? '0'}{' '}
         </Typography>
       </TableCell>
 
@@ -138,7 +142,7 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
             handleOpen(e, row.id);
           }}
           style={{ fontWeight: '600', fontSize: '0.9rem' }}
-          disabled={row?.collected_cash_in_hand <= 0}
+          disabled={row?.amount_required_from_assistant <= 0}
         >
           {t('collect')}
         </Button>
@@ -146,6 +150,9 @@ const CashInHandListRow = ({ reload, row }: CollectedCashListRowProps) => {
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           onClose={handleClose}
+          PaperProps={{
+            onClick: (e) => e.stopPropagation(),
+          }}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         >
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
