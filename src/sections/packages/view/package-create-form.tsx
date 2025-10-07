@@ -217,18 +217,12 @@ export default function PackageCreateForm({
     // ),
     is_drivys_commision_percentage: Yup.boolean(),
   });
-  const localeDefaults = localeOptions.reduce(
-    (acc, locale) => {
-      acc[locale.value] = '';
-      return acc;
-    },
-    {} as Record<string, string>
-  );
+
   const defaultValues = useMemo(
     () => ({
       name: '',
       locale: '',
-      session_inclusions: localeDefaults,
+      session_inclusions: '',
       is_published: false,
       is_pickup_fee_included: false,
       background_color: '',
