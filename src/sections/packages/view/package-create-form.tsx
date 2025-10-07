@@ -48,6 +48,7 @@ import { InfoOutlined } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { FormatColorFill } from '@mui/icons-material';
+import RHFMultilineTextField from 'src/components/hook-form/rhf-editor-session-inclusion';
 
 type Props = {
   open: boolean;
@@ -152,9 +153,9 @@ export default function PackageCreateForm({
   }));
 
   const DeliverySchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    locale: Yup.string().required('Locale is required'),
-    session_inclusions: Yup.string().required('Session Inclusion is required'),
+    name: Yup.string(),
+    locale: Yup.string(),
+    session_inclusions: Yup.mixed(),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
     is_cash_pay_available: Yup.boolean(),
@@ -216,12 +217,18 @@ export default function PackageCreateForm({
     // ),
     is_drivys_commision_percentage: Yup.boolean(),
   });
-
+  const localeDefaults = localeOptions.reduce(
+    (acc, locale) => {
+      acc[locale.value] = '';
+      return acc;
+    },
+    {} as Record<string, string>
+  );
   const defaultValues = useMemo(
     () => ({
       name: '',
       locale: '',
-      session_inclusions: '',
+      session_inclusions: localeDefaults,
       is_published: false,
       is_pickup_fee_included: false,
       background_color: '',
@@ -382,10 +389,25 @@ export default function PackageCreateForm({
     }
 
     formData.append('background_color', data.background_color ? data.background_color : 'normal');
+    localeOptions.forEach((locale: any, index: number) => {
+      const localeCode = locale.value;
 
-    if (data?.name) formData.append(`package_translation[0][name]`, data?.name);
-    if (data?.locale) formData.append(`package_translation[0][locale]`, data?.locale);
-    formData.append(`package_translation[0][session_inclusions]`, data?.session_inclusions || '');
+      const titleValue = data?.title?.[localeCode]?.trim() || '';
+      const inclusionValue = data?.session_inclusions?.[localeCode]?.trim() || '';
+
+      if (titleValue || inclusionValue) {
+        if (titleValue) {
+          formData.append(`package_translation[${index}][name]`, titleValue);
+        }
+
+        if (inclusionValue) {
+          formData.append(`package_translation[${index}][session_inclusions]`, inclusionValue);
+        }
+
+        formData.append(`package_translation[${index}][locale]`, localeCode);
+      }
+    });
+
     if (data?.category_id) formData.append(`category_id`, data?.category_id?.value);
     if (data?.drivys_commision) formData.append('drivys_commision', data?.drivys_commision);
     if (data.is_drivys_commision_percentage !== undefined) {
@@ -407,16 +429,25 @@ export default function PackageCreateForm({
       });
     }
 
-    if (sessionTitles.length === 0) {
-      formData.append('session_titles', '');
-    } else {
-      sessionTitles.forEach((session, index) => {
-        formData.append(`session_titles[${index}][locale]`, session.locale);
-        session.titles.forEach((title, titleIndex) => {
-          formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
-        });
+    if (data?.session_titles) {
+      localeOptions.forEach((locale: any, localeIndex: number) => {
+        const localeCode = locale.value;
+
+        const localeTitles = data.session_titles
+          .map((session: any) => session?.[localeCode]?.trim())
+          .filter((title: string) => title && title !== '');
+
+        if (localeTitles.length > 0) {
+          formData.append(`session_titles[${localeIndex}][locale]`, localeCode);
+          localeTitles.forEach((title, titleIndex) => {
+            formData.append(`session_titles[${localeIndex}][titles][${titleIndex}]`, title);
+          });
+        }
       });
+    } else {
+      formData.append('session_titles', '');
     }
+
     if (Array.isArray(cityFields)) {
       cityFields.forEach((city, index) => {
         if (city?.id !== undefined && city?.id !== '' && city?.id) {
@@ -529,24 +560,18 @@ export default function PackageCreateForm({
               gap={1}
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: '25% 75% ',
+                sm: '25% 75%',
               }}
             >
-              <RHFSelect
-                name="locale"
-                label={t('Locale')}
-                value={selectedLocale}
-                onChange={(e) => handleLocaleChange(e.target.value)}
-              >
-                {localeOptions?.map((option: any) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-
-              <RHFTextField name="name" label={t('Name')} />
+              {localeOptions?.map((locale: any) => (
+                <RHFTextField
+                  key={locale.value}
+                  name={`title.${locale.value}`}
+                  label={t(`Title (${locale.label})`)}
+                />
+              ))}
             </Box>
+
             {/* <RHFTextField name="description" label="Description" /> */}
           </Box>
 
@@ -573,12 +598,18 @@ export default function PackageCreateForm({
               <Grid container spacing={2} key={`slots-${numberOfSlots}`}>
                 {Array.from({ length: numberOfSlots }).map((_, index) => (
                   <Grid item xs={12} key={index}>
-                    <RHFTextField
-                      fullWidth
-                      name={`session_titles[${index}]`}
-                      label={`session_titles ${index + 1}`}
-                      defaultValue="" // <- important for fresh mount
-                    />
+                    <Grid container spacing={1}>
+                      {localeOptions?.map((locale: any) => (
+                        <Grid item xs={12} sm={6} key={locale.value}>
+                          <RHFTextField
+                            fullWidth
+                            name={`session_titles[${index}].${locale.value}`}
+                            label={`Session Title ${index + 1} (${locale.label})`}
+                            defaultValue=""
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
                   </Grid>
                 ))}
               </Grid>
@@ -878,10 +909,20 @@ export default function PackageCreateForm({
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1.5} mt={2}>
-                <Typography variant="subtitle2">{t('Session inclusions')}</Typography>
-                <RHFEditor name="session_inclusions" />
+                {localeOptions?.map((locale) => (
+                  <Box key={locale.value}>
+                    <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                      {t('Session Inclusion With Locale', { locale: locale.label })}
+                    </Typography>
+
+                    <RHFMultilineTextField
+                      name={`session_inclusions.${locale.value}`}
+                      label={t(`Session Inclusion With Locale`, { locale: locale.label })}
+                      minRows={3}
+                    />
+                  </Box>
+                ))}
               </Stack>
-              {/* <RHFTextField name="session_inclusions" label="Session inclusions" /> */}
             </Grid>
           </Grid>
         </DialogContent>

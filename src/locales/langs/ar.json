@@ -1479,5 +1479,6 @@
   "free_reschedule_before_must_be_number": "وقت الإعفاء من رسوم إعادة الجدولة يجب أن يكون رقمًا",
   "min_price_less_than_max_price": "الحد الأدنى للسعر يجب أن يكون أقل من أو يساوي الحد الأقصى للسعر",
   "language_name_required": "اسم اللغة مطلوب",
-  "order_must_be_number": "الترتيب يجب أن يكون رقمًا"
+  "order_must_be_number": "الترتيب يجب أن يكون رقمًا",
+  "Session Inclusion With Locale": "({{locale}}) المحتويات المشمولة في الجلسة"
 }
