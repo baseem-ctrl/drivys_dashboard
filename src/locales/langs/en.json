@@ -1431,5 +1431,6 @@
   "free_reschedule_before_must_be_number": "Free reschedule time must be a number",
   "min_price_less_than_max_price": "Minimum price should be less than or equal to maximum slot",
   "language_name_required": "Language Name is required",
-  "order_must_be_number": "Order must be a number"
+  "order_must_be_number": "Order must be a number",
+  "Session Inclusion With Locale": "Session Inclusion ({{locale}})"
 }
