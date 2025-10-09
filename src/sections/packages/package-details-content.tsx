@@ -147,7 +147,12 @@ export default function PackageDetails({ details, loading, reload }: Props) {
     number_of_sessions: Yup.number()
       .nullable()
       .typeError(t('number_of_sessions_invalid'))
-      .min(0, t('number_of_sessions_invalid')),
+      .test(
+        'allow-negative-one',
+        t('number_of_sessions_invalid'),
+        (value) => value === -1 || value >= 0 || value === null
+      ),
+
     status: Yup.string(),
     is_published: Yup.boolean(),
     is_certificate_included: Yup.boolean(),
@@ -392,44 +397,19 @@ export default function PackageDetails({ details, loading, reload }: Props) {
         }
       }
 
-      // const sessionTitles = [];
-      // const selectedLocale = data?.locale?.toLowerCase() || selectedLanguage.toLowerCase();
-
-      // const filteredSessionTitles = Array.isArray(data?.session_titles)
-      //   ? data.session_titles.filter((title) => title)
-      //   : [];
-      // const sessionDetails = filteredSessionTitles.map((newTitle) => ({
-      //   locale: selectedLocale || selectedLanguage,
-      //   title: newTitle,
-      // }));
-      // console.log('session.locale ', sessionTitles);
-      // sessionTitles.forEach((session, index) => {
-      //   if (session.locale && sessionTitles.length > 0) {
-      //     sessionTitles.push({
-      //       locale: selectedLocale || selectedLanguage,
-      //       titles: sessionDetails.map((session) => session.title),
-      //     });
-      //     formData.append(`session_titles[${index}][locale]`, session.locale);
-      //   }
-      //   if (Array.isArray(session.titles)) {
-      //     session.titles.forEach((title, titleIndex) => {
-      //       if (title) {
-      //         formData.append(`session_titles[${index}][titles][${titleIndex}]`, title);
-      //       }
-      //     });
-      //   }
-      // });
       const sessionTitles = [];
-      if (data?.locale && data?.session_titles) {
-        const selectedLocale = data.locale.toLowerCase();
 
-        const titles = data.session_titles.filter((title: string) => title);
+      if (data?.session_titles && Array.isArray(data.session_titles)) {
+        const validTitles = data.session_titles.filter((title: string) => title?.trim() !== '');
 
-        sessionTitles.push({
-          locale: selectedLocale,
-          titles: titles,
-        });
+        if (validTitles.length > 0 && data?.locale) {
+          sessionTitles.push({
+            locale: data.locale.toLowerCase(),
+            titles: validTitles,
+          });
+        }
       }
+
       if (sessionTitles.length === 0) {
         formData.append('session_titles', '');
       } else {
@@ -775,19 +755,33 @@ export default function PackageDetails({ details, loading, reload }: Props) {
                     <Iconify color="red" icon="bi:x-square-fill" />
                   ),
               },
-              ...((details?.number_of_sessions !== -1 &&
-                details?.session_details
-                  ?.slice(0, Math.floor(numberOfSessions / 2))
-                  ?.map((sessionItem: any) => ({
+              ...((details?.session_details ?? [])
+                .filter(() => numberOfSessions !== -1)
+                .slice(
+                  0,
+                  numberOfSessions && numberOfSessions > 0
+                    ? Math.floor(numberOfSessions / 2)
+                    : details?.session_details?.length
+                )
+                .map((sessionItem: any) => {
+                  const translations = Array.isArray(sessionItem?.translations)
+                    ? sessionItem.translations.filter(
+                        (tr: any) => tr?.title && tr?.title.toLowerCase() !== 'undefined'
+                      )
+                    : [];
+
+                  const validTranslations =
+                    translations.length > 0
+                      ? translations
+                          .map((tr: any) => `${tr.title} (${tr.locale.toUpperCase()})`)
+                          .join(' , ')
+                      : '';
+
+                  return {
                     label: `${t('Slot')} ${sessionItem.slot_number} ${t('Title')}`,
-                    value:
-                      sessionItem.translations?.find(
-                        (tr) => tr?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                      )?.title ??
-                      sessionItem.translations?.[0]?.title ??
-                      t('n/a'),
-                  }))) ||
-                []),
+                    value: validTranslations || '',
+                  };
+                }) || []),
             ]?.map((item, index) => (
               <Box key={index} sx={{ display: 'flex', width: '100%' }}>
                 <Box component="span" sx={{ minWidth: '200px', fontWeight: 'bold' }}>
