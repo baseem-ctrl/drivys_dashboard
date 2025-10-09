@@ -18,6 +18,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { Autocomplete, Chip, TextField } from '@mui/material';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'src/locales/i18n';
 
 // ----------------------------------------------------------------------
 
@@ -64,7 +65,6 @@ export default function ProductFilters({
   publishedOptions,
   schoolOptions,
 }: Props) {
-
   const { t } = useTranslation();
   const handleFilterStocks = (newValue: string) => {
     onFilters('status', newValue);
@@ -87,7 +87,7 @@ export default function ProductFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        {t("Filters")}
+        {t('Filters')}
       </Typography>
 
       <Tooltip title="Reset">
@@ -131,7 +131,7 @@ export default function ProductFilters({
   const renderActive = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1 }}>
-        {t("Publish Status")}
+        {t('Publish Status')}
       </Typography>
       {publishedOptions.map((option) => (
         <FormControlLabel
@@ -150,7 +150,7 @@ export default function ProductFilters({
   const renderPrice = (
     <Stack>
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        {t("No of sessions")}
+        {t('No of sessions')}
       </Typography>
 
       {/* <Stack direction="row" spacing={5} sx={{ my: 2 }}>
@@ -177,29 +177,34 @@ export default function ProductFilters({
       />
     </Stack>
   );
-  let schoolsOptions = schoolOptions?.map((item) => {
-    const translations = item.vendor_translations;
+  const schoolsOptions = schoolOptions?.map((item) => {
+    const translations = item?.vendor_translations || [];
 
-    // Find the translation for both Arabic and English locales
-    const englishTranslation = translations.find((t) => t.locale === 'en');
-    const arabicTranslation = translations.find((t) => t.locale === 'ar');
+    const selectedTranslation = translations.find(
+      (t) => t.locale?.toLowerCase() === i18n.language?.toLowerCase()
+    );
+
+    const fallbackTranslation = translations[0];
+
+    const name = selectedTranslation?.name || fallbackTranslation?.name || 'Unknown';
 
     return {
-      label: `${englishTranslation?.name || 'Unknown'} (${arabicTranslation?.name || 'Unknown'})`,
+      label: name,
       value: item.id,
     };
   });
+
   const renderVendorType = (
     <Stack>
       <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-        {t("School Type")}
+        {t('School Type')}
       </Typography>
       <Autocomplete
         options={schoolsOptions?.map((option) => option)}
         getOptionLabel={(option) => option.label}
         value={filters.vendor_id}
         onChange={(event, newValue) => handleFilterVendor(newValue)}
-        renderInput={(params) => <TextField placeholder={t("Select School type")} {...params} />}
+        renderInput={(params) => <TextField placeholder={t('Select School')} {...params} />}
         renderOption={(props, option) => (
           <li {...props} key={option.value}>
             {option.label}
@@ -231,7 +236,7 @@ export default function ProductFilters({
         }
         onClick={onOpen}
       >
-        {t("Filters")}
+        {t('Filters')}
       </Button>
 
       <Drawer
@@ -320,7 +325,6 @@ function InputRange({ type, onFilters, filterName, value }: InputRangeProps) {
 }
 
 function NoOfSession({ type, onFilters, filterName, value }: InputRangeProps) {
-
   const { t } = useTranslation();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
