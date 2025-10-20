@@ -4,6 +4,9 @@ export default function StudentRow({ row, t }) {
   return (
     <TableRow>
       <TableCell>
+        <Typography variant="body2">{row?.id || t('n/a')}</Typography>
+      </TableCell>
+      <TableCell>
         <Typography variant="body2">{row?.name || t('n/a')}</Typography>
       </TableCell>
       <TableCell>

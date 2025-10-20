@@ -13,6 +13,24 @@ interface PackageCardProps {
   selected?: boolean;
 }
 
+const getPackageBackground = (title: string) => {
+  const normalizedTitle = title.trim().toLowerCase();
+
+  if (normalizedTitle.includes('unlimited')) {
+    return '#e9d5ff'; // light purple
+  } else if (normalizedTitle.includes('silver')) {
+    return '#e8e8e8'; // silver gray
+  } else if (normalizedTitle.includes('bronze')) {
+    return '#f5e6d3'; // bronze tan
+  } else if (normalizedTitle.includes('gold')) {
+    return '#fef3c7'; // gold cream
+  } else if (normalizedTitle.includes('starter')) {
+    return '#dbeafe'; // light blue for starter
+  } else {
+    return '#1e293b'; // fallback dark (your original default)
+  }
+};
+
 const PackageCard: React.FC<PackageCardProps> = ({
   title,
   sessions,
@@ -20,18 +38,19 @@ const PackageCard: React.FC<PackageCardProps> = ({
   currency = 'AED',
   features,
   onSelect,
-  background = '#1e293b',
+  background,
   selected = false,
 }) => {
+  const bgColor = background || getPackageBackground(title);
+
   return (
     <Card
       sx={{
-        background,
+        background: bgColor,
         color: '#fff',
         borderRadius: 3,
         border: '1px solid #333',
         width: 280,
-        // mx: 'auto',
         boxShadow: 4,
         transition: 'transform 0.3s ease',
         '&:hover': { transform: 'scale(1.03)' },
@@ -52,10 +71,6 @@ const PackageCard: React.FC<PackageCardProps> = ({
           <Typography fontSize="14px">{currency}</Typography>
         </Box>
 
-        {/* <Typography mt={1} fontWeight={500} sx={{ fontSize: '12px' }}>
-          What’s included?
-        </Typography> */}
-
         <Stack spacing={1} mt={1}>
           {features.map((f, i) => (
             <Box key={i} display="flex" alignItems="center" gap={1}>
@@ -64,6 +79,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
             </Box>
           ))}
         </Stack>
+
         <Box mt={2} display="flex" justifyContent="center">
           <Button
             variant="contained"

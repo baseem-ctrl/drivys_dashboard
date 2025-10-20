@@ -16,9 +16,14 @@ import {
   Button,
   TextField,
   InputAdornment,
+  Typography,
+  MenuItem,
+  Select,
+  TableHead,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -58,9 +63,11 @@ export default function StudentListView() {
   const confirm = useBoolean();
   const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
+  const [filteredData, setFilteredData] = useState<any>([]);
   const [viewMode, setViewMode] = useState('table');
   const [localeFilter, setLocaleFilter] = useState('');
   const [searchTermStudent, setSearchTermStudent] = useState('');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState('');
 
   const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
@@ -72,28 +79,34 @@ export default function StudentListView() {
     endDate?: string;
     category_id?: any;
   }>({});
+
   const TABLE_HEAD = [
+    { id: 'id', label: '#ID', width: 100 },
     { id: 'name', label: t('name'), width: 200 },
     { id: 'school-revenue', label: t('preferred_language'), width: 200 },
     { id: 'email', label: t('email'), width: 200 },
     { id: 'phone', label: t('Phone'), width: 200 },
     { id: 'active', label: t('active'), width: 200 },
   ];
+
   const { students, studentListLoading, totalStudentPages, revalidateStudentList } =
     useGetStudentList({
       page: table.page,
       limit: table.rowsPerPage,
       search: searchTermStudent,
     });
+
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
+
   const { language } = useGetAllLanguage(0, 1000);
 
   const localeOptions = (language || []).map((lang) => ({
     value: lang.language_culture,
     label: lang.name,
   }));
+
   useEffect(() => {
     if (students?.length) {
       setTableData(students);
@@ -101,6 +114,31 @@ export default function StudentListView() {
       setTableData([]);
     }
   }, [students]);
+
+  // Filter data based on booking status
+  useEffect(() => {
+    if (!tableData.length) {
+      setFilteredData([]);
+      return;
+    }
+
+    let filtered = [...tableData];
+
+    // Apply booking status filter
+    if (bookingStatusFilter) {
+      filtered = filtered.filter((student) => {
+        if (bookingStatusFilter === 'active') {
+          return student.is_active === true || student.is_active === 1;
+        }
+        if (bookingStatusFilter === 'inactive') {
+          return student.is_active === false || student.is_active === 0;
+        }
+        return true;
+      });
+    }
+
+    setFilteredData(filtered);
+  }, [tableData, bookingStatusFilter]);
 
   const handleRowClick = (row) => {
     // setRowId(row.id);
@@ -118,9 +156,11 @@ export default function StudentListView() {
     // },
     [table]
   );
+
   const handleClickNewStudent = () => {
     router.push(paths.dashboard.assistant.student.addNew);
   };
+
   const handleOrderChange = (event) => {
     const value = event.target.value;
 
@@ -132,15 +172,17 @@ export default function StudentListView() {
       setSelectedOrder(value);
     }
   };
+
   const handleLocaleFilterChange = (locale: string) => {
     setLocaleFilter(locale);
   };
+
   // const canReset = !isEqual(defaultFilters, filters);
 
   const handleResetFilters = useCallback(() => {
     setSelectedOrder(undefined);
-
     setLocaleFilter('');
+    setBookingStatusFilter('');
     // setFilters(defaultFilters);
   }, []);
 
@@ -148,71 +190,135 @@ export default function StudentListView() {
     setSearchTermStudent('');
   };
 
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <Box mb={3} sx={{ width: '100%', maxWidth: 500 }}>
-        <TextField
-          label={t('search_students')}
-          variant="outlined"
-          fullWidth
-          value={searchTermStudent}
-          onChange={(e) => setSearchTermStudent(e.target.value)}
-          InputProps={{
-            endAdornment: searchTermStudent && (
-              <InputAdornment position="end">
-                <IconButton onClick={handleClearSearch}>
-                  <CloseIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-    </Stack>
-  );
+  const handleBookingStatusChange = (event) => {
+    setBookingStatusFilter(event.target.value);
+    table.onResetPage(); // Reset to first page when filter changes
+  };
+
+  // Use filtered data for display
+  const displayData = bookingStatusFilter ? filteredData : tableData;
+
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading={t('student_list')}
-        links={[
-          { name: t('dashboard'), href: paths.dashboard.root },
-          {
-            name: t('student'),
-            href: paths.dashboard.assistant.student.list,
-          },
-          { name: t('list') },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
-      {renderFilters}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          endIcon={<AddIcon />}
-          onClick={handleClickNewStudent}
-        >
-          {t('add_new')}
-        </Button>
+    <Box sx={{ p: 4, bgcolor: '#fafafa', minHeight: '100vh' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
+          {t('Students')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('Students')}</span>
+        </Typography>
       </Box>
-      <Card>
+
+      {/* White Card Container */}
+      <Card
+        sx={{
+          borderRadius: 2,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Card Header */}
+        <Box
+          sx={{
+            p: 3,
+            borderBottom: '1px solid #f0f0f0',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            {t('student_list')}
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Search */}
+            <TextField
+              placeholder={t('search_students') || 'Search...'}
+              size="small"
+              value={searchTermStudent}
+              onChange={(e) => setSearchTermStudent(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#999', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTermStudent && (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={handleClearSearch}>
+                      <CloseIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: 250,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: '#fafafa',
+                },
+              }}
+            />
+
+            {/* Booking Status Filter */}
+            <Select
+              size="small"
+              value={bookingStatusFilter}
+              onChange={handleBookingStatusChange}
+              displayEmpty
+              sx={{
+                minWidth: 150,
+                bgcolor: '#fafafa',
+                '& .MuiSelect-select': {
+                  py: 1,
+                },
+              }}
+            >
+              <MenuItem value="">{t('Booking Status')}</MenuItem>
+              <MenuItem value="active">{t('Active')}</MenuItem>
+              <MenuItem value="inactive">{t('Inactive')}</MenuItem>
+            </Select>
+
+            {/* Clear Filter Button (optional) */}
+            {bookingStatusFilter && (
+              <IconButton size="small" onClick={() => setBookingStatusFilter('')}>
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            )}
+
+            {/* Add New Student Button */}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleClickNewStudent}
+              sx={{
+                bgcolor: '#ff6b35',
+                textTransform: 'none',
+                px: 3,
+                '&:hover': {
+                  bgcolor: '#e55a2b',
+                },
+              }}//this code costing latgger
+            >
+              {t('add_new')}
+            </Button>
+          </Box>
+        </Box>
+
+        {/* Table with TableSelectedAction */}
         {viewMode === 'table' && (
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
+              rowCount={displayData.length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  displayData.map((row) => row.id)
                 )
               }
               action={
@@ -230,46 +336,63 @@ export default function StudentListView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={displayData.length}
                   numSelected={table.selected.length}
+                  sx={{
+                    '& .MuiTableCell-head': {
+                      bgcolor: '#f8f8f8',
+                      fontWeight: 600,
+                      color: '#333',
+                    },
+                  }}
                 />
                 <TableBody>
                   {studentListLoading
                     ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData?.map((row) => (
-                        <StudentRow
-                          userType={user?.user?.user_type}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => handleRowClick(row)}
-                          reload={revalidateStudentList}
-                          t={t}
-                        />
-                      ))}
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                    : displayData?.map((row) => (
+                      <StudentRow
+                        key={row.id}
+                        userType={user?.user?.user_type}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => handleRowClick(row)}
+                        reload={revalidateStudentList}
+                        t={t}
+                      />
+                    ))}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
         )}
 
+        {/* Pagination */}
         {viewMode === 'table' && (
-          <TablePaginationCustom
-            count={totalStudentPages}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
+          <Box
+            sx={{
+              borderTop: '1px solid #f0f0f0',
+              px: 2,
+              py: 1,
+            }}
+          >
+            <TablePaginationCustom
+              count={totalStudentPages}
+              page={table.page}
+              rowsPerPage={table.rowsPerPage}
+              onPageChange={table.onChangePage}
+              onRowsPerPageChange={table.onChangeRowsPerPage}
+              dense={table.dense}
+              onChangeDense={table.onChangeDense}
+            />
+          </Box>
         )}
       </Card>
-    </Container>
+    </Box>
   );
 }

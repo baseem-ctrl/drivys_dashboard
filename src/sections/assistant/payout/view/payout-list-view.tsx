@@ -1,93 +1,79 @@
 import { useState, useEffect, useCallback } from 'react';
-// @mui
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  Typography,
+  Tooltip,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import { useGetRevenueReportsDownload } from 'src/api/reportDownload';
 
 import {
   useTable,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-// types
 
-import { useGetAllLanguage } from 'src/api/language';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetBookingReports, useGetRevenueReports } from 'src/api/reportPreview';
+// API
+import { useGetPayoutList } from 'src/api/booking-assistant';
 import { useTranslation } from 'react-i18next';
-import { useGetStudentList } from 'src/api/assistant';
 import { useRouter } from 'src/routes/hooks';
 import PayoutRow from '../payout-table-row';
-import PayoutFilter from '../payout-filters';
-import { useGetPayoutList } from 'src/api/booking-assistant';
-
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
 export default function PayoutListView() {
-  const { user } = useAuthContext();
   const router = useRouter();
-  const table = useTable({ defaultRowsPerPage: 15 });
+  const table = useTable({ defaultRowsPerPage: 10 });
   const settings = useSettingsContext();
-  const confirm = useBoolean();
-  const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
-  const [viewMode, setViewMode] = useState('table');
-  const [localeFilter, setLocaleFilter] = useState('');
-
-  const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
-  const locale = i18n.language;
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState('');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
+
   const TABLE_HEAD = [
-    // { id: 'assistant', label: t('assistant'), width: 200 },
-    { id: 'user', label: t('student'), width: 200 },
-    { id: 'trainer', label: t('trainer'), width: 200 },
-    { id: 'booking_status', label: t('booking_status'), width: 200 },
-    { id: 'payment_status', label: t('payment_status'), width: 200 },
-    { id: 'amount', label: t('amount'), width: 200 },
-    { id: 'remarks', label: t('remarks'), width: 200 },
-    { id: 'payment_proof', label: t('payment_proof'), width: 200 },
+    { id: 'user', label: t('student_name'), width: 180, align: 'left' as const },
+    { id: 'trainer', label: t('trainer'), width: 180, align: 'left' as const },
+    { id: 'booking_status', label: t('booking_status'), width: 150, align: 'left' as const },
+    { id: 'payment_status', label: t('payment_status'), width: 150, align: 'left' as const },
+    { id: 'amount', label: t('amount'), width: 120, align: 'left' as const },
+    { id: 'remarks', label: t('remarks'), width: 200, align: 'left' as const },
+    { id: 'payment_proof', label: t('payment_proof'), width: 150, align: 'left' as const },
+    { id: 'created_date', label: t('created_date'), width: 150, align: 'left' as const },
+    { id: 'created_time', label: t('created_time'), width: 120, align: 'left' as const },
   ];
-  const [filters, setFilters] = useState<{
-    startDate?: string;
-    endDate?: string;
-    category_id?: any;
-  }>({});
+
+  // Fetch real data from API
   const { payouts, payoutListLoading, totalPayoutPages } = useGetPayoutList({
     page: table.page,
     limit: table.rowsPerPage,
   });
 
-  const handleFiltersChange = (newFilters: any) => {
-    setFilters(newFilters);
-  };
-  const { language } = useGetAllLanguage(0, 1000);
-
-  const localeOptions = (language || []).map((lang) => ({
-    value: lang.language_culture,
-    label: lang.name,
-  }));
+  // Set real data from API
   useEffect(() => {
     if (payouts?.length) {
       setTableData(payouts);
@@ -96,145 +82,237 @@ export default function PayoutListView() {
     }
   }, [payouts]);
 
-  const handleRowClick = (row) => {
-    // setRowId(row.id);
-    // // setViewMode('detail');
-    //No Need on click
-  };
+  // Filter real data
+  const filteredData = tableData.filter((row: any) => {
+    const matchesSearch =
+      searchQuery === '' ||
+      row?.booking?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.booking?.user?.name_ar?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.booking?.driver?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.booking?.driver?.name_ar?.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const handleFilters = useCallback(
-    // (name: string) => {
-    //   table.onResetPage();
-    //   setFilters((prevState) => ({
-    //     ...prevState,
-    //     [name]: value,
-    //   }));
-    // },
-    [table]
-  );
+    const matchesBookingStatus =
+      bookingStatusFilter === '' ||
+      row?.booking?.booking_status === bookingStatusFilter;
 
-  const handleOrderChange = (event) => {
-    const value = event.target.value;
+    const matchesPaymentStatus =
+      paymentStatusFilter === '' ||
+      row?.payment_status === paymentStatusFilter;
 
-    if (value === '') {
-      setSelectedOrder(undefined);
-      setLocaleFilter('');
-      // setFilters(defaultFilters);
-    } else {
-      setSelectedOrder(value);
-    }
-  };
-  const handleLocaleFilterChange = (locale: string) => {
-    setLocaleFilter(locale);
-  };
-  // const canReset = !isEqual(defaultFilters, filters);
+    return matchesSearch && matchesBookingStatus && matchesPaymentStatus;
+  });
 
-  const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
-  }, []);
-
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <PayoutFilter
-        open={openFilters.value}
-        onOpen={openFilters.onTrue}
-        onClose={openFilters.onFalse}
-        handleOrderChange={handleOrderChange}
-        selectedOrder={selectedOrder}
-        filters={filters}
-        setFilters={setFilters}
-        onFilters={handleFiltersChange}
-        // canReset={canReset}
-        onResetFilters={handleResetFilters}
-        localeOptions={localeOptions}
-        onLocaleChange={handleLocaleFilterChange}
-      />
-    </Stack>
-  );
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
-        heading={t('payout_list')}
+        heading={t('payout')}
         links={[
-          { name: t('dashboard'), href: paths.dashboard.root },
-          {
-            name: t('payout'),
-            href: paths.dashboard.assistant.payout.list,
-          },
-          { name: t('list') },
+          { name: t('home'), href: paths.dashboard.root },
+          { name: t('payout'), href: paths.dashboard.assistant.payout.list },
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: { xs: 3, md: 4 },
         }}
       />
-      {/* {renderFilters} */}
 
-      <Card>
-        {viewMode === 'table' && (
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
+      <Card
+        sx={{
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          borderRadius: 2,
+        }}
+      >
+        {/* Filters Section */}
+        <Box
+          sx={{
+            p: 2.5,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            justifyContent="space-between"
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.125rem' }}>
+              {t('payout_list')}
+            </Typography>
 
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
-                />
-                <TableBody>
-                  {payoutListLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData?.map((row) => <PayoutRow row={row} />)}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </TableContainer>
-        )}
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.5}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
+              {/* Search Field */}
+              <TextField
+                placeholder={t('search') + '...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                size="small"
+                sx={{
+                  minWidth: { sm: 240 },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
 
-        {viewMode === 'table' && (
-          <TablePaginationCustom
-            count={totalPayoutPages}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
-        )}
+              {/* Booking Status Filter */}
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <Select
+                  value={bookingStatusFilter}
+                  onChange={(e) => setBookingStatusFilter(e.target.value)}
+                  displayEmpty
+                  IconComponent={KeyboardArrowDownIcon}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">
+                      {t('booking_status')}
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem value="SUCCESS">{t('success')}</MenuItem>
+                  <MenuItem value="FAIL">{t('fail')}</MenuItem>
+                  <MenuItem value="PENDING">{t('pending')}</MenuItem>
+                  <MenuItem value="CONFIRMED">{t('confirmed')}</MenuItem>
+                  <MenuItem value="CANCELLED">{t('cancelled')}</MenuItem>
+                  <MenuItem value="IN PROGRESS">{t('in_progress')}</MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Payment Status Filter */}
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <Select
+                  value={paymentStatusFilter}
+                  onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                  displayEmpty
+                  IconComponent={KeyboardArrowDownIcon}
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">
+                      {t('payment_status')}
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem value="PAID">{t('paid')}</MenuItem>
+                  <MenuItem value="PENDING">{t('pending')}</MenuItem>
+                  <MenuItem value="PARTIALLY PAID">{t('partially_paid')}</MenuItem>
+                  <MenuItem value="REFUNDED">{t('refunded')}</MenuItem>
+                  <MenuItem value="FAILED">{t('failed')}</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </Stack>
+        </Box>
+
+        {/* Table Section */}
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Scrollbar>
+            <Table
+              size={table.dense ? 'small' : 'medium'}
+              sx={{
+                minWidth: 1350,
+                '& .MuiTableCell-root': {
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  maxWidth: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                },
+              }}
+            >
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={filteredData.length}
+                numSelected={table.selected.length}
+                sx={{
+                  '& .MuiTableCell-head': {
+                    bgcolor: '#fafafa',
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    fontSize: '0.6875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    py: 1.5,
+                    textAlign: 'left',
+                  },
+                }}
+              />
+              <TableBody>
+                {payoutListLoading
+                  ? Array.from(new Array(table.rowsPerPage)).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={TABLE_HEAD?.length || 9}>
+                          <Skeleton animation="wave" height={40} />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : filteredData?.map((row: any) => (
+                      <PayoutRow
+                        key={row.id}
+                        row={row}
+                        selected={false}
+                      />
+                    ))}
+
+                {!payoutListLoading && filteredData.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 8 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('no_data_found')}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </TableContainer>
+
+        {/* Pagination */}
+        <TablePaginationCustom
+          count={totalPayoutPages}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          dense={table.dense}
+          onChangeDense={table.onChangeDense}
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            '& .MuiTablePagination-toolbar': {
+              py: 1.5,
+            },
+          }}
+        />
       </Card>
     </Container>
   );

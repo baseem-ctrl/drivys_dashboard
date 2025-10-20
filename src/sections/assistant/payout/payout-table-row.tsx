@@ -1,51 +1,35 @@
-import moment from 'moment';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { IBookingItem } from 'src/types/booking';
 import Label from 'src/components/label';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import {
   Box,
   Button,
   Chip,
-  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  IconButton,
-  Link,
-  MenuItem,
-  Table,
-  TableBody,
-  TableHead,
-  Tooltip,
   Typography,
+  Link,
+  Stack,
+  Tooltip,
 } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useTranslation } from 'react-i18next';
 import Iconify from 'src/components/iconify';
-import RescheduleSession from './re-schedule-session';
 import i18n from 'src/locales/i18n';
 import { useState } from 'react';
-
-// import BookingCreateEditForm from './booking-create-update'; // Assuming this form exists
-
-// ----------------------------------------------------------------------
+import { format } from 'date-fns';
 
 type Props = {
-  selected: boolean;
+  selected?: boolean;
   row: any;
 };
 
 export default function PayoutRow({ row, selected }: Props) {
   const { t } = useTranslation();
-  const confirm = useBoolean();
-  const quickEdit = useBoolean();
-  const popover = usePopover();
-  const zerothIndex = 0;
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -58,111 +42,127 @@ export default function PayoutRow({ row, selected }: Props) {
     setOpenDialog(false);
   };
 
-  const { user, driver, booking_method, payment_status, total, created_at, sessions, driver_id } =
-    row;
-
-  const handleRowClick = (bookingId: number) => {
-    // onSelectRow();
-    // navigate(paths.dashboard.bookings.viewDetails(bookingId)); // Adjust navigation if needed
-  };
-  const handleClickDetails = (id) => {
+  const handleClickDetails = (id: number) => {
     router.push(paths.dashboard.user.details(id));
   };
+
+  // Format date helper
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '--';
+    try {
+      return format(new Date(dateString), 'MMM dd, yyyy');
+    } catch (error) {
+      return '--';
+    }
+  };
+
+  // Format time helper
+  const formatTime = (dateString: string) => {
+    if (!dateString) return '--';
+    try {
+      return format(new Date(dateString), 'hh:mm a');
+    } catch (error) {
+      return '--';
+    }
+  };
+
+  // Get student name
+  const studentName = i18n.language.toLowerCase() === 'ar'
+    ? row?.booking?.user?.name_ar || t('n/a')
+    : row?.booking?.user?.name || t('n/a');
+
+  // Get trainer name
+  const trainerName = i18n.language.toLowerCase() === 'ar'
+    ? row?.booking?.driver?.name_ar || t('n/a')
+    : row?.booking?.driver?.name || t('n/a');
+
   return (
     <>
-      {' '}
-      <TableRow hover selected={selected} onClick={() => handleRowClick(row.id)}>
-        {/* <TableCell
-          sx={{
-            // cursor: 'pointer',
-            textDecoration: 'none',
-            // '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          <Link
-            color="inherit"
-            sx={{
-              // cursor: 'pointer',
-              textDecoration: 'none',
-              // '&:hover': { textDecoration: 'underline' },
-            }}
-            onClick={(event) => {
-              event.stopPropagation();
-              if (user) {
-                handleClickDetails(user?.id);
-              }
-            }}
-          >
-            {i18n.language.toLowerCase() === 'ar'
-              ? row?.booking?.assistant?.name_ar || t('n/a')
-              : row?.booking?.assistant?.name || t('n/a')}
-          </Link>
-        </TableCell> */}
-        <TableCell
-          sx={{
-            cursor: 'pointer',
-            textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-          onClick={(event) => {
-            event.stopPropagation();
-            if (row?.booking?.user_id) {
-              handleClickDetails(row?.booking?.user_id);
-            }
-          }}
-        >
-          {i18n.language.toLowerCase() === 'ar'
-            ? row?.booking?.user?.name_ar || t('n/a')
-            : row?.booking?.user?.name || t('n/a')}
-        </TableCell>
-        <TableCell
-          sx={{
-            cursor: 'pointer',
-            textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-          onClick={(event) => {
-            event.stopPropagation();
-            if (row?.booking?.driver?.id) {
-              handleClickDetails(row?.booking?.driver?.id);
-            }
-          }}
-        >
-          <Box>
-            <Typography variant="body1">
-              {' '}
-              {i18n.language.toLowerCase() === 'ar'
-                ? row?.booking?.driver?.name_ar || t('n/a')
-                : row?.booking?.driver?.name || t('n/a')}
-            </Typography>
-
-            {row?.booking?.city?.city_translations && (
-              <Chip
-                label={
-                  row.booking.city.city_translations.find(
-                    (t) => t.locale?.toLowerCase() === i18n.language?.toLowerCase()
-                  )?.name || t('n/a')
+      <TableRow
+        hover
+        selected={selected}
+        sx={{
+          '&:hover': {
+            backgroundColor: '#fafafa',
+          },
+        }}
+      >
+        {/* Student Name */}
+        <TableCell sx={{ textAlign: 'left', maxWidth: 180 }}>
+          <Tooltip title={studentName} placement="top" arrow>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={(event) => {
+                event.stopPropagation();
+                if (row?.booking?.user_id) {
+                  handleClickDetails(row?.booking?.user_id);
                 }
-                size="small"
-                color="warning"
-                variant="soft"
-                sx={{ mt: 0.5 }}
-              />
-            )}
-          </Box>
+              }}
+              sx={{
+                color: 'text.primary',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                fontWeight: 400,
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textAlign: 'left',
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              {studentName}
+            </Link>
+          </Tooltip>
         </TableCell>
 
-        <TableCell>
+        {/* Trainer */}
+        <TableCell sx={{ textAlign: 'left', maxWidth: 180 }}>
+          <Tooltip title={trainerName} placement="top" arrow>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={(event) => {
+                event.stopPropagation();
+                if (row?.booking?.driver?.id) {
+                  handleClickDetails(row?.booking?.driver?.id);
+                }
+              }}
+              sx={{
+                color: 'text.primary',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                fontWeight: 400,
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                textAlign: 'left',
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              {trainerName}
+            </Link>
+          </Tooltip>
+        </TableCell>
+
+        {/* Booking Status */}
+        <TableCell sx={{ textAlign: 'left' }}>
           <Label
             variant="soft"
             color={
-              row?.booking_status === 'PENDING'
+              row?.booking?.booking_status === 'PENDING'
                 ? 'info'
-                : row?.booking_status === 'CANCELLED'
+                : row?.booking?.booking_status === 'CANCELLED'
                 ? 'error'
-                : row?.booking_status === 'IN PROGRESS'
+                : row?.booking?.booking_status === 'IN PROGRESS'
                 ? 'warning'
-                : row?.booking_status === 'CONFIRMED'
+                : row?.booking?.booking_status === 'CONFIRMED'
                 ? 'secondary'
                 : 'success'
             }
@@ -170,7 +170,9 @@ export default function PayoutRow({ row, selected }: Props) {
             {row?.booking?.booking_status || t('n/a')}
           </Label>
         </TableCell>
-        <TableCell>
+
+        {/* Payment Status */}
+        <TableCell sx={{ textAlign: 'left' }}>
           <Label
             variant="soft"
             color={
@@ -189,149 +191,237 @@ export default function PayoutRow({ row, selected }: Props) {
           </Label>
         </TableCell>
 
-        <TableCell>
-          <span className="dirham-symbol">&#x00EA;</span>
-          {row?.amount || '0'}
+        {/* Amount */}
+        <TableCell sx={{ textAlign: 'left' }}>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            <span className="dirham-symbol">&#x00EA;</span>
+            {row?.amount || '0'}
+          </Typography>
         </TableCell>
-        {/* <TableCell>{row?.payment_method}</TableCell> */}
-        <TableCell>{row.remarks ? row.remarks : t('n/a')}</TableCell>
-        <TableCell align="center">
-          <Button
-            variant="text"
-            size="small"
-            startIcon={<Iconify icon="mdi:file-eye-outline" />}
-            onClick={handleOpenDialog}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 500,
-              color: 'primary.main',
-            }}
-          >
-            {t('view')}
-          </Button>
+
+        {/* Remarks */}
+        <TableCell sx={{ textAlign: 'left' }}>
+          <Tooltip title={row.remarks || t('n/a')} placement="top" arrow>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                display: 'block',
+              }}
+            >
+              {row.remarks || t('n/a')}
+            </Typography>
+          </Tooltip>
+        </TableCell>
+
+        {/* Payment Proof */}
+        <TableCell sx={{ textAlign: 'left' }}>
+          {row?.booking?.assistant_payment_proof ? (
+            <Link
+              component="button"
+              variant="body2"
+              onClick={handleOpenDialog}
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'none',
+                fontWeight: 500,
+                cursor: 'pointer',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              {t('view_proof')}
+            </Link>
+          ) : (
+            <Typography variant="body2" color="text.disabled">
+              --
+            </Typography>
+          )}
+        </TableCell>
+
+        {/* Created Date */}
+        <TableCell sx={{ textAlign: 'left' }}>
+          <Typography variant="body2" color="text.secondary">
+            {formatDate(row?.created_at || row?.booking?.created_at)}
+          </Typography>
+        </TableCell>
+
+        {/* Created Time */}
+        <TableCell sx={{ textAlign: 'left' }}>
+          <Typography variant="body2" color="text.secondary">
+            {formatTime(row?.created_at || row?.booking?.created_at)}
+          </Typography>
         </TableCell>
       </TableRow>
-      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
-        <DialogTitle
-          color="primary"
-          sx={{
-            fontSize: '18px',
-            fontWeight: 300,
-            bgcolor: 'background.neutral',
-            borderBottom: '1px solid #ddd',
-            py: 2,
-          }}
-        >
-          {t('payment_proof_details')}
-        </DialogTitle>
 
-        <DialogContent
-          dividers
-          sx={{
-            bgcolor: 'background.default',
-            px: 3,
-            py: 3,
+      {/* Payment Proof Details Modal */}
+      {row?.booking?.assistant_payment_proof && (
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          fullWidth
+          maxWidth="md"
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+            }
           }}
         >
-          <Box
+          <DialogTitle
             sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 2.5,
+              fontSize: '1.125rem',
+              fontWeight: 500,
+              bgcolor: '#fafafa',
+              borderBottom: '1px solid #e0e0e0',
+              py: 2,
+              px: 3,
             }}
           >
-            <DetailItem
-              label={t('status')}
-              value={
-                <Chip
-                  label={row.booking.assistant_payment_proof.payment_status}
-                  color="info"
-                  size="small"
-                  variant="soft"
-                />
-              }
-            />
-            <DetailItem
-              label={t('amount')}
-              value={` ${row.booking.assistant_payment_proof.amount}`}
-            />
-            <DetailItem
-              label={t('assistant_commission')}
-              value={` ${row?.assistant_commission_amount || '0'}`}
-            />
-            <DetailItem
-              label={t('drivys_commission')}
-              value={`${row?.amount_to_be_paid_after_commission || '0'}`}
-            />
-            <DetailItem
-              label={t('remarks')}
-              value={
-                <Typography variant="body2" fontStyle="italic" color="text.secondary">
-                  {row.booking.assistant_payment_proof.remarks || t('n/a')}
-                </Typography>
-              }
-            />
-            <DetailItem
-              label={t('approved')}
-              value={
-                <Chip
-                  label={row.booking.assistant_payment_proof.is_approved ? t('yes') : t('no')}
-                  color={row.booking.assistant_payment_proof.is_approved ? 'success' : 'error'}
-                  size="small"
-                  variant="soft"
-                />
-              }
-            />
-            <DetailItem
-              label={t('document')}
-              value={
-                row.booking.assistant_payment_proof.document_path ? (
-                  <Link
-                    href={row.booking.assistant_payment_proof.document_path}
-                    target="_blank"
-                    rel="noopener"
-                    underline="hover"
-                    fontWeight={500}
-                  >
-                    {t('view_document')}
-                  </Link>
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    {t('n/a')}
-                  </Typography>
-                )
-              }
-            />
-          </Box>
-        </DialogContent>
+            {t('payment_proof_details')}
+          </DialogTitle>
 
-        <DialogActions
-          sx={{
-            bgcolor: 'background.neutral',
-            py: 2,
-            px: 3,
-            borderTop: '1px solid #ddd',
-          }}
-        >
-          <Button variant="contained" color="primary" onClick={handleCloseDialog}>
-            {t('close')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <DialogContent
+            sx={{
+              bgcolor: 'background.default',
+              px: 3,
+              py: 3,
+            }}
+          >
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                gap: 2,
+              }}
+            >
+              <DetailItem
+                label={t('status')}
+                value={
+                  <Chip
+                    label={row.booking.assistant_payment_proof.payment_status}
+                    color="info"
+                    size="small"
+                    variant="soft"
+                    sx={{
+                      height: 24,
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                    }}
+                  />
+                }
+              />
+
+              <DetailItem
+                label={t('amount')}
+                value={`${row.booking.assistant_payment_proof.amount}`}
+              />
+
+              <DetailItem
+                label={t('assistant_commission')}
+                value={`${row?.assistant_commission_amount || '0'}`}
+              />
+
+              <DetailItem
+                label={t('drivys_commission')}
+                value={`${row?.amount_to_be_paid_after_commission || '0'}`}
+              />
+
+              <DetailItem
+                label={t('remarks')}
+                value={
+                  <Typography variant="body2" fontStyle="italic" color="text.secondary">
+                    {row.booking.assistant_payment_proof.remarks || t('n/a')}
+                  </Typography>
+                }
+              />
+
+              <DetailItem
+                label={t('approved')}
+                value={
+                  <Chip
+                    label={row.booking.assistant_payment_proof.is_approved ? t('yes') : t('no')}
+                    color={row.booking.assistant_payment_proof.is_approved ? 'success' : 'error'}
+                    size="small"
+                    variant="soft"
+                    sx={{
+                      height: 24,
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                    }}
+                  />
+                }
+              />
+
+              <DetailItem
+                label={t('document')}
+                value={
+                  row.booking.assistant_payment_proof.document_path ? (
+                    <Link
+                      href={row.booking.assistant_payment_proof.document_path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      underline="hover"
+                      sx={{
+                        color: 'primary.main',
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {t('view_document')}
+                    </Link>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      {t('n/a')}
+                    </Typography>
+                  )
+                }
+                sx={{ gridColumn: { sm: 'span 2' } }}
+              />
+            </Box>
+          </DialogContent>
+
+          <DialogActions
+            sx={{
+              bgcolor: '#fafafa',
+              py: 2,
+              px: 3,
+              borderTop: '1px solid #e0e0e0',
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={handleCloseDialog}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 500,
+                px: 3,
+              }}
+            >
+              {t('close')}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 }
-const DetailItem = ({ label, value }) => (
+
+const DetailItem = ({ label, value, sx = {} }: { label: string; value: any; sx?: any }) => (
   <Box
     sx={{
       borderRadius: 2,
       bgcolor: '#f5f3f1',
-      border: '1px solid  #e0e0e0',
+      border: '1px solid #e0e0e0',
       px: 2,
       py: 1.5,
       display: 'flex',
       flexDirection: 'column',
       gap: 0.5,
+      ...sx,
     }}
   >
     <Typography variant="caption" color="text.secondary" fontWeight={500}>

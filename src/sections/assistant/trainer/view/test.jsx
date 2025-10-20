@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { useCallback, useState } from 'react';
 import isEqual from 'lodash/isEqual';
 import {
@@ -6,16 +5,13 @@ import {
   CircularProgress,
   Typography,
   Box,
-  Stack,
   InputAdornment,
   IconButton,
   TextField,
   Card,
-  Button,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { useGetTrainerList } from 'src/api/assistant';
 import { TablePaginationCustom, useTable } from 'src/components/table';
 import { paths } from 'src/routes/paths';
@@ -24,16 +20,15 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/city';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import { useGetGearEnum } from 'src/api/users';
 import { useTranslation } from 'react-i18next';
 import TrainerProfileCard from '../trainer-profile-card';
 import TrainerFilters from '../trainer-filter';
 
 const defaultFilters: any = {
   city_id: '',
-  vehicle_type_id: { label: '', value: '' },
+  vehicle_type_id: null,
   gear: '',
-  vendor_id: { label: '', value: '' },
+  vendor_id: null,
 };
 
 const TrainerListPage: React.FC = () => {
@@ -42,18 +37,15 @@ const TrainerListPage: React.FC = () => {
   const router = useRouter();
   const openFilters = useBoolean();
   const [filters, setFilters] = useState(defaultFilters);
-  const { gearData, gearLoading } = useGetGearEnum();
   const { t } = useTranslation();
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
 
   const { trainers, trainerListLoading, trainerListError, totalTrainerPages } = useGetTrainerList({
-    page: table.page,
-    limit: 1000,
+    page: table.page + 1,
+    limit: table.rowsPerPage,
     ...(filters.vendor_id?.value ? { vendor_id: filters.vendor_id.value } : {}),
     ...(filters.vehicle_type_id?.value ? { vehicle_type_id: filters.vehicle_type_id.value } : {}),
-    ...(filters.gear !== '' && gearData?.length
-      ? { gear: gearData.find((g: any) => g.name === filters.gear)?.value }
-      : {}),
+    ...(filters.gear ? { gear: filters.gear } : {}),
     ...(filters.city_id ? { city_id: filters.city_id } : {}),
     search: searchTermTrainer,
   });
@@ -84,14 +76,14 @@ const TrainerListPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 5, bgcolor: '#fafafa', minHeight: '100vh', borderRadius: 3,}}>
+    <Box sx={{ p: 4, bgcolor: '#fafafa', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
-          {t('Trainers')}
+          {t('trainers')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('Trainers')}</span>
+          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('trainers')}</span>
         </Typography>
       </Box>
 
@@ -148,41 +140,27 @@ const TrainerListPage: React.FC = () => {
               }}
             />
 
-            {/* Filters Button */}
-            <Button
-              variant="outlined"
-              startIcon={<FilterListIcon />}
-              onClick={openFilters.onTrue}
-              sx={{
-                textTransform: 'none',
-                borderColor: '#ddd',
-                color: '#666',
-                '&:hover': {
-                  borderColor: '#bbb',
-                  bgcolor: '#f5f5f5',
-                },
-              }}
-            >
-              {t('Filters')}
-            </Button>
-
-            {/* Clear Filters */}
-            {canReset && (
-              <IconButton size="small" onClick={handleResetFilters}>
-                <CloseIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            )}
+            {/* Filter Component */}
+            <TrainerFilters
+              open={openFilters.value}
+              onOpen={openFilters.onTrue}
+              onClose={openFilters.onFalse}
+              filters={filters}
+              onFilters={handleFilters}
+              canReset={canReset}
+              onResetFilters={handleResetFilters}
+            />
           </Box>
         </Box>
 
         {/* Content Area */}
         <Box sx={{ p: 3 }}>
           {trainerListLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+            <Box display="flex" justifyContent="center" py={10}>
               <CircularProgress />
             </Box>
           ) : trainerListError ? (
-            <Typography color="error" textAlign="center" sx={{ py: 8 }}>
+            <Typography color="error" textAlign="center" py={10}>
               {t('failed_to_load_trainers')}
             </Typography>
           ) : !trainers || trainers.length === 0 ? (
@@ -191,7 +169,8 @@ const TrainerListPage: React.FC = () => {
               flexDirection="column"
               alignItems="center"
               justifyContent="center"
-              sx={{ py: 8, opacity: 0.75 }}
+              py={10}
+              sx={{ opacity: 0.75 }}
             >
               <HourglassEmptyIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
               <Typography variant="h6" color="text.primary">
@@ -201,14 +180,13 @@ const TrainerListPage: React.FC = () => {
           ) : (
             <Grid container spacing={3}>
               {trainers.map((trainer: any) => (
-                <Grid item xs={12} sm={12} md={6} lg={6} key={trainer.id}>
+                <Grid item xs={12} md={6} key={trainer.id}>
                   <Box
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
-                        transform: 'translateY(-2px)',
-                        transition: 'transform 0.2s ease-in-out'
-                      }
+                        opacity: 0.9,
+                      },
                     }}
                     onClick={() => handleClickTrainerDetails(trainer?.user_id)}
                   >
@@ -221,7 +199,7 @@ const TrainerListPage: React.FC = () => {
         </Box>
 
         {/* Pagination */}
-        {trainers && trainers.length > 0 && (
+        {!trainerListLoading && trainers && trainers.length > 0 && (
           <Box
             sx={{
               borderTop: '1px solid #f0f0f0',
@@ -230,26 +208,17 @@ const TrainerListPage: React.FC = () => {
             }}
           >
             <TablePaginationCustom
-              count={totalTrainerPages * table.rowsPerPage}
+              count={totalTrainerPages}
               page={table.page}
               rowsPerPage={table.rowsPerPage}
               onPageChange={table.onChangePage}
               onRowsPerPageChange={table.onChangeRowsPerPage}
+              dense={table.dense}
+              onChangeDense={table.onChangeDense}
             />
           </Box>
         )}
       </Card>
-
-      {/* Filters Drawer */}
-      <TrainerFilters
-        open={openFilters.value}
-        onOpen={openFilters.onTrue}
-        onClose={openFilters.onFalse}
-        filters={filters}
-        onFilters={handleFilters}
-        canReset={canReset}
-        onResetFilters={handleResetFilters}
-      />
     </Box>
   );
 };

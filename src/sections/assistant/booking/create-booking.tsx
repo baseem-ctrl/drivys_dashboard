@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import isEqual from 'lodash/isEqual';
@@ -13,16 +14,20 @@ import {
   Stepper,
   Step,
   StepLabel,
-  MenuItem,
-  Dialog,
-  DialogContent,
-  Select,
-  InputLabel,
-  FormControl,
+  IconButton,
+  InputAdornment,
   TextField,
-  Popover,
+  MenuItem,
+  Select,
+  FormControl,
+  useMediaQuery,
+  Avatar,
+  Divider,
   Stack,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {
   createBooking,
   useGetStudentList,
@@ -30,8 +35,6 @@ import {
   useGetTrainerPackageList,
 } from 'src/api/assistant';
 import StudentStep from './select-student';
-import { useSnackbar } from 'src/components/snackbar';
-
 import SessionStep from './select-session';
 import TrainerSelectStep from './select-trainer';
 import PackageCard from './select-package';
@@ -45,30 +48,35 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { IUserTableFilterValue } from 'src/types/user';
 import { useTable } from 'src/components/table';
 import { useGetGearEnum } from 'src/api/users';
-import PaymentDetails from './payment-details';
 import TrainerPaymentDetails from './payment-details';
+import { useSnackbar } from 'src/components/snackbar';
 
-const defaultFilters: any = {
+const ACCENT = '#ff6b00';
+const SIDEBAR_BG = '#0d0d0d';
+const CARD_RADIUS = 2;
+
+const defaultFilters = {
   city_id: '',
   vehicle_type_id: { label: '', value: '' },
   gear: '',
   vendor_id: { label: '', value: '' },
 };
 
-export default function CreateBooking() {
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
-  const [selectedStudent, setSelectedStudent] = useState<number | null>(null);
-  const [selectedTrainer, setSelectedTrainer] = useState<number | null>(null);
+export default function CreateBookingLayout() {
+  // ----- state (same as original) -----
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [txnId, setTxnId] = useState('');
   const [remarks, setRemarks] = useState('');
-  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const [paymentProof, setPaymentProof] = useState(null);
   const [searchTermStudent, setSearchTermStudent] = useState('');
   const [isPickUpEnabled, setIsPickupEnabled] = useState('');
 
   const [searchTermTrainer, setSearchTermTrainer] = useState('');
   const [sessions, setSessions] = useState([{ start_time: '', end_time: '', session_no: [1, 2] }]);
-  const [pickupLocation, setPickupLocation] = useState<number | null>(null);
-  const [pickupLocationSelected, setPickupLocationSelected] = useState<number | null>(null);
+  const [pickupLocation, setPickupLocation] = useState(null);
+  const [pickupLocationSelected, setPickupLocationSelected] = useState(null);
   const [loadingBooking, setLoadingBooking] = useState(false);
   const table = useTable({ defaultRowsPerPage: 3 });
   const location = useLocation();
@@ -79,12 +87,12 @@ export default function CreateBooking() {
   const preselectedTrainerId = parseInt(searchParams.get('trainerId') || '', 10);
   const preselectedPackageId = parseInt(searchParams.get('packageId') || '', 10);
   const [activeStep, setActiveStep] = useState(initialStep);
-  const [selectedTrainerId, setSelectedTrainerId] = useState<number | null>(
+  const [selectedTrainerId, setSelectedTrainerId] = useState(
     Number.isNaN(preselectedTrainerId) ? null : preselectedTrainerId
   );
-  const [paymentMode, setPaymentMode] = useState<'CASH' | 'ONLINE' | null>('ONLINE');
+  const [paymentMode, setPaymentMode] = useState('ONLINE');
   const [couponCode, setCouponCode] = useState(false);
-  const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
+  const [selectedPackageId, setSelectedPackageId] = useState(
     Number.isNaN(preselectedPackageId) ? null : preselectedPackageId
   );
 
@@ -100,6 +108,7 @@ export default function CreateBooking() {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
+  // ----- external data hooks -----
   const { students, studentListLoading } = useGetStudentList({
     page: 0,
     limit: 1000,
@@ -115,7 +124,7 @@ export default function CreateBooking() {
     ...(filters.vendor_id?.value ? { vendor_id: filters.vendor_id.value } : {}),
     ...(filters.vehicle_type_id?.value ? { vehicle_type_id: filters.vehicle_type_id.value } : {}),
     ...(filters.gear !== '' && gearData?.length
-      ? { gear: gearData.find((g: any) => g.name === filters.gear)?.value }
+      ? { gear: gearData.find((g) => g.name === filters.gear)?.value }
       : {}),
     ...(filters.city_id ? { city_id: filters.city_id } : {}),
   });
@@ -126,16 +135,12 @@ export default function CreateBooking() {
     trainer_id: selectedTrainerId,
   });
 
-  const handleSessionChange = (index: number, key: string, value: string | number[]) => {
-    const updatedSessions = [...sessions];
-    updatedSessions[index][key as keyof (typeof updatedSessions)[number]] = value;
-    setSessions(updatedSessions);
-  };
-
+  // ----- effects kept from original -----
   useEffect(() => {
     if (initialStep >= 2 && preselectedTrainerId && preselectedPackageId) {
       setActiveStep(initialStep);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialStep, preselectedTrainerId, preselectedPackageId]);
 
   useEffect(() => {
@@ -145,6 +150,7 @@ export default function CreateBooking() {
         setSelectedPackageId(foundPkg);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trainerPackages, preselectedPackageId]);
 
   useEffect(() => {
@@ -153,6 +159,7 @@ export default function CreateBooking() {
     }
   }, [selectedStudent]);
 
+  // ----- session helpers -----
   const addSession = () => {
     const totalSessions = sessions.length;
     const lastSessionNo = totalSessions * 2;
@@ -163,7 +170,7 @@ export default function CreateBooking() {
     };
     setSessions([...sessions, newSession]);
   };
-  const removeSession = (index: number) => {
+  const removeSession = (index) => {
     const updated = sessions
       .filter((_, i) => i !== index)
       .map((session, idx) => ({
@@ -172,36 +179,37 @@ export default function CreateBooking() {
       }));
     setSessions(updated);
   };
+
+  // ----- navigation -----
   const handleNext = () => {
     switch (activeStep) {
       case 0:
-        if (!selectedStudentId) {
-          enqueueSnackbar(t('select_student_error'), { variant: 'error' });
-          return;
-        }
-        break;
-      case 1:
         if (!selectedTrainerId) {
           enqueueSnackbar(t('select_trainer_error'), { variant: 'error' });
           return;
         }
         break;
-      case 2:
+      case 1:
         if (!selectedPackageId) {
           enqueueSnackbar(t('select_package_error'), { variant: 'error' });
           return;
         }
         break;
-      case 3:
-        const allSessionsValid = sessions.every(
-          (session) => session.start_time && session.end_time
-        );
-        if (!allSessionsValid) {
-          enqueueSnackbar(t('select_sessions_error'), { variant: 'error' });
+      case 2:
+        if (!selectedStudentId) {
+          enqueueSnackbar(t('select_student_error'), { variant: 'error' });
           return;
         }
         break;
-
+      case 3:
+        {
+          const allSessionsValid = sessions.every((session) => session.start_time && session.end_time);
+          if (!allSessionsValid) {
+            enqueueSnackbar(t('select_sessions_error'), { variant: 'error' });
+            return;
+          }
+        }
+        break;
       default:
         break;
     }
@@ -213,52 +221,32 @@ export default function CreateBooking() {
     setPickupLocationSelected(null);
   };
 
-  const handleSelectStudent = (id: number) => {
+  const handleSelectStudent = (id) => {
     setSelectedStudentId(id);
     setActiveStep((prev) => prev + 1);
   };
-  const handleSelecTrainer = (id: number) => {
+  const handleSelecTrainer = (id) => {
     setSelectedTrainerId(id);
     setActiveStep((prev) => prev + 1);
   };
+
   const packages = [
-    {
-      value: 'trial',
-      label: 'Trial',
-      gradient: 'linear-gradient(to right, #1E1E1E, #292929)',
-    },
-    {
-      value: 'bronze',
-      label: 'Bronze',
-      gradient: 'linear-gradient(to right, #CD7F32, #000000)',
-    },
-    {
-      value: 'silver',
-      label: 'Silver',
-      gradient: 'linear-gradient(to right, #8E8E8E, #000000)',
-    },
-    {
-      value: 'gold',
-      label: 'Gold',
-      gradient: 'linear-gradient(to right, #FFB000, #000000)',
-    },
-    {
-      value: 'unlimited',
-      label: 'Unlimited',
-      gradient: 'linear-gradient(to right, #7B156D, #3B0033)',
-    },
+    { value: 'trial', label: 'Trial', gradient: 'linear-gradient(to right, #1E1E1E, #292929)' },
+    { value: 'bronze', label: 'Bronze', gradient: 'linear-gradient(to right, #CD7F32, #000000)' },
+    { value: 'silver', label: 'Silver', gradient: 'linear-gradient(to right, #8E8E8E, #000000)' },
+    { value: 'gold', label: 'Gold', gradient: 'linear-gradient(to right, #FFB000, #000000)' },
+    { value: 'unlimited', label: 'Unlimited', gradient: 'linear-gradient(to right, #7B156D, #3B0033)' },
   ];
 
-  const getCardBackground = (index: number) => {
-    return packages[index]?.gradient || '#111';
-  };
+  const getCardBackground = (index) => packages[index]?.gradient || '#111';
 
-  const handlePackageSelect = (pkg: any) => {
+  const handlePackageSelect = (pkg) => {
     setSelectedPackageId(pkg);
     setActiveStep((prev) => prev + 1);
   };
+
   const handleFilters = useCallback(
-    (name: string, value: IUserTableFilterValue) => {
+    (name, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -267,13 +255,15 @@ export default function CreateBooking() {
     },
     [table]
   );
-  const createBookingStudent = async (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  // ----- create booking (same as original) -----
+  const createBookingStudent = async (event) => {
     setLoadingBooking(true);
 
     try {
       const formData = new FormData();
-      formData.append('student_id', selectedStudentId.toString());
-      formData.append('trainer_id', selectedTrainerId.toString());
+      formData.append('student_id', selectedStudentId?.toString());
+      formData.append('trainer_id', selectedTrainerId?.toString());
       formData.append('mode_of_payment', paymentMode);
       if (couponCode) formData.append('coupon_code', couponCode);
 
@@ -284,8 +274,6 @@ export default function CreateBooking() {
       if (pickupLocationSelected) {
         formData.append('pickup_location', pickupLocationSelected);
       }
-
-      // formData.append('is_paid', paymentProof ? '1' : '0');
 
       sessions.forEach(({ start_time, end_time, session_no }, index) => {
         const formattedStart = moment(start_time).format('YYYY-MM-DD HH:mm');
@@ -303,10 +291,6 @@ export default function CreateBooking() {
         }
       });
 
-      // if (paymentProof) {
-      //   formData.append('payment_proof', paymentProof); // binary file
-      // }
-
       if (remarks) formData.append('remarks', remarks);
       if (txnId) formData.append('txn_id', txnId);
 
@@ -316,7 +300,7 @@ export default function CreateBooking() {
         enqueueSnackbar(t('booking_created_success'), { variant: 'success' });
         router.push(paths.dashboard.assistant.booking.list);
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorDetails = error?.message?.errors;
 
       if (errorDetails && typeof errorDetails === 'object' && !Array.isArray(errorDetails)) {
@@ -340,37 +324,33 @@ export default function CreateBooking() {
   }, []);
   const canReset = !isEqual(defaultFilters, filters);
 
+  // ----- Updated filters UI with TrainerFilters button from previous code -----
   const renderFilters = (
     <Stack
-      spacing={3}
+      spacing={2}
+      direction="row"
+      alignItems="center"
       justifyContent="flex-end"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-      margin={3}
+      sx={{ width: '100%' }}
     >
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <TrainerFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          //
-          filters={filters}
-          onFilters={handleFilters}
-          //
-          canReset={canReset}
-          onResetFilters={handleResetFilters}
-        />
-      </Stack>
+      <TrainerFilters
+        open={openFilters.value}
+        onOpen={openFilters.onTrue}
+        onClose={openFilters.onFalse}
+        filters={filters}
+        onFilters={handleFilters}
+        canReset={canReset}
+        onResetFilters={handleResetFilters}
+      />
     </Stack>
   );
 
+  // ----- step content renderer (keeps your children) -----
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
         return (
-          <>
-            {' '}
-            {/* {renderFilters} */}
+          <Box>
             <TrainerSelectStep
               trainers={trainers}
               selectedTrainerId={selectedTrainerId}
@@ -381,58 +361,45 @@ export default function CreateBooking() {
               renderFilters={renderFilters}
               setSelectedTrainer={setSelectedTrainer}
             />
-          </>
+          </Box>
         );
       case 1:
-        return (
-          <Box>
-            {trainerPackageLoading ? (
-              <Box textAlign="center" py={5}>
-                <CircularProgress />
-                <Typography mt={2}>{t('loading_packages')}</Typography>
-              </Box>
-            ) : trainerPackages.length > 0 ? (
-              <Box
-                display="grid"
-                gridTemplateColumns={{
-                  xs: '1fr',
-                  sm: '1fr 1fr',
-                  md: '1fr 1fr 1fr',
-                }}
-                gap={3}
-              >
-                {trainerPackages.map((pkg: any, index: number) => {
-                  const translation = pkg?.package?.package_translations?.find(
-                    (t: any) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                  );
+        return trainerPackageLoading ? (
+          <Box textAlign="center" py={6}>
+            <CircularProgress />
+            <Typography mt={2}>{t('loading_packages')}</Typography>
+          </Box>
+        ) : trainerPackages.length > 0 ? (
+          <Grid container spacing={2}>
+            {trainerPackages.map((pkg, index) => {
+              const translation = pkg?.package?.package_translations?.find(
+                (tr) => tr.locale.toLowerCase() === i18n.language.toLowerCase()
+              );
+              const sessionFeature =
+                pkg.package?.number_of_sessions === -1
+                  ? t('unlimited_driving_sessions')
+                  : `${pkg.package?.number_of_sessions} ${t('driving_sessions')}`;
 
-                  // first feature: number of sessions
-                  const sessionFeature =
-                    pkg.package?.number_of_sessions === -1
-                      ? t('unlimited_driving_sessions')
-                      : `${pkg.package?.number_of_sessions} ${t('driving_sessions')}`;
-
-                  return (
-                    <PackageCard
-                      key={pkg.id}
-                      title={translation?.name || t('n/a')}
-                      sessions={pkg.package?.number_of_sessions}
-                      price={pkg.price}
-                      offerDetails={pkg.package_offer_detail}
-                      features={translation?.session_inclusions}
-                      flagUrl={pkg.flag?.virtual_path}
-                      onSelect={() => handlePackageSelect(pkg)}
-                      background={getCardBackground(index)}
-                      selected={pkg.package_id === selectedPackageId}
-                    />
-                  );
-                })}
-              </Box>
-            ) : (
-              <Box textAlign="center" py={5} border="1px dashed #999" borderRadius={2} color="gray">
-                <Typography variant="h6">{t('no_packages_available_for_trainer')}</Typography>
-              </Box>
-            )}
+              return (
+                <Grid item xs={12} sm={6} md={4} key={pkg.id}>
+                  <PackageCard
+                    title={translation?.name || t('n/a')}
+                    sessions={pkg.package?.number_of_sessions}
+                    price={pkg.price}
+                    offerDetails={pkg.package_offer_detail}
+                    features={translation?.session_inclusions}
+                    flagUrl={pkg.flag?.virtual_path}
+                    onSelect={() => handlePackageSelect(pkg)}
+                    background={getCardBackground(index)}
+                    selected={pkg.package_id === selectedPackageId}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Box textAlign="center" py={6} border="1px dashed #999" borderRadius={2} color="gray">
+            <Typography variant="h6">{t('no_packages_available_for_trainer')}</Typography>
           </Box>
         );
 
@@ -448,11 +415,16 @@ export default function CreateBooking() {
             setSelectedStudent={setSelectedStudent}
           />
         );
+
       case 3:
         return (
           <SessionStep
             sessions={sessions}
-            handleSessionChange={handleSessionChange}
+            handleSessionChange={(i, k, v) => {
+              const updated = [...sessions];
+              updated[i][k] = v;
+              setSessions(updated);
+            }}
             addSession={addSession}
             removeSession={removeSession}
             driverId={selectedTrainerId}
@@ -460,6 +432,7 @@ export default function CreateBooking() {
             setIsPickupEnabled={setIsPickupEnabled}
           />
         );
+
       case 4:
         return (
           <AddressSelector
@@ -493,60 +466,326 @@ export default function CreateBooking() {
             setActiveStep={setActiveStep}
           />
         );
+
       default:
         return null;
     }
   };
 
-  return (
-    <Box sx={{ p: 4 }}>
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label, index) => (
-          <Step key={label}>
-            <StepLabel
-              onClick={() => setActiveStep(index)}
-              sx={{
-                cursor: 'pointer',
-                '& .MuiStepLabel-label': {
-                  fontSize: '12px',
-                  transition: 'color 0.3s',
-                  '&:hover': {
-                    color: 'primary.main',
-                  },
-                },
-              }}
-            >
-              {label}
-            </StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+  // ----- responsive layout decisions -----
+  const isSmall = useMediaQuery((theme) => theme.breakpoints.down('md'));
 
-      {renderStepContent()}
+  // ----- UPDATED profile block for sidebar -----
+  const ProfileBlock = () => {
+    const getInitials = (name) => {
+      if (!name) return 'CB';
+      return name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    };
 
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-        <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
-          {t('back')}
-        </Button>
+    // Check if trainer is selected
+    if (selectedTrainer && selectedTrainer.user) {
+      const trainerName =
+        i18n.language === 'ar'
+          ? selectedTrainer.user.name_ar || selectedTrainer.user.name
+          : selectedTrainer.user.name;
+      const photoUrl = selectedTrainer.user.photo_url || selectedTrainer.avatarUrl;
 
-        {activeStep === steps.length - 1 ? (
-          <Button variant="contained" color="primary" onClick={(e) => createBookingStudent(e)}>
-            {t('submit')}
-          </Button>
-        ) : (
-          <Button variant="contained" onClick={handleNext} disabled={trainerPackages.length === 0}>
-            {t('next')}
-          </Button>
-        )}
-      </Box>
-      <Dialog open={loadingBooking} PaperProps={{ sx: { textAlign: 'center', p: 4 } }}>
-        <DialogContent>
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <CircularProgress sx={{ mb: 2 }} />
-            <Typography variant="body1">{t('booking_in_progress')}</Typography>
+      return (
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+          <Avatar
+            src={photoUrl}
+            sx={{
+              width: 64,
+              height: 64,
+              bgcolor: '#ff6b35',
+              fontSize: 20,
+              fontWeight: 700,
+              border: '3px solid rgba(255, 107, 53, 0.2)',
+            }}
+          >
+            {getInitials(trainerName)}
+          </Avatar>
+          <Box>
+            <Typography sx={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>
+              {trainerName || 'N/A'}
+            </Typography>
+            <Typography sx={{ color: '#bbb', fontSize: 11, mb: 0.5 }}>
+              {t('Selected Trainer') || 'Selected Trainer'}
+            </Typography>
+            <Typography sx={{ color: '#ff6b35', fontSize: 10, fontWeight: 600 }}>
+              ✓ {t('confirmed') || 'CONFIRMED'}
+            </Typography>
           </Box>
-        </DialogContent>
-      </Dialog>
+        </Box>
+      );
+    }
+
+    // Default state - no trainer selected
+    return (
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+        <Avatar sx={{ width: 64, height: 64, bgcolor: '#222' }}>
+          <Typography sx={{ fontSize: 24, fontWeight: 700 }}>CB</Typography>
+        </Avatar>
+        <Box>
+          <Typography sx={{ color: '#fff', fontWeight: 600 }}>Create Booking</Typography>
+          <Typography sx={{ color: '#bbb', fontSize: 12 }}>Assistant panel</Typography>
+        </Box>
+      </Box>
+    );
+  };
+
+  return (
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <Grid container spacing={3}>
+        {/* SIDEBAR */}
+        <Grid item xs={12} md={4} lg={3}>
+          <Card
+            sx={{
+              bgcolor: SIDEBAR_BG,
+              color: '#fff',
+              borderRadius: CARD_RADIUS,
+              p: 3,
+              height: '100%',
+              minHeight: 320,
+            }}
+            elevation={6}
+          >
+            <CardContent sx={{ p: 0 }}>
+              <ProfileBlock />
+              <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mb: 3,
+                  py: 1.5,
+                  px: 2,
+                  bgcolor: 'rgba(255,255,255,0.03)',
+                  borderRadius: 1.5,
+                }}
+              >
+                <Typography sx={{ color: '#ccc', fontSize: 12, fontWeight: 500 }}>
+                  Progress
+                </Typography>
+                <Typography sx={{ color: ACCENT, fontWeight: 700, fontSize: 14 }}>
+                  {activeStep + 1}/{steps.length}
+                </Typography>
+              </Box>
+
+              {/* vertical stepper styled */}
+              <Stepper
+                activeStep={activeStep}
+                orientation="vertical"
+                sx={{
+                  '.MuiStep-root': {
+                    padding: '16px 0',
+                    minHeight: '72px',
+                  },
+                  '.MuiStepLabel-root': {
+                    color: '#999',
+                    '& .Mui-active, & .Mui-completed': {
+                      color: '#fff',
+                    },
+                  },
+                  '.MuiStepLabel-label': {
+                    fontSize: 13,
+                    fontWeight: 500,
+                  },
+                  '.MuiStepIcon-root': {
+                    width: 28,
+                    height: 28,
+                  },
+                  '.MuiStepConnector-root': {
+                    marginLeft: '14px',
+                  },
+                  '.MuiStepConnector-line': {
+                    borderColor: ACCENT,
+                    borderLeftStyle: 'dashed',
+                    borderLeftWidth: '2px',
+                    minHeight: '80px',
+                    borderImage: `repeating-linear-gradient(to bottom, ${ACCENT} 0, ${ACCENT} 8px, transparent 8px, transparent 16px) 1`,
+                  },
+                }}
+              >
+                {steps.map((label, idx) => {
+                  const isCompleted = idx < activeStep;
+                  const isActive = idx === activeStep;
+                  const isClickable = isCompleted;
+
+                  return (
+                    <Step key={label}>
+                      <StepLabel
+                        onClick={() => isClickable && setActiveStep(idx)}
+                        sx={{
+                          cursor: isClickable ? 'pointer' : 'default',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          '& .MuiStepLabel-label': {
+                            color: isActive ? '#fff' : isCompleted ? '#fff' : '#bbb',
+                            fontWeight: isActive ? 600 : 400,
+                          },
+                          '.MuiStepIcon-root': {
+                            color: isCompleted ? ACCENT : isActive ? ACCENT : 'rgba(255,255,255,0.12)',
+                            border: isCompleted ? `2px solid ${ACCENT}` : 'none',
+                            borderRadius: '50%',
+                          },
+                        }}
+                      >
+                        {label}
+                      </StepLabel>
+                    </Step>
+                  );
+                })}
+              </Stepper>
+
+              <Box sx={{ mt: 3 }}>
+                <Typography sx={{ color: '#bbb', fontSize: 12, mb: 1 }}>Quick actions</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    disabled={activeStep === 0}
+                    sx={{
+                      color: '#fff',
+                      borderColor: 'rgba(255,255,255,0.12)',
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      '&:disabled': {
+                        color: 'rgba(255,255,255,0.3)',
+                        borderColor: 'rgba(255,255,255,0.05)',
+                      },
+                    }}
+                    onClick={handleBack}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    disabled={activeStep === steps.length - 1}
+                    sx={{
+                      bgcolor: ACCENT,
+                      '&:hover': { bgcolor: ACCENT },
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      '&:disabled': {
+                        bgcolor: 'rgba(255, 107, 0, 0.3)',
+                      },
+                    }}
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                </Stack>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* MAIN CONTENT */}
+        <Grid item xs={12} md={8} lg={9}>
+          <Card sx={{ borderRadius: CARD_RADIUS, p: { xs: 2, md: 3 }, minHeight: 520 }} elevation={2}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  {steps[activeStep]}
+                </Typography>
+                <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>
+                  {'Follow the steps to create a booking'}
+                </Typography>
+              </Box>
+
+              {/* Filter button shown only on trainer step */}
+              {activeStep === 0 && (
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  {renderFilters}
+                </Box>
+              )}
+            </Box>
+
+            <Divider sx={{ mb: 2 }} />
+
+            <Box sx={{ minHeight: 300 }}>{renderStepContent()}</Box>
+
+            {/* bottom actions */}
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button
+                variant="text"
+                startIcon={<ArrowBackIosNewIcon sx={{ fontSize: 14 }} />}
+                onClick={handleBack}
+                disabled={activeStep === 0}
+                sx={{
+                  color: activeStep === 0 ? 'grey.400' : 'text.primary',
+                  textTransform: 'none',
+                }}
+              >
+                {t('back')}
+              </Button>
+
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {activeStep < steps.length - 1 ? (
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    endIcon={<ArrowForwardIosIcon sx={{ fontSize: 14 }} />}
+                    sx={{
+                      bgcolor: ACCENT,
+                      '&:hover': { bgcolor: ACCENT },
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      px: 3,
+                    }}
+                  >
+                    {t('next')}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={createBookingStudent}
+                    sx={{
+                      bgcolor: ACCENT,
+                      '&:hover': { bgcolor: ACCENT },
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      px: 4,
+                    }}
+                  >
+                    {t('submit')}
+                  </Button>
+                )}
+              </Box>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Loader Dialog like original */}
+      {loadingBooking && (
+        <Box
+          sx={{
+            position: 'fixed',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: (theme) => theme.zIndex.modal + 10,
+          }}
+        >
+          <Card sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
+            <CircularProgress />
+            <Typography sx={{ mt: 2 }}>{t('booking_in_progress')}</Typography>
+          </Card>
+        </Box>
+      )}
     </Box>
   );
 }

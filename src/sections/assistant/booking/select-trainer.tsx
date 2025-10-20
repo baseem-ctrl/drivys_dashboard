@@ -1,29 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Avatar,
   Box,
   Card,
-  CardContent,
   Typography,
   Chip,
   Stack,
-  Divider,
-  Grid,
   TextField,
   InputAdornment,
   IconButton,
   CircularProgress,
+  Button,
+  Grid,
+  Pagination,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import EmailIcon from '@mui/icons-material/Email';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useTranslation } from 'react-i18next';
+
+// Types
+interface UserPreference {
+  gear?: string | number;
+  vehicle_type?: {
+    category_translations?: Array<{
+      locale?: string;
+      name?: string;
+    }>;
+  };
+}
+
+interface Language {
+  dialect?: {
+    language_name?: string;
+  };
+}
+
+interface User {
+  name?: string;
+  name_ar?: string;
+  email?: string;
+  photo_url?: string;
+  is_active?: boolean;
+  user_preference?: UserPreference;
+  license_number?: string;
+  languages?: Language[];
+}
 
 interface Trainer {
   id: number;
+  user_id: number;
   name: string;
   email?: string;
   avatarUrl?: string;
   photo_url?: string;
   is_active?: boolean;
+  license_number?: string;
+  user?: User;
 }
 
 interface TrainerStepProps {
@@ -33,10 +69,296 @@ interface TrainerStepProps {
   isLoading: boolean;
   setSearchTerm: (value: string) => void;
   searchTerm: string;
-  renderFilters: any;
-  setSelectedTrainer: any;
+  renderFilters?: React.ReactNode;
+  setSelectedTrainer: (trainer: Trainer) => void;
 }
 
+// Constants
+const ITEMS_PER_PAGE = 6;
+
+const GEAR_TYPES = {
+  MANUAL: ['Manual', 'manual', 1],
+  AUTOMATIC: ['Automatic', 'automatic', 0],
+} as const;
+
+const VEHICLE_CONFIG = {
+  car: { icon: DirectionsCarIcon, color: '#2196f3' },
+  truck: { icon: LocalShippingIcon, color: '#f44336' },
+  bus: { icon: DirectionsBusIcon, color: '#4caf50' },
+  default: { icon: DirectionsCarIcon, color: '#2196f3' },
+} as const;
+
+// Utility Functions
+const getInitials = (name?: string): string => {
+  if (!name) return 'N/A';
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase();
+};
+
+const getVehicleConfig = (categoryName: string) => {
+  const lower = categoryName?.toLowerCase() || '';
+
+  if (lower.includes('car')) return VEHICLE_CONFIG.car;
+  if (lower.includes('truck')) return VEHICLE_CONFIG.truck;
+  if (lower.includes('bus')) return VEHICLE_CONFIG.bus;
+  return VEHICLE_CONFIG.default;
+};
+
+const isGearType = (gear: string | number | undefined, type: 'MANUAL' | 'AUTOMATIC'): boolean => {
+  if (!gear) return false;
+
+  const gearValue = typeof gear === 'string' ? gear : gear.toString();
+  return GEAR_TYPES[type].some(
+    (value) => value.toString().toLowerCase() === gearValue.toLowerCase()
+  );
+};
+
+// Debounce utility function
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): T & { cancel: () => void } {
+  let timeout: NodeJS.Timeout | null = null;
+
+  const debounced = function (this: any, ...args: Parameters<T>) {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(this, args);
+    }, wait);
+  } as T & { cancel: () => void };
+
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced;
+}
+
+// Sub-components
+interface TrainerCardProps {
+  trainer: Trainer;
+  isSelected: boolean;
+  onSelect: () => void;
+  language: string;
+  t: (key: string) => string;
+}
+
+const TrainerCard: React.FC<TrainerCardProps> = ({
+  trainer,
+  isSelected,
+  onSelect,
+  language,
+  t,
+}) => {
+  const trainerName = language === 'ar' ? trainer?.user?.name_ar : trainer?.user?.name;
+  const trainerEmail = trainer?.user?.email;
+  const photoUrl = trainer?.user?.photo_url || trainer.avatarUrl;
+  const isActive = trainer?.user?.is_active ?? trainer.is_active;
+  const gear = trainer?.user?.user_preference?.gear;
+  const licenseNumber = trainer?.user?.license_number || trainer?.license_number;
+
+  const vehicleCategory = useMemo(() => {
+    const translations = trainer?.user?.user_preference?.vehicle_type?.category_translations;
+    if (!translations?.length) return 'N/A';
+
+    const translation = translations.find(
+      (trans) => trans?.locale?.toLowerCase() === language.toLowerCase()
+    );
+    return translation?.name || translations[0]?.name || 'N/A';
+  }, [trainer, language]);
+
+  const languages = useMemo(() => {
+    const userLanguages = trainer?.user?.languages;
+    if (!userLanguages?.length) return 'N/A';
+
+    return userLanguages
+      .map((lang) => lang.dialect?.language_name)
+      .filter(Boolean)
+      .join(', ');
+  }, [trainer]);
+
+  const vehicleConfig = getVehicleConfig(vehicleCategory);
+  const VehicleIcon = vehicleConfig.icon;
+
+  return (
+    <Card
+      sx={{
+        borderRadius: 3,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        border: '1px solid #f0f0f0',
+        position: 'relative',
+        overflow: 'visible',
+        height: '100%',
+        '&:hover': {
+          boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+        },
+      }}
+    >
+      {/* Status Chip */}
+      <Chip
+        label={isActive ? t('active') : t('unavailable')}
+        size="small"
+        sx={{
+          position: 'absolute',
+          top: 16,
+          right: 16,
+          bgcolor: isActive ? '#4caf50' : '#f44336',
+          color: 'white',
+          fontWeight: 600,
+          fontSize: 11,
+          height: 24,
+          zIndex: 1,
+        }}
+      />
+
+      <Box sx={{ p: 2.5 }}>
+        {/* Avatar and Name */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Avatar
+            src={photoUrl}
+            sx={{
+              width: 80,
+              height: 80,
+              borderRadius: 2,
+              bgcolor: '#f5f5f5',
+              fontSize: 24,
+              fontWeight: 600,
+              color: '#666',
+            }}
+          >
+            {getInitials(trainerName)}
+          </Avatar>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, fontSize: 18 }}>
+              {trainerName || t('n/a')}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <EmailIcon sx={{ fontSize: 14, color: '#999' }} />
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: 12 }}>
+                {trainerEmail || t('n/a')}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Badges Row */}
+        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
+          {isGearType(gear, 'MANUAL') && (
+            <Chip
+              icon={<SettingsIcon />}
+              label={t('manual') || 'Manual'}
+              size="small"
+              sx={{
+                bgcolor: '#2196f3',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: 11,
+                height: 24,
+                '& .MuiChip-icon': { color: 'white', fontSize: 14 },
+              }}
+            />
+          )}
+
+          {isGearType(gear, 'AUTOMATIC') && (
+            <Chip
+              icon={<SettingsIcon />}
+              label={t('automatic') || 'Automatic'}
+              size="small"
+              sx={{
+                bgcolor: '#ff9800',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: 11,
+                height: 24,
+                '& .MuiChip-icon': { color: 'white', fontSize: 14 },
+              }}
+            />
+          )}
+
+          {licenseNumber && (
+            <Chip
+              label={licenseNumber}
+              size="small"
+              variant="outlined"
+              sx={{
+                fontWeight: 600,
+                borderColor: '#ddd',
+                fontSize: 11,
+                height: 24,
+              }}
+            />
+          )}
+        </Stack>
+
+        {/* Vehicle Category */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+          <Typography variant="body2" sx={{ fontSize: 12, color: '#666', minWidth: 100 }}>
+            {t('Vehicle Category') || 'Vehicle'}:
+          </Typography>
+          <Chip
+            icon={<VehicleIcon sx={{ fontSize: 16 }} />}
+            label={vehicleCategory}
+            size="small"
+            sx={{
+              bgcolor: vehicleConfig.color,
+              color: 'white',
+              fontWeight: 600,
+              fontSize: 11,
+              height: 24,
+              '& .MuiChip-icon': { color: 'white', fontSize: 14 },
+            }}
+          />
+        </Box>
+
+        {/* Languages */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <Typography variant="body2" sx={{ fontSize: 12, color: '#666', minWidth: 100 }}>
+            {t('language') || 'Language'}:
+          </Typography>
+          <Typography variant="body2" sx={{ fontSize: 12, color: '#333' }}>
+            {languages}
+          </Typography>
+        </Box>
+
+        {/* Select Button */}
+        <Button
+          fullWidth
+          variant={isSelected ? 'contained' : 'outlined'}
+          onClick={onSelect}
+          sx={{
+            textTransform: 'none',
+            borderRadius: 2,
+            py: 1,
+            fontWeight: 600,
+            ...(isSelected
+              ? {
+                  bgcolor: '#ff6b35',
+                  '&:hover': { bgcolor: '#ff5722' },
+                }
+              : {
+                  borderColor: '#ff6b35',
+                  color: '#ff6b35',
+                  '&:hover': {
+                    borderColor: '#ff6b35',
+                    bgcolor: 'rgba(255,107,53,0.04)',
+                  },
+                }),
+          }}
+        >
+          {isSelected ? t('selected') || 'Selected' : t('select_trainer') || 'Select Trainer'}
+        </Button>
+      </Box>
+    </Card>
+  );
+};
+
+// Main Component
 const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   trainers,
   selectedTrainerId,
@@ -44,163 +366,159 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   isLoading,
   setSearchTerm,
   searchTerm,
-  renderFilters,
   setSelectedTrainer,
 }) => {
   const { i18n, t } = useTranslation();
-  const getInitials = (name?: string) => {
-    if (!name) return t('n/a');
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
-  const handleClearSearch = () => {
+  // Create debounced search function
+  const debouncedSetSearchTerm = useMemo(
+    () => debounce((value: string) => {
+      setSearchTerm(value);
+    }, 300),
+    [setSearchTerm]
+  );
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSetSearchTerm.cancel();
+    };
+  }, [debouncedSetSearchTerm]);
+
+  // Reset to page 1 when trainers or search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [trainers.length, searchTerm]);
+
+  // Sync local search term with prop when it changes externally
+  useEffect(() => {
+    setLocalSearchTerm(searchTerm);
+  }, [searchTerm]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalSearchTerm(value);
+    debouncedSetSearchTerm(value);
+  }, [debouncedSetSearchTerm]);
+
+  const handleClearSearch = useCallback(() => {
+    setLocalSearchTerm('');
     setSearchTerm('');
-  };
+    debouncedSetSearchTerm.cancel();
+  }, [setSearchTerm, debouncedSetSearchTerm]);
+
+  // Calculate pagination
+  const { totalPages, currentTrainers } = useMemo(() => {
+    const total = Math.ceil(trainers.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const current = trainers.slice(startIndex, endIndex);
+
+    return { totalPages: total, currentTrainers: current };
+  }, [trainers, currentPage]);
+
+  const handlePageChange = useCallback((_event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleSelectTrainer = useCallback(
+    (trainer: Trainer) => {
+      setSelectedTrainerId(trainer.user_id);
+      setSelectedTrainer(trainer);
+    },
+    [setSelectedTrainerId, setSelectedTrainer]
+  );
+
+  if (isLoading) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (trainers.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+        <Typography>{t('no_trainers_found') || 'No trainers found'}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <>
+      {/* Search Bar */}
       <Box
         mb={3}
         sx={{ width: '100%' }}
         display="flex"
         justifyContent="space-between"
         alignItems="center"
+        gap={2}
       >
         <TextField
-          label={t('search')}
+          placeholder={t('search') || 'Search...'}
           variant="outlined"
-          fullWidth
-          value={searchTerm}
+          size="small"
+          value={localSearchTerm}
           sx={{ maxWidth: '300px' }}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
           InputProps={{
-            endAdornment: searchTerm && (
+            endAdornment: localSearchTerm && (
               <InputAdornment position="end">
-                <IconButton onClick={handleClearSearch}>
-                  <CloseIcon />
+                <IconButton size="small" onClick={handleClearSearch}>
+                  <CloseIcon sx={{ fontSize: 18 }} />
                 </IconButton>
               </InputAdornment>
             ),
           }}
         />
-        {renderFilters}
       </Box>
 
+      {/* Trainer Grid */}
       <Grid container spacing={3}>
-        {isLoading ? (
-          <Grid item xs={12} sx={{ textAlign: 'center', py: 5 }}>
-            <CircularProgress />
+        {currentTrainers.map((trainer) => (
+          <Grid item xs={12} md={6} key={trainer.user_id}>
+            <TrainerCard
+              trainer={trainer}
+              isSelected={trainer.user_id === selectedTrainerId}
+              onSelect={() => handleSelectTrainer(trainer)}
+              language={i18n.language}
+              t={t}
+            />
           </Grid>
-        ) : (
-          trainers.map((trainer) => (
-            <Grid item xs={12} sm={6} md={4} key={trainer.user_id}>
-              <Card
-                onClick={() => {
-                  setSelectedTrainerId(trainer.user_id);
-                  setSelectedTrainer(trainer);
-                }}
-                sx={{
-                  borderRadius: 5,
-                  boxShadow: 4,
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  border: trainer.user_id === selectedTrainerId ? '2px solid #e36c1e' : 'none',
-                }}
-              >
-                <Box
-                  sx={{
-                    height: 100,
-                    background: 'linear-gradient(to right, #e36c1e, #e99562)',
-                    position: 'relative',
-                  }}
-                >
-                  <Chip
-                    label={trainer?.user?.is_active ? t('active') : t('inactive')}
-                    size="small"
-                    variant="outlined"
-                    sx={{
-                      position: 'absolute',
-                      top: 15,
-                      right: 15,
-                      backgroundColor: 'rgba(255,255,255,0.8)',
-                      color: trainer?.user?.is_active ? '#388e3c' : '#d32f2f',
-                      fontWeight: 600,
-                      borderColor: 'rgba(255,255,255,0.5)',
-                    }}
-                  />
-
-                  <Avatar
-                    src={trainer?.user?.photo_url || trainer.avatarUrl}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      border: '3px solid white',
-                      position: 'absolute',
-                      bottom: -40,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      backgroundColor: '#eee',
-                      fontSize: 24,
-                      color: '#444',
-                    }}
-                  >
-                    {getInitials(trainer.name)}
-                  </Avatar>
-                </Box>
-
-                <CardContent sx={{ mt: 5, textAlign: 'center' }}>
-                  <Typography fontWeight={600} sx={{ fontSize: '16px' }}>
-                    {(i18n.language === 'ar' ? trainer?.user?.name_ar : trainer?.user?.name) ||
-                      t('n/a')}{' '}
-                  </Typography>
-                  <Typography sx={{ fontSize: '13px' }} color="text.secondary">
-                    {trainer?.user?.email || t('n/a')}
-                  </Typography>
-
-                  <Divider
-                    sx={{
-                      my: 2,
-                      borderBottomWidth: 2,
-                      borderColor: '#1976d2',
-                      width: '80%',
-                      mx: 'auto',
-                    }}
-                  />
-
-                  <Stack spacing={1} sx={{ fontSize: '13px', textAlign: 'left', px: 2 }}>
-                    <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>{t('type')}:</strong>
-                      {trainer?.user?.user_preference?.gear || t('n/a')}
-                    </Typography>
-                    <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>{t('languages')}:</strong>
-                      {trainer?.user?.languages?.length > 0
-                        ? trainer?.user?.languages
-                            .map((lang: any) => lang.dialect?.language_name)
-                            .filter(Boolean)
-                            .join(', ')
-                        : t('n/a')}
-                    </Typography>
-                    <Typography sx={{ fontSize: '13px', mx: 'auto' }}>
-                      <strong>{t('category')}:</strong>{' '}
-                      {trainer?.user?.user_preference?.vehicle_type?.category_translations?.find(
-                        (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name ||
-                        trainer?.user?.user_preference?.vehicle_type?.category_translations?.[0]
-                          ?.name ||
-                        t('n/a')}{' '}
-                    </Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
-        )}
+        ))}
       </Grid>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+            showFirstButton
+            showLastButton
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontWeight: 600,
+              },
+              '& .Mui-selected': {
+                bgcolor: '#ff6b35 !important',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: '#ff5722 !important',
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
     </>
   );
 };

@@ -665,7 +665,7 @@ export function useNavData() {
       icon: ICONS.banking,
     },
     {
-      title: t('notifications'),
+      title: t('massages'),
       path: paths.dashboard.notification.root,
       icon: ICONS.mail,
     },

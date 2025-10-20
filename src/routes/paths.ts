@@ -257,6 +257,7 @@ export const paths = {
     assistant: {
       overview: `${ROOTS.DASHBOARD}/assistant/overview`,
       edit: `${ROOTS.DASHBOARD}/assistant/edit`,
+      message:``,
       student: {
         list: `${ROOTS.DASHBOARD}/assistant/students`,
         addNew: `${ROOTS.DASHBOARD}/assistant/new-student`,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   TextField,
   Button,
@@ -6,10 +6,17 @@ import {
   Typography,
   Box,
   MenuItem,
-  Card,
   Autocomplete,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
-import { GoogleMap, useJsApiLoader, Marker, LoadScript } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Marker,
+  Autocomplete as GoogleAutocomplete,
+} from '@react-google-maps/api';
+import { Visibility, VisibilityOff, CalendarToday, Search } from '@mui/icons-material';
 import { useGetGearEnum, useGetGenderEnum } from 'src/api/users';
 import { useSnackbar } from 'src/components/snackbar';
 import { useGetLanguages, useGetCategories, useGetCities, useGetAreas } from 'src/api/enum';
@@ -27,9 +34,7 @@ interface StudentFormData {
   gear: string | number;
   vehicle_type_id: string;
   gender: string;
-  // city_id: string;
   locale: string;
-  // area_id: string;
   traffic_file_number: string;
   building_name: string;
   plot_number: string;
@@ -41,7 +46,6 @@ interface StudentFormData {
   label: string;
   postal_code: string;
   neighbourhood: string;
-  // country_code: string;
 }
 
 const initialFormState: StudentFormData = {
@@ -49,14 +53,11 @@ const initialFormState: StudentFormData = {
   password: '',
   email: '',
   phone: '',
-  // country_code: '+971',
   dob: '',
   gear: '',
   vehicle_type_id: '',
   gender: '',
-  // city_id: '',
   locale: '',
-  // area_id: '',
   traffic_file_number: '',
   building_name: '',
   plot_number: '',
@@ -73,6 +74,7 @@ const initialFormState: StudentFormData = {
 const AddNewStudent: React.FC = () => {
   const [formData, setFormData] = useState<StudentFormData>(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { gearData, gearLoading } = useGetGearEnum();
   const { genderData, genderLoading } = useGetGenderEnum();
   const { languages } = useGetLanguages(0, 1000);
@@ -82,20 +84,48 @@ const AddNewStudent: React.FC = () => {
   const { i18n, t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+
+  // Refs for Google Places Autocomplete
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_APP_GOOGLE_API_KEY,
     libraries: ['visualization', 'places'],
   });
+
   const mapContainerStyle = {
     width: '100%',
-    height: '300px',
+    height: '400px',
+    borderRadius: '8px',
   };
 
-  const center = {
+  const [center, setCenter] = useState({
     lat: 25.276987,
     lng: 55.296249,
-  };
+  });
+
   const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Get current location on component mount
+  React.useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const currentLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setCenter(currentLocation);
+          setMarkerPosition(currentLocation);
+          getGeocodeDetails(currentLocation.lat, currentLocation.lng);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          enqueueSnackbar('Unable to get current location', { variant: 'warning' });
+        }
+      );
+    }
+  }, []);
 
   const getGeocodeDetails = async (lat: number, lng: number) => {
     const geocoder = new window.google.maps.Geocoder();
@@ -118,21 +148,37 @@ const AddNewStudent: React.FC = () => {
           landmark: getComponent('point_of_interest'),
           postal_code: getComponent('postal_code'),
           neighbourhood: getComponent('neighborhood') || getComponent('sublocality'),
-          label: '',
         }));
       }
     });
   };
 
+  const handlePlaceSelect = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+
+      if (place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        const newLocation = { lat, lng };
+        setCenter(newLocation);
+        setMarkerPosition(newLocation);
+        getGeocodeDetails(lat, lng);
+      }
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      // Reset area_id if city changes
-      ...(name === 'city_id' ? { area_id: '' } : {}),
     }));
+  };
+
+  const handleCancel = () => {
+    router.push(paths.dashboard.assistant.student.list);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,288 +207,509 @@ const AddNewStudent: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Prepare options for dropdowns
+  const genderOptions = Array.isArray(genderData) ? genderData : [];
+  const gearOptions = Array.isArray(gearData) ? gearData : [];
+
+  const vehicleOptions = Array.isArray(categories)
+    ? categories.map((category) => {
+        const localizedName =
+          category.category_translations.find(
+            (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
+          )?.name || t('unknown_category');
+        return {
+          value: category.id.toString(),
+          name: localizedName,
+        };
+      })
+    : [];
+
+  const languageOptions = Array.isArray(languages)
+    ? languages.map((lang) => ({
+        value: lang.language_culture,
+        name: lang.name,
+      }))
+    : [];
+
+  const selectedVehicle = vehicleOptions.find(
+    (option) => option.value === formData.vehicle_type_id
+  );
+  const selectedLanguage = languageOptions.find((option) => option.value === formData.locale);
+
   return (
-    <Card sx={{ maxWidth: 800, p: 3 }}>
-      <Typography variant="h6" gutterBottom color="primary">
-        {t('add_new_student')}
-      </Typography>
-
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
-          {Object.entries(formData)
-            .filter(
-              ([key]) =>
-                ![
-                  'building_name',
-                  'plot_number',
-                  'street',
-                  'address',
-                  'landmark',
-                  'longitude',
-                  'latitude',
-                  'label',
-                  'postal_code',
-                  'neighbourhood',
-                ].includes(key)
-            )
-            .map(([key, value]) => {
-              const label = t(key);
-
-              let options: any[] = [];
-
-              if (
-                ['gear', 'vehicle_type_id', 'gender', 'city_id', 'locale', 'area_id'].includes(key)
-              ) {
-                if (key === 'gear' && Array.isArray(gearData)) {
-                  options = gearData;
-                } else if (key === 'gender' && Array.isArray(genderData)) {
-                  options = genderData;
-                } else if (key === 'vehicle_type_id' && Array.isArray(categories)) {
-                  options = categories.map((category) => {
-                    const localizedName =
-                      category.category_translations.find(
-                        (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || t('unknown_category');
-                    return {
-                      value: category.id.toString(),
-                      name: localizedName,
-                    };
-                  });
-                } else if (key === 'city_id' && Array.isArray(cities)) {
-                  options = cities.map((city) => {
-                    const englishName =
-                      city.city_translations.find(
-                        (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || t('unknown_city');
-
-                    return {
-                      value: city.id.toString(),
-                      name: englishName,
-                    };
-                  });
-                } else if (key === 'locale' && Array.isArray(languages)) {
-                  options = languages.map((lang) => ({
-                    value: lang.language_culture,
-                    name: lang.name,
-                  }));
-                } else if (key === 'area_id') {
-                  const areaList = areas ?? [];
-                  options = areaList.map((area) => {
-                    const englishName =
-                      area.translations.find(
-                        (t) => t.locale.toLowerCase() === i18n.language.toLowerCase()
-                      )?.name || t('unknown_area');
-
-                    return {
-                      value: area.id.toString(),
-                      name: englishName,
-                    };
-                  });
-                }
-              }
-
-              if (['gear', 'gender'].includes(key)) {
-                return (
-                  <Grid item xs={12} sm={6} key={key}>
-                    <TextField
-                      select
-                      fullWidth
-                      label={label}
-                      name={key}
-                      value={value}
-                      onChange={handleChange}
-                      variant="outlined"
-                    >
-                      {options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                );
-              }
-
-              if (['vehicle_type_id', 'city_id', 'locale', 'area_id'].includes(key)) {
-                const selectedOption = options.find((option) => option.value === value);
-                return (
-                  <Grid item xs={12} sm={6} key={key}>
-                    <Autocomplete
-                      options={options}
-                      getOptionLabel={(option) => option.name ?? ''}
-                      isOptionEqualToValue={(option, val) => option.value === val.value}
-                      value={selectedOption || null}
-                      onChange={(_, newValue) => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          [key]: newValue?.value || '',
-                          ...(key === 'city_id' ? { area_id: '' } : {}),
-                        }));
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={label}
-                          variant="outlined"
-                          fullWidth
-                          disabled={options.length === 0}
-                        />
-                      )}
-                    />
-                  </Grid>
-                );
-              }
-
-              if (key === 'dob') {
-                return (
-                  <Grid item xs={12} sm={6} key={key}>
-                    <TextField
-                      fullWidth
-                      label={label}
-                      type="date"
-                      name={key}
-                      value={value}
-                      onChange={handleChange}
-                      InputLabelProps={{ shrink: true }}
-                      variant="outlined"
-                    />
-                  </Grid>
-                );
-              }
-              if (key === 'phone') {
-                return (
-                  <Grid item xs={12} sm={6} key={key}>
-                    <TextField
-                      fullWidth
-                      type="tel"
-                      label={label}
-                      name={key}
-                      value={formData[key]}
-                      onChange={(e) => {
-                        const onlyDigits = e.target.value.replace(/\D/g, '');
-                        setFormData((prev) => ({
-                          ...prev,
-                          [key]: onlyDigits,
-                        }));
-                      }}
-                      InputProps={{
-                        startAdornment: (
-                          <Typography sx={{ mr: 1, color: 'text.secondary', fontWeight: 500 }}>
-                            +971
-                          </Typography>
-                        ),
-                      }}
-                      variant="outlined"
-                    />
-                  </Grid>
-                );
-              }
-
-              return (
-                <Grid item xs={12} sm={6} key={key}>
-                  <TextField
-                    fullWidth
-                    type={key === 'password' ? 'password' : 'text'}
-                    label={label}
-                    name={key}
-                    value={value}
-                    onChange={handleChange}
-                    variant="outlined"
-                  />
-                </Grid>
-              );
-            })}
-        </Grid>
-
-        {/* ---------- Address Section ---------- */}
-        <Box mt={4}>
-          <Typography variant="h6" gutterBottom color="primary">
-            {t('address_details')}
+    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', p: 5, borderRadius: 3 }}>
+      {/* Header */}
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
+            Students
           </Typography>
-          <Box mt={4}>
-            <Typography variant="h6" gutterBottom>
-              {t('select_location_on_map')}
-            </Typography>
-
-            {isLoaded && (
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={center}
-                zoom={12}
-                onClick={(e) => {
-                  const lat = e.latLng?.lat();
-                  const lng = e.latLng?.lng();
-                  if (lat && lng) {
-                    setMarkerPosition({ lat, lng });
-                    getGeocodeDetails(lat, lng);
-                  }
-                }}
-              >
-                {markerPosition && <Marker position={markerPosition} />}
-              </GoogleMap>
-            )}
-          </Box>
-          <Grid container spacing={3} mt="10px">
-            {[
-              'building_name',
-              'plot_number',
-              'street',
-              'address',
-              'landmark',
-              'postal_code',
-              'neighbourhood',
-              'latitude',
-              'longitude',
-              'label',
-            ].map((key) => {
-              const labelText = t(key);
-
-              if (key === 'label') {
-                return (
-                  <Grid item xs={12} sm={6} key={key}>
-                    <TextField
-                      fullWidth
-                      select
-                      label={t(key)}
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      variant="outlined"
-                    >
-                      {['home', 'office', 'other'].map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {t(option)}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                );
-              }
-
-              return (
-                <Grid item xs={12} sm={6} key={key}>
-                  <TextField
-                    fullWidth
-                    label={labelText}
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    variant="outlined"
-                    disabled={['latitude', 'longitude', 'address'].includes(key)}
-                  />
-                </Grid>
-              );
-            })}
-          </Grid>
+          <Typography variant="body2" color="text.secondary">
+            Home / Students / <span style={{ color: '#000' }}>Add New Student</span>
+          </Typography>
         </Box>
-
-        <Box mt={4}>
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ py: 1.5 }}>
-            {isSubmitting ? t('submitting') : t('submit')}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={handleCancel}
+            sx={{
+              borderColor: '#ff6b35',
+              color: '#ff6b35',
+              px: 4,
+              '&:hover': {
+                borderColor: '#ff6b35',
+                bgcolor: 'rgba(255, 107, 53, 0.04)',
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            sx={{
+              bgcolor: '#ff6b35',
+              px: 4,
+              '&:hover': {
+                bgcolor: '#e55a2b',
+              },
+            }}
+          >
+            {isSubmitting ? 'Saving...' : 'Save'}
           </Button>
         </Box>
-      </form>
-    </Card>
+      </Box>
+
+      {/* Form Content */}
+      <Box sx={{ bgcolor: 'white', borderRadius: 2, p: 4 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
+          Add New Student
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          {/* First Row: Name, Phone, Email, Password */}
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Student Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
+                onChange={(e) => {
+                  let onlyDigits = e.target.value.replace(/\D/g, '');
+
+                  // Remove leading 0 if present
+                  if (onlyDigits.startsWith('0')) {
+                    onlyDigits = onlyDigits.substring(1);
+                  }
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    phone: onlyDigits,
+                  }));
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Typography sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+                        +971 |
+                      </Typography>
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                size="medium"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Second Row: DOB, Gender, Vehicle Type, Gear */}
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Date of Birth"
+                name="dob"
+                type="date"
+                value={formData.dob}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+                size="medium"
+                placeholder="DD/MM/YYYY"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <CalendarToday sx={{ color: 'text.secondary', fontSize: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                select
+                fullWidth
+                label="Gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+                placeholder="Select gender"
+              >
+                {genderOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Autocomplete
+                options={vehicleOptions}
+                getOptionLabel={(option) => option.name ?? ''}
+                isOptionEqualToValue={(option, val) => option.value === val.value}
+                value={selectedVehicle || null}
+                onChange={(_, newValue) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    vehicle_type_id: newValue?.value || '',
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Vehicle Type"
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Select vehicle type"
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                select
+                fullWidth
+                label="Gear"
+                name="gear"
+                value={formData.gear}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+                placeholder="Select gear type"
+              >
+                {gearOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+
+          {/* Third Row: Preferred Language and Traffic File Number */}
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Autocomplete
+                options={languageOptions}
+                getOptionLabel={(option) => option.name ?? ''}
+                isOptionEqualToValue={(option, val) => option.value === val.value}
+                value={selectedLanguage || null}
+                onChange={(_, newValue) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    locale: newValue?.value || '',
+                  }));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Preferred Language"
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Select preferred language"
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Traffic File Number (optional)"
+                name="traffic_file_number"
+                value={formData.traffic_file_number}
+                onChange={handleChange}
+                variant="outlined"
+                size="medium"
+                placeholder="Enter traffic file number"
+              />
+            </Grid>
+          </Grid>
+
+          {/* Address Details Section */}
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, mt: 4 }}>
+            Address Details
+          </Typography>
+
+          <Grid container spacing={3}>
+            {/* Map Section with Search */}
+            <Grid item xs={12} md={6}>
+              {/* Search Box */}
+              {isLoaded && (
+                <Box sx={{ mb: 2 }}>
+                  <GoogleAutocomplete
+                    onLoad={(autocomplete) => {
+                      autocompleteRef.current = autocomplete;
+                    }}
+                    onPlaceChanged={handlePlaceSelect}
+                  >
+                    <TextField
+                      fullWidth
+                      placeholder="Search for a location..."
+                      variant="outlined"
+                      size="medium"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Search sx={{ color: 'text.secondary' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          bgcolor: 'white',
+                        },
+                      }}
+                    />
+                  </GoogleAutocomplete>
+                </Box>
+              )}
+
+              {/* Map */}
+              {isLoaded && (
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={center}
+                  zoom={15}
+                  onClick={(e) => {
+                    const lat = e.latLng?.lat();
+                    const lng = e.latLng?.lng();
+                    if (lat && lng) {
+                      setMarkerPosition({ lat, lng });
+                      getGeocodeDetails(lat, lng);
+                    }
+                  }}
+                >
+                  {markerPosition && (
+                    <Marker
+                      position={markerPosition}
+                      draggable={true}
+                      onDragEnd={(e) => {
+                        const lat = e.latLng?.lat();
+                        const lng = e.latLng?.lng();
+                        if (lat && lng) {
+                          setMarkerPosition({ lat, lng });
+                          getGeocodeDetails(lat, lng);
+                        }
+                      }}
+                    />
+                  )}
+                </GoogleMap>
+              )}
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Search, click on the map, or drag the marker to select your location
+              </Typography>
+            </Grid>
+
+            {/* Address Fields */}
+            <Grid item xs={12} md={6}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Billing Name"
+                    name="building_name"
+                    value={formData.building_name}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter billing name"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Apartment / Build Number"
+                    name="plot_number"
+                    value={formData.plot_number}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter plot number"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Street"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter street"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    disabled
+                    placeholder="Enter address"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Land Mark"
+                    name="landmark"
+                    value={formData.landmark}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter land mark"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Postal Code"
+                    name="postal_code"
+                    value={formData.postal_code}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter postal code"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Neighborhood"
+                    name="neighbourhood"
+                    value={formData.neighbourhood}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Enter neighborhood"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ display: 'none' }}>
+                  <TextField
+                    fullWidth
+                    label="Latitude"
+                    name="latitude"
+                    value={formData.latitude}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    disabled
+                    placeholder="Latitude"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} sx={{ display: 'none' }}>
+                  <TextField
+                    fullWidth
+                    label="Longitude"
+                    name="longitude"
+                    value={formData.longitude}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    disabled
+                    placeholder="Longitude"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Label"
+                    name="label"
+                    value={formData.label}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="medium"
+                    placeholder="Select Label"
+                  >
+                    {['home', 'office', 'other'].map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {t(option)}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </form>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,88 +1,72 @@
-import { useState, useEffect, useCallback } from 'react';
-// @mui
+import { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import { Box, Skeleton, Stack, TableCell, TableRow, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import {
+  Box,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  Typography,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import { useGetRevenueReportsDownload } from 'src/api/reportDownload';
 
 import {
   useTable,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-// types
 
-import { useGetAllLanguage } from 'src/api/language';
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetBookingReports, useGetRevenueReports } from 'src/api/reportPreview';
+// API
+import { useGetCommissionList } from 'src/api/booking-assistant';
 import { useTranslation } from 'react-i18next';
-import { useGetStudentList } from 'src/api/assistant';
-import { useRouter } from 'src/routes/hooks';
-import { useGetCommissionList, useGetPayoutList } from 'src/api/booking-assistant';
 import CommissionRow from '../commission-table-row';
-import CommissionFilter from '../commission-filters';
 
 // ----------------------------------------------------------------------
 
 export default function CommissionListView() {
-  const { user } = useAuthContext();
-  const router = useRouter();
   const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
-  const confirm = useBoolean();
-  const openFilters = useBoolean();
   const [tableData, setTableData] = useState<any>([]);
-  const [viewMode, setViewMode] = useState('table');
-  const [localeFilter, setLocaleFilter] = useState('');
-
-  const [selectedOrder, setSelectedOrder] = useState(undefined);
   const { i18n, t } = useTranslation();
-  const locale = i18n.language;
-  const [startDate, setStartDate] = useState<string | undefined>(undefined);
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
-  const [filters, setFilters] = useState<{
-    startDate?: string;
-    endDate?: string;
-    category_id?: any;
-  }>({});
+
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState('');
+  const [driverStatusFilter, setDriverStatusFilter] = useState('');
+
   const TABLE_HEAD = [
     { id: 'user', label: t('student'), width: 200 },
     { id: 'trainer', label: t('trainer'), width: 200 },
-    { id: 'status', label: t('booking_status'), width: 200 },
-    { id: 'status', label: t('driver_status'), width: 200 },
+    { id: 'booking_status', label: t('booking_status'), width: 200 },
+    { id: 'driver_status', label: t('driver_status'), width: 200 },
     { id: 'amount', label: t('amount'), width: 200 },
     { id: 'remarks', label: t('remarks'), width: 200 },
   ];
+
+  // Fetch real data from API
   const { commissions, commissionListLoading, totalCommissionPages } = useGetCommissionList({
     page: table.page,
     limit: table.rowsPerPage,
   });
-  const handleFiltersChange = (newFilters: any) => {
-    setFilters(newFilters);
-  };
-  const { language } = useGetAllLanguage(0, 1000);
 
-  const localeOptions = (language || []).map((lang) => ({
-    value: lang.language_culture,
-    label: lang.name,
-  }));
+  // Set real data from API
   useEffect(() => {
     if (commissions?.length) {
       setTableData(commissions);
@@ -91,71 +75,31 @@ export default function CommissionListView() {
     }
   }, [commissions]);
 
-  const handleRowClick = (row) => {
-    // setRowId(row.id);
-    // // setViewMode('detail');
-    //No Need on click
-  };
+  // Client-side filtering - similar to Payout view
+  const filteredData = tableData.filter((row: any) => {
+    // Search filter - matches student name, trainer name (including Arabic names if available)
+    const matchesSearch =
+      searchQuery === '' ||
+      row?.student?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.student?.name_ar?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.trainer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row?.trainer?.name_ar?.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const handleFilters = useCallback(
-    // (name: string) => {
-    //   table.onResetPage();
-    //   setFilters((prevState) => ({
-    //     ...prevState,
-    //     [name]: value,
-    //   }));
-    // },
-    [table]
-  );
+    // Booking status filter
+    const matchesBookingStatus =
+      bookingStatusFilter === '' ||
+      row?.booking_status === bookingStatusFilter;
 
-  const handleOrderChange = (event) => {
-    const value = event.target.value;
+    // Driver status filter
+    const matchesDriverStatus =
+      driverStatusFilter === '' ||
+      row?.driver_status === driverStatusFilter;
 
-    if (value === '') {
-      setSelectedOrder(undefined);
-      setLocaleFilter('');
-      // setFilters(defaultFilters);
-    } else {
-      setSelectedOrder(value);
-    }
-  };
-  const handleLocaleFilterChange = (locale: string) => {
-    setLocaleFilter(locale);
-  };
-  // const canReset = !isEqual(defaultFilters, filters);
+    return matchesSearch && matchesBookingStatus && matchesDriverStatus;
+  });
 
-  const handleResetFilters = useCallback(() => {
-    setSelectedOrder(undefined);
-
-    setLocaleFilter('');
-    // setFilters(defaultFilters);
-  }, []);
-
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ marginBottom: 3 }}
-    >
-      <CommissionFilter
-        open={openFilters.value}
-        onOpen={openFilters.onTrue}
-        onClose={openFilters.onFalse}
-        handleOrderChange={handleOrderChange}
-        selectedOrder={selectedOrder}
-        filters={filters}
-        setFilters={setFilters}
-        onFilters={handleFiltersChange}
-        // canReset={canReset}
-        onResetFilters={handleResetFilters}
-        localeOptions={localeOptions}
-        onLocaleChange={handleLocaleFilterChange}
-      />
-    </Stack>
-  );
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
         heading={t('commission')}
         links={[
@@ -167,69 +111,198 @@ export default function CommissionListView() {
           { name: t('list') },
         ]}
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: { xs: 3, md: 4 },
         }}
       />
-      {/* {renderFilters} */}
 
-      <Card>
-        {viewMode === 'table' && (
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
+      <Card
+        sx={{
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          borderRadius: 2,
+        }}
+      >
+        {/* Filters Section */}
+        <Box
+          sx={{
+            p: 2.5,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            justifyContent="space-between"
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.125rem' }}>
+              {t('commission_list')}
+            </Typography>
+
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.5}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
+              {/* Search Field */}
+              <TextField
+                placeholder={t('search') + '...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                size="small"
+                sx={{
+                  minWidth: { sm: 240 },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              {/* Booking Status Filter */}
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <Select
+                  value={bookingStatusFilter}
+                  onChange={(e) => setBookingStatusFilter(e.target.value)}
+                  displayEmpty
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">
+                      {t('booking_status')}
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem value="SUCCESS">{t('success')}</MenuItem>
+                  <MenuItem value="FAIL">{t('fail')}</MenuItem>
+                  <MenuItem value="PENDING">{t('pending')}</MenuItem>
+                  <MenuItem value="CONFIRMED">{t('confirmed')}</MenuItem>
+                  <MenuItem value="CANCELLED">{t('cancelled')}</MenuItem>
+                  <MenuItem value="IN PROGRESS">{t('in_progress')}</MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Driver Status Filter */}
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <Select
+                  value={driverStatusFilter}
+                  onChange={(e) => setDriverStatusFilter(e.target.value)}
+                  displayEmpty
+                  sx={{
+                    borderRadius: 1.5,
+                    bgcolor: 'background.paper',
+                    '& fieldset': {
+                      borderColor: 'divider',
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">
+                      {t('driver_status')}
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem value="AVAILABLE">{t('available')}</MenuItem>
+                  <MenuItem value="BUSY">{t('busy')}</MenuItem>
+                  <MenuItem value="OFFLINE">{t('offline')}</MenuItem>
+                  <MenuItem value="ON_DUTY">{t('on_duty')}</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </Stack>
+        </Box>
+
+        {/* Table Section */}
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Table
+            size={table.dense ? 'small' : 'medium'}
+            sx={{
+              minWidth: 1200,
+              '& .MuiTableCell-root': {
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+              },
+            }}
+          >
+            <TableHeadCustom
+              order={table.order}
+              orderBy={table.orderBy}
+              headLabel={TABLE_HEAD}
+              rowCount={filteredData.length}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
+              sx={{
+                '& .MuiTableCell-head': {
+                  bgcolor: '#fafafa',
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                  fontSize: '0.6875rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  py: 1.5,
+                },
+              }}
             />
+            <TableBody>
+              {commissionListLoading
+                ? Array.from(new Array(table.rowsPerPage)).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={TABLE_HEAD?.length || 6}>
+                        <Skeleton animation="wave" height={40} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : filteredData?.map((row: any) => (
+                    <CommissionRow
+                      key={row.id}
+                      row={row}
+                      selected={false}
+                    />
+                  ))}
 
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
-                />
-                <TableBody>
-                  {commissionListLoading
-                    ? Array.from(new Array(5)).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={TABLE_HEAD?.length || 6}>
-                            <Skeleton animation="wave" height={40} />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : tableData?.map((row) => <CommissionRow row={row} />)}
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </TableContainer>
-        )}
+              {!commissionListLoading && filteredData.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 8 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('no_data_found')}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-        {viewMode === 'table' && (
-          <TablePaginationCustom
-            count={totalCommissionPages}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
-        )}
+        {/* Pagination */}
+        <TablePaginationCustom
+          count={totalCommissionPages}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+          dense={table.dense}
+          onChangeDense={table.onChangeDense}
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            '& .MuiTablePagination-toolbar': {
+              py: 1.5,
+            },
+          }}
+        />
       </Card>
     </Container>
   );

@@ -1,32 +1,24 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Avatar,
   Chip,
-  Rating,
-  LinearProgress,
-  CircularProgress,
   Card,
   CardContent,
   Button,
+  Grid,
+  Divider,
+  CircularProgress,
+  Rating,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import EditIcon from '@mui/icons-material/Edit';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { useGetTrainerList } from 'src/api/assistant';
 import { useTranslation } from 'react-i18next';
-import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import LanguageIcon from '@mui/icons-material/Language';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import FeedbackIcon from '@mui/icons-material/Feedback';
-
-import { useRouter } from 'src/routes/hooks';
-import { paths } from 'src/routes/paths';
-import PackageCard from '../package-card';
+import CheckIcon from '@mui/icons-material/Check';
 import TrainerAddressMap from '../trainer-address-map';
 import moment from 'moment';
 
@@ -34,16 +26,17 @@ interface TrainerProfileProps {
   trainer_id: number;
 }
 
-const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
+const TrainerDetailsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
   const { trainers, trainerListLoading, trainerListError } = useGetTrainerList({
     trainer_id: String(trainer_id),
   });
-  const [showAll, setShowAll] = useState(false);
+  const [selectedLang, setSelectedLang] = useState('Arabic');
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   const { i18n, t } = useTranslation();
-  const router = useRouter();
 
   const trainer = trainers?.[0];
+
   if (trainerListLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -60,428 +53,505 @@ const TrainerDeatilsPage: React.FC<TrainerProfileProps> = ({ trainer_id }) => {
     );
   }
 
-  const rawBreakdown = trainer?.user?.rating_breakdown || {};
-  const ratingBreakdown = [
-    rawBreakdown['5_star'] ?? 0,
-    rawBreakdown['4_star'] ?? 0,
-    rawBreakdown['3_star'] ?? 0,
-    rawBreakdown['2_star'] ?? 0,
-    rawBreakdown['1_star'] ?? 0,
-  ];
-  const totalRatings = ratingBreakdown.reduce((a: number, b: number) => a + b, 0);
+  // Determine if mode is manual or automatic
+  const isManual = trainer?.user?.user_preference?.is_manual_mode === true;
+
+  // Get real address data
+  const primaryAddress = trainer?.user?.user_addresses?.[0];
+  const addressLine1 = primaryAddress?.address_line_1 || '';
+  const addressLine2 = primaryAddress?.address_line_2 || '';
+  const city = primaryAddress?.city || '';
+
+  // Get reviews
   const validReviews = Array.isArray(trainer?.user?.reviews)
     ? trainer.user.reviews.filter((r: any) => r.rating !== null || r.comment)
     : [];
+  const reviewsToShow = showAllReviews ? validReviews : validReviews.slice(0, 3);
 
-  const reviewsToShow = showAll ? validReviews : validReviews.slice(0, 3);
+  // Package color mapping
+  const getPackageColor = (packageName: string) => {
+    const name = packageName?.toLowerCase() || '';
+    if (name.includes('gold')) return '#fff8e1';
+    if (name.includes('silver')) return '#f5f5f5';
+    if (name.includes('bronze')) return '#fff3e0';
+    if (name.includes('platinum')) return '#e8eaf6';
+    return 'white';
+  };
 
-  function getEmojiFlag(countryCode) {
-    return countryCode
-      .toUpperCase()
-      .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
-  }
+  const getPackageBorderColor = (packageName: string) => {
+    const name = packageName?.toLowerCase() || '';
+    if (name.includes('gold')) return '#ffa000';
+    if (name.includes('silver')) return '#9e9e9e';
+    if (name.includes('bronze')) return '#ff6f00';
+    if (name.includes('platinum')) return '#5e35b1';
+    return '#e0e0e0';
+  };
+
+  // Get language-specific bio
+  const getBioByLanguage = (lang: string) => {
+    const langMap: { [key: string]: string } = {
+      'Arabic': trainer.user?.user_preference?.bio_ar || t('n/a'),
+      'English': trainer.user?.user_preference?.bio || t('n/a'),
+      'Urdu': trainer.user?.user_preference?.bio_ur || t('n/a'),
+      'Malayalam': trainer.user?.user_preference?.bio_ml || t('n/a'),
+    };
+    return langMap[lang] || trainer.user?.user_preference?.bio || t('n/a');
+  };
+
   return (
-    <Box color="black" p={2} borderRadius={3} width="100%" mx="auto">
-      <Box
-        mt={3}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        p={3}
-        borderRadius="16px"
-        boxShadow={3}
-        sx={{ background: 'linear-gradient(to right, #ffffff, #f5f5f5)' }}
-      >
-        <Avatar
-          src={trainer?.user?.photo_url}
-          alt={trainer?.user?.name}
-          sx={{ width: 100, height: 100, border: '1px solid #F37421' }}
-        />
-        <Box display="flex" alignItems="center" mt={1}>
-          <StarIcon fontSize="small" sx={{ color: '#FFD700' }} />
-          <Typography ml={0.5}>
-            {(trainer?.rating ?? 0).toFixed(1)} ({trainer?.user?.rating_count ?? 0})
-          </Typography>
-        </Box>
-
-        <Typography variant="h6" mt={1} color="black">
-          {i18n.language === 'ar'
-            ? trainer?.user?.name_ar || t('n/a')
-            : trainer?.user?.name || t('n/a')}
+    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', p: 3 }}>
+      {/* Header */}
+      <Box mb={3}>
+        <Typography variant="h5" fontWeight={600}>
+          {t('trainers')}
         </Typography>
-        <Typography variant="body2" color="black" sx={{ fontSize: '12px' }}>
-          {trainer?.user?.vendor?.vendor_translations?.find(
-            (t) => t?.locale?.toLowerCase() === i18n.language.toLowerCase()
-          )?.name ||
-            trainer?.user?.vendor?.vendor_translations?.[0]?.name ||
-            t('n/a')}
-        </Typography>
-        <Chip
-          label={trainer?.user?.is_active ? t('available') : t('unavailable')}
-          size="medium"
-          color="primary"
-          sx={{ mt: 1 }}
-        />
-      </Box>
-
-      {/* About */}
-      <Box mt={3}>
-        <Typography fontWeight={600} mb={1} color="black">
-          {t('about_label')}
-        </Typography>
-
-        <Typography variant="body2" color="gray">
-          {i18n.language === 'ar'
-            ? trainer.user?.user_preference?.bio_ar ?? t('n/a')
-            : trainer.user?.user_preference?.bio ?? t('n/a')}
+        <Typography variant="body2" color="text.secondary">
+          {t('home')} / {t('trainers')} / <strong>{t('trainer_details')}</strong>
         </Typography>
       </Box>
 
-      <Box
-        mt={3}
-        px={2}
-        py={3}
-        sx={{
-          borderTop: '1px solid #CF5A0D',
-          borderBottom: '1px solid #CF5A0D',
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: { xs: 'center', sm: 'space-between' },
-          alignItems: 'center',
-          gap: { xs: 3, sm: 0 },
-          flexWrap: 'wrap',
-        }}
-      >
-        <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <PrecisionManufacturingIcon sx={{ fontSize: 30, color: 'grey' }} />
-          <Typography variant="h6" color="grey">
-            {t('Gear')}
-          </Typography>
-          <Chip
-            label={trainer.gear}
-            sx={{
-              px: 3,
-              backgroundColor: '#f8d9c5',
-              color: '#804820',
-              fontWeight: 600,
-              borderRadius: '24px',
-            }}
-          />
-        </Box>
-
-        <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <DriveEtaIcon sx={{ fontSize: 30, color: 'grey' }} />
-          <Typography variant="h6" color="grey">
-            {t('Car')}
-          </Typography>
-          <Chip
-            label={
-              trainer.user?.user_preference?.vehicle_type?.category_translations?.find(
-                (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || t('n/a')
-            }
-            sx={{
-              px: 3,
-              backgroundColor: '#f8d9c5',
-              color: '#804820',
-              fontWeight: 600,
-              borderRadius: '24px',
-            }}
-          />
-        </Box>
-
-        <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-          <LocationCityIcon sx={{ fontSize: 30, color: 'grey' }} />
-          <Typography variant="h6" color="grey">
-            {t('city')}
-          </Typography>
-          <Chip
-            label={`${
-              trainer.user?.user_preference?.city?.city_translations?.find(
-                (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || t('n/a')
-            } - ${
-              trainer.user?.user_preference?.state_province?.translations?.find(
-                (item) => item.locale.toLowerCase() === i18n.language.toLowerCase()
-              )?.name || t('n/a')
-            }`}
-            sx={{
-              px: 3,
-              backgroundColor: '#f8d9c5',
-              color: '#804820',
-              fontWeight: 600,
-              borderRadius: '24px',
-            }}
-          />
-        </Box>
-      </Box>
-      <TrainerAddressMap
-        addresses={trainer?.user?.user_addresses || []}
-        max_radius={trainer?.user?.user_preference?.max_radius_in_km}
-      />
-
-      <Box mt={2} pb={4} sx={{ borderBottom: '1px solid #CF5A0D', paddingTop: 2 }}>
-        <Typography
-          mb={2}
-          color="grey"
-          display="flex"
-          alignItems="center"
-          gap={1}
-          variant="h6"
-          sx={{ fontSize: 18 }}
-        >
-          <LocalOfferIcon sx={{ fontSize: 30, color: 'grey' }} />
-          {t('available_packages')}
-        </Typography>
-
-        {trainer?.packages && trainer.packages.length > 0 ? (
-          <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-between">
-            {trainer.packages.map((pkg: any) => {
-              const translation =
-                pkg.package_translations?.find(
-                  (pt: any) => pt.locale?.toLowerCase() === i18n.language.toLowerCase()
-                ) || pkg.package_translations?.[0];
-
-              const categoryTranslation =
-                pkg.category?.category_translations?.find(
-                  (ct: any) => ct.locale?.toLowerCase() === i18n.language.toLowerCase()
-                ) || pkg.category?.category_translations?.[0];
-              // const flagUrl = categoryTranslation?.pictures?.[0]?.virtual_path;
-              const features = [
-                `${
-                  pkg.number_of_sessions === -1
-                    ? t('unlimited_sessions')
-                    : `${pkg.number_of_sessions} ${t('driving_sessions')}`
-                }`,
-              ];
-
-              return (
-                <PackageCard
-                  key={pkg.id}
-                  title={translation?.name || t('n/a')}
-                  sessions={pkg.is_unlimited ? -1 : pkg.number_of_sessions}
-                  price={parseFloat(trainer.starting_package_price)}
-                  currency="AED"
-                  features={features}
-                  background="linear-gradient(to bottom right, #ea9650, #111111)"
-                  selected={false}
-                  onSelect={() => {
-                    router.push(paths.dashboard.assistant.booking.create, {
-                      step: 2,
-                      trainerId: trainer.user_id,
-                      packageId: pkg.id,
-                    });
-                  }}
+      <Grid container spacing={3}>
+        {/* LEFT COLUMN */}
+        <Grid item xs={12} md={6}>
+          {/* Profile Card */}
+          <Card sx={{ borderRadius: 2, mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box display="flex" gap={3} mb={3}>
+                {/* Avatar */}
+                <Avatar
+                  src={trainer?.user?.photo_url}
+                  alt={trainer?.user?.name}
+                  sx={{ width: 160, height: 160, borderRadius: 2 }}
                 />
-              );
-            })}
-          </Box>
-        ) : (
-          <Typography variant="body2" color="gray" textAlign="center">
-            {t('no_packages_available')}
-          </Typography>
-        )}
-      </Box>
-      <Box display="flex" alignItems="center" gap={1} minWidth={100} mt={3}>
-        <LanguageIcon sx={{ fontSize: 32, color: 'grey' }} />
-        <Typography variant="h6" color="grey" sx={{ fontSize: 18 }}>
-          {t('language')}
-        </Typography>
-      </Box>
 
-      <Box
-        mt={3}
-        px={2}
-        py={3}
-        sx={{
-          borderBottom: '1px solid #CF5A0D',
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: { xs: 'center', sm: 'space-between' },
-          alignItems: 'center',
-          gap: { xs: 3, sm: 2 },
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Languages List */}
-        {trainer?.user?.languages?.map((langObj, index) => {
-          const languageName = langObj.dialect?.language_name || 'Unknown';
-          const countryCode = langObj.dialect?.country_code || 'US';
-          const emojiFlag = getEmojiFlag(countryCode);
-
-          return (
-            <Box
-              key={index}
-              display="flex"
-              alignItems="center"
-              gap={1}
-              px={2}
-              py={1}
-              minWidth={130}
-              borderRadius="24px"
-              bgcolor="#f8d9c5"
-              sx={{
-                boxShadow: '0px 2px 6px rgba(0,0,0,0.2)',
-              }}
-            >
-              <Typography sx={{ fontSize: 21 }}>{emojiFlag}</Typography>
-              <Chip
-                label={languageName}
-                sx={{
-                  fontWeight: 600,
-                  backgroundColor: 'transparent',
-                  color: '#804820',
-                  padding: 0,
-                  cursor: 'default',
-                }}
-              />
-            </Box>
-          );
-        })}
-      </Box>
-
-      <Box mt={3} sx={{ paddingBottom: 3, borderBottom: '1px solid #CF5A0D' }}>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <DirectionsCarIcon sx={{ fontSize: 32, color: 'grey' }} />
-          <Typography fontWeight={600} variant="h6" color="grey" sx={{ fontSize: 18 }}>
-            {t('pickup')}
-          </Typography>
-        </Box>
-        <Typography variant="body2" color="grey" mb={2} textAlign="center">
-          {t('this_option_is_for')}{' '}
-        </Typography>
-
-        <Box mt={2}>
-          {trainer?.user?.user_preference?.is_pickup_enabled ? (
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{
-                backgroundColor: '#e7f8ed',
-                color: '#14532d',
-                px: 2,
-                py: 1,
-                fontWeight: 600,
-                width: 'fit-content',
-                mx: 'auto',
-              }}
-            >
-              <Typography fontSize="14px" fontWeight={600}>
-                {t('pickup_option_available')}
-              </Typography>
-
-              <CheckCircleIcon sx={{ fontSize: 18, ml: 1 }} />
-            </Box>
-          ) : (
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{
-                backgroundColor: '#fbeaea',
-                color: '#7f1d1d',
-                px: 2,
-                py: 1,
-                fontWeight: 600,
-                width: 'fit-content',
-                mx: 'auto',
-              }}
-            >
-              <Typography fontSize="14px" fontWeight={600} textAlign="center">
-                {t('pickup_option_not_available')}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Box>
-
-      <Box mt={3}>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <FeedbackIcon sx={{ color: 'grey.600' }} />
-          <Typography fontWeight={600} sx={{ color: 'grey.600' }}>
-            {t('reviews_label')}
-          </Typography>
-        </Box>
-        {totalRatings === 0 ? (
-          <Typography variant="body2" color="gray" textAlign="center">
-            {t('no_reviews')}
-          </Typography>
-        ) : (
-          <Box>
-            {[5, 4, 3, 2, 1].map((star, index) => (
-              <Box key={star} display="flex" alignItems="center" gap={1} mb={1}>
-                <Typography width={60}>{star} Star</Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={(ratingBreakdown[5 - star] / totalRatings) * 100}
-                  sx={{
-                    flex: 1,
-                    height: 8,
-                    borderRadius: 5,
-                    backgroundColor: '#cdcdcd',
-                    '& .MuiLinearProgress-bar': '#CF5A0D',
-                  }}
-                />
-                <Typography width={20} textAlign="right">
-                  {ratingBreakdown[5 - star]}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        )}
-      </Box>
-
-      <Box mt={4} sx={{ borderTop: '1px solid #CF5A0D', paddingTop: 2 }}>
-        <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <RateReviewIcon sx={{ color: 'grey.600' }} />
-          <Typography fontWeight={600} sx={{ color: 'grey.600' }}>
-            {t('reviews_label')}
-          </Typography>
-        </Box>
-
-        {validReviews.length === 0 ? (
-          <Typography variant="body2" color="gray" textAlign="center">
-            {t('no_reviews_available')}
-          </Typography>
-        ) : (
-          reviewsToShow.map((review: any, index: number) => (
-            <>
-              {' '}
-              <Card key={index} variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar sx={{ bgcolor: '#E0F7FA' }}>{(review.student || 'A').charAt(0)}</Avatar>
-                    <Box>
-                      <Typography fontWeight={600}>{review.student || 'Anonymous'}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {moment(review.date).format('Do MMMM YYYY') || t('n/a')}
-                      </Typography>
-                    </Box>
-                    <Box ml="auto">
-                      {review.rating !== null && (
-                        <Rating value={review.rating} precision={0.5} readOnly />
-                      )}
-                    </Box>
+                {/* Info */}
+                <Box flex={1}>
+                  {/* Name & Status */}
+                  <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <Typography variant="h5" fontWeight={600}>
+                      {i18n.language === 'ar'
+                        ? trainer?.user?.name_ar || trainer?.user?.name || t('n/a')
+                        : trainer?.user?.name || t('n/a')}
+                    </Typography>
+                    <Chip
+                      label={trainer?.user?.is_active ? t('active') : t('inactive')}
+                      size="small"
+                      sx={{
+                        bgcolor: trainer?.user?.is_active ? '#4caf50' : '#f44336',
+                        color: 'white',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                      }}
+                    />
                   </Box>
-                  {review.comment && (
-                    <Typography variant="body2" mt={2} color="text.secondary">
-                      {review.comment}
+
+                  {/* Vendor Location */}
+                  <Typography variant="body2" color="text.secondary" mb={2}>
+                    {' '}
+                    {trainer?.user?.vendor?.vendor_translations?.find(
+                      (vt: any) => vt?.locale?.toLowerCase() === i18n.language.toLowerCase()
+                    )?.name ||
+                      trainer?.user?.vendor?.vendor_translations?.[0]?.name ||
+                      'Al Ain - Sanaya'}
+                  </Typography>
+
+                  {/* Buttons */}
+                  <Box display="flex" gap={1} mb={2}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={isManual ? <EditIcon /> : <AutoModeIcon />}
+                      sx={{
+                        bgcolor: isManual ? '#2196f3' : '#4caf50',
+                        textTransform: 'none',
+                        px: 3,
+                        '&:hover': {
+                          bgcolor: isManual ? '#1976d2' : '#388e3c',
+                        },
+                      }}
+                    >
+                      {isManual ? t('manual') : t('automatic')}
+                    </Button>
+
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        textTransform: 'none',
+                        borderColor: '#e0e0e0',
+                        color: 'text.primary',
+                        px: 3,
+                      }}
+                    >
+                      {trainer?.vehicle_number || 'AD-12345'}
+                    </Button>
+                  </Box>
+
+                  {/* Contact Details */}
+                  <Box>
+                    <InfoLine
+                      label={t('Phone Number')}
+                      value={`+${trainer?.user?.country_code || '971'} ${trainer?.user?.phone || '56 600 5000'}`}
+                    />
+                    <InfoLine
+                      label={t('Email')}
+                      value={trainer?.user?.email || 'floydmiles@gmail.com'}
+                    />
+                    <InfoLine
+                      label={t('Vehicle Category')}
+                      value={
+                        trainer.user?.user_preference?.vehicle_type?.category_translations?.find(
+                          (item: any) => item.locale.toLowerCase() === i18n.language.toLowerCase()
+                        )?.name || t('light_vehicle')
+                      }
+                    />
+                    <InfoLine
+                      label={t('language')}
+                      value={
+                        trainer?.user?.languages
+                          ?.map((l: any) => l.dialect?.language_name)
+                          .join(', ') || 'English, Malayalam, Arabic, Hindi'
+                      }
+                    />
+                    <InfoLine
+                      label={t('pickup_option')}
+                      value={
+                        trainer?.user?.user_preference?.is_pickup_enabled
+                          ? `${t('yes')} (${t('extra_fee_applies')})`
+                          : t('no')
+                      }
+                    />
+                  </Box>
+
+                  {/* Rating */}
+                  <Box display="flex" alignItems="center" gap={0.5} mt={2}>
+                    <Typography variant="h6" fontWeight={600}>
+                      {(trainer?.user?.average_rating ?? 0).toFixed(1)}
+                    </Typography>
+                    <StarIcon sx={{ color: '#ffc107', fontSize: 20 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      ({trainer?.user?.rating_count ?? 0})
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+
+          {/* Trainer Address */}
+          <Card sx={{ borderRadius: 2 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" fontWeight={600} mb={2}>
+                {t('trainer_address')}
+              </Typography>
+
+              {primaryAddress ? (
+                <>
+                  {primaryAddress.building_name && (
+                    <Typography variant="body2" color="text.secondary">
+                      {primaryAddress.building_name}
                     </Typography>
                   )}
-                </CardContent>
-              </Card>
-            </>
-          ))
-        )}
-      </Box>
-      {!showAll && validReviews.length > 3 && (
-        <Box textAlign="center" mt={2}>
-          <Button variant="outlined" color="primary" onClick={() => setShowAll(true)}>
-            {t('view_all')}
-          </Button>
-        </Box>
-      )}
+                  {primaryAddress.street && (
+                    <Typography variant="body2" color="text.secondary">
+                      {primaryAddress.street}
+                    </Typography>
+                  )}
+                  {primaryAddress.neighbourhood && (
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                      {primaryAddress.neighbourhood}
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <Typography variant="body2" color="text.secondary" mb={2}>
+                  {t('no_address_available')}
+                </Typography>
+              )}
+
+              <TrainerAddressMap
+                addresses={trainer?.user?.user_addresses || []}
+                max_radius={trainer?.user?.user_preference?.max_radius_in_km}
+              />
+
+              <Box
+                sx={{
+                  bgcolor: '#ff5722',
+                  color: 'white',
+                  px: 2,
+                  py: 1,
+                  borderRadius: 1,
+                  mt: 2,
+                  display: 'inline-block',
+                }}
+              >
+                <Typography variant="body2" fontWeight={600}>
+                  {t('maximum_radius')}: {trainer?.user?.user_preference?.max_radius_in_km || 60}KM
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* RIGHT COLUMN */}
+        <Grid item xs={12} md={6}>
+          {/* About Section */}
+          <Card sx={{ borderRadius: 2, mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" fontWeight={600} mb={2}>
+                {t('about')}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                mb={3}
+                sx={{ lineHeight: 1.8, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
+              >
+                {getBioByLanguage(selectedLang)}
+              </Typography>
+
+              {/* Language Tabs */}
+              <Box display="flex" gap={1} flexWrap="wrap">
+                {['Arabic', 'English', 'Urdu', 'Malayalam'].map((lang) => (
+                  <Button
+                    key={lang}
+                    variant={selectedLang === lang ? 'contained' : 'outlined'}
+                    size="small"
+                    onClick={() => setSelectedLang(lang)}
+                    sx={{
+                      textTransform: 'none',
+                      bgcolor: selectedLang === lang ? '#ff5722' : 'transparent',
+                      color: selectedLang === lang ? 'white' : 'text.primary',
+                      borderColor: '#e0e0e0',
+                      px: 3,
+                      '&:hover': {
+                        bgcolor: selectedLang === lang ? '#e64a19' : '#f5f5f5',
+                      },
+                    }}
+                  >
+                    {t(lang.toLowerCase())}
+                  </Button>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+
+          {/* Available Package */}
+          <Card sx={{ borderRadius: 2, mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" fontWeight={600} mb={3}>
+                {t('available_package')}
+              </Typography>
+
+              {trainer?.user?.packages && trainer.user.packages.length > 0 ? (
+                <Grid container spacing={2}>
+                  {trainer.user.packages.map((userPkg: any) => {
+                    const pkg = userPkg.package;
+
+                    if (!pkg) return null;
+
+                    const translation =
+                      pkg.package_translations?.find(
+                        (pt: any) => pt.locale?.toLowerCase() === i18n.language.toLowerCase()
+                      ) || pkg.package_translations?.[0];
+
+                    const packageName = translation?.name || t('package');
+                    const isGold = packageName?.toLowerCase().includes('gold');
+
+                    // Extract features from session_inclusions HTML or use default
+                    const sessionInclusions = translation?.session_inclusions || '';
+                    const featuresArray = sessionInclusions
+                      ? [sessionInclusions.replace(/<\/?p>/g, '').trim()]
+                      : [
+                          t('driving_fundamentals'),
+                          t('sessions_before_test'),
+                          t('discount_on_certificate'),
+                          t('serious_preparation'),
+                        ];
+
+                    return (
+                      <Grid item xs={12} sm={6} key={userPkg.id}>
+                        <PackageCard
+                          title={packageName}
+                          price={parseFloat(userPkg.price || 0)}
+                          sessions={pkg.number_of_sessions || 0}
+                          isUnlimited={pkg.is_unlimited || false}
+                          features={featuresArray}
+                          bgColor={getPackageColor(packageName)}
+                          borderColor={getPackageBorderColor(packageName)}
+                          isGold={isGold}
+                          discountText={t('discount_on_certificate_percent')}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              ) : (
+                <Typography variant="body2" color="gray" textAlign="center">
+                  {t('no_packages_available')}
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Reviews Section */}
+          {validReviews.length > 0 && (
+            <Card sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={600} mb={3}>
+                  {t('reviews')} ({validReviews.length})
+                </Typography>
+
+                {reviewsToShow.map((review: any, index: number) => (
+                  <Box key={review.id || index} mb={3}>
+                    <Box display="flex" alignItems="center" gap={2} mb={1}>
+                      <Avatar
+                        src={review.user?.photo_url}
+                        alt={review.user?.name}
+                        sx={{ width: 40, height: 40 }}
+                      />
+                      <Box flex={1}>
+                        <Typography variant="body1" fontWeight={600}>
+                          {review.user?.name || t('anonymous')}
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Rating
+                            value={review.rating || 0}
+                            readOnly
+                            size="small"
+                            precision={0.5}
+                          />
+                          <Typography variant="caption" color="text.secondary">
+                            {review.created_at
+                              ? moment(review.created_at).format('MMM DD, YYYY')
+                              : ''}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                    {review.comment && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ pl: 7, lineHeight: 1.6 }}
+                      >
+                        {review.comment}
+                      </Typography>
+                    )}
+                    {index < reviewsToShow.length - 1 && <Divider sx={{ mt: 2 }} />}
+                  </Box>
+                ))}
+
+                {validReviews.length > 3 && (
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => setShowAllReviews(!showAllReviews)}
+                    sx={{
+                      textTransform: 'none',
+                      borderColor: '#e0e0e0',
+                      color: 'text.primary',
+                      mt: 2,
+                    }}
+                  >
+                    {showAllReviews
+                      ? t('show_less')
+                      : `${t('show_all_reviews')} (${validReviews.length - 3} ${t('more')})`}
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </Grid>
+      </Grid>
     </Box>
   );
 };
 
-export default TrainerDeatilsPage;
+// Helper Components
+const InfoLine = ({ label, value }: { label: string; value: string }) => (
+  <Box mb={1}>
+    <Typography variant="caption" color="text.secondary" component="span">
+      {label}:{' '}
+    </Typography>
+    <Typography variant="body2" component="span" fontWeight={500}>
+      {value}
+    </Typography>
+  </Box>
+);
+
+const PackageCard = ({
+  title,
+  price,
+  sessions,
+  isUnlimited,
+  description,
+  features,
+  bgColor = 'white',
+  borderColor = '#e0e0e0',
+  isGold = false,
+  discountText = '40% discount on certificate',
+}: {
+  title: string;
+  price: number;
+  sessions?: number;
+  isUnlimited?: boolean;
+  description?: string;
+  features?: string[];
+  bgColor?: string;
+  borderColor?: string;
+  isGold?: boolean;
+  discountText?: string;
+}) => (
+  <Card
+    sx={{
+      border: `2px solid ${borderColor}`,
+      borderRadius: 2,
+      p: 2.5,
+      height: '100%',
+      bgcolor: bgColor,
+      position: 'relative',
+    }}
+  >
+    <Typography variant="h6" fontWeight={700} mb={1}>
+      {title}
+    </Typography>
+    <Typography variant="h4" fontWeight={700} mb={1}>
+      {price} <span style={{ fontSize: '1.2rem' }}>AED</span>
+    </Typography>
+    {isUnlimited ? (
+      <Typography variant="body2" color="primary" fontWeight={600} mb={1}>
+        Unlimited Sessions
+      </Typography>
+    ) : sessions > 0 ? (
+      <Typography variant="body2" color="primary" fontWeight={600} mb={1}>
+        {sessions} {sessions === 1 ? 'Session' : 'Sessions'}
+      </Typography>
+    ) : null}
+    {description && (
+      <Typography variant="body2" color="text.secondary" mb={2.5}>
+        {description}
+      </Typography>
+    )}
+
+    {isGold && (
+      <Box
+        sx={{
+          bgcolor: '#fff3e0',
+          color: '#ff6f00',
+          px: 2,
+          py: 0.8,
+          borderRadius: 1,
+          mt: 2,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="body2" fontWeight={600}>
+          {discountText}
+        </Typography>
+      </Box>
+    )}
+  </Card>
+);
+
+export default TrainerDetailsPage;
