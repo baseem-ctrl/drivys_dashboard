@@ -301,7 +301,7 @@ export default function StudentListView() {
                 '&:hover': {
                   bgcolor: '#e55a2b',
                 },
-              }}//this code costing latgger
+              }}
             >
               {t('add_new')}
             </Button>
@@ -355,7 +355,7 @@ export default function StudentListView() {
                         </TableCell>
                       </TableRow>
                     ))
-                    : displayData?.map((row) => (
+                    : displayData?.map((row, index) => (
                       <StudentRow
                         key={row.id}
                         userType={user?.user?.user_type}
@@ -364,8 +364,10 @@ export default function StudentListView() {
                         onSelectRow={() => handleRowClick(row)}
                         reload={revalidateStudentList}
                         t={t}
+                        index={index}
                       />
-                    ))}
+                    ))
+                  }
                 </TableBody>
               </Table>
             </Scrollbar>

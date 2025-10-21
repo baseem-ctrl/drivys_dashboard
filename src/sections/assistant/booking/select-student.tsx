@@ -111,6 +111,15 @@ const StudentStep: React.FC<StudentStepProps> = ({
       .slice(0, 2);
   };
 
+  const getLanguageName = (locale: string) => {
+    const languageMap: { [key: string]: string } = {
+      ar: 'Arabic',
+      en: 'English',
+      ur: 'Urdu',
+    };
+    return languageMap[locale.toLowerCase()] || locale;
+  };
+
   const handleClearSearch = () => {
     setSearchTerm('');
     if (useExternalPagination && externalOnPageChange) {
@@ -191,10 +200,10 @@ const StudentStep: React.FC<StudentStepProps> = ({
 
             // FIXED: Get language from student.locale directly or from languages array
             const languages = student?.locale
-              ? student.locale
+              ? getLanguageName(student.locale)
               : student?.languages?.length > 0
                 ? student.languages
-                    .map((lang: any) => lang.locale)
+                    .map((lang: any) => getLanguageName(lang.locale))
                     .filter(Boolean)
                     .join(', ')
                 : 'N/A';

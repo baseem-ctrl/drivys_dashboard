@@ -67,8 +67,8 @@ interface TrainerStepProps {
   selectedTrainerId: number | null;
   setSelectedTrainerId: (id: number) => void;
   isLoading: boolean;
-  setSearchTerm: (value: string) => void;
-  searchTerm: string;
+  setSearchTerm?: (value: string) => void;
+  searchTerm?: string;
   renderFilters?: React.ReactNode;
   setSelectedTrainer: (trainer: Trainer) => void;
 }
@@ -139,6 +139,40 @@ function debounce<T extends (...args: any[]) => any>(
 
   return debounced;
 }
+
+// Search filter function
+const filterTrainers = (trainers: Trainer[], searchTerm: string, language: string): Trainer[] => {
+  if (!searchTerm.trim()) return trainers;
+
+  const lowerSearch = searchTerm.toLowerCase().trim();
+
+  return trainers.filter((trainer) => {
+    const name = language === 'ar' ? trainer?.user?.name_ar : trainer?.user?.name;
+    const email = trainer?.user?.email;
+    const licenseNumber = trainer?.user?.license_number || trainer?.license_number;
+
+    // Get vehicle category
+    const translations = trainer?.user?.user_preference?.vehicle_type?.category_translations;
+    const vehicleCategory = translations?.find(
+      (trans) => trans?.locale?.toLowerCase() === language.toLowerCase()
+    )?.name || translations?.[0]?.name || '';
+
+    // Get languages
+    const languages = trainer?.user?.languages
+      ?.map((lang) => lang.dialect?.language_name)
+      .filter(Boolean)
+      .join(' ') || '';
+
+    // Search across all fields
+    return (
+      name?.toLowerCase().includes(lowerSearch) ||
+      email?.toLowerCase().includes(lowerSearch) ||
+      licenseNumber?.toLowerCase().includes(lowerSearch) ||
+      vehicleCategory?.toLowerCase().includes(lowerSearch) ||
+      languages?.toLowerCase().includes(lowerSearch)
+    );
+  });
+};
 
 // Sub-components
 interface TrainerCardProps {
@@ -365,17 +399,19 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   setSelectedTrainerId,
   isLoading,
   setSearchTerm,
-  searchTerm,
+  searchTerm: externalSearchTerm = '',
   setSelectedTrainer,
 }) => {
   const { i18n, t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const [localSearchTerm, setLocalSearchTerm] = useState(externalSearchTerm);
 
   // Create debounced search function
   const debouncedSetSearchTerm = useMemo(
     () => debounce((value: string) => {
-      setSearchTerm(value);
+      if (setSearchTerm) {
+        setSearchTerm(value);
+      }
     }, 300),
     [setSearchTerm]
   );
@@ -387,15 +423,10 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
     };
   }, [debouncedSetSearchTerm]);
 
-  // Reset to page 1 when trainers or search term changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [trainers.length, searchTerm]);
-
   // Sync local search term with prop when it changes externally
   useEffect(() => {
-    setLocalSearchTerm(searchTerm);
-  }, [searchTerm]);
+    setLocalSearchTerm(externalSearchTerm);
+  }, [externalSearchTerm]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -405,19 +436,31 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
 
   const handleClearSearch = useCallback(() => {
     setLocalSearchTerm('');
-    setSearchTerm('');
+    if (setSearchTerm) {
+      setSearchTerm('');
+    }
     debouncedSetSearchTerm.cancel();
   }, [setSearchTerm, debouncedSetSearchTerm]);
 
+  // Filter trainers based on search term
+  const filteredTrainers = useMemo(() => {
+    return filterTrainers(trainers, localSearchTerm, i18n.language);
+  }, [trainers, localSearchTerm, i18n.language]);
+
+  // Reset to page 1 when filtered trainers change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredTrainers.length]);
+
   // Calculate pagination
   const { totalPages, currentTrainers } = useMemo(() => {
-    const total = Math.ceil(trainers.length / ITEMS_PER_PAGE);
+    const total = Math.ceil(filteredTrainers.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const current = trainers.slice(startIndex, endIndex);
+    const current = filteredTrainers.slice(startIndex, endIndex);
 
     return { totalPages: total, currentTrainers: current };
-  }, [trainers, currentPage]);
+  }, [filteredTrainers, currentPage]);
 
   const handlePageChange = useCallback((_event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
@@ -440,14 +483,6 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
     );
   }
 
-  if (trainers.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
-        <Typography>{t('no_trainers_found') || 'No trainers found'}</Typography>
-      </Box>
-    );
-  }
-
   return (
     <>
       {/* Search Bar */}
@@ -460,7 +495,7 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
         gap={2}
       >
         <TextField
-          placeholder={t('search') || 'Search...'}
+          placeholder={t('search') || 'Search trainers...'}
           variant="outlined"
           size="small"
           value={localSearchTerm}
@@ -478,46 +513,64 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
         />
       </Box>
 
-      {/* Trainer Grid */}
-      <Grid container spacing={3}>
-        {currentTrainers.map((trainer) => (
-          <Grid item xs={12} md={6} key={trainer.user_id}>
-            <TrainerCard
-              trainer={trainer}
-              isSelected={trainer.user_id === selectedTrainerId}
-              onSelect={() => handleSelectTrainer(trainer)}
-              language={i18n.language}
-              t={t}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            size="large"
-            showFirstButton
-            showLastButton
-            sx={{
-              '& .MuiPaginationItem-root': {
-                fontWeight: 600,
-              },
-              '& .Mui-selected': {
-                bgcolor: '#ff6b35 !important',
-                color: 'white',
-                '&:hover': {
-                  bgcolor: '#ff5722 !important',
-                },
-              },
-            }}
-          />
+      {/* No Results Message */}
+      {filteredTrainers.length === 0 && (
+        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+          <Typography variant="h6" gutterBottom>
+            {t('no_trainers_found') || 'No trainers found'}
+          </Typography>
+          {localSearchTerm && (
+            <Typography variant="body2">
+              {t('try_different_search') || 'Try adjusting your search terms'}
+            </Typography>
+          )}
         </Box>
+      )}
+
+      {/* Trainer Grid */}
+      {filteredTrainers.length > 0 && (
+        <>
+          <Grid container spacing={3}>
+            {currentTrainers.map((trainer) => (
+              <Grid item xs={12} md={6} key={trainer.user_id}>
+                <TrainerCard
+                  trainer={trainer}
+                  isSelected={trainer.user_id === selectedTrainerId}
+                  onSelect={() => handleSelectTrainer(trainer)}
+                  language={i18n.language}
+                  t={t}
+                />
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontWeight: 600,
+                  },
+                  '& .Mui-selected': {
+                    bgcolor: '#ff6b35 !important',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: '#ff5722 !important',
+                    },
+                  },
+                }}
+              />
+            </Box>
+          )}
+        </>
       )}
     </>
   );

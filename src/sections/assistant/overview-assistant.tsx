@@ -59,7 +59,9 @@ const OverviewAssistant = () => {
   }, [bookings]);
 
   const handleClickSave = () => router.push(paths.dashboard.assistant.edit);
-  const handleRowClick = (row) => router.push(paths.dashboard.booking.details(row?.id));
+
+  // FIXED: Navigate to booking list page instead of booking details
+  const handleRowClick = (row) => router.push('/dashboard/assistant/booking-list');
 
   const getStatusColor = (status) => {
     if (status === 'COMPLETED') return '#28a745';
