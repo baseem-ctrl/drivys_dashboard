@@ -541,11 +541,13 @@ export default function CreateBookingLayout() {
 
 return (
   <Box sx={{ display: 'flex', minHeight: '100vh', position: 'relative' }}>
-
+    {/* SIDEBAR - Fixed with all content visible */}
     <Box
       sx={{
         width: { xs: '100%', md: '400px', lg: '360px' }, // Fixed width for better control
         position: { xs: 'relative', md: 'fixed' },
+
+
         height: { xs: 'auto', md: 'calc(100vh - 40px)' }, // Full height minus padding
         p: { xs: 2, md: 2 },
         display: 'flex',
@@ -711,7 +713,7 @@ return (
       </Card>
     </Box>
 
-    {/* MAIN CONTENT - With fixed header and footer, scrollable content */}
+    {/* MAIN CONTENT - With single scrollbar */}
     <Box
       sx={{
         flex: 1,
@@ -720,83 +722,31 @@ return (
         p: { xs: 2, md: 4 },
       }}
     >
-      <Card
-        sx={{
-          borderRadius: CARD_RADIUS,
-          height: 'calc(100vh - 64px)', // Full viewport height minus padding
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden', // Prevent card from expanding
-        }}
-        elevation={2}
-      >
-        {/* FIXED HEADER */}
-        <Box sx={{
-          p: { xs: 2, md: 3 },
-          pb: 0,
-          flexShrink: 0, // Prevent shrinking
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                {steps[activeStep]}
-              </Typography>
-              <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>
-                {'Follow the steps to create a booking'}
-              </Typography>
-            </Box>
-
-            {/* Filter button shown only on trainer step */}
-            {activeStep === 0 && (
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                {renderFilters}
-              </Box>
-            )}
+      <Card sx={{ borderRadius: CARD_RADIUS, p: { xs: 2, md: 3 }, minHeight: 520 }} elevation={2}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              {steps[activeStep]}
+            </Typography>
+            <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>
+              {'Follow the steps to create a booking'}
+            </Typography>
           </Box>
 
-          <Divider />
+          {/* Filter button shown only on trainer step */}
+          {activeStep === 0 && (
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {renderFilters}
+            </Box>
+          )}
         </Box>
 
-        {/* SCROLLABLE CONTENT AREA */}
-        <Box
-          sx={{
-            flex: 1,
-            overflow: 'auto', // Enable scrolling
-            p: { xs: 2, md: 3 },
-            pt: 2,
-            pb: 2,
-            // Custom scrollbar styles
-            '&::-webkit-scrollbar': {
-              width: '8px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: '#f1f1f1',
-              borderRadius: '4px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '4px',
-              '&:hover': {
-                background: '#555',
-              },
-            },
-          }}
-        >
-          {renderStepContent()}
-        </Box>
+        <Divider sx={{ mb: 2 }} />
 
-        {/* FIXED FOOTER WITH ACTIONS */}
-        <Box sx={{
-          p: { xs: 2, md: 3 },
-          pt: 2,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          flexShrink: 0, // Prevent shrinking
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          bgcolor: 'background.paper', // Ensure it has a background
-        }}>
+        <Box sx={{ minHeight: 300 }}>{renderStepContent()}</Box>
+
+        {/* bottom actions */}
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Button
             variant="text"
             startIcon={<ArrowBackIosNewIcon sx={{ fontSize: 14 }} />}
