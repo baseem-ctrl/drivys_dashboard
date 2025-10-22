@@ -176,405 +176,109 @@ export default function BookingListAssistantView() {
     setFilters(defaultFilters);
   }, []);
 
-  return (
-    <Box sx={{ p: 4, bgcolor: '#fafafa', minHeight: '100vh' }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
-          {t('Bookings')}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('Bookings')}</span>
-        </Typography>
-      </Box>
+return (
+  <Box sx={{ display: 'flex', minHeight: '100vh' }}>
 
-      {/* White Card Container */}
+    {/* SIDEBAR */}
+    <Box
+      sx={{
+        width: { xs: '100%', md: '400px', lg: '360px' },
+        position: { xs: 'relative', md: 'fixed' },
+        height: '100vh',
+        p: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 100,
+        overflowY: 'auto',
+      }}
+    >
       <Card
         sx={{
-          borderRadius: 2,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          overflow: 'hidden',
+          bgcolor: SIDEBAR_BG,
+          color: '#fff',
+          borderRadius: CARD_RADIUS,
+          p: 3,
+          flex: '1 1 auto',
+          display: 'flex',
+          flexDirection: 'column',
         }}
+        elevation={6}
       >
-        {/* Card Header */}
-        <Box
-          sx={{
-            p: 3,
-            borderBottom: '1px solid #f0f0f0',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 2,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            {t('Booking List')}
-          </Typography>
+        <CardContent sx={{ p: 0, flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
+          <ProfileBlock />
+          <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', my: 2 }} />
 
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Search */}
-            <TextField
-              placeholder={t('Search bookings') || 'Search...'}
-              size="small"
-              value={filters.search}
-              onChange={(e) => handleFilters('search', e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#999', fontSize: 20 }} />
-                  </InputAdornment>
-                ),
-                endAdornment: filters.search && (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={handleClearSearch}>
-                      <CloseIcon sx={{ fontSize: 18 }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                width: 250,
-                '& .MuiOutlinedInput-root': {
-                  bgcolor: '#fafafa',
-                },
-              }}
-            />
-
-            {/* Booking Status Filter */}
-            <Select
-              size="small"
-              value={filters.booking_status}
-              onChange={(e) => handleFilters('booking_status', e.target.value)}
-              displayEmpty
-              sx={{
-                minWidth: 150,
-                bgcolor: '#fafafa',
-                '& .MuiSelect-select': {
-                  py: 1,
-                },
-              }}
-            >
-              <MenuItem value="">{t('Booking Status')}</MenuItem>
-              {bookingStatusEnum.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {t(status.name)}
-                </MenuItem>
-              ))}
-            </Select>
-
-            {/* Clear Booking Status Filter */}
-            {filters.booking_status && (
-              <IconButton
-                size="small"
-                onClick={() => handleFilters('booking_status', '')}
-              >
-                <CloseIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            )}
-
-            {/* Payment Status Filter */}
-            <Select
-              size="small"
-              value={filters.is_payment_approved}
-              onChange={(e) => handleFilters('is_payment_approved', e.target.value)}
-              displayEmpty
-              sx={{
-                minWidth: 150,
-                bgcolor: '#fafafa',
-                '& .MuiSelect-select': {
-                  py: 1,
-                },
-              }}
-            >
-              <MenuItem value="">{t('Payment Status')}</MenuItem>
-              <MenuItem value="1">{t('Approved')}</MenuItem>
-              <MenuItem value="0">{t('Pending')}</MenuItem>
-            </Select>
-
-            {/* Clear Payment Status Filter */}
-            {filters.is_payment_approved && (
-              <IconButton
-                size="small"
-                onClick={() => handleFilters('is_payment_approved', '')}
-              >
-                <CloseIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            )}
-
-            {/* Advanced Filters Button */}
-            <Button
-              variant="outlined"
-              startIcon={<FilterListIcon />}
-              onClick={openFilters.onTrue}
-              sx={{
-                textTransform: 'none',
-                borderColor: '#ddd',
-                color: '#666',
-                '&:hover': {
-                  borderColor: '#bbb',
-                  bgcolor: '#f5f5f5',
-                },
-              }}
-            >
-              {t('More Filters')}
-            </Button>
-
-            {/* Reset Filters Button */}
-            {canReset && (
-              <Button
-                variant="text"
-                onClick={handleResetFilters}
-                sx={{
-                  textTransform: 'none',
-                  color: '#ff6b35',
-                  '&:hover': {
-                    bgcolor: '#fff3f0',
-                  },
-                }}
-              >
-                {t('Reset')}
-              </Button>
-            )}
+          {/* Progress Box */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, py: 1.5, px: 2, bgcolor: 'rgba(255,255,255,0.03)', borderRadius: 1.5 }}>
+            <Typography sx={{ color: '#ccc', fontSize: 12, fontWeight: 500 }}>Progress</Typography>
+            <Typography sx={{ color: ACCENT, fontWeight: 700, fontSize: 14 }}>{activeStep + 1}/{steps.length}</Typography>
           </Box>
+
+          {/* Stepper */}
+          <Box sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
+            <Stepper activeStep={activeStep} orientation="vertical" sx={{ '.MuiStep-root': { padding: '16px 0' } }}>
+              {steps.map((label, idx) => (
+                <Step key={label}>
+                  <StepLabel
+                    onClick={() => idx < activeStep && setActiveStep(idx)}
+                    sx={{ cursor: idx < activeStep ? 'pointer' : 'default' }}
+                  >
+                    {label}
+                  </StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+
+          {/* Quick Actions */}
+          <Box sx={{ mt: 3 }}>
+            <Typography sx={{ color: '#bbb', fontSize: 12, mb: 1 }}>Quick actions</Typography>
+            <Stack direction="row" spacing={1}>
+              <Button variant="outlined" size="small" disabled={activeStep === 0} onClick={handleBack}>Previous</Button>
+              <Button variant="contained" size="small" disabled={activeStep === steps.length - 1} onClick={handleNext}>Next</Button>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
+
+    {/* MAIN CONTENT */}
+    <Box
+      sx={{
+        flex: 1,
+        ml: { xs: 0, md: '400px', lg: '360px' },
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        p: { xs: 2, md: 4 },
+      }}
+    >
+      <Card sx={{ borderRadius: CARD_RADIUS, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} elevation={2}>
+
+        {/* FIXED HEADER */}
+        <Box sx={{ p: 3, flexShrink: 0 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>{steps[activeStep]}</Typography>
+          <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>Follow the steps to create a booking</Typography>
+          <Divider sx={{ mt: 2 }} />
         </Box>
 
-        {/* Active Filters Display */}
-        {(filters.city_id || filters.category_id || filters.trainer_id || filters.student_id) && (
-          <Box
-            sx={{
-              px: 3,
-              py: 2,
-              bgcolor: '#f8f8f8',
-              borderBottom: '1px solid #f0f0f0',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 1,
-              alignItems: 'center',
-            }}
-          >
-            <Typography variant="body2" sx={{ color: '#666', mr: 1 }}>
-              {t('Active Filters')}:
-            </Typography>
+        {/* SCROLLABLE CONTENT */}
+        <Box sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
+          {renderStepContent()}
+        </Box>
 
-            {filters.city_id && (
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  bgcolor: 'white',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  border: '1px solid #e0e0e0',
-                }}
-              >
-                <Typography variant="body2" sx={{ mr: 0.5 }}>
-                  {t('City')}: {filters.city_id}
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleFilters('city_id', '')}
-                  sx={{ ml: 0.5, p: 0.25 }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Box>
-            )}
-
-            {filters.category_id && (
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  bgcolor: 'white',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  border: '1px solid #e0e0e0',
-                }}
-              >
-                <Typography variant="body2" sx={{ mr: 0.5 }}>
-                  {t('Category')}: {filters.category_id}
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleFilters('category_id', '')}
-                  sx={{ ml: 0.5, p: 0.25 }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Box>
-            )}
-
-            {filters.trainer_id && (
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  bgcolor: 'white',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  border: '1px solid #e0e0e0',
-                }}
-              >
-                <Typography variant="body2" sx={{ mr: 0.5 }}>
-                  {t('Trainer')}: {filters.trainer_id}
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleFilters('trainer_id', '')}
-                  sx={{ ml: 0.5, p: 0.25 }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Box>
-            )}
-
-            {filters.student_id && (
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  bgcolor: 'white',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
-                  border: '1px solid #e0e0e0',
-                }}
-              >
-                <Typography variant="body2" sx={{ mr: 0.5 }}>
-                  {t('Student')}: {filters.student_id}
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleFilters('student_id', '')}
-                  sx={{ ml: 0.5, p: 0.25 }}
-                >
-                  <CloseIcon sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Box>
-            )}
-          </Box>
-        )}
-
-        {/* Table with TableSelectedAction */}
-        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-          <TableSelectedAction
-            dense={table.dense}
-            numSelected={table.selected.length}
-            rowCount={tableData.length}
-            onSelectAllRows={(checked) =>
-              table.onSelectAllRows(
-                checked,
-                tableData.map((row) => row.id)
-              )
-            }
-            action={
-              <Tooltip title="Delete">
-                <IconButton onClick={confirm.onTrue}>
-                  <Iconify icon="solar:trash-bin-trash-bold" />
-                </IconButton>
-              </Tooltip>
-            }
-          />
-
-          <Scrollbar>
-            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-              <TableHeadCustom
-                order={table.order}
-                orderBy={table.orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
-                numSelected={table.selected.length}
-                onSort={table.onSort}
-                sx={{
-                  '& .MuiTableCell-head': {
-                    bgcolor: '#f8f8f8',
-                    fontWeight: 600,
-                    color: '#333',
-                  },
-                }}
-              />
-              <TableBody>
-                {bookingListLoading &&
-                  Array.from(new Array(5)).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell colSpan={TABLE_HEAD.length}>
-                        <Skeleton animation="wave" height={40} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-
-                {!bookingListLoading &&
-                  tableData.length > 0 &&
-                  tableData.map((row) => (
-                    <BookingTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => handleRowClick(row)}
-                    />
-                  ))}
-
-                {!bookingListLoading && tableData.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 8 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {t('No data available')}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Scrollbar>
-        </TableContainer>
-
-        {/* Pagination */}
-        <Box
-          sx={{
-            borderTop: '1px solid #f0f0f0',
-            px: 2,
-            py: 1,
-          }}
-        >
-          <TablePaginationCustom
-            count={totalBookingPages}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
+        {/* FIXED FOOTER */}
+        <Box sx={{ p: 3, flexShrink: 0, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button variant="text" onClick={handleBack} disabled={activeStep === 0}>Back</Button>
+          {activeStep < steps.length - 1 ? (
+            <Button variant="contained" onClick={handleNext}>Next</Button>
+          ) : (
+            <Button variant="contained" onClick={createBookingStudent}>Submit</Button>
+          )}
         </Box>
       </Card>
-
-      {/* Advanced Filters Dialog */}
-      <BookingFilters
-        open={openFilters.value}
-        onOpen={openFilters.onTrue}
-        onClose={openFilters.onFalse}
-        filters={filters}
-        onFilters={handleFilters}
-        canReset={canReset}
-        onResetFilters={handleResetFilters}
-      />
-
-      {/* Confirm Dialog */}
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title={t('Delete')}
-        content={t('Are you sure you want to delete selected items?')}
-        action={
-          <Button variant="contained" color="error" onClick={confirm.onFalse}>
-            {t('Delete')}
-          </Button>
-        }
-      />
     </Box>
-  );
+  </Box>
+);
+
 }
