@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Container from '@mui/material/Container';
@@ -14,12 +14,11 @@ import {
   InputAdornment,
   Select,
   MenuItem,
-  FormControl,
   Typography,
-  Tooltip,
+  IconButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CloseIcon from '@mui/icons-material/Close';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -28,7 +27,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import {
   useTable,
@@ -46,7 +44,7 @@ import PayoutRow from '../payout-table-row';
 
 export default function PayoutListView() {
   const router = useRouter();
-  const table = useTable({ defaultRowsPerPage: 10 });
+  const table = useTable({ defaultRowsPerPage: 15 });
   const settings = useSettingsContext();
   const [tableData, setTableData] = useState<any>([]);
   const { i18n, t } = useTranslation();
@@ -56,15 +54,15 @@ export default function PayoutListView() {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
 
   const TABLE_HEAD = [
-    { id: 'user', label: t('student_name'), width: 180, align: 'left' as const },
-    { id: 'trainer', label: t('trainer'), width: 180, align: 'left' as const },
-    { id: 'booking_status', label: t('booking_status'), width: 150, align: 'left' as const },
-    { id: 'payment_status', label: t('payment_status'), width: 150, align: 'left' as const },
-    { id: 'amount', label: t('amount'), width: 120, align: 'left' as const },
-    { id: 'remarks', label: t('remarks'), width: 200, align: 'left' as const },
-    { id: 'payment_proof', label: t('payment_proof'), width: 150, align: 'left' as const },
-    { id: 'created_date', label: t('created_date'), width: 150, align: 'left' as const },
-    { id: 'created_time', label: t('created_time'), width: 120, align: 'left' as const },
+    { id: 'user', label: t('student_name'), width: 180 },
+    { id: 'trainer', label: t('trainer'), width: 180 },
+    { id: 'booking_status', label: t('booking_status'), width: 150 },
+    { id: 'payment_status', label: t('payment_status'), width: 150 },
+    { id: 'amount', label: t('amount'), width: 120 },
+    { id: 'remarks', label: t('remarks'), width: 200 },
+    { id: 'payment_proof', label: t('payment_proof'), width: 150 },
+    { id: 'created_date', label: t('created_date'), width: 150 },
+    { id: 'created_time', label: t('created_time'), width: 120 },
   ];
 
   // Fetch real data from API
@@ -102,150 +100,150 @@ export default function PayoutListView() {
     return matchesSearch && matchesBookingStatus && matchesPaymentStatus;
   });
 
-  return (
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <CustomBreadcrumbs
-        heading={t('payout')}
-        links={[
-          { name: t('home'), href: paths.dashboard.root },
-          { name: t('payout'), href: paths.dashboard.assistant.payout.list },
-        ]}
-        sx={{
-          mb: { xs: 3, md: 4 },
-        }}
-      />
+  const handleClearSearch = () => {
+    setSearchQuery('');
+  };
 
+  const handleBookingStatusChange = (event) => {
+    setBookingStatusFilter(event.target.value);
+    table.onResetPage();
+  };
+
+  const handlePaymentStatusChange = (event) => {
+    setPaymentStatusFilter(event.target.value);
+    table.onResetPage();
+  };
+
+  return (
+    <Box sx={{ p: 4, bgcolor: '#fafafa', minHeight: '100vh' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
+          {t('payout')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('payout')}</span>
+        </Typography>
+      </Box>
+
+      {/* White Card Container */}
       <Card
         sx={{
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
           borderRadius: 2,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          overflow: 'hidden',
         }}
       >
-        {/* Filters Section */}
+        {/* Card Header */}
         <Box
           sx={{
-            p: 2.5,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
+            p: 3,
+            borderBottom: '1px solid #f0f0f0',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2,
           }}
         >
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
-            justifyContent="space-between"
-          >
-            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.125rem' }}>
-              {t('payout_list')}
-            </Typography>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            {t('payout_list')}
+          </Typography>
 
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1.5}
-              sx={{ width: { xs: '100%', sm: 'auto' } }}
-            >
-              {/* Search Field */}
-              <TextField
-                placeholder={t('search') + '...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                size="small"
-                sx={{
-                  minWidth: { sm: 240 },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1.5,
-                    bgcolor: 'background.paper',
-                    '& fieldset': {
-                      borderColor: 'divider',
-                    },
-                  },
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: 'text.disabled', width: 20, height: 20 }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              {/* Booking Status Filter */}
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <Select
-                  value={bookingStatusFilter}
-                  onChange={(e) => setBookingStatusFilter(e.target.value)}
-                  displayEmpty
-                  IconComponent={KeyboardArrowDownIcon}
-                  sx={{
-                    borderRadius: 1.5,
-                    bgcolor: 'background.paper',
-                    '& fieldset': {
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <Typography variant="body2" color="text.secondary">
-                      {t('booking_status')}
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem value="SUCCESS">{t('success')}</MenuItem>
-                  <MenuItem value="FAIL">{t('fail')}</MenuItem>
-                  <MenuItem value="PENDING">{t('pending')}</MenuItem>
-                  <MenuItem value="CONFIRMED">{t('confirmed')}</MenuItem>
-                  <MenuItem value="CANCELLED">{t('cancelled')}</MenuItem>
-                  <MenuItem value="IN PROGRESS">{t('in_progress')}</MenuItem>
-                </Select>
-              </FormControl>
-
-              {/* Payment Status Filter */}
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <Select
-                  value={paymentStatusFilter}
-                  onChange={(e) => setPaymentStatusFilter(e.target.value)}
-                  displayEmpty
-                  IconComponent={KeyboardArrowDownIcon}
-                  sx={{
-                    borderRadius: 1.5,
-                    bgcolor: 'background.paper',
-                    '& fieldset': {
-                      borderColor: 'divider',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <Typography variant="body2" color="text.secondary">
-                      {t('payment_status')}
-                    </Typography>
-                  </MenuItem>
-                  <MenuItem value="PAID">{t('paid')}</MenuItem>
-                  <MenuItem value="PENDING">{t('pending')}</MenuItem>
-                  <MenuItem value="PARTIALLY PAID">{t('partially_paid')}</MenuItem>
-                  <MenuItem value="REFUNDED">{t('refunded')}</MenuItem>
-                  <MenuItem value="FAILED">{t('failed')}</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
-          </Stack>
-        </Box>
-
-        {/* Table Section */}
-        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-          <Scrollbar>
-            <Table
-              size={table.dense ? 'small' : 'medium'}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Search */}
+            <TextField
+              placeholder={t('search') || 'Search...'}
+              size="small"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#999', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery && (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={handleClearSearch}>
+                      <CloseIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
               sx={{
-                minWidth: 1350,
-                '& .MuiTableCell-root': {
-                  borderBottom: '1px solid',
-                  borderColor: 'divider',
-                  maxWidth: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                width: 250,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: '#fafafa',
+                },
+              }}
+            />
+
+            {/* Booking Status Filter */}
+            <Select
+              size="small"
+              value={bookingStatusFilter}
+              onChange={handleBookingStatusChange}
+              displayEmpty
+              sx={{
+                minWidth: 150,
+                bgcolor: '#fafafa',
+                '& .MuiSelect-select': {
+                  py: 1,
                 },
               }}
             >
+              <MenuItem value="">{t('booking_status')}</MenuItem>
+              <MenuItem value="SUCCESS">{t('success')}</MenuItem>
+              <MenuItem value="FAIL">{t('fail')}</MenuItem>
+              <MenuItem value="PENDING">{t('pending')}</MenuItem>
+              <MenuItem value="CONFIRMED">{t('confirmed')}</MenuItem>
+              <MenuItem value="CANCELLED">{t('cancelled')}</MenuItem>
+              <MenuItem value="IN PROGRESS">{t('in_progress')}</MenuItem>
+            </Select>
+
+            {/* Clear Booking Status Filter */}
+            {bookingStatusFilter && (
+              <IconButton size="small" onClick={() => setBookingStatusFilter('')}>
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            )}
+
+            {/* Payment Status Filter */}
+            <Select
+              size="small"
+              value={paymentStatusFilter}
+              onChange={handlePaymentStatusChange}
+              displayEmpty
+              sx={{
+                minWidth: 150,
+                bgcolor: '#fafafa',
+                '& .MuiSelect-select': {
+                  py: 1,
+                },
+              }}
+            >
+              <MenuItem value="">{t('payment_status')}</MenuItem>
+              <MenuItem value="PAID">{t('paid')}</MenuItem>
+              <MenuItem value="PENDING">{t('pending')}</MenuItem>
+              <MenuItem value="PARTIALLY PAID">{t('partially_paid')}</MenuItem>
+              <MenuItem value="REFUNDED">{t('refunded')}</MenuItem>
+              <MenuItem value="FAILED">{t('failed')}</MenuItem>
+            </Select>
+
+            {/* Clear Payment Status Filter */}
+            {paymentStatusFilter && (
+              <IconButton size="small" onClick={() => setPaymentStatusFilter('')}>
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            )}
+          </Box>
+        </Box>
+
+        {/* Table */}
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 1350 }}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
@@ -254,14 +252,9 @@ export default function PayoutListView() {
                 numSelected={table.selected.length}
                 sx={{
                   '& .MuiTableCell-head': {
-                    bgcolor: '#fafafa',
-                    color: 'text.secondary',
+                    bgcolor: '#f8f8f8',
                     fontWeight: 600,
-                    fontSize: '0.6875rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    py: 1.5,
-                    textAlign: 'left',
+                    color: '#333',
                   },
                 }}
               />
@@ -297,23 +290,24 @@ export default function PayoutListView() {
         </TableContainer>
 
         {/* Pagination */}
-        <TablePaginationCustom
-          count={totalPayoutPages}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
+        <Box
           sx={{
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            '& .MuiTablePagination-toolbar': {
-              py: 1.5,
-            },
+            borderTop: '1px solid #f0f0f0',
+            px: 2,
+            py: 1,
           }}
-        />
+        >
+          <TablePaginationCustom
+            count={totalPayoutPages}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
+          />
+        </Box>
       </Card>
-    </Container>
+    </Box>
   );
 }

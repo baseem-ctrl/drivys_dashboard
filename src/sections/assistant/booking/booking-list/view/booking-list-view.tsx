@@ -1,99 +1,45 @@
 import { useState, useCallback, useEffect } from 'react';
-import { alpha } from '@mui/material/styles';
 import isEqual from 'lodash/isEqual';
-import { STATUS_OPTIONS } from 'src/_mock/_school';
-import { _roles, ACTIVE_OPTIONS } from 'src/_mock';
-
 import {
-  Container,
   Card,
-  Tabs,
-  Tab,
   Button,
   Table,
   TableBody,
   TableContainer,
   IconButton,
   Tooltip,
-  CircularProgress,
   Skeleton,
   TableCell,
   TableRow,
   Typography,
   Box,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-// import BookingTableToolbar from '../booking-table-toolbar';
-import BookingDetailsToolbar from '../booking-details-toolbar';
-import { useGetBookings, useGetBookingStatusEnum } from 'src/api/booking';
+import { useGetBookingStatusEnum } from 'src/api/booking';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import BookingTableRow from '../booking-table-row';
-import BookingTableToolbar from '../booking-table-tool-bar';
 import { useGetUsers } from 'src/api/users';
-import BookingDetailsComponent from './booking-details-view';
 import BookingFilters from '../booking-filter';
 import { useTranslation } from 'react-i18next';
-import { t } from 'i18next';
 import { useGetBookingList } from 'src/api/booking-assistant';
-
-const TABLE_HEAD = {
-  all: [
-    { id: 'id', label: t('ID'), width: 180 },
-    { id: 'customerName', label: t('Student Name'), width: 180 },
-    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
-    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
-    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
-    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
-    { id: 'coupon', label: t('Coupon'), width: 200 },
-    { id: 'created', label: t('Created'), width: 200 },
-    { id: 'action', label: '', width: 200 },
-  ],
-  confirmed: [
-    { id: 'customerName', label: t('Student Name'), width: 180 },
-    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
-    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
-    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
-    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
-    { id: 'coupon', label: t('Coupon'), width: 200 },
-    { id: 'created', label: t('Created'), width: 200 },
-  ],
-  cancelled: [
-    { id: 'customerName', label: t('Student Name'), width: 180 },
-    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
-    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
-    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
-    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
-    { id: 'coupon', label: t('Coupon'), width: 200 },
-    { id: 'created', label: t('Created'), width: 200 },
-  ],
-  pending: [
-    { id: 'customerName', label: t('Student Name'), width: 180 },
-    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
-    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
-    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
-    { id: 'price', label: t('Price'), width: 120 },
-    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
-    { id: 'coupon', label: t('Coupon'), width: 200 },
-    { id: 'created', label: t('Created'), width: 200 },
-  ],
-};
 
 const defaultFilters = {
   city_id: '',
@@ -110,12 +56,12 @@ export default function BookingListAssistantView() {
   const table = useTable({ defaultRowsPerPage: 15, defaultOrderBy: 'id', defaultOrder: 'desc' });
   const { bookingStatusEnum, bookingStatusError, bookingStatusLoading } = useGetBookingStatusEnum();
   const openFilters = useBoolean();
-
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
   const confirm = useBoolean();
+
   const {
     bookings,
     bookingListLoading,
@@ -142,6 +88,7 @@ export default function BookingListAssistantView() {
     user_types: 'TRAINER',
     search: searchValue,
   });
+
   const [bookingCounts, setBookingCounts] = useState({
     all: 0,
     PENDING: 0,
@@ -151,20 +98,30 @@ export default function BookingListAssistantView() {
     IN_PROGRESS: 0,
   });
 
+  const TABLE_HEAD = [
+    { id: 'id', label: t('ID'), width: 180 },
+    { id: 'customerName', label: t('Student Name'), width: 180 },
+    { id: 'vendorName', label: t('Trainer Name'), width: 180 },
+    { id: 'orderStatus', label: t('Booking Status'), width: 150 },
+    { id: 'paymentStatus', label: t('Payment Status'), width: 150 },
+    { id: 'price', label: t('Price'), width: 120 },
+    { id: 'paymentMethod', label: t('Payment Method'), width: 150 },
+    { id: 'coupon', label: t('Coupon'), width: 200 },
+    { id: 'created', label: t('Created'), width: 200 },
+    { id: 'action', label: '', width: 200 },
+  ];
+
   useEffect(() => {
     if (bookings.booking_status_counts) {
       const initialCounts = { all: 0 };
 
-      // Initialize counts for all statuses
       bookingStatusEnum.forEach((status) => {
-        initialCounts[status.name] = 0; // Use `status.name` as the key
+        initialCounts[status.name] = 0;
       });
 
-      // Update counts based on booking_status_counts
       Object.keys(bookings.booking_status_counts).forEach((statusKey) => {
         const statusCount = bookings.booking_status_counts[statusKey] || 0;
 
-        // Find the corresponding `status.name` from bookingStatusEnum
         const matchingStatus = bookingStatusEnum.find(
           (status) => status.name.replace(/\s+/g, '_').toUpperCase() === statusKey
         );
@@ -185,6 +142,7 @@ export default function BookingListAssistantView() {
         label: user.name,
         value: user.id,
       }));
+
   useEffect(() => {
     if (bookings?.length > 0) {
       setTableData(bookings);
@@ -192,6 +150,7 @@ export default function BookingListAssistantView() {
       setTableData([]);
     }
   }, [bookings]);
+
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
@@ -203,174 +162,304 @@ export default function BookingListAssistantView() {
     [table]
   );
 
-  const handleTabChange = useCallback(
-    (event, newValue) => {
-      handleFilters('bookingType', newValue);
-    },
-    [handleFilters]
-  );
-
-  const currentTableHeaders = (() => {
-    switch (filters.bookingType) {
-      case 'confirmed':
-        return TABLE_HEAD.confirmed;
-      case 'cancelled':
-        return TABLE_HEAD.cancelled;
-      case 'pending':
-        return TABLE_HEAD.pending;
-      default:
-        return TABLE_HEAD.all;
-    }
-  })();
-
-  const handleClear = (name) => () => {
-    handleFilters(name, '');
-  };
-
-  const tabBackgroundColors = {
-    all: '#49525b',
-    0: '#ffab0029',
-    1: '#8e33ff29',
-    2: '#ffe4de',
-    3: '#dbf6e5',
-    4: '#d3f2f7',
-  };
-  const tabTextColors = {
-    all: '#ffff',
-    pending: '#212b36',
-    confirmed: '#4ca97e',
-    cancelled: '#ce605b',
+  const handleClearSearch = () => {
+    handleFilters('search', '');
   };
 
   const handleRowClick = (row: any) => {
     router.push(paths.dashboard.booking.details(row?.id));
   };
+
   const canReset = !isEqual(defaultFilters, filters);
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   return (
-    <Container maxWidth="xl">
-      <CustomBreadcrumbs
-        heading={t('Bookings')}
-        links={[
-          { name: t('Dashboard'), href: paths.dashboard.booking.root },
-          { name: t('Booking'), href: paths.dashboard.booking.root },
-          { name: t('List') },
-        ]}
-        sx={{ mb: 3 }}
-      />
-      <Box display="flex" justifyContent="flex-end" padding={2}>
-        <BookingFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          filters={filters}
-          onFilters={handleFilters}
-          canReset={canReset}
-          onResetFilters={handleResetFilters}
-        />
+    <Box sx={{ p: 4, bgcolor: '#fafafa', minHeight: '100vh' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, mb: 0.5 }}>
+          {t('Bookings')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {t('Home')} / <span style={{ color: '#ff6b35' }}>{t('Bookings')}</span>
+        </Typography>
       </Box>
 
-      <Card>
-        {/* <Tabs
-          value={filters.bookingType}
-          onChange={handleTabChange}
+      {/* White Card Container */}
+      <Card
+        sx={{
+          borderRadius: 2,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Card Header */}
+        <Box
           sx={{
-            borderBottom: 1,
-            borderColor: 'divider',
+            p: 3,
+            borderBottom: '1px solid #f0f0f0',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 2,
           }}
         >
-          <Tab
-            value="all"
-            label={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span>{t('All')}</span>
-                <Typography
-                  sx={{
-                    backgroundColor: '#f0f0f0',
-                    display: 'inline-block',
-                    padding: '4px 9px',
-                    borderRadius: '4px',
-                    marginLeft: '8px',
-                    color: '#000',
-                  }}
-                >
-                  {bookingCounts.all || 0}
-                </Typography>
-              </div>
-            }
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '8px',
-              borderRadius: '4px',
-            }}
-          />
-          {bookingStatusEnum.map((tab) => {
-            const count = bookingCounts[tab.name] || 0;
-            const backgroundColor = tabBackgroundColors[tab.value] || '#fff';
-            const textColor = tabTextColors[tab.value] || '#000';
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            {t('Booking List')}
+          </Typography>
 
-            return (
-              <Tab
-                key={tab.value}
-                value={tab.value}
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Search */}
+            <TextField
+              placeholder={t('Search bookings') || 'Search...'}
+              size="small"
+              value={filters.search}
+              onChange={(e) => handleFilters('search', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#999', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: filters.search && (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={handleClearSearch}>
+                      <CloseIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                width: 250,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: '#fafafa',
+                },
+              }}
+            />
+
+            {/* Booking Status Filter */}
+            <Select
+              size="small"
+              value={filters.booking_status}
+              onChange={(e) => handleFilters('booking_status', e.target.value)}
+              displayEmpty
+              sx={{
+                minWidth: 150,
+                bgcolor: '#fafafa',
+                '& .MuiSelect-select': {
+                  py: 1,
+                },
+              }}
+            >
+              <MenuItem value="">{t('Booking Status')}</MenuItem>
+              {bookingStatusEnum.map((status) => (
+                <MenuItem key={status.value} value={status.value}>
+                  {t(status.name)}
+                </MenuItem>
+              ))}
+            </Select>
+
+            {/* Clear Booking Status Filter */}
+            {filters.booking_status && (
+              <IconButton
+                size="small"
+                onClick={() => handleFilters('booking_status', '')}
+              >
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            )}
+
+            {/* Payment Status Filter */}
+            <Select
+              size="small"
+              value={filters.is_payment_approved}
+              onChange={(e) => handleFilters('is_payment_approved', e.target.value)}
+              displayEmpty
+              sx={{
+                minWidth: 150,
+                bgcolor: '#fafafa',
+                '& .MuiSelect-select': {
+                  py: 1,
+                },
+              }}
+            >
+              <MenuItem value="">{t('Payment Status')}</MenuItem>
+              <MenuItem value="1">{t('Approved')}</MenuItem>
+              <MenuItem value="0">{t('Pending')}</MenuItem>
+            </Select>
+
+            {/* Clear Payment Status Filter */}
+            {filters.is_payment_approved && (
+              <IconButton
+                size="small"
+                onClick={() => handleFilters('is_payment_approved', '')}
+              >
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            )}
+
+            {/* Advanced Filters Button */}
+            <Button
+              variant="outlined"
+              startIcon={<FilterListIcon />}
+              onClick={openFilters.onTrue}
+              sx={{
+                textTransform: 'none',
+                borderColor: '#ddd',
+                color: '#666',
+                '&:hover': {
+                  borderColor: '#bbb',
+                  bgcolor: '#f5f5f5',
+                },
+              }}
+            >
+              {t('More Filters')}
+            </Button>
+
+            {/* Reset Filters Button */}
+            {canReset && (
+              <Button
+                variant="text"
+                onClick={handleResetFilters}
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px',
-                  borderRadius: '4px',
+                  textTransform: 'none',
+                  color: '#ff6b35',
+                  '&:hover': {
+                    bgcolor: '#fff3f0',
+                  },
                 }}
-                label={
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <span>{t(tab.name)}</span>
-                    <Typography
-                      sx={{
-                        backgroundColor: backgroundColor,
-                        display: 'inline-block',
-                        padding: '4px 9px',
-                        borderRadius: '4px',
-                        marginLeft: '8px',
-                        color: textColor,
-                      }}
-                    >
-                      {count}
-                    </Typography>
-                  </div>
-                }
-              />
-            );
-          })}
-        </Tabs> */}
-
-        <BookingTableToolbar
-          filters={filters}
-          onFilters={handleFilters}
-          vendorOptions={users}
-          setSearch={setSearchValue}
-          loading={usersLoading}
-        />
-        <Box display="flex" flexDirection="row" gap={1} marginBottom={4} marginLeft={2}>
-          {filters.paymentStatus && (
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <Typography variant="body2">{`Payment Status: ${filters.paymentStatus}`}</Typography>
-              <IconButton size="small" onClick={handleClear('paymentStatus')}>
-                <Iconify icon="mdi:close" />
-              </IconButton>
-            </Box>
-          )}
-          {filters.vendor && (
-            <Box display="flex" alignItems="center">
-              <Typography variant="body2">{`School: ${vendorOptions.find(
-                (v) => v.value === filters.vendor
-              )?.label}`}</Typography>
-              <IconButton size="small" onClick={handleClear('vendor')}>
-                <Iconify icon="mdi:close" />
-              </IconButton>
-            </Box>
-          )}
+              >
+                {t('Reset')}
+              </Button>
+            )}
+          </Box>
         </Box>
+
+        {/* Active Filters Display */}
+        {(filters.city_id || filters.category_id || filters.trainer_id || filters.student_id) && (
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: '#f8f8f8',
+              borderBottom: '1px solid #f0f0f0',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 1,
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="body2" sx={{ color: '#666', mr: 1 }}>
+              {t('Active Filters')}:
+            </Typography>
+
+            {filters.city_id && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  bgcolor: 'white',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                  {t('City')}: {filters.city_id}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => handleFilters('city_id', '')}
+                  sx={{ ml: 0.5, p: 0.25 }}
+                >
+                  <CloseIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+            )}
+
+            {filters.category_id && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  bgcolor: 'white',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                  {t('Category')}: {filters.category_id}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => handleFilters('category_id', '')}
+                  sx={{ ml: 0.5, p: 0.25 }}
+                >
+                  <CloseIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+            )}
+
+            {filters.trainer_id && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  bgcolor: 'white',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                  {t('Trainer')}: {filters.trainer_id}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => handleFilters('trainer_id', '')}
+                  sx={{ ml: 0.5, p: 0.25 }}
+                >
+                  <CloseIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+            )}
+
+            {filters.student_id && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  bgcolor: 'white',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  border: '1px solid #e0e0e0',
+                }}
+              >
+                <Typography variant="body2" sx={{ mr: 0.5 }}>
+                  {t('Student')}: {filters.student_id}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => handleFilters('student_id', '')}
+                  sx={{ ml: 0.5, p: 0.25 }}
+                >
+                  <CloseIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {/* Table with TableSelectedAction */}
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
           <TableSelectedAction
             dense={table.dense}
@@ -392,20 +481,27 @@ export default function BookingListAssistantView() {
           />
 
           <Scrollbar>
-            <Table size={table.dense ? 'small' : 'medium'}>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
               <TableHeadCustom
                 order={table.order}
                 orderBy={table.orderBy}
-                headLabel={currentTableHeaders}
+                headLabel={TABLE_HEAD}
                 rowCount={tableData.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
+                sx={{
+                  '& .MuiTableCell-head': {
+                    bgcolor: '#f8f8f8',
+                    fontWeight: 600,
+                    color: '#333',
+                  },
+                }}
               />
               <TableBody>
                 {bookingListLoading &&
                   Array.from(new Array(5)).map((_, index) => (
                     <TableRow key={index}>
-                      <TableCell colSpan={currentTableHeaders.length}>
+                      <TableCell colSpan={TABLE_HEAD.length}>
                         <Skeleton animation="wave" height={40} />
                       </TableCell>
                     </TableRow>
@@ -419,15 +515,13 @@ export default function BookingListAssistantView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => handleRowClick(row)}
-                      // onDeleteRow={() => handleDeleteRow(row.id)}
-                      // onEditRow={() => handleEditRow(row.id)}
                     />
                   ))}
 
                 {!bookingListLoading && tableData.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={currentTableHeaders.length} align="center">
-                      <Typography variant="h6" color="textSecondary">
+                    <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 8 }}>
+                      <Typography variant="body2" color="text.secondary">
                         {t('No data available')}
                       </Typography>
                     </TableCell>
@@ -438,16 +532,49 @@ export default function BookingListAssistantView() {
           </Scrollbar>
         </TableContainer>
 
-        <TablePaginationCustom
-          count={totalBookingPages}
-          page={table.page}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-          dense={table.dense}
-          onChangeDense={table.onChangeDense}
-        />
+        {/* Pagination */}
+        <Box
+          sx={{
+            borderTop: '1px solid #f0f0f0',
+            px: 2,
+            py: 1,
+          }}
+        >
+          <TablePaginationCustom
+            count={totalBookingPages}
+            page={table.page}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
+          />
+        </Box>
       </Card>
-    </Container>
+
+      {/* Advanced Filters Dialog */}
+      <BookingFilters
+        open={openFilters.value}
+        onOpen={openFilters.onTrue}
+        onClose={openFilters.onFalse}
+        filters={filters}
+        onFilters={handleFilters}
+        canReset={canReset}
+        onResetFilters={handleResetFilters}
+      />
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title={t('Delete')}
+        content={t('Are you sure you want to delete selected items?')}
+        action={
+          <Button variant="contained" color="error" onClick={confirm.onFalse}>
+            {t('Delete')}
+          </Button>
+        }
+      />
+    </Box>
   );
 }

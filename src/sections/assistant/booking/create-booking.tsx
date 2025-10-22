@@ -539,253 +539,332 @@ export default function CreateBookingLayout() {
     );
   };
 
-  return (
-    <Box sx={{ p: { xs: 2, md: 4 } }}>
-      <Grid container spacing={3}>
-        {/* SIDEBAR */}
-        <Grid item xs={12} md={4} lg={3}>
-          <Card
+return (
+  <Box sx={{ display: 'flex', minHeight: '100vh', position: 'relative' }}>
+
+    <Box
+      sx={{
+        width: { xs: '100%', md: '400px', lg: '360px' }, // Fixed width for better control
+        position: { xs: 'relative', md: 'fixed' },
+        height: { xs: 'auto', md: 'calc(100vh - 40px)' }, // Full height minus padding
+        p: { xs: 2, md: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 100,
+        overflowY: { md: 'auto' }, // Allow sidebar to scroll if needed
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'rgba(255,255,255,0.1)',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'rgba(255,255,255,0.3)',
+          borderRadius: '3px',
+        },
+      }}
+    >
+      <Card
+        sx={{
+          bgcolor: SIDEBAR_BG,
+          color: '#fff',
+          borderRadius: CARD_RADIUS,
+          p: 3,
+          width: '100%',
+          flex: '0 0 auto', // Don't grow or shrink
+        }}
+        elevation={6}
+      >
+        <CardContent sx={{ p: 0 }}>
+          <ProfileBlock />
+          <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+
+          <Box
             sx={{
-              bgcolor: SIDEBAR_BG,
-              color: '#fff',
-              borderRadius: CARD_RADIUS,
-              p: 3,
-              height: '100%',
-              minHeight: 320,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 3,
+              py: 1.5,
+              px: 2,
+              bgcolor: 'rgba(255,255,255,0.03)',
+              borderRadius: 1.5,
             }}
-            elevation={6}
           >
-            <CardContent sx={{ p: 0 }}>
-              <ProfileBlock />
-              <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 2 }} />
+            <Typography sx={{ color: '#ccc', fontSize: 12, fontWeight: 500 }}>
+              Progress
+            </Typography>
+            <Typography sx={{ color: ACCENT, fontWeight: 700, fontSize: 14 }}>
+              {activeStep + 1}/{steps.length}
+            </Typography>
+          </Box>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  mb: 3,
-                  py: 1.5,
-                  px: 2,
-                  bgcolor: 'rgba(255,255,255,0.03)',
-                  borderRadius: 1.5,
-                }}
-              >
-                <Typography sx={{ color: '#ccc', fontSize: 12, fontWeight: 500 }}>
-                  Progress
-                </Typography>
-                <Typography sx={{ color: ACCENT, fontWeight: 700, fontSize: 14 }}>
-                  {activeStep + 1}/{steps.length}
-                </Typography>
-              </Box>
+          {/* vertical stepper - all visible */}
+          <Stepper
+            activeStep={activeStep}
+            orientation="vertical"
+            sx={{
+              '.MuiStep-root': {
+                padding: '16px 0',
+                minHeight: '72px',
+              },
+              '.MuiStepLabel-root': {
+                color: '#999',
+                '& .Mui-active, & .Mui-completed': {
+                  color: '#fff',
+                },
+              },
+              '.MuiStepLabel-label': {
+                fontSize: 13,
+                fontWeight: 500,
+              },
+              '.MuiStepIcon-root': {
+                width: 28,
+                height: 28,
+              },
+              '.MuiStepConnector-root': {
+                marginLeft: '14px',
+              },
+              '.MuiStepConnector-line': {
+                borderColor: ACCENT,
+                borderLeftStyle: 'dashed',
+                borderLeftWidth: '2px',
+                minHeight: '80px',
+                borderImage: `repeating-linear-gradient(to bottom, ${ACCENT} 0, ${ACCENT} 8px, transparent 8px, transparent 16px) 1`,
+              },
+            }}
+          >
+            {steps.map((label, idx) => {
+              const isCompleted = idx < activeStep;
+              const isActive = idx === activeStep;
+              const isClickable = isCompleted;
 
-              {/* vertical stepper styled */}
-              <Stepper
-                activeStep={activeStep}
-                orientation="vertical"
-                sx={{
-                  '.MuiStep-root': {
-                    padding: '16px 0',
-                    minHeight: '72px',
-                  },
-                  '.MuiStepLabel-root': {
-                    color: '#999',
-                    '& .Mui-active, & .Mui-completed': {
-                      color: '#fff',
-                    },
-                  },
-                  '.MuiStepLabel-label': {
-                    fontSize: 13,
-                    fontWeight: 500,
-                  },
-                  '.MuiStepIcon-root': {
-                    width: 28,
-                    height: 28,
-                  },
-                  '.MuiStepConnector-root': {
-                    marginLeft: '14px',
-                  },
-                  '.MuiStepConnector-line': {
-                    borderColor: ACCENT,
-                    borderLeftStyle: 'dashed',
-                    borderLeftWidth: '2px',
-                    minHeight: '80px',
-                    borderImage: `repeating-linear-gradient(to bottom, ${ACCENT} 0, ${ACCENT} 8px, transparent 8px, transparent 16px) 1`,
-                  },
-                }}
-              >
-                {steps.map((label, idx) => {
-                  const isCompleted = idx < activeStep;
-                  const isActive = idx === activeStep;
-                  const isClickable = isCompleted;
-
-                  return (
-                    <Step key={label}>
-                      <StepLabel
-                        onClick={() => isClickable && setActiveStep(idx)}
-                        sx={{
-                          cursor: isClickable ? 'pointer' : 'default',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1.5,
-                          '& .MuiStepLabel-label': {
-                            color: isActive ? '#fff' : isCompleted ? '#fff' : '#bbb',
-                            fontWeight: isActive ? 600 : 400,
-                          },
-                          '.MuiStepIcon-root': {
-                            color: isCompleted ? ACCENT : isActive ? ACCENT : 'rgba(255,255,255,0.12)',
-                            border: isCompleted ? `2px solid ${ACCENT}` : 'none',
-                            borderRadius: '50%',
-                          },
-                        }}
-                      >
-                        {label}
-                      </StepLabel>
-                    </Step>
-                  );
-                })}
-              </Stepper>
-
-              <Box sx={{ mt: 3 }}>
-                <Typography sx={{ color: '#bbb', fontSize: 12, mb: 1 }}>Quick actions</Typography>
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    disabled={activeStep === 0}
+              return (
+                <Step key={label}>
+                  <StepLabel
+                    onClick={() => isClickable && setActiveStep(idx)}
                     sx={{
-                      color: '#fff',
-                      borderColor: 'rgba(255,255,255,0.12)',
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      '&:disabled': {
-                        color: 'rgba(255,255,255,0.3)',
-                        borderColor: 'rgba(255,255,255,0.05)',
+                      cursor: isClickable ? 'pointer' : 'default',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      '& .MuiStepLabel-label': {
+                        color: isActive ? '#fff' : isCompleted ? '#fff' : '#bbb',
+                        fontWeight: isActive ? 600 : 400,
+                      },
+                      '.MuiStepIcon-root': {
+                        color: isCompleted ? ACCENT : isActive ? ACCENT : 'rgba(255,255,255,0.12)',
+                        border: isCompleted ? `2px solid ${ACCENT}` : 'none',
+                        borderRadius: '50%',
                       },
                     }}
-                    onClick={handleBack}
                   >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    disabled={activeStep === steps.length - 1}
-                    sx={{
-                      bgcolor: ACCENT,
-                      '&:hover': { bgcolor: ACCENT },
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      '&:disabled': {
-                        bgcolor: 'rgba(255, 107, 0, 0.3)',
-                      },
-                    }}
-                    onClick={handleNext}
-                  >
-                    Next
-                  </Button>
-                </Stack>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+                    {label}
+                  </StepLabel>
+                </Step>
+              );
+            })}
+          </Stepper>
 
-        {/* MAIN CONTENT */}
-        <Grid item xs={12} md={8} lg={9}>
-          <Card sx={{ borderRadius: CARD_RADIUS, p: { xs: 2, md: 3 }, minHeight: 520 }} elevation={2}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  {steps[activeStep]}
-                </Typography>
-                <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>
-                  {'Follow the steps to create a booking'}
-                </Typography>
-              </Box>
-
-              {/* Filter button shown only on trainer step */}
-              {activeStep === 0 && (
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                  {renderFilters}
-                </Box>
-              )}
-            </Box>
-
-            <Divider sx={{ mb: 2 }} />
-
-            <Box sx={{ minHeight: 300 }}>{renderStepContent()}</Box>
-
-            {/* bottom actions */}
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ mt: 3 }}>
+            <Typography sx={{ color: '#bbb', fontSize: 12, mb: 1 }}>Quick actions</Typography>
+            <Stack direction="row" spacing={1}>
               <Button
-                variant="text"
-                startIcon={<ArrowBackIosNewIcon sx={{ fontSize: 14 }} />}
-                onClick={handleBack}
+                variant="outlined"
+                size="small"
                 disabled={activeStep === 0}
                 sx={{
-                  color: activeStep === 0 ? 'grey.400' : 'text.primary',
+                  color: '#fff',
+                  borderColor: 'rgba(255,255,255,0.12)',
                   textTransform: 'none',
+                  borderRadius: 2,
+                  '&:disabled': {
+                    color: 'rgba(255,255,255,0.3)',
+                    borderColor: 'rgba(255,255,255,0.05)',
+                  },
                 }}
+                onClick={handleBack}
               >
-                {t('back')}
+                Previous
               </Button>
+              <Button
+                variant="contained"
+                size="small"
+                disabled={activeStep === steps.length - 1}
+                sx={{
+                  bgcolor: ACCENT,
+                  '&:hover': { bgcolor: ACCENT },
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  '&:disabled': {
+                    bgcolor: 'rgba(255, 107, 0, 0.3)',
+                  },
+                }}
+                onClick={handleNext}
+              >
+                Next
+              </Button>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
 
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                {activeStep < steps.length - 1 ? (
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    endIcon={<ArrowForwardIosIcon sx={{ fontSize: 14 }} />}
-                    sx={{
-                      bgcolor: ACCENT,
-                      '&:hover': { bgcolor: ACCENT },
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      px: 3,
-                    }}
-                  >
-                    {t('next')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={createBookingStudent}
-                    sx={{
-                      bgcolor: ACCENT,
-                      '&:hover': { bgcolor: ACCENT },
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      px: 4,
-                    }}
-                  >
-                    {t('submit')}
-                  </Button>
-                )}
-              </Box>
+    {/* MAIN CONTENT - With fixed header and footer, scrollable content */}
+    <Box
+      sx={{
+        flex: 1,
+        ml: { xs: 0, md: '440px', lg: '400px' }, // Leave space for fixed sidebar
+        minHeight: '100vh',
+        p: { xs: 2, md: 4 },
+      }}
+    >
+      <Card
+        sx={{
+          borderRadius: CARD_RADIUS,
+          height: 'calc(100vh - 64px)', // Full viewport height minus padding
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden', // Prevent card from expanding
+        }}
+        elevation={2}
+      >
+        {/* FIXED HEADER */}
+        <Box sx={{
+          p: { xs: 2, md: 3 },
+          pb: 0,
+          flexShrink: 0, // Prevent shrinking
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                {steps[activeStep]}
+              </Typography>
+              <Typography sx={{ color: 'text.secondary', fontSize: 13 }}>
+                {'Follow the steps to create a booking'}
+              </Typography>
             </Box>
-          </Card>
-        </Grid>
-      </Grid>
 
-      {/* Loader Dialog like original */}
-      {loadingBooking && (
+            {/* Filter button shown only on trainer step */}
+            {activeStep === 0 && (
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                {renderFilters}
+              </Box>
+            )}
+          </Box>
+
+          <Divider />
+        </Box>
+
+        {/* SCROLLABLE CONTENT AREA */}
         <Box
           sx={{
-            position: 'fixed',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: (theme) => theme.zIndex.modal + 10,
+            flex: 1,
+            overflow: 'auto', // Enable scrolling
+            p: { xs: 2, md: 3 },
+            pt: 2,
+            pb: 2,
+            // Custom scrollbar styles
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#f1f1f1',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#888',
+              borderRadius: '4px',
+              '&:hover': {
+                background: '#555',
+              },
+            },
           }}
         >
-          <Card sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
-            <CircularProgress />
-            <Typography sx={{ mt: 2 }}>{t('booking_in_progress')}</Typography>
-          </Card>
+          {renderStepContent()}
         </Box>
-      )}
+
+        {/* FIXED FOOTER WITH ACTIONS */}
+        <Box sx={{
+          p: { xs: 2, md: 3 },
+          pt: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          flexShrink: 0, // Prevent shrinking
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          bgcolor: 'background.paper', // Ensure it has a background
+        }}>
+          <Button
+            variant="text"
+            startIcon={<ArrowBackIosNewIcon sx={{ fontSize: 14 }} />}
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            sx={{
+              color: activeStep === 0 ? 'grey.400' : 'text.primary',
+              textTransform: 'none',
+            }}
+          >
+            {t('back')}
+          </Button>
+
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {activeStep < steps.length - 1 ? (
+              <Button
+                variant="contained"
+                onClick={handleNext}
+                endIcon={<ArrowForwardIosIcon sx={{ fontSize: 14 }} />}
+                sx={{
+                  bgcolor: ACCENT,
+                  '&:hover': { bgcolor: ACCENT },
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  px: 3,
+                }}
+              >
+                {t('next')}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={createBookingStudent}
+                sx={{
+                  bgcolor: ACCENT,
+                  '&:hover': { bgcolor: ACCENT },
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  px: 4,
+                }}
+              >
+                {t('submit')}
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Card>
     </Box>
-  );
+
+    {/* Loader Dialog */}
+    {loadingBooking && (
+      <Box
+        sx={{
+          position: 'fixed',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: (theme) => theme.zIndex.modal + 10,
+        }}
+      >
+        <Card sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
+          <CircularProgress />
+          <Typography sx={{ mt: 2 }}>{t('booking_in_progress')}</Typography>
+        </Card>
+      </Box>
+    )}
+  </Box>
+);
 }

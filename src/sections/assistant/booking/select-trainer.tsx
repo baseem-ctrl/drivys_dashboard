@@ -229,6 +229,9 @@ const TrainerCard: React.FC<TrainerCardProps> = ({
         position: 'relative',
         overflow: 'visible',
         height: '100%',
+        // Fix for maintaining position during scroll
+        transform: 'translateZ(0)',
+        willChange: 'transform',
         '&:hover': {
           boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
         },
@@ -269,43 +272,46 @@ const TrainerCard: React.FC<TrainerCardProps> = ({
             {getInitials(trainerName)}
           </Avatar>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, fontSize: 18 }}>
-              {trainerName || t('n/a')}
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: 16,
+                fontWeight: 700,
+                color: '#333',
+                mb: 0.5,
+                lineHeight: 1.2,
+              }}
+            >
+              {trainerName || 'N/A'}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <EmailIcon sx={{ fontSize: 14, color: '#999' }} />
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: 12 }}>
-                {trainerEmail || t('n/a')}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 11,
+                  color: '#999',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '140px',
+                }}
+              >
+                {trainerEmail || 'N/A'}
               </Typography>
             </Box>
           </Box>
         </Box>
 
-        {/* Badges Row */}
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
-          {isGearType(gear, 'MANUAL') && (
+        {/* Info Chips */}
+        <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" gap={1}>
+          {gear !== undefined && (
             <Chip
-              icon={<SettingsIcon />}
-              label={t('manual') || 'Manual'}
+              icon={<SettingsIcon sx={{ fontSize: 14 }} />}
+              label={isGearType(gear, 'MANUAL') ? t('manual') || 'Manual' : t('automatic') || 'Automatic'}
               size="small"
               sx={{
-                bgcolor: '#2196f3',
-                color: 'white',
-                fontWeight: 600,
-                fontSize: 11,
-                height: 24,
-                '& .MuiChip-icon': { color: 'white', fontSize: 14 },
-              }}
-            />
-          )}
-
-          {isGearType(gear, 'AUTOMATIC') && (
-            <Chip
-              icon={<SettingsIcon />}
-              label={t('automatic') || 'Automatic'}
-              size="small"
-              sx={{
-                bgcolor: '#ff9800',
+                bgcolor: isGearType(gear, 'MANUAL') ? '#3f51b5' : '#9c27b0',
                 color: 'white',
                 fontWeight: 600,
                 fontSize: 11,
@@ -464,7 +470,8 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
 
   const handlePageChange = useCallback((_event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Removed smooth scroll to prevent scrolling issues
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const handleSelectTrainer = useCallback(
@@ -484,95 +491,133 @@ const TrainerSelectStep: React.FC<TrainerStepProps> = ({
   }
 
   return (
-    <>
-      {/* Search Bar */}
+    <Box sx={{ position: 'relative' }}>
+      {/* Fixed Search Bar Container */}
       <Box
-        mb={3}
-        sx={{ width: '100%' }}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        gap={2}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          bgcolor: 'background.default',
+          pb: 2,
+          pt: 1,
+          // Add backdrop blur for better visibility
+          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        }}
       >
-        <TextField
-          placeholder={t('search') || 'Search trainers...'}
-          variant="outlined"
-          size="small"
-          value={localSearchTerm}
-          sx={{ maxWidth: '300px' }}
-          onChange={handleSearchChange}
-          InputProps={{
-            endAdornment: localSearchTerm && (
-              <InputAdornment position="end">
-                <IconButton size="small" onClick={handleClearSearch}>
-                  <CloseIcon sx={{ fontSize: 18 }} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          gap={2}
+        >
+          <TextField
+            placeholder={t('search') || 'Search trainers...'}
+            variant="outlined"
+            size="small"
+            value={localSearchTerm}
+            sx={{ maxWidth: '300px' }}
+            onChange={handleSearchChange}
+            InputProps={{
+              endAdornment: localSearchTerm && (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={handleClearSearch}>
+                    <CloseIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
       </Box>
 
-      {/* No Results Message */}
-      {filteredTrainers.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
-          <Typography variant="h6" gutterBottom>
-            {t('no_trainers_found') || 'No trainers found'}
-          </Typography>
-          {localSearchTerm && (
-            <Typography variant="body2">
-              {t('try_different_search') || 'Try adjusting your search terms'}
+      {/* Content Container */}
+      <Box sx={{ position: 'relative' }}>
+        {/* No Results Message */}
+        {filteredTrainers.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+            <Typography variant="h6" gutterBottom>
+              {t('no_trainers_found') || 'No trainers found'}
             </Typography>
-          )}
-        </Box>
-      )}
+            {localSearchTerm && (
+              <Typography variant="body2">
+                {t('try_different_search') || 'Try adjusting your search terms'}
+              </Typography>
+            )}
+          </Box>
+        )}
 
-      {/* Trainer Grid */}
-      {filteredTrainers.length > 0 && (
-        <>
-          <Grid container spacing={3}>
-            {currentTrainers.map((trainer) => (
-              <Grid item xs={12} md={6} key={trainer.user_id}>
-                <TrainerCard
-                  trainer={trainer}
-                  isSelected={trainer.user_id === selectedTrainerId}
-                  onSelect={() => handleSelectTrainer(trainer)}
-                  language={i18n.language}
-                  t={t}
-                />
-              </Grid>
-            ))}
-          </Grid>
+        {/* Trainer Grid */}
+        {filteredTrainers.length > 0 && (
+          <>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                // Ensure grid maintains position
+                position: 'relative',
+                transform: 'translateZ(0)',
+              }}
+            >
+              {currentTrainers.map((trainer) => (
+                <Grid
+                  item
+                  xs={12}
+                  md={6}
+                  key={trainer.user_id}
+                  sx={{
+                    // Prevent layout shifts
+                    transform: 'translateZ(0)',
+                    willChange: 'auto',
+                  }}
+                >
+                  <TrainerCard
+                    trainer={trainer}
+                    isSelected={trainer.user_id === selectedTrainerId}
+                    onSelect={() => handleSelectTrainer(trainer)}
+                    language={i18n.language}
+                    t={t}
+                  />
+                </Grid>
+              ))}
+            </Grid>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
-                showLastButton
-                sx={{
-                  '& .MuiPaginationItem-root': {
-                    fontWeight: 600,
-                  },
-                  '& .Mui-selected': {
-                    bgcolor: '#ff6b35 !important',
-                    color: 'white',
-                    '&:hover': {
-                      bgcolor: '#ff5722 !important',
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mt: 4,
+                position: 'relative',
+              }}>
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size="large"
+                  showFirstButton
+                  showLastButton
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      fontWeight: 600,
                     },
-                  },
-                }}
-              />
-            </Box>
-          )}
-        </>
-      )}
-    </>
+                    '& .Mui-selected': {
+                      bgcolor: '#ff6b35 !important',
+                      color: 'white',
+                      '&:hover': {
+                        bgcolor: '#ff5722 !important',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
+    </Box>
   );
 };
 
